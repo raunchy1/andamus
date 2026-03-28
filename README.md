@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Andamus
+
+Il carpooling sardo per viaggiare insieme. Trova e offri passaggi in tutta la Sardegna.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: TailwindCSS
+- **UI Components**: shadcn/ui
+- **Auth & Database**: Supabase (Google OAuth)
+- **Font**: Inter
+
+## Design System
+
+- **Primary Color**: #1a1a2e (dark navy)
+- **Accent Color**: #e63946 (sardinian red)
+- **Font**: Inter
+- **Design**: Mobile-first
+
+## Project Structure
+
+```
+andamus/
+├── app/
+│   ├── auth/callback/     # OAuth callback handler
+│   ├── cerca/             # Search rides page
+│   ├── offri/             # Post a ride page
+│   ├── profilo/           # Profile page
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Homepage
+├── components/
+│   ├── navbar.tsx         # Navigation bar
+│   ├── footer.tsx         # Footer
+│   └── ui/                # UI components
+├── lib/
+│   ├── supabase/
+│   │   ├── client.ts      # Browser client
+│   │   ├── server.ts      # Server client
+│   │   └── middleware.ts  # Session middleware
+│   └── utils.ts           # Utility functions
+├── middleware.ts          # Next.js middleware
+└── .env.local.example     # Environment variables template
+```
+
+## Environment Variables
+
+Copy `.env.local.example` to `.env.local` and fill in your Supabase credentials:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Supabase Setup
+
+1. Create a new Supabase project
+2. Enable Google OAuth provider in Authentication > Providers
+3. Set up your Google OAuth credentials in the Google Cloud Console
+4. Add the redirect URL: `http://localhost:3000/auth/callback`
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/` - Homepage
+- `/cerca` - Search for rides
+- `/offri` - Post a ride offer
+- `/profilo` - User profile
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
