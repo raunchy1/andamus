@@ -56,6 +56,256 @@ export function getCityCoordinates(city: string): { lat: number; lng: number } |
   return SARDINIA_CITIES[city] || null;
 }
 
+// Distance matrix between major cities (in km)
+// Used for CO2 calculations and statistics
+export const CITY_DISTANCES: Record<string, Record<string, number>> = {
+  'Cagliari': {
+    'Sassari': 210,
+    'Nuoro': 170,
+    'Oristano': 90,
+    'Olbia': 270,
+    'Tortolì': 150,
+    'Lanusei': 135,
+    'Iglesias': 55,
+    'Carbonia': 65,
+    'Alghero': 240,
+    'Tempio Pausania': 260,
+    'La Maddalena': 300,
+    'Siniscola': 200,
+    'Dorgali': 220,
+    'Muravera': 90,
+    'Sanluri': 70,
+    'Macomer': 150,
+    'Bosa': 180,
+    'Castelsardo': 240,
+    'Arzachena': 280,
+    'Porto Torres': 230,
+    'Pula': 30,
+    'Quartu Sant\'Elena': 10,
+  },
+  'Sassari': {
+    'Cagliari': 210,
+    'Nuoro': 130,
+    'Oristano': 140,
+    'Olbia': 100,
+    'Tortolì': 170,
+    'Alghero': 35,
+    'Tempio Pausania': 85,
+    'La Maddalena': 125,
+    'Castelsardo': 35,
+    'Arzachena': 105,
+    'Porto Torres': 25,
+    'Sorso': 10,
+    'Macomer': 80,
+    'Bosa': 70,
+    'Ozieri': 65,
+  },
+  'Nuoro': {
+    'Cagliari': 170,
+    'Sassari': 130,
+    'Oristano': 120,
+    'Olbia': 140,
+    'Tortolì': 60,
+    'Lanusei': 45,
+    'Dorgali': 50,
+    'Siniscola': 90,
+    'Fonni': 35,
+    'Orgosolo': 20,
+    'Oliena': 15,
+    'Bitti': 30,
+    'Lula': 25,
+    'Macomer': 55,
+    'Ozieri': 70,
+  },
+  'Oristano': {
+    'Cagliari': 90,
+    'Sassari': 140,
+    'Nuoro': 120,
+    'Olbia': 150,
+    'Bosa': 50,
+    'Macomer': 50,
+    'Villanovaforru': 35,
+    'San Gavino Monreale': 40,
+    'Sanluri': 45,
+    'Cuglieri': 45,
+    'Arborea': 25,
+  },
+  'Olbia': {
+    'Cagliari': 270,
+    'Sassari': 100,
+    'Nuoro': 140,
+    'Oristano': 150,
+    'Tortolì': 95,
+    'La Maddalena': 45,
+    'Arzachena': 25,
+    'Tempio Pausania': 40,
+    'Posada': 60,
+    'Siniscola': 70,
+    'Golfo Aranci': 20,
+    'San Teodoro': 25,
+    'Budoni': 35,
+  },
+  'Tortolì': {
+    'Cagliari': 150,
+    'Sassari': 170,
+    'Nuoro': 60,
+    'Olbia': 95,
+    'Lanusei': 15,
+    'Cardedu': 35,
+    'Bari Sardo': 25,
+    'Lotzorai': 45,
+    'Santa Maria Navarrese': 55,
+    'Baunei': 75,
+    'Tertenia': 20,
+  },
+  'Alghero': {
+    'Sassari': 35,
+    'Cagliari': 240,
+    'Oristano': 130,
+    'Bosa': 50,
+    'Porto Torres': 35,
+    'Castelsardo': 60,
+  },
+  'Iglesias': {
+    'Cagliari': 55,
+    'Carbonia': 25,
+    'Villacidro': 30,
+    'Sanluri': 55,
+    'Guspini': 35,
+    'Arbus': 45,
+    'Buggerru': 35,
+  },
+  'Carbonia': {
+    'Cagliari': 65,
+    'Iglesias': 25,
+    'Villacidro': 30,
+    'Sanluri': 55,
+    'Guspini': 25,
+    'Arbus': 40,
+    'Portoscuso': 15,
+    'Carloforte': 50,
+  },
+  'Tempio Pausania': {
+    'Sassari': 85,
+    'Olbia': 40,
+    'Arzachena': 35,
+    'La Maddalena': 50,
+    'Posada': 55,
+  },
+  'Dorgali': {
+    'Nuoro': 50,
+    'Cagliari': 220,
+    'Olbia': 95,
+    'Cala Gonone': 5,
+    'Siniscola': 80,
+    'Baunei': 45,
+  },
+  'Macomer': {
+    'Sassari': 80,
+    'Nuoro': 55,
+    'Oristano': 50,
+    'Bosa': 35,
+    'Ozieri': 25,
+    'Bitti': 45,
+  },
+  'Bosa': {
+    'Oristano': 50,
+    'Sassari': 70,
+    'Alghero': 50,
+    'Macomer': 35,
+    'Cagliari': 180,
+  },
+  'Castelsardo': {
+    'Sassari': 35,
+    'Alghero': 60,
+    'Porto Torres': 45,
+    'Santa Teresa Gallura': 50,
+  },
+  'Arzachena': {
+    'Olbia': 25,
+    'Tempio Pausania': 35,
+    'La Maddalena': 30,
+    'Palau': 10,
+  },
+  'La Maddalena': {
+    'Olbia': 45,
+    'Arzachena': 30,
+    'Palau': 20,
+  },
+  'Porto Torres': {
+    'Sassari': 25,
+    'Alghero': 35,
+    'Castelsardo': 45,
+    'Sorso': 15,
+  },
+  'Muravera': {
+    'Cagliari': 90,
+    'Tortolì': 55,
+    'Villacidro': 40,
+    'Sanluri': 70,
+  },
+  'Sanluri': {
+    'Cagliari': 70,
+    'Oristano': 45,
+    'Iglesias': 55,
+    'Carbonia': 55,
+    'Muravera': 70,
+    'Villanovaforru': 20,
+  },
+  'Pula': {
+    'Cagliari': 30,
+    'Teulada': 35,
+    'Domus de Maria': 25,
+    'Sant\'Antioco': 90,
+  },
+  'Quartu Sant\'Elena': {
+    'Cagliari': 10,
+    'Muravera': 85,
+    'Pula': 35,
+  },
+};
+
+// Get distance between two cities (returns km or null if unknown)
+export function getDistanceBetweenCities(from: string, to: string): number | null {
+  if (from === to) return 0;
+  
+  // Check direct distance
+  const fromDistances = CITY_DISTANCES[from];
+  if (fromDistances && fromDistances[to]) {
+    return fromDistances[to];
+  }
+  
+  // Check reverse distance
+  const toDistances = CITY_DISTANCES[to];
+  if (toDistances && toDistances[from]) {
+    return toDistances[from];
+  }
+  
+  // Approximate distance based on coordinates if available
+  const fromCoords = SARDINIA_CITIES[from];
+  const toCoords = SARDINIA_CITIES[to];
+  if (fromCoords && toCoords) {
+    // Haversine formula for approximate distance
+    const R = 6371; // Earth's radius in km
+    const dLat = (toCoords.lat - fromCoords.lat) * Math.PI / 180;
+    const dLon = (toCoords.lng - fromCoords.lng) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(fromCoords.lat * Math.PI / 180) * Math.cos(toCoords.lat * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return Math.round(R * c);
+  }
+  
+  return null;
+}
+
+// Calculate CO2 saved (kg) - average car emission is ~120g/km per passenger
+export function calculateCO2Saved(distanceKm: number, passengers: number = 1): number {
+  // Assuming each passenger in carpooling saves 120g per km compared to driving alone
+  const emissionPerKm = 0.12; // kg per km
+  return Math.round(distanceKm * emissionPerKm * passengers * 10) / 10;
+}
+
 // Dark map styles for Google Maps
 export const darkMapStyles = [
   {

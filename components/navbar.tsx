@@ -14,7 +14,8 @@ import {
   PlusCircle,
   Home,
   Shield,
-  Gift
+  Gift,
+  BarChart3
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
@@ -206,6 +207,19 @@ export function Navbar() {
                     <Gift className="h-5 w-5" />
                   </Link>
 
+                  {/* Statistics Link */}
+                  <Link
+                    href={`/${locale}/statistiche`}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                      isHome 
+                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
+                        : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
+                    }`}
+                    title="Statistiche"
+                  >
+                    <BarChart3 className="h-5 w-5" />
+                  </Link>
+
                   <Link 
                     href={`/${locale}/profilo`}
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all ${
@@ -340,6 +354,18 @@ export function Navbar() {
                       >
                         <Gift className="h-5 w-5" />
                         <span>{t('invite')}</span>
+                      </Link>
+                      <Link
+                        href={`/${locale}/statistiche`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
+                          isHome 
+                            ? "text-white/70 hover:bg-white/10" 
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        <BarChart3 className="h-5 w-5" />
+                        <span>Statistiche</span>
                       </Link>
                       {user?.email && ADMIN_EMAILS.includes(user.email || '') && (
                         <Link

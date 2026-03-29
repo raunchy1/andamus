@@ -8,13 +8,15 @@ import toast from "react-hot-toast";
 import { 
   User, Car, Star, Calendar, LogOut, MapPin, Loader2,
   Armchair, Clock, MessageCircle, PlusCircle, Search, 
-  Shield, CheckCircle2, Check, X, BadgeCheck, Zap
+  Shield, CheckCircle2, Check, X, BadgeCheck, Zap,
+  Route, Leaf, Users, TrendingUp, BarChart3
 } from "lucide-react";
 import { ReportUser } from "@/components/ReportUser";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import { RatingModal } from "@/components/RatingModal";
 import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notifications";
+import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { BadgeDisplay, LevelProgress, PointsInfo, BadgeUnlockNotification } from "@/components/BadgeDisplay";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 
@@ -391,6 +393,48 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
+
+              {/* Mini Stats Bar */}
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                {(() => {
+                  const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
+                  const completedBookings = myBookings.filter(b => b.status === 'confirmed');
+                  let totalKm = 0;
+                  let passengersHelped = 0;
+                  
+                  completedRides.forEach(ride => {
+                    const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
+                    if (dist) {
+                      totalKm += dist;
+                      passengersHelped += (ride.bookings_count || 0);
+                    }
+                  });
+                  
+                  completedBookings.forEach(booking => {
+                    const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
+                    if (dist) totalKm += dist;
+                  });
+                  
+                  const co2Saved = calculateCO2Saved(totalKm, passengersHelped);
+                  
+                  return (
+                    <>
+                      <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-white">
+                        <Route className="h-4 w-4" />
+                        <span className="text-sm font-medium">{totalKm} km</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 rounded-full bg-green-500/20 px-4 py-1.5 text-green-300">
+                        <Leaf className="h-4 w-4" />
+                        <span className="text-sm font-medium">{co2Saved} kg CO₂</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-white">
+                        <Users className="h-4 w-4" />
+                        <span className="text-sm font-medium">{passengersHelped} aiutati</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
 
             <button
@@ -486,6 +530,13 @@ export default function ProfilePage() {
           >
             <BadgeCheck className="h-4 w-4" />
             Verifica
+          </Link>
+          <Link
+            href="/statistiche"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#e63946]/20 py-3 text-sm font-semibold text-white transition-all hover:bg-[#e63946]/30"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Statistiche
           </Link>
         </div>
       </div>
