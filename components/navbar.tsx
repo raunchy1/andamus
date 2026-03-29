@@ -11,7 +11,8 @@ import {
   User,
   Search,
   PlusCircle,
-  Home
+  Home,
+  Shield
 } from "lucide-react";
 import { NotificationBell } from "./NotificationBell";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,8 @@ const navLinks = [
   { href: "/cerca", label: "Cerca", icon: Search },
   { href: "/offri", label: "Offri", icon: PlusCircle },
 ];
+
+const ADMIN_EMAIL = "cristianermurache@gmail.com";
 
 interface UserData {
   id: string;
@@ -157,6 +160,21 @@ export function Navbar() {
             <>
               {user ? (
                 <div className="flex items-center gap-3">
+                  {/* Admin Link */}
+                  {user.email === ADMIN_EMAIL && (
+                    <Link
+                      href="/admin"
+                      className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                        isHome 
+                          ? "text-white/70 hover:bg-white/10 hover:text-white" 
+                          : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
+                      }`}
+                      title="Admin"
+                    >
+                      <Shield className="h-5 w-5" />
+                    </Link>
+                  )}
+                  
                   {/* Notification Bell */}
                   <NotificationBell isHome={isHome} />
 
@@ -272,6 +290,20 @@ export function Navbar() {
                 <>
                   {user ? (
                     <div className="space-y-2">
+                      {user?.email === ADMIN_EMAIL && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
+                            isHome 
+                              ? "text-white/70 hover:bg-white/10" 
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          <Shield className="h-5 w-5" />
+                          <span>Admin</span>
+                        </Link>
+                      )}
                       <Link
                         href="/profilo"
                         onClick={() => setMobileMenuOpen(false)}
