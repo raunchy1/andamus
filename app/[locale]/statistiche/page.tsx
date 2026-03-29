@@ -9,21 +9,17 @@ import {
   Users, 
   TreePine, 
   Route, 
-  Award, 
-  Star,
+  Award,
   Calendar,
   TrendingUp,
   Download,
-  ChevronDown,
   Trophy,
-  Leaf,
   MapPin,
-  Clock,
-  Filter
+  Clock
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
-import { getUserBadges, getLevelInfo } from "@/lib/gamification";
+import { getUserBadges, type Badge } from "@/lib/gamification";
 import { 
   BarChart, 
   Bar, 
@@ -31,10 +27,10 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  Cell
+  ResponsiveContainer
 } from "recharts";
 import toast from "react-hot-toast";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface Ride {
   id: string;
@@ -64,23 +60,22 @@ interface Booking {
   };
 }
 
-interface Badge {
+interface HistoryItem {
   id: string;
-  type: string;
-  earned_at: string;
-}
-
-interface PointsHistory {
-  points: number;
-  reason: string;
+  from_city: string;
+  to_city: string;
+  date: string;
+  time: string;
+  price: number;
+  status: string;
   created_at: string;
 }
 
 export default function StatisticsPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [, setUser] = useState<SupabaseUser | null>(null);
+  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   
   // Data states
@@ -538,7 +533,7 @@ export default function StatisticsPage() {
             {filteredHistory.length === 0 ? (
               <p className="text-center text-white/40 py-8">Nessuna corsa trovata</p>
             ) : (
-              filteredHistory.map((item: any) => (
+              filteredHistory.map((item: HistoryItem) => (
                 <div 
                   key={item.id}
                   className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
@@ -593,7 +588,7 @@ export default function StatisticsPage() {
             </h2>
             <div className="space-y-4">
               {badges.map((badge) => {
-                const badgeDetails = getBadgeDetails(badge.type);
+                const badgeDetails = getBadgeDetails(badge.type || 'unknown');
                 return (
                   <div 
                     key={badge.id}
@@ -608,7 +603,7 @@ export default function StatisticsPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-white/60 text-sm">
-                        {new Date(badge.earned_at).toLocaleDateString('it-IT', {
+                        {new Date(badge.earned_at || '2024-01-01').toLocaleDateString('it-IT', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'

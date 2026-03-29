@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewReview } from "@/lib/notifications";
 import { completeGamificationAction } from "@/lib/gamification";
+import Image from "next/image";
 import toast from "react-hot-toast";
 
 interface RatingModalProps {
@@ -35,13 +36,7 @@ export function RatingModal({
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    if (isOpen) {
-      checkExistingReview();
-    }
-  }, [isOpen]);
-
-  const checkExistingReview = async () => {
+  const checkExistingReview = useCallback(async () => {
     const { data } = await supabase
       .from("reviews")
       .select("id")
@@ -52,9 +47,15 @@ export function RatingModal({
     if (data) {
       setAlreadyReviewed(true);
     }
-  };
+  }, [supabase, rideId, currentUserId]);
 
-  const handleSubmit = async () => {
+  useEffect(() => {
+    if (isOpen) {
+      checkExistingReview();
+    }
+  }, [isOpen, checkExistingReview]);
+
+    const handleSubmit = async () => {
     if (rating === 0) {
       toast.error("Seleziona una valutazione");
       return;
@@ -103,7 +104,7 @@ export function RatingModal({
         setRating(0);
         setComment("");
       }
-    } catch (error) {
+    } catch {
       toast.error("Errore durante l'invio");
     } finally {
       setLoading(false);
@@ -139,9 +140,11 @@ export function RatingModal({
             <div className="mb-6 flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
                 {reviewedUser.avatar_url ? (
-                  <img
+                  <Image
                     src={reviewedUser.avatar_url}
                     alt={reviewedUser.name}
+                    width={64}
+                    height={64}
                     className="h-full w-full rounded-full object-cover"
                   />
                 ) : (

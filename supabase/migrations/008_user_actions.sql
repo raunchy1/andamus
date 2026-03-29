@@ -1,6 +1,7 @@
 -- Create user_actions table for rate limiting and audit
+-- Using gen_random_uuid() which is available by default in Supabase
 CREATE TABLE IF NOT EXISTS user_actions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     action TEXT NOT NULL,
     metadata JSONB DEFAULT NULL,

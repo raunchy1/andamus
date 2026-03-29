@@ -21,6 +21,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth";
 
@@ -86,7 +87,7 @@ export function Navbar() {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error("Login failed:", error);
+      // // console.error("Login failed:", error);
     }
   };
 
@@ -94,7 +95,7 @@ export function Navbar() {
     try {
       await signOut();
     } catch (error) {
-      console.error("Logout failed:", error);
+      // // console.error("Logout failed:", error);
     }
   };
 
@@ -229,9 +230,11 @@ export function Navbar() {
                     }`}
                   >
                     {getUserAvatar() ? (
-                      <img 
+                      <Image 
                         src={getUserAvatar()!} 
                         alt={getUserName()}
+                        width={32}
+                        height={32}
                         className="h-8 w-8 rounded-full object-cover"
                       />
                     ) : (
@@ -389,9 +392,11 @@ export function Navbar() {
                         }`}
                       >
                         {getUserAvatar() ? (
-                          <img 
+                          <Image 
                             src={getUserAvatar()!} 
                             alt={getUserName()}
+                            width={32}
+                            height={32}
                             className="h-8 w-8 rounded-full object-cover"
                           />
                         ) : (

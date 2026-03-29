@@ -11,13 +11,12 @@ interface NavigationButtonsProps {
 
 export function NavigationButtons({ 
   destination, 
-  label = "Destinazione",
   variant = "default" 
 }: NavigationButtonsProps) {
   const coords = getCityCoordinates(destination);
 
   if (!coords) {
-    console.warn(`Coordinates not found for destination: ${destination}`);
+    // console.warn(`Coordinates not found for destination: ${destination}`);
     return null;
   }
 

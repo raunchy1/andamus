@@ -20,6 +20,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
 import { toast } from "react-hot-toast";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const sardinianCities = [
   "Cagliari",
@@ -45,7 +46,7 @@ const sardinianCities = [
 ];
 
 export default function OfferPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   
   const [formData, setFormData] = useState({
@@ -149,12 +150,12 @@ export default function OfferPage() {
         .select();
 
       if (error) {
-        console.error("Error inserting ride:", error);
+        // console.error("Error inserting ride:", error);
         setSubmitError("Errore durante la pubblicazione. Riprova più tardi.");
         return;
       }
 
-      console.log("Ride created:", data);
+      // // console.log("Ride created:", data);
       
       // Add gamification points
       if (currentUser) {
@@ -180,7 +181,7 @@ export default function OfferPage() {
         }
         
         if (result.newBadges.length > 0) {
-          result.newBadges.forEach(badge => {
+          result.newBadges.forEach(() => {
             // Badge notification will be shown via component
           });
         }
@@ -188,7 +189,7 @@ export default function OfferPage() {
       
       setIsSubmitted(true);
     } catch (err) {
-      console.error("Unexpected error:", err);
+      // console.error("Unexpected error:", err);
       setSubmitError("Errore imprevisto. Riprova più tardi.");
     } finally {
       setIsSubmitting(false);
@@ -199,7 +200,7 @@ export default function OfferPage() {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error("Login failed:", error);
+      // console.error("Login failed:", error);
     }
   };
 

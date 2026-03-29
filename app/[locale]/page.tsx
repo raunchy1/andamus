@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { Car, Search, UserPlus, MessageCircle, MapPin, ArrowRight, Calendar, Users, Route, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { OnboardingModal } from "@/components/OnboardingModal";
@@ -20,7 +21,21 @@ export default function HomePage() {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState("");
-  const [todayRides, setTodayRides] = useState<any[]>([]);
+interface TodayRide {
+  id: string;
+  from_city: string;
+  to_city: string;
+  time: string;
+  price: number;
+  seats: number;
+  profiles: {
+    name: string;
+    avatar_url: string | null;
+    rating: number;
+  };
+}
+
+  const [todayRides, setTodayRides] = useState<TodayRide[]>([]);
   const [stats, setStats] = useState({ users: 0, rides: 0, cities: 20 });
   const [loadingRides, setLoadingRides] = useState(true);
   const supabase = createClient();
@@ -107,13 +122,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
     router.push(`/cerca?${params.toString()}`);
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("it-IT", { 
-      weekday: "short", 
-      day: "numeric", 
-      month: "short" 
-    });
-  };
+
 
   return (
     <div className="min-h-screen bg-[#1a1a2e]">
@@ -298,7 +307,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
                   <div className="mt-4 flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
                       {ride.profiles.avatar_url ? (
-                        <img src={ride.profiles.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                        <Image src={ride.profiles.avatar_url} alt="" width={32} height={32} className="h-full w-full rounded-full object-cover" />
                       ) : (
                         <Users className="h-4 w-4" />
                       )}

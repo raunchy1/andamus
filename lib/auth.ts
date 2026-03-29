@@ -14,7 +14,7 @@ export async function signInWithGoogle() {
   });
   
   if (error) {
-    console.error("Error signing in with Google:", error);
+    // console.error("Error signing in with Google:", error);
     throw error;
   }
 }
@@ -24,7 +24,7 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
   
   if (error) {
-    console.error("Error signing out:", error);
+    // console.error("Error signing out:", error);
     throw error;
   }
   
@@ -39,7 +39,7 @@ export async function getUser() {
   const { data: { user }, error } = await supabase.auth.getUser();
   
   if (error) {
-    console.error("Error getting user:", error);
+    // console.error("Error getting user:", error);
     return null;
   }
   
@@ -51,7 +51,7 @@ export async function getSession() {
   const { data: { session }, error } = await supabase.auth.getSession();
   
   if (error) {
-    console.error("Error getting session:", error);
+    // console.error("Error getting session:", error);
     return null;
   }
   

@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getUserBadges, getBadgeDetails, BADGES } from "@/lib/gamification";
+import { getUserBadges, getBadgeDetails, BADGES, type Badge } from "@/lib/gamification";
 import { Award, X } from "lucide-react";
-
-interface Badge {
-  id: string;
-  type: string;
-  earned_at: string;
-}
 
 interface BadgeDisplayProps {
   userId: string;
@@ -77,7 +71,7 @@ export function BadgeUnlockNotification({
 
 // Individual badge item
 function BadgeItem({ badge, index }: { badge: Badge; index: number }) {
-  const details = getBadgeDetails(badge.type);
+  const details = getBadgeDetails(badge.type || 'unknown');
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -122,17 +116,17 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
   const [loading, setLoading] = useState(true);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
 
-  useEffect(() => {
-    fetchBadges();
-  }, [userId]);
-
-  const fetchBadges = async () => {
+  const fetchBadges = useCallback(async () => {
     const result = await getUserBadges(userId);
     if (result.success) {
       setBadges(result.badges || []);
     }
     setLoading(false);
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    setTimeout(() => fetchBadges(), 0);
+  }, [fetchBadges]);
 
   if (loading) {
     return (
@@ -200,8 +194,8 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
               </div>
               
               <div className="grid grid-cols-4 gap-4">
-                {badges.map((badge, index) => {
-                  const details = getBadgeDetails(badge.type);
+                {badges.map((badge) => {
+                  const details = getBadgeDetails(badge.type || 'unknown');
                   return (
                     <div key={badge.id} className="text-center">
                       <div
@@ -211,7 +205,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
                       </div>
                       <p className="text-white text-xs font-medium truncate">{details.name}</p>
                       <p className="text-white/40 text-[10px]">
-                        {new Date(badge.earned_at).toLocaleDateString('it-IT')}
+                        {new Date(badge.earned_at || '2024-01-01').toLocaleDateString('it-IT')}
                       </p>
                     </div>
                   );
@@ -245,7 +239,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
 }
 
 // Level progress component
-export function LevelProgress({ points, level }: { points: number; level: string }) {
+export function LevelProgress({ points }: { points: number }) {
   const { current, next, progress } = (() => {
     const LEVELS = [
       { min: 0, max: 99, name: "Viaggiatore", emoji: "🚗" },

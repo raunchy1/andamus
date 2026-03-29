@@ -89,7 +89,7 @@ export async function addPoints(userId: string, points: number): Promise<{
       leveledUp: data[0].leveled_up,
     };
   } catch (error) {
-    console.error("Error adding points:", error);
+    // console.error("Error adding points:", error);
     return { success: false, error: "Failed to add points" };
   }
 }
@@ -112,7 +112,7 @@ export async function awardBadge(
       awarded: data,
     };
   } catch (error) {
-    console.error("Error awarding badge:", error);
+    // console.error("Error awarding badge:", error);
     return { success: false, awarded: false, error: "Failed to award badge" };
   }
 }
@@ -159,15 +159,23 @@ export async function checkRideBadges(userId: string): Promise<{
 
     return { success: true, newBadges };
   } catch (error) {
-    console.error("Error checking ride badges:", error);
+    // console.error("Error checking ride badges:", error);
     return { success: false, newBadges };
   }
 }
 
 // Get user's badges
+export interface Badge {
+  id?: string;
+  user_id?: string;
+  type?: string;
+  earned_at?: string;
+  [key: string]: unknown;
+}
+
 export async function getUserBadges(userId: string): Promise<{
   success: boolean;
-  badges?: any[];
+  badges?: Badge[];
   error?: string;
 }> {
   try {
@@ -181,7 +189,7 @@ export async function getUserBadges(userId: string): Promise<{
 
     return { success: true, badges: data || [] };
   } catch (error) {
-    console.error("Error getting badges:", error);
+    // console.error("Error getting badges:", error);
     return { success: false, error: "Failed to get badges" };
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer } from "@react-google-maps/api";
+import Image from "next/image";
 import { MapPin, Navigation } from "lucide-react";
 import { SARDINIA_CITIES, darkMapStyles } from "@/lib/sardinia-cities";
 
@@ -288,10 +289,11 @@ export function MiniMap({ fromCity, toCity }: MiniMapProps) {
 
   return (
     <div className="relative h-[120px] w-full overflow-hidden rounded-xl">
-      <img
+      <Image
         src={mapUrl}
         alt={`Mappa da ${fromCity} a ${toCity}`}
-        className="h-full w-full object-cover"
+        fill
+        className="object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e]/60 to-transparent" />
       

@@ -27,8 +27,6 @@ function getWeatherIcon(code: number, className: string = "w-5 h-5") {
 
 // Compact version for ride cards
 function CompactWeatherWidget({ weather, rainWarning }: { weather: WeatherData; rainWarning: boolean }) {
-  const weatherInfo = getWeatherInfo(weather.weatherCode);
-  
   return (
     <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2 py-1 border border-white/10">
       {getWeatherIcon(weather.weatherCode, "w-4 h-4")}
@@ -108,7 +106,7 @@ export function WeatherWidget({ city, date, variant = "full" }: WeatherWidgetPro
         const data = await getWeatherForCity(city, date);
         setWeather(data);
       } catch (err) {
-        console.error('Error loading weather:', err);
+        // console.error('Error loading weather:', err);
         setError(true);
       } finally {
         setLoading(false);

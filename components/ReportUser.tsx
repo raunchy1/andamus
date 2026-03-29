@@ -56,7 +56,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
       setIsOpen(false);
       setReason("");
       setDescription("");
-    } catch (error) {
+    } catch {
       toast.error("Errore nell'invio della segnalazione");
     } finally {
       setLoading(false);

@@ -1,24 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { Gift, Loader2, ArrowLeft, CheckCircle } from "lucide-react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
 export default function JoinPage() {
-  const router = useRouter();
+
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
   const supabase = createClient();
   
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [referralApplied, setReferralApplied] = useState(false);
+
+  const applyReferralBonus = useCallback(async (userId: string, code: string) => {
+    try {
+      const { data, error } = await supabase.rpc("apply_referral_bonus", {
+        new_user_id: userId,
+        referrer_code: code
+      });
+
+      if (error) throw error;
+
+      if (data && data[0].success) {
+        setReferralApplied(true);
+        localStorage.removeItem("pending_referral_code");
+        toast.success("Bonus di 25 punti applicato! 🎉");
+      }
+    } catch (_error) {
+      // console.error("Error applying referral:", _error);
+      localStorage.removeItem("pending_referral_code");
+    }
+  }, [supabase]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,27 +64,9 @@ export default function JoinPage() {
     };
 
     checkAuth();
-  }, [referralCode, referralApplied, supabase]);
+  }, [referralCode, referralApplied, supabase, applyReferralBonus]);
 
-  const applyReferralBonus = async (userId: string, code: string) => {
-    try {
-      const { data, error } = await supabase.rpc("apply_referral_bonus", {
-        new_user_id: userId,
-        referrer_code: code
-      });
 
-      if (error) throw error;
-
-      if (data && data[0].success) {
-        setReferralApplied(true);
-        localStorage.removeItem("pending_referral_code");
-        toast.success("Bonus di 25 punti applicato! 🎉");
-      }
-    } catch (error) {
-      console.error("Error applying referral:", error);
-      localStorage.removeItem("pending_referral_code");
-    }
-  };
 
   const handleLogin = async () => {
     if (referralCode) {
@@ -75,7 +78,7 @@ export default function JoinPage() {
     
     try {
       await signInWithGoogle();
-    } catch (error) {
+    } catch {
       toast.error("Errore durante l'accesso");
     }
   };

@@ -11,7 +11,7 @@ import {
   Search, 
   Shield, 
   CheckCircle, 
-  XCircle,
+  
   Ban,
   Unlock,
   Check,
@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { completeGamificationAction } from "@/lib/gamification";
 
@@ -233,8 +234,8 @@ export default function AdminDashboard() {
         created_at: r.created_at
       })) || []);
 
-    } catch (error) {
-      console.error("Error fetching admin data:", error);
+    } catch (_error) {
+      // console.error("Error fetching admin data:", _error);
       toast.error("Errore nel caricamento dei dati");
     } finally {
       setLoading(false);
@@ -260,7 +261,7 @@ export default function AdminDashboard() {
       
       toast.success(currentStatus ? "Utente sbloccato" : "Utente bloccato");
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error("Errore nell'aggiornamento dello stato");
     }
   };
@@ -277,7 +278,7 @@ export default function AdminDashboard() {
       
       toast.success("Segnalazione risolta");
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error("Errore nella risoluzione");
     }
   };
@@ -321,7 +322,7 @@ export default function AdminDashboard() {
       
       toast.success("Verifica approvata");
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error("Errore nell'approvazione");
     }
   };
@@ -338,7 +339,7 @@ export default function AdminDashboard() {
       
       toast.success("Verifica rifiutata");
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error("Errore nel rifiuto");
     }
   };
@@ -355,7 +356,7 @@ export default function AdminDashboard() {
       
       toast.success("Corsa disattivata");
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error("Errore nella disattivazione");
     }
   };
@@ -503,7 +504,7 @@ export default function AdminDashboard() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             {user.avatar_url ? (
-                              <img src={user.avatar_url} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
+                              <Image src={user.avatar_url} alt={user.name} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                             ) : (
                               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                                 <Users className="w-4 h-4 text-white/60" />
@@ -618,7 +619,7 @@ export default function AdminDashboard() {
                     <div key={verif.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
                       <div className="flex items-center gap-3 mb-3">
                         {verif.user_avatar ? (
-                          <img src={verif.user_avatar} alt={verif.user_name} className="w-10 h-10 rounded-full object-cover" />
+                          <Image src={verif.user_avatar} alt={verif.user_name} width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                             <Users className="w-5 h-5 text-white/60" />
@@ -711,7 +712,7 @@ export default function AdminDashboard() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             {ride.driver_avatar ? (
-                              <img src={ride.driver_avatar} alt={ride.driver_name} className="w-6 h-6 rounded-full object-cover" />
+                              <Image src={ride.driver_avatar} alt={ride.driver_name} width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
                             ) : (
                               <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
                                 <Users className="w-3 h-3 text-white/60" />

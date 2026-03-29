@@ -31,8 +31,10 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     // Check if user has already seen onboarding
     const onboardingDone = localStorage.getItem("onboarding_done");
     if (!onboardingDone && !hasChecked) {
-      setIsOpen(true);
-      setHasChecked(true);
+      setTimeout(() => {
+        setIsOpen(true);
+        setHasChecked(true);
+      }, 0);
     }
   }, [hasChecked]);
 

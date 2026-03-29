@@ -5,20 +5,31 @@ import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import Image from "next/image";
 import { 
-  User, Car, Star, Calendar, LogOut, MapPin, Loader2,
+  User, Car, Star, LogOut, MapPin, Loader2,
   Armchair, Clock, MessageCircle, PlusCircle, Search, 
   Shield, CheckCircle2, Check, X, BadgeCheck, Zap,
-  Route, Leaf, Users, TrendingUp, BarChart3
+  Route, Leaf, Users, BarChart3
 } from "lucide-react";
 import { ReportUser } from "@/components/ReportUser";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
 import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notifications";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { BadgeDisplay, LevelProgress, PointsInfo, BadgeUnlockNotification } from "@/components/BadgeDisplay";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
+
+interface Profile {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  points: number;
+  level: string;
+  rating: number;
+}
 
 interface Ride {
   id: string;
@@ -90,30 +101,12 @@ interface BookingRequest {
   };
 }
 
-// Star Rating Display Component
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          className={`h-4 w-4 ${
-            star <= rating
-              ? "fill-yellow-400 text-yellow-400"
-              : star - 0.5 <= rating
-              ? "fill-yellow-400/50 text-yellow-400"
-              : "text-white/20"
-          }`}
-        />
-      ))}
-    </div>
-  );
-}
+
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [myRides, setMyRides] = useState<Ride[]>([]);
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
   const [bookingRequests, setBookingRequests] = useState<BookingRequest[]>([]);
@@ -238,7 +231,7 @@ export default function ProfilePage() {
       );
 
       // Add gamification points for confirmed booking (to passenger)
-      const result = await completeGamificationAction(
+      await completeGamificationAction(
         request.passenger_id,
         'booking_confirmed'
       );
@@ -246,7 +239,7 @@ export default function ProfilePage() {
       // Update local state
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
       toast.success("Prenotazione accettata!");
-    } catch (error) {
+    } catch {
       toast.error("Errore nell'accettare la prenotazione");
     } finally {
       setProcessingBooking(null);
@@ -275,7 +268,7 @@ export default function ProfilePage() {
       // Update local state
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
       toast.success("Prenotazione rifiutata");
-    } catch (error) {
+    } catch {
       toast.error("Errore nel rifiutare la prenotazione");
     } finally {
       setProcessingBooking(null);
@@ -357,7 +350,7 @@ export default function ProfilePage() {
             <div className="relative">
               <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/20 ring-4 ring-white/30">
                 {getUserAvatar() ? (
-                  <img src={getUserAvatar()} alt="" className="h-full w-full rounded-full object-cover" />
+                  <Image src={getUserAvatar()!} alt="" width={112} height={112} className="h-full w-full rounded-full object-cover" />
                 ) : (
                   <User className="h-14 w-14 text-white" />
                 )}
@@ -454,7 +447,7 @@ export default function ProfilePage() {
           <div className="mx-auto max-w-5xl">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Level & Points */}
-              <LevelProgress points={profile?.points || 0} level={profile?.level || 'Viaggiatore'} />
+              <LevelProgress points={profile?.points || 0} />
               
               {/* Points Info */}
               <PointsInfo />
@@ -483,7 +476,7 @@ export default function ProfilePage() {
                   <div className="mb-2 flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] text-sm font-bold">
                       {review.reviewer.avatar_url ? (
-                        <img src={review.reviewer.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                        <Image src={review.reviewer.avatar_url} alt="" width={32} height={32} className="h-full w-full rounded-full object-cover" />
                       ) : (
                         review.reviewer.name.charAt(0).toUpperCase()
                       )}
@@ -556,7 +549,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
                         {request.passenger.avatar_url ? (
-                          <img src={request.passenger.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                          <Image src={request.passenger.avatar_url} alt="" width={48} height={48} className="h-full w-full rounded-full object-cover" />
                         ) : (
                           <User className="h-6 w-6" />
                         )}

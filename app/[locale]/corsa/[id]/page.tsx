@@ -4,16 +4,16 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
-  ArrowLeft, MapPin, Calendar, Clock, Users, Banknote,
-  MapPinned, FileText, User, Star, Loader2, AlertCircle,
-  Check, MessageCircle, Share2, Copy, CheckCircle2, Route, Car
+  ArrowLeft, MapPin, Calendar, Clock,
+  User, Star, Loader2, AlertCircle,
+  MessageCircle, Share2, CheckCircle2, Car,
+  MapPinned, FileText
 } from "lucide-react";
+import Image from "next/image";
 import { RouteMap } from "@/components/RouteMap";
-import { ShareRide } from "@/components/ShareRide";
-import { WeatherWidget } from "@/components/WeatherWidget";
-import { NavigationButtons } from "@/components/NavigationButtons";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notifications";
 import toast from "react-hot-toast";
 
@@ -26,6 +26,13 @@ interface Review {
     name: string;
     avatar_url: string | null;
   };
+}
+
+interface Booking {
+  id: string;
+  ride_id: string;
+  passenger_id: string;
+  status: string;
 }
 
 interface Ride {
@@ -81,14 +88,14 @@ export default function RideDetailPage() {
   const rideId = params.id as string;
   
   const [ride, setRide] = useState<Ride | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [similarRides, setSimilarRides] = useState<Ride[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [existingBooking, setExistingBooking] = useState<any>(null);
+  const [existingBooking, setExistingBooking] = useState<Booking | null>(null);
 
   const supabase = createClient();
 
@@ -377,7 +384,7 @@ export default function RideDetailPage() {
                       <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] text-sm font-bold">
                           {review.reviewer.avatar_url ? (
-                            <img src={review.reviewer.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                            <Image src={review.reviewer.avatar_url} alt="" width={40} height={40} className="h-full w-full rounded-full object-cover" />
                           ) : (
                             review.reviewer.name.charAt(0).toUpperCase()
                           )}
@@ -459,7 +466,7 @@ export default function RideDetailPage() {
                 <div className="text-center">
                   <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] ring-4 ring-[#e63946]/10">
                     {ride.profiles.avatar_url ? (
-                      <img src={ride.profiles.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                      <Image src={ride.profiles.avatar_url} alt="" width={96} height={96} className="h-full w-full rounded-full object-cover" />
                     ) : (
                       <User className="h-12 w-12" />
                     )}

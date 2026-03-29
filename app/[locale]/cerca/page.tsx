@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { 
   Search, 
   MapPin, 
@@ -10,7 +10,6 @@ import {
   User, 
   Armchair, 
   ArrowRight,
-  Filter,
   Loader2,
   Star,
   Clock,
@@ -18,9 +17,9 @@ import {
   X,
   Euro,
   Shield,
-  ChevronDown,
   SlidersHorizontal
 } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { MiniMap } from "@/components/RouteMap";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -87,7 +86,6 @@ function SkeletonCard() {
 
 function SearchContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   
   // Filters state
   const [activeFilter, setActiveFilter] = useState("all");
@@ -101,15 +99,13 @@ function SearchContent() {
   
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
   
   const supabase = createClient();
 
-  const fetchRides = async () => {
+  const fetchRides = useCallback(async () => {
     setLoading(true);
-    setError("");
 
     try {
       let query = supabase
@@ -136,7 +132,6 @@ function SearchContent() {
         .order("time", { ascending: true });
 
       if (supabaseError) {
-        setError("Errore durante il caricamento.");
         return;
       }
 
@@ -150,19 +145,17 @@ function SearchContent() {
 
       setRides(filtered);
     } catch {
-      setError("Errore imprevisto.");
+      // ignore
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeFilter, date, destination, maxPrice, minSeats, onlyVerified, origin, supabase, today, setRides]);
 
   useEffect(() => {
     fetchRides();
-  }, []);
+  }, [fetchRides]);
 
-  useEffect(() => {
-    fetchRides();
-  }, [activeFilter]);
+  
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -475,9 +468,11 @@ function SearchContent() {
                       <div className="relative">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
                           {ride.profiles.avatar_url ? (
-                            <img 
+                            <Image 
                               src={ride.profiles.avatar_url} 
                               alt={ride.profiles.name}
+                              width={40}
+                              height={40}
                               className="h-full w-full rounded-full object-cover"
                             />
                           ) : (

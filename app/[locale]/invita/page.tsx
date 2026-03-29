@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { 
   Gift, 
@@ -19,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface ReferralStats {
   referral_code: string;
@@ -36,7 +38,7 @@ interface LeaderboardUser {
 export default function InvitaPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [user, setUser] = useState<any>(null);
+  const [, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<ReferralStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -291,9 +293,11 @@ export default function InvitaPage() {
                 
                 <div className="flex-1 flex items-center gap-3">
                   {user.user_avatar ? (
-                    <img 
+                    <Image 
                       src={user.user_avatar} 
                       alt={user.user_name}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (

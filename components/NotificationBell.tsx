@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { 
   Bell, 
@@ -68,7 +68,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const supabase = createClient();
 
   // Fetch notifications
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -83,12 +83,12 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       setNotifications(data);
       setUnreadCount(data.filter((n) => !n.read).length);
     }
-  };
+  }, [supabase]);
 
   // Initial fetch
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    setTimeout(() => fetchNotifications(), 0);
+  }, [fetchNotifications]);
 
   // Real-time subscription
   useEffect(() => {

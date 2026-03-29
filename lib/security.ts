@@ -275,7 +275,7 @@ export async function checkServerRateLimit(
     .gte("created_at", windowStart.toISOString());
 
   if (error) {
-    console.error("Rate limit check error:", error);
+    // console.error("Rate limit check error:", error);
     // Allow on error to not block users
     return { allowed: true, remaining: maxAttempts };
   }

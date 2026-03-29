@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface VerificationStatus {
   phone: "none" | "pending" | "verified";
@@ -25,10 +26,14 @@ interface VerificationStatus {
   driver: "none" | "pending" | "verified";
 }
 
+interface Verification {
+  status: string;
+  type: string;
+}
+
 export default function VerificationPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otpCode, setOtpCode] = useState("");
@@ -58,7 +63,6 @@ export default function VerificationPage() {
         .eq("id", user.id)
         .single();
 
-      setProfile(profileData);
       setPhoneNumber(profileData?.phone_number || "");
 
       // Load verification status
@@ -74,7 +78,7 @@ export default function VerificationPage() {
         driver: profileData?.driver_verified ? "verified" : "none",
       };
 
-      verifications?.forEach((v: any) => {
+      verifications?.forEach((v: Verification) => {
         if (v.status === "approved") {
           if (v.type === "phone") newStatus.phone = "verified";
           if (v.type === "id_document") newStatus.id = "verified";
@@ -110,6 +114,11 @@ export default function VerificationPage() {
       return;
     }
 
+    if (!user) {
+      toast.error("Utente non autenticato");
+      return;
+    }
+
     const { error } = await supabase
       .from("profiles")
       .update({ phone_verified: true, phone_number: phoneNumber })
@@ -125,7 +134,7 @@ export default function VerificationPage() {
   };
 
   const handleFileUpload = async (type: "id" | "driver", file: File) => {
-    if (!file) return;
+    if (!file || !user) return;
 
     setUploading(type);
 
@@ -156,7 +165,7 @@ export default function VerificationPage() {
 
       toast.success("Documento caricato! In attesa di approvazione.");
       setStatus((s) => ({ ...s, [type]: "pending" }));
-    } catch (error) {
+    } catch {
       toast.error("Errore nel caricamento");
     } finally {
       setUploading(null);
@@ -342,7 +351,7 @@ export default function VerificationPage() {
                 <IdCard className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Documento d'identità</h3>
+                <h3 className="font-semibold text-white">Documento d&apos;identit&agrave;</h3>
                 <p className="text-sm text-white/50">
                   {status.id === "verified"
                     ? "Verificato"
@@ -359,7 +368,7 @@ export default function VerificationPage() {
             {status.id !== "verified" && status.id !== "pending" && (
               <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#e63946] hover:bg-white/10">
                 <Upload className="mb-2 h-8 w-8 text-white/50" />
-                <span className="text-sm text-white/70">Carica carta d'identità</span>
+                <span className="text-sm text-white/70">Carica carta d&apos;identit&agrave;</span>
                 <span className="mt-1 text-xs text-white/40">PNG, JPG fino a 5MB</span>
                 <input
                   type="file"

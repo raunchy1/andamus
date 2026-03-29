@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -9,19 +9,19 @@ import {
   Loader2,
   AlertCircle,
   User,
-  Camera,
   MapPin,
   Mic,
   X,
   Image as ImageIcon,
   StopCircle,
   Play,
-  Pause,
-  Maximize2
+  Pause
 } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
 import { NavigationButtons } from "@/components/NavigationButtons";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 
 interface Message {
@@ -69,7 +69,7 @@ export default function ChatPage() {
   const router = useRouter();
   const bookingId = params.bookingId as string;
   
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -85,7 +85,7 @@ export default function ChatPage() {
   // Voice recording state
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -311,13 +311,13 @@ export default function ChatPage() {
 
       const fileName = `${bookingId}/${Date.now()}.jpg`;
       
-      const { data, error } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('chat-images')
         .upload(fileName, blob, {
           contentType: 'image/jpeg',
         });
 
-      if (error) throw error;
+      if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('chat-images')
@@ -330,8 +330,8 @@ export default function ChatPage() {
       });
 
       setImagePreview(null);
-    } catch (error) {
-      console.error('Error uploading image:', error);
+    } catch (_error) {
+      // console.error('Error uploading image:', _error);
       toast.error("Errore nel caricamento dell'immagine");
     } finally {
       setUploadingImage(false);
@@ -357,7 +357,7 @@ export default function ChatPage() {
           location_lng: position.coords.longitude,
         });
       },
-      (error) => {
+      () => {
         toast.dismiss();
         toast.error("Impossibile ottenere la posizione");
       }
@@ -378,7 +378,6 @@ export default function ChatPage() {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        setAudioBlob(audioBlob);
         await sendAudioMessage(audioBlob, recordingTime);
         setRecordingTime(0);
       };
@@ -389,7 +388,7 @@ export default function ChatPage() {
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (error) {
+    } catch {
       toast.error("Impossibile accedere al microfono");
     }
   };
@@ -412,13 +411,13 @@ export default function ChatPage() {
     try {
       const fileName = `${bookingId}/${Date.now()}.webm`;
       
-      const { data, error } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('chat-audio')
         .upload(fileName, blob, {
           contentType: 'audio/webm',
         });
 
-      if (error) throw error;
+      if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('chat-audio')
@@ -430,8 +429,8 @@ export default function ChatPage() {
         media_url: publicUrl,
         duration: duration,
       });
-    } catch (error) {
-      console.error('Error uploading audio:', error);
+    } catch (_error) {
+      // console.error('Error uploading audio:', _error);
       toast.error("Errore nell'invio del messaggio vocale");
     }
   };
@@ -517,9 +516,11 @@ export default function ChatPage() {
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
                 {otherParticipant.avatar_url ? (
-                  <img
+                  <Image
                     src={otherParticipant.avatar_url}
                     alt={otherParticipant.name}
+                    width={40}
+                    height={40}
                     className="h-full w-full rounded-full object-cover"
                   />
                 ) : (
@@ -574,9 +575,11 @@ export default function ChatPage() {
                     {/* Image Message */}
                     {message.type === 'image' && message.media_url && (
                       <div className="mb-2">
-                        <img
+                        <Image
                           src={message.media_url}
                           alt="Immagine condivisa"
+                          width={400}
+                          height={300}
                           className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => setZoomedImage(message.media_url!)}
                         />
@@ -592,13 +595,14 @@ export default function ChatPage() {
                           rel="noopener noreferrer"
                           className="block"
                         >
-                          <img
+                          <Image
                             src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
                             alt="Mappa posizione"
+                            width={300}
+                            height={150}
                             className="rounded-lg max-w-full"
-                            onError={(e) => {
-                              // Fallback if static map fails
-                              e.currentTarget.style.display = 'none';
+                            onError={() => {
+                              // Fallback handled by parent
                             }}
                           />
                           <div className="flex items-center gap-2 mt-2 text-sm">
@@ -675,9 +679,11 @@ export default function ChatPage() {
             >
               <X className="h-6 w-6" />
             </button>
-            <img
+            <Image
               src={imagePreview}
               alt="Preview"
+              width={600}
+              height={400}
               className="w-full rounded-lg"
             />
             <div className="flex gap-2 mt-4">
@@ -711,9 +717,11 @@ export default function ChatPage() {
           >
             <X className="h-8 w-8" />
           </button>
-          <img
+          <Image
             src={zoomedImage}
             alt="Immagine ingrandita"
+            width={800}
+            height={600}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
