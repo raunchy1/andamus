@@ -381,8 +381,113 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* EVENTI SPECIALI */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#0d0d16]">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">Eventi Speciali</h2>
+            <p className="mt-4 text-white/60">Le tradizioni sarde più importanti - trova un passaggio!</p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { 
+                name: "Sartiglia di Oristano", 
+                date: "02-25",
+                month: 2,
+                day: 25,
+                description: "La giostra equestre più famosa della Sardegna",
+                icon: "🏇",
+                city: "Oristano"
+              },
+              { 
+                name: "Cavalcata Sarda", 
+                date: "05-18",
+                month: 5,
+                day: 18,
+                description: "Grande sfilata a cavallo per le vie di Sassari",
+                icon: "🐴",
+                city: "Sassari"
+              },
+              { 
+                name: "Fiera di Cagliari", 
+                date: "05-01",
+                month: 5,
+                day: 1,
+                description: "Tradizionale fiera di Sant'Efisio",
+                icon: "🎪",
+                city: "Cagliari"
+              },
+              { 
+                name: "Ferragosto", 
+                date: "08-15",
+                month: 8,
+                day: 15,
+                description: "Il grande esodo estivo - prenota il tuo passaggio",
+                icon: "🏖️",
+                city: ""
+              },
+              { 
+                name: "Pasqua", 
+                date: "04-20",
+                month: 4,
+                day: 20,
+                description: "Torna a casa per le festività pasquali",
+                icon: "🐣",
+                city: ""
+              },
+              { 
+                name: "Natale", 
+                date: "12-25",
+                month: 12,
+                day: 25,
+                description: "Riunisciti con la famiglia per le feste",
+                icon: "🎄",
+                city: ""
+              },
+            ].map((event) => {
+              // Calculate the next occurrence of this event
+              const currentYear = new Date().getFullYear();
+              const eventDate = new Date(currentYear, event.month - 1, event.day);
+              if (eventDate < new Date()) {
+                eventDate.setFullYear(currentYear + 1);
+              }
+              const dateStr = eventDate.toISOString().split('T')[0];
+              
+              return (
+                <Link
+                  key={event.name}
+                  href={`/cerca?date=${dateStr}${event.city ? `&to=${event.city}` : ''}`}
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] p-6 transition-all hover:border-[#e63946]/30 hover:bg-[#1e2a4a]/80"
+                >
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#e63946]/10 to-transparent rounded-bl-full" />
+                  
+                  <div className="relative">
+                    <div className="text-4xl mb-3">{event.icon}</div>
+                    <h3 className="text-lg font-semibold text-white mb-1">{event.name}</h3>
+                    <p className="text-sm text-white/60 mb-3">{event.description}</p>
+                    
+                    <div className="flex items-center gap-2 text-[#e63946]">
+                      <Calendar className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        {eventDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })}
+                      </span>
+                    </div>
+                    
+                    <div className="mt-4 flex items-center gap-1 text-sm text-white/40 group-hover:text-[#e63946] transition-colors">
+                      <span>Cerca passaggi</span>
+                      <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* STATS BAR with Animated Counters */}
-      <section className="border-y border-white/10 bg-[#0d0d16] px-4 py-16 sm:px-6 lg:px-8">
+      <section className="border-y border-white/10 bg-[#0a0a12] px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 text-center sm:grid-cols-3">
             <div className="relative">

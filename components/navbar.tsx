@@ -12,7 +12,8 @@ import {
   Search,
   PlusCircle,
   Home,
-  Shield
+  Shield,
+  Gift
 } from "lucide-react";
 import { NotificationBell } from "./NotificationBell";
 import { Button } from "@/components/ui/button";
@@ -181,6 +182,19 @@ export function Navbar() {
                   {/* Notification Bell */}
                   <NotificationBell isHome={isHome} />
 
+                  {/* Invite Friends Link */}
+                  <Link
+                    href="/invita"
+                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                      isHome 
+                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
+                        : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
+                    }`}
+                    title="Invita amici"
+                  >
+                    <Gift className="h-5 w-5" />
+                  </Link>
+
                   <Link 
                     href="/profilo"
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all ${
@@ -293,6 +307,18 @@ export function Navbar() {
                 <>
                   {user ? (
                     <div className="space-y-2">
+                      <Link
+                        href="/invita"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
+                          isHome 
+                            ? "text-white/70 hover:bg-white/10" 
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        <Gift className="h-5 w-5" />
+                        <span>Invita amici</span>
+                      </Link>
                       {user?.email && ADMIN_EMAILS.includes(user.email) && (
                         <Link
                           href="/admin"

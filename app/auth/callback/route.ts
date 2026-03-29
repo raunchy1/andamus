@@ -7,19 +7,38 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
     
-    if (!error) {
+    if (!error && user) {
+      // Check for pending referral code in cookie
+      const cookieHeader = request.headers.get('cookie');
+      const pendingRefMatch = cookieHeader?.match(/pending_referral_code=([^;]+)/);
+      const pendingRefCode = pendingRefMatch ? decodeURIComponent(pendingRefMatch[1]) : null;
+      
+      if (pendingRefCode) {
+        // Apply referral bonus
+        await supabase.rpc("apply_referral_bonus", {
+          new_user_id: user.id,
+          referrer_code: pendingRefCode
+        });
+      }
+      
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
       
+      let response;
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}/profilo`);
+        response = NextResponse.redirect(`${origin}/profilo`);
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}/profilo`);
+        response = NextResponse.redirect(`https://${forwardedHost}/profilo`);
       } else {
-        return NextResponse.redirect(`${origin}/profilo`);
+        response = NextResponse.redirect(`${origin}/profilo`);
       }
+      
+      // Clear the referral code cookie
+      response.cookies.delete('pending_referral_code');
+      
+      return response;
     }
     
     console.error("Error exchanging code for session:", error);

@@ -9,6 +9,7 @@ import {
   Check, MessageCircle, Share2, Copy, CheckCircle2, Route, Car
 } from "lucide-react";
 import { RouteMap } from "@/components/RouteMap";
+import { ShareRide } from "@/components/ShareRide";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { notifyBookingRequest } from "@/lib/notifications";
