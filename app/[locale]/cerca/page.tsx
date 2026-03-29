@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback } from "react";
+import { useState, useEffect, Suspense, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { 
@@ -17,7 +17,10 @@ import {
   X,
   Euro,
   Shield,
-  SlidersHorizontal
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -96,9 +99,14 @@ function SearchContent() {
   const [minSeats, setMinSeats] = useState<number | null>(null);
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showSearchBar, setShowSearchBar] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullStartY, setPullStartY] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
   
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toISOString().split("T")[0];
   
@@ -155,6 +163,38 @@ function SearchContent() {
     fetchRides();
   }, [fetchRides]);
 
+  // Pull to refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (resultsRef.current && resultsRef.current.scrollTop === 0) {
+      setPullStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (pullStartY > 0 && resultsRef.current && resultsRef.current.scrollTop === 0) {
+      const diff = e.touches[0].clientY - pullStartY;
+      if (diff > 0) {
+        setPullDistance(Math.min(diff * 0.5, 80));
+      }
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > 60) {
+      setIsRefreshing(true);
+      await fetchRides();
+      setIsRefreshing(false);
+    }
+    setPullStartY(0);
+    setPullDistance(0);
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchRides();
+    setIsRefreshing(false);
+  };
+
   
 
   const handleSearch = (e: React.FormEvent) => {
@@ -198,8 +238,28 @@ function SearchContent() {
 
   return (
     <>
-      {/* SEARCH BAR SECTION */}
-      <section className="sticky top-16 z-30 border-b border-white/10 bg-[#12121e]/95 backdrop-blur px-4 py-4 sm:px-6 lg:px-8">
+      {/* SEARCH BAR SECTION - Collapsible on Mobile */}
+      <section className="sticky top-16 z-30 border-b border-white/10 bg-[#12121e]/95 backdrop-blur">
+        {/* Mobile Search Toggle */}
+        <div className="md:hidden px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-white">
+            <Search className="w-4 h-4 text-[#e63946]" />
+            <span className="text-sm">
+              {origin || destination || date 
+                ? `${origin || "Da"} → ${destination || "A"}${date ? ` • ${formatDate(date)}` : ""}`
+                : "Cerca un passaggio"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowSearchBar(!showSearchBar)}
+            className="p-2 rounded-lg bg-white/5 text-white/70 active:scale-95 transition-all"
+          >
+            {showSearchBar ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+        
+        <div className={`${showSearchBar ? 'block' : 'hidden md:block'} px-4 py-4 sm:px-6 lg:px-8`}>
         <div className="mx-auto max-w-6xl">
           <form onSubmit={handleSearch} className="grid gap-3 md:grid-cols-4 lg:grid-cols-5">
             <div className="relative">
@@ -337,12 +397,26 @@ function SearchContent() {
             </div>
           )}
         </div>
+        </div>
       </section>
 
       {/* QUICK FILTERS */}
       <section className="border-b border-white/10 px-4 py-3 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {/* Mobile Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex-shrink-0 flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/70 transition-all hover:bg-white/10 lg:hidden"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Filtri
+              {activeFiltersCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-xs text-white">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
             {filterOptions.map((option) => (
               <button
                 key={option.id}
@@ -361,20 +435,48 @@ function SearchContent() {
       </section>
 
       {/* RESULTS LIST */}
-      <section className="px-4 py-6 sm:px-6 lg:px-8">
+      <section 
+        ref={resultsRef}
+        className="px-4 py-6 sm:px-6 lg:px-8 overscroll-contain"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="mx-auto max-w-6xl">
+          {/* Pull to refresh indicator */}
+          <div 
+            className="flex justify-center items-center h-0 overflow-visible transition-all duration-200"
+            style={{ height: pullDistance > 0 ? pullDistance : 0 }}
+          >
+            <div className={`flex items-center gap-2 text-white/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
+              <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 2}deg)` }} />
+              <span className="text-sm">{pullDistance > 60 ? 'Rilascia per aggiornare' : 'Tira per aggiornare'}</span>
+            </div>
+          </div>
+          
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-white/50">
               {loading ? "Caricamento..." : `${rides.length} corse trovate`}
             </p>
-            {activeFiltersCount > 0 && (
+            <div className="flex items-center gap-2">
+              {/* Refresh button for mobile */}
               <button
-                onClick={clearFilters}
-                className="text-sm text-[#e63946] hover:text-white"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="md:hidden p-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 active:scale-95 transition-all"
+                aria-label="Aggiorna"
               >
-                Cancella tutti i filtri
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
-            )}
+              {activeFiltersCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="text-sm text-[#e63946] hover:text-white"
+                >
+                  Cancella tutti i filtri
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Loading Skeleton */}
@@ -412,7 +514,7 @@ function SearchContent() {
                 <Link
                   key={ride.id}
                   href={`/corsa/${ride.id}`}
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] transition-all hover:border-[#e63946]/30 hover:shadow-lg hover:shadow-[#e63946]/5"
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] transition-all hover:border-[#e63946]/30 hover:shadow-lg hover:shadow-[#e63946]/5 active:scale-[0.98] touch-manipulation"
                 >
                   {/* Mini Map */}
                   <div className="mb-4">

@@ -156,7 +156,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
           </div>
 
           {/* Headline */}
-          <h1 className="text-center text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="text-center text-3xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
             Viaggia insieme
             <br />
             <span className="text-[#e63946]">in Sardegna</span>
@@ -227,7 +227,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
                 <div className="flex items-end">
                   <button
                     type="submit"
-                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#e63946] text-sm font-semibold text-white shadow-lg shadow-[#e63946]/25 transition-all hover:bg-[#c92a37] hover:shadow-xl"
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#e63946] text-sm font-semibold text-white shadow-lg shadow-[#e63946]/25 transition-all hover:bg-[#c92a37] hover:shadow-xl active:scale-95 touch-manipulation min-h-[48px]"
                   >
                     <Search className="h-4 w-4" />
                     Cerca
@@ -237,25 +237,34 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
             </div>
           </form>
 
-          {/* Quick Links */}
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/cerca" className="text-sm text-white/50 hover:text-white transition-colors">
-              Popolari: <span className="text-[#e63946]">Tortolì → Cagliari</span>
-            </Link>
-            <span className="text-white/20">•</span>
-            <Link href="/cerca" className="text-sm text-white/50 hover:text-white transition-colors">
-              <span className="text-[#e63946]">Olbia → Sassari</span>
-            </Link>
-            <span className="text-white/20">•</span>
-            <Link href="/cerca" className="text-sm text-white/50 hover:text-white transition-colors">
-              <span className="text-[#e63946]">Nuoro → Cagliari</span>
-            </Link>
+          {/* Popular Routes - Horizontal Scroll on Mobile */}
+          <div className="mt-6">
+            <p className="text-center text-sm text-white/40 mb-3 hidden sm:block">Percorsi popolari:</p>
+            <div className="flex overflow-x-auto gap-2 pb-2 px-4 sm:px-0 sm:flex-wrap sm:justify-center sm:gap-3 no-scrollbar">
+              {[
+                { from: "Tortolì", to: "Cagliari" },
+                { from: "Olbia", to: "Sassari" },
+                { from: "Nuoro", to: "Cagliari" },
+                { from: "Oristano", to: "Cagliari" },
+                { from: "Sassari", to: "Cagliari" },
+              ].map((route) => (
+                <Link
+                  key={`${route.from}-${route.to}`}
+                  href={`/cerca?from=${route.from}&to=${route.to}`}
+                  className="flex-shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/70 hover:bg-white/10 hover:border-[#e63946]/30 transition-all whitespace-nowrap active:scale-95"
+                >
+                  <span className="text-[#e63946]">{route.from}</span>
+                  <span className="text-white/30">→</span>
+                  <span>{route.to}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* TODAY'S RIDES SECTION */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e]">
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e] pb-24 md:pb-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-center justify-between">
             <div>
@@ -285,7 +294,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
                 <Link
                   key={ride.id}
                   href={`/corsa/${ride.id}`}
-                  className="group rounded-2xl border border-white/10 bg-[#1e2a4a] p-5 transition-all hover:border-[#e63946]/50 hover:shadow-lg hover:shadow-[#e63946]/10"
+                  className="group rounded-2xl border border-white/10 bg-[#1e2a4a] p-5 transition-all hover:border-[#e63946]/50 hover:shadow-lg hover:shadow-[#e63946]/10 active:scale-[0.98] touch-manipulation"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-medium text-[#e63946] bg-[#e63946]/10 px-2 py-1 rounded-full">

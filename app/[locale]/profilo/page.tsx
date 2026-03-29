@@ -387,8 +387,8 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Mini Stats Bar */}
-              <div className="mt-4 flex flex-wrap items-center gap-3">
+              {/* Mini Stats Bar - 2x2 Grid on Mobile */}
+              <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
                 {(() => {
                   const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
                   const completedBookings = myBookings.filter(b => b.status === 'confirmed');
@@ -432,7 +432,7 @@ export default function ProfilePage() {
 
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center gap-2 rounded-xl bg-white/20 px-5 py-3 text-sm font-medium text-white transition-all hover:bg-white/30"
+              className="flex items-center gap-2 rounded-xl bg-white/20 px-5 py-3 text-sm font-medium text-white transition-all hover:bg-white/30 active:scale-95 touch-manipulation min-h-[44px]"
             >
               <LogOut className="h-4 w-4" />
               Esci
@@ -500,36 +500,38 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Full width on mobile */}
       <div className="border-b border-white/10 bg-[#12121e] px-4 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-5xl gap-3">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-3 sm:flex">
           <Link
             href="/offri"
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#e63946] py-3 text-sm font-semibold text-white shadow-lg shadow-[#e63946]/20 transition-all hover:bg-[#c92a37]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#e63946] py-3.5 sm:py-3 text-sm font-semibold text-white shadow-lg shadow-[#e63946]/20 transition-all hover:bg-[#c92a37] active:scale-95 touch-manipulation"
           >
             <PlusCircle className="h-4 w-4" />
-            Offri passaggio
+            <span className="hidden sm:inline">Offri passaggio</span>
+            <span className="sm:hidden">Offri</span>
           </Link>
           <Link
             href="/cerca"
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-white transition-all hover:bg-white/10"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3.5 sm:py-3 text-sm font-semibold text-white transition-all hover:bg-white/10 active:scale-95 touch-manipulation"
           >
             <Search className="h-4 w-4" />
             Cerca
           </Link>
           <Link
             href="/verifica"
-            className="hidden sm:flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-white transition-all hover:bg-white/10"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3.5 sm:py-3 text-sm font-semibold text-white transition-all hover:bg-white/10 active:scale-95 touch-manipulation"
           >
             <BadgeCheck className="h-4 w-4" />
             Verifica
           </Link>
           <Link
             href="/statistiche"
-            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#e63946]/20 py-3 text-sm font-semibold text-white transition-all hover:bg-[#e63946]/30"
+            className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#e63946]/20 py-3.5 sm:py-3 text-sm font-semibold text-white transition-all hover:bg-[#e63946]/30 active:scale-95 touch-manipulation"
           >
             <BarChart3 className="h-4 w-4" />
-            Statistiche
+            <span className="hidden sm:inline">Statistiche</span>
+            <span className="sm:hidden">Stats</span>
           </Link>
         </div>
       </div>
@@ -597,24 +599,26 @@ export default function ProfilePage() {
       {/* Tabs & Content */}
       <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          {/* Tabs */}
-          <div className="mb-6 flex gap-1 rounded-xl bg-white/5 p-1">
-            {[
-              { id: "rides", label: "Le mie corse", count: myRides.length },
-              { id: "bookings", label: "I miei passaggi", count: myBookings.length },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? "bg-[#e63946] text-white shadow-lg"
-                    : "text-white/60 hover:text-white"
-                }`}
-              >
-                {tab.label} ({tab.count})
-              </button>
-            ))}
+          {/* Tabs - Scrollable on mobile */}
+          <div className="mb-6 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex min-w-max gap-1 rounded-xl bg-white/5 p-1 sm:min-w-0">
+              {[
+                { id: "rides", label: "Le mie corse", count: myRides.length },
+                { id: "bookings", label: "I miei passaggi", count: myBookings.length },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-all whitespace-nowrap active:scale-95 touch-manipulation ${
+                    activeTab === tab.id
+                      ? "bg-[#e63946] text-white shadow-lg"
+                      : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  {tab.label} ({tab.count})
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* My Rides */}

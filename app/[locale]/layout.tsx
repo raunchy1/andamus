@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
+import { BottomNav } from "@/components/BottomNav";
 import { Toaster } from "react-hot-toast";
 import { SafetyButton } from "@/components/SafetyButton";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -180,6 +181,7 @@ export default async function LocaleLayout({
           <ThemeProvider>
             <Navbar />
             {children}
+            <BottomNav />
             <SafetyButton />
             <Toaster
               position="top-center"

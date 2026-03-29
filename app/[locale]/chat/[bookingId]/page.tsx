@@ -501,7 +501,7 @@ export default function ChatPage() {
   const otherParticipant = getOtherParticipant();
 
   return (
-    <div className="flex h-screen flex-col bg-[#1a1a2e]">
+    <div className="flex h-[100dvh] flex-col bg-[#1a1a2e] pb-[72px] md:pb-0">
       {/* Chat Header */}
       <header className="border-b border-white/10 bg-[#12121e] px-4 py-4">
         <div className="mx-auto flex max-w-4xl items-center gap-4">
@@ -551,8 +551,11 @@ export default function ChatPage() {
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="mx-auto max-w-4xl space-y-4">
+      <div 
+        className="flex-1 overflow-y-auto px-4 py-4 overscroll-contain"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
+        <div className="mx-auto max-w-4xl space-y-4 pb-4">
           {messages.length === 0 ? (
             <div className="py-12 text-center">
               <p className="text-white/40">Inizia la conversazione...</p>
@@ -728,10 +731,10 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Message Input */}
+      {/* Message Input - Fixed at bottom */}
       <form
         onSubmit={handleSendMessage}
-        className="border-t border-white/10 bg-[#12121e] px-4 py-4"
+        className="fixed bottom-0 left-0 right-0 border-t border-white/10 bg-[#12121e] px-3 sm:px-4 py-3 sm:py-4 safe-area-pb z-40 md:relative"
       >
         {/* Recording Indicator */}
         {isRecording && (
@@ -744,7 +747,7 @@ export default function ChatPage() {
           </div>
         )}
 
-        <div className="mx-auto max-w-4xl flex items-center gap-2">
+        <div className="mx-auto max-w-4xl flex items-center gap-1.5 sm:gap-2">
           {/* Image Upload Button */}
           <input
             type="file"
@@ -757,7 +760,8 @@ export default function ChatPage() {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isRecording}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+            className="flex h-11 w-11 sm:h-10 sm:w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 active:scale-95 touch-manipulation min-w-[44px] min-h-[44px]"
+            aria-label="Invia foto"
           >
             <ImageIcon className="h-5 w-5" />
           </button>
@@ -767,7 +771,8 @@ export default function ChatPage() {
             type="button"
             onClick={sendLocation}
             disabled={isRecording}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+            className="flex h-11 w-11 sm:h-10 sm:w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 active:scale-95 touch-manipulation min-w-[44px] min-h-[44px]"
+            aria-label="Invia posizione"
           >
             <MapPin className="h-5 w-5" />
           </button>
@@ -777,9 +782,9 @@ export default function ChatPage() {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder={isRecording ? "Registrazione in corso..." : "Scrivi un messaggio..."}
+            placeholder={isRecording ? "Registrazione..." : "Messaggio..."}
             disabled={isRecording}
-            className="flex-1 rounded-xl border border-white/10 bg-[#1e2a4a] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#e63946] focus:ring-1 focus:ring-[#e63946] disabled:opacity-50"
+            className="flex-1 rounded-xl border border-white/10 bg-[#1e2a4a] px-3 sm:px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#e63946] focus:ring-1 focus:ring-[#e63946] disabled:opacity-50 min-h-[44px]"
           />
 
           {/* Voice/Message Button */}
@@ -787,7 +792,8 @@ export default function ChatPage() {
             <button
               type="submit"
               disabled={sending}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#e63946] text-white transition-all hover:bg-[#c92a37] disabled:opacity-50"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#e63946] text-white transition-all hover:bg-[#c92a37] disabled:opacity-50 active:scale-95 touch-manipulation min-w-[48px] min-h-[48px]"
+              aria-label="Invia messaggio"
             >
               {sending ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -803,11 +809,12 @@ export default function ChatPage() {
               onTouchStart={startRecording}
               onTouchEnd={stopRecording}
               onMouseLeave={isRecording ? stopRecording : undefined}
-              className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all ${
+              className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all active:scale-95 touch-manipulation min-w-[48px] min-h-[48px] ${
                 isRecording 
                   ? "bg-red-500 text-white" 
                   : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
               }`}
+              aria-label={isRecording ? "Ferma registrazione" : "Registra audio"}
             >
               {isRecording ? <StopCircle className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </button>
