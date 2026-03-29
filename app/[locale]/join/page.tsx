@@ -35,7 +35,7 @@ export default function JoinPage() {
         localStorage.removeItem("pending_referral_code");
         toast.success("Bonus di 25 punti applicato! 🎉");
       }
-    } catch (_error) {
+    } catch {
       // console.error("Error applying referral:", _error);
       localStorage.removeItem("pending_referral_code");
     }

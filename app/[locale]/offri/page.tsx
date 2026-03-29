@@ -133,7 +133,7 @@ export default function OfferPage() {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("rides")
         .insert({
           driver_id: currentUser.id,
@@ -188,7 +188,7 @@ export default function OfferPage() {
       }
       
       setIsSubmitted(true);
-    } catch (err) {
+    } catch {
       // console.error("Unexpected error:", err);
       setSubmitError("Errore imprevisto. Riprova più tardi.");
     } finally {
@@ -199,7 +199,7 @@ export default function OfferPage() {
   const handleLogin = async () => {
     try {
       await signInWithGoogle();
-    } catch (error) {
+    } catch {
       // console.error("Login failed:", error);
     }
   };

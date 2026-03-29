@@ -40,11 +40,11 @@ export default function StatisticsLoading() {
             <div className="absolute inset-0 animate-shimmer" />
             {/* Chart bars placeholder */}
             <div className="absolute bottom-0 left-0 right-0 h-full flex items-end justify-around px-4 pb-4">
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+              {[35, 55, 40, 70, 45, 60, 50].map((height, i) => (
                 <div 
                   key={i} 
                   className="w-8 bg-white/10 rounded-t-lg"
-                  style={{ height: `${20 + Math.random() * 60}%` }}
+                  style={{ height: `${height}%` }}
                 />
               ))}
             </div>

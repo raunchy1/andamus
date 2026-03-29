@@ -86,7 +86,7 @@ export function Navbar() {
   const handleLogin = async () => {
     try {
       await signInWithGoogle();
-    } catch (error) {
+    } catch {
       // // console.error("Login failed:", error);
     }
   };
@@ -94,7 +94,7 @@ export function Navbar() {
   const handleLogout = async () => {
     try {
       await signOut();
-    } catch (error) {
+    } catch {
       // // console.error("Logout failed:", error);
     }
   };

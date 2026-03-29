@@ -330,7 +330,7 @@ export default function ChatPage() {
       });
 
       setImagePreview(null);
-    } catch (_error) {
+    } catch {
       // console.error('Error uploading image:', _error);
       toast.error("Errore nel caricamento dell'immagine");
     } finally {
@@ -429,7 +429,7 @@ export default function ChatPage() {
         media_url: publicUrl,
         duration: duration,
       });
-    } catch (_error) {
+    } catch {
       // console.error('Error uploading audio:', _error);
       toast.error("Errore nell'invio del messaggio vocale");
     }

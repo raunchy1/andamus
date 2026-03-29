@@ -234,7 +234,7 @@ export default function AdminDashboard() {
         created_at: r.created_at
       })) || []);
 
-    } catch (_error) {
+    } catch {
       // console.error("Error fetching admin data:", _error);
       toast.error("Errore nel caricamento dei dati");
     } finally {

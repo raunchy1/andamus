@@ -105,7 +105,7 @@ export function WeatherWidget({ city, date, variant = "full" }: WeatherWidgetPro
         setError(false);
         const data = await getWeatherForCity(city, date);
         setWeather(data);
-      } catch (err) {
+      } catch {
         // console.error('Error loading weather:', err);
         setError(true);
       } finally {
