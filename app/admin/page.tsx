@@ -29,7 +29,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
 
-const ADMIN_EMAIL = "cristianermurache@gmail.com";
+const ADMIN_EMAILS = [
+  'cristianermurache@gmail.com',
+  'cristiermurache@gmail.com'
+];
 
 interface User {
   id: string;
@@ -116,7 +119,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || user.email !== ADMIN_EMAIL) {
+      if (!user || !ADMIN_EMAILS.includes(user.email)) {
         router.push("/");
         return;
       }

@@ -25,7 +25,10 @@ const navLinks = [
   { href: "/offri", label: "Offri", icon: PlusCircle },
 ];
 
-const ADMIN_EMAIL = "cristianermurache@gmail.com";
+const ADMIN_EMAILS = [
+  'cristianermurache@gmail.com',
+  'cristiermurache@gmail.com'
+];
 
 interface UserData {
   id: string;
@@ -161,7 +164,7 @@ export function Navbar() {
               {user ? (
                 <div className="flex items-center gap-3">
                   {/* Admin Link */}
-                  {user.email === ADMIN_EMAIL && (
+                  {ADMIN_EMAILS.includes(user.email) && (
                     <Link
                       href="/admin"
                       className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
@@ -290,7 +293,7 @@ export function Navbar() {
                 <>
                   {user ? (
                     <div className="space-y-2">
-                      {user?.email === ADMIN_EMAIL && (
+                      {user?.email && ADMIN_EMAILS.includes(user.email) && (
                         <Link
                           href="/admin"
                           onClick={() => setMobileMenuOpen(false)}
