@@ -1,0 +1,202 @@
+{
+  "metadata": {
+    "title": "Andamus - Mitfahrgelegenheit in Sardinien",
+    "description": "Finden und anbieten von Mitfahrgelegenheiten in Sardinien. Die sardische Fahrgemeinschafts-Plattform."
+  },
+  "nav": {
+    "home": "Startseite",
+    "search": "Suchen",
+    "offer": "Anbieten",
+    "profile": "Profil",
+    "admin": "Admin",
+    "invite": "Freunde einladen",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "loginWithGoogle": "Mit Google anmelden"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "toggle": "Thema wechseln"
+  },
+  "language": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "select": "Sprache wählen"
+  },
+  "home": {
+    "hero": {
+      "badge": "Sardische Fahrgemeinschaft",
+      "title": "Gemeinsam reisen",
+      "titleHighlight": "in Sardinien",
+      "description": "Finden oder bieten Sie eine Mitfahrgelegenheit in ganz Sardinien.",
+      "free": "Kostenlos.",
+      "from": "Von",
+      "to": "Nach",
+      "date": "Datum",
+      "searchButton": "Mitfahrgelegenheit suchen",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "thisWeek": "Diese Woche"
+    },
+    "todayRides": "Heutige Fahrten",
+    "noRidesToday": "Keine Fahrten heute",
+    "howItWorks": {
+      "title": "So funktioniert's",
+      "subtitle": "In drei einfachen Schritten",
+      "step1": {
+        "title": "Registrieren",
+        "description": "Erstellen Sie in Sekunden ein kostenloses Konto mit Google."
+      },
+      "step2": {
+        "title": "Suchen oder anbieten",
+        "description": "Finden Sie eine passende Fahrt oder bieten Sie Ihren freien Platz an."
+      },
+      "step3": {
+        "title": "Gemeinsam reisen",
+        "description": "Kontaktieren Sie den Fahrer oder Mitfahrer und reisen Sie zusammen."
+      }
+    },
+    "popularRoutes": {
+      "title": "Beliebte Routen",
+      "subtitle": "Die meistgesuchten Fahrten in Sardinien"
+    },
+    "events": {
+      "title": "Besondere Veranstaltungen",
+      "subtitle": "Wichtigste sardische Traditionen - finden Sie eine Mitfahrgelegenheit!",
+      "searchRides": "Fahrten suchen"
+    },
+    "stats": {
+      "users": "Registrierte Nutzer",
+      "rides": "Angebotene Fahrten",
+      "cities": "Städte abgedeckt"
+    },
+    "footer": {
+      "madeWith": "Gemacht mit",
+      "inSardinia": "in Sardinien",
+      "rights": "Alle Rechte vorbehalten."
+    }
+  },
+  "search": {
+    "title": "Mitfahrgelegenheit finden",
+    "from": "Von",
+    "to": "Nach",
+    "date": "Datum",
+    "filters": "Filter",
+    "maxPrice": "Max. Preis",
+    "minSeats": "Min. Plätze",
+    "verifiedOnly": "Nur verifiziert",
+    "freeOnly": "Nur kostenlos",
+    "availableOnly": "Nur mit freien Plätzen",
+    "results": "Ergebnisse",
+    "noResults": "Keine Fahrten gefunden",
+    "tryAdjust": "Versuchen Sie, Ihre Suchfilter anzupassen",
+    "seats": "Plätze",
+    "free": "Kostenlos",
+    "book": "Buchen",
+    "driver": "Fahrer"
+  },
+  "offer": {
+    "title": "Mitfahrgelegenheit anbieten",
+    "loginRequired": "Sie müssen angemeldet sein, um eine Fahrt anzubieten.",
+    "form": {
+      "from": "Von",
+      "to": "Nach",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "seats": "Verfügbare Plätze",
+      "price": "Kostenbeteiligung",
+      "free": "Kostenlos",
+      "meetingPoint": "Treffpunkt",
+      "notes": "Notizen",
+      "submit": "Fahrt veröffentlichen",
+      "submitting": "Veröffentlichen..."
+    },
+    "success": {
+      "title": "Fahrt veröffentlicht!",
+      "message": "Ihre Fahrt ist jetzt für alle Nutzer sichtbar.",
+      "backHome": "Zurück zur Startseite",
+      "manage": "Fahrten verwalten"
+    },
+    "errors": {
+      "sameCity": "Start und Ziel können nicht identisch sein",
+      "required": "Pflichtfeld"
+    }
+  },
+  "ride": {
+    "details": "Fahrtdetails",
+    "route": "Route",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "seats": "Verfügbare Plätze",
+    "price": "Preis",
+    "free": "Kostenlos",
+    "driver": "Fahrer",
+    "meetingPoint": "Treffpunkt",
+    "notes": "Notizen",
+    "bookRide": "Fahrt anfragen",
+    "share": "Teilen",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert!",
+    "reviews": "Bewertungen",
+    "noReviews": "Keine Bewertungen",
+    "similarRides": "Ähnliche Fahrten"
+  },
+  "profile": {
+    "title": "Profil",
+    "rides": "Meine Fahrten",
+    "bookings": "Meine Mitfahrten",
+    "reviews": "Bewertungen",
+    "stats": {
+      "rating": "Bewertung",
+      "rides": "Fahrten",
+      "verified": "Verifiziert"
+    },
+    "verification": {
+      "title": "Profil verifizieren",
+      "level": "Verifizierungsstufe",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "id": "Ausweis",
+      "license": "Führerschein"
+    },
+    "gamification": {
+      "points": "Punkte",
+      "level": "Level",
+      "badges": "Abzeichen",
+      "howToEarn": "So verdienen Sie Punkte"
+    },
+    "actions": {
+      "offerRide": "Fahrt anbieten",
+      "search": "Suchen",
+      "verify": "Verifizieren"
+    },
+    "bookingRequests": "Ausstehende Anfragen",
+    "accept": "Annehmen",
+    "reject": "Ablehnen",
+    "completed": "Abgeschlossen",
+    "rate": "Bewerten"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Nachricht schreiben...",
+    "send": "Senden",
+    "bookingConfirmed": "Buchung bestätigt",
+    "bookingPending": "Warte auf Bestätigung"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
+    "info": "Info"
+  }
+}

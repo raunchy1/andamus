@@ -120,7 +120,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !ADMIN_EMAILS.includes(user.email)) {
+      if (!user || !user.email || !ADMIN_EMAILS.includes(user.email)) {
         router.push("/");
         return;
       }
@@ -141,11 +141,12 @@ export default function AdminDashboard() {
         .single();
       
       if (statsData) {
+        const stats = statsData as { total_users: number; total_rides: number; total_bookings: number; pending_reports: number };
         setStats({
-          total_users: Number(statsData.total_users),
-          total_rides: Number(statsData.total_rides),
-          total_bookings: Number(statsData.total_bookings),
-          pending_reports: Number(statsData.pending_reports)
+          total_users: Number(stats.total_users),
+          total_rides: Number(stats.total_rides),
+          total_bookings: Number(stats.total_bookings),
+          pending_reports: Number(stats.pending_reports)
         });
       }
 

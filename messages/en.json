@@ -1,0 +1,202 @@
+{
+  "metadata": {
+    "title": "Andamus - Carpooling in Sardinia",
+    "description": "Find and offer rides in Sardinia. The Sardinian carpooling platform to travel together."
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "offer": "Offer",
+    "profile": "Profile",
+    "admin": "Admin",
+    "invite": "Invite friends",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "loginWithGoogle": "Sign in with Google"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  },
+  "language": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "select": "Select language"
+  },
+  "home": {
+    "hero": {
+      "badge": "Sardinian carpooling",
+      "title": "Travel together",
+      "titleHighlight": "in Sardinia",
+      "description": "Find or offer a ride anywhere in Sardinia.",
+      "free": "Free.",
+      "from": "From",
+      "to": "To",
+      "date": "Date",
+      "searchButton": "Search ride",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "thisWeek": "This week"
+    },
+    "todayRides": "Today's rides",
+    "noRidesToday": "No rides today",
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "In three simple steps",
+      "step1": {
+        "title": "Sign up",
+        "description": "Create a free account with Google in seconds."
+      },
+      "step2": {
+        "title": "Search or offer",
+        "description": "Find a ride that suits you or offer your free seat."
+      },
+      "step3": {
+        "title": "Travel together",
+        "description": "Contact the driver or passenger and travel together."
+      }
+    },
+    "popularRoutes": {
+      "title": "Popular routes",
+      "subtitle": "Most searched rides in Sardinia"
+    },
+    "events": {
+      "title": "Special Events",
+      "subtitle": "Most important Sardinian traditions - find a ride!",
+      "searchRides": "Search rides"
+    },
+    "stats": {
+      "users": "Registered users",
+      "rides": "Rides offered",
+      "cities": "Cities covered"
+    },
+    "footer": {
+      "madeWith": "Made with",
+      "inSardinia": "in Sardinia",
+      "rights": "All rights reserved."
+    }
+  },
+  "search": {
+    "title": "Find a ride",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "filters": "Filters",
+    "maxPrice": "Max price",
+    "minSeats": "Min seats",
+    "verifiedOnly": "Verified only",
+    "freeOnly": "Free only",
+    "availableOnly": "With seats only",
+    "results": "Results",
+    "noResults": "No rides found",
+    "tryAdjust": "Try adjusting your search filters",
+    "seats": "seats",
+    "free": "Free",
+    "book": "Book",
+    "driver": "Driver"
+  },
+  "offer": {
+    "title": "Offer a ride",
+    "loginRequired": "You need to sign in to offer a ride.",
+    "form": {
+      "from": "From",
+      "to": "To",
+      "date": "Date",
+      "time": "Time",
+      "seats": "Seats available",
+      "price": "Contribution",
+      "free": "Free",
+      "meetingPoint": "Meeting point",
+      "notes": "Notes",
+      "submit": "Publish ride",
+      "submitting": "Publishing..."
+    },
+    "success": {
+      "title": "Ride published!",
+      "message": "Your ride is now visible to all users.",
+      "backHome": "Back to home",
+      "manage": "Manage rides"
+    },
+    "errors": {
+      "sameCity": "Origin and destination cannot be the same",
+      "required": "Required field"
+    }
+  },
+  "ride": {
+    "details": "Ride details",
+    "route": "Route",
+    "date": "Date",
+    "time": "Time",
+    "seats": "Seats available",
+    "price": "Price",
+    "free": "Free",
+    "driver": "Driver",
+    "meetingPoint": "Meeting point",
+    "notes": "Notes",
+    "bookRide": "Request ride",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "reviews": "Reviews",
+    "noReviews": "No reviews",
+    "similarRides": "Similar rides"
+  },
+  "profile": {
+    "title": "Profile",
+    "rides": "My rides",
+    "bookings": "My rides",
+    "reviews": "Reviews",
+    "stats": {
+      "rating": "Rating",
+      "rides": "rides",
+      "verified": "Verified"
+    },
+    "verification": {
+      "title": "Verify profile",
+      "level": "Verification level",
+      "phone": "Phone",
+      "email": "Email",
+      "id": "ID Document",
+      "license": "License"
+    },
+    "gamification": {
+      "points": "points",
+      "level": "Level",
+      "badges": "Badges",
+      "howToEarn": "How to earn points"
+    },
+    "actions": {
+      "offerRide": "Offer ride",
+      "search": "Search",
+      "verify": "Verify"
+    },
+    "bookingRequests": "Pending requests",
+    "accept": "Accept",
+    "reject": "Decline",
+    "completed": "Completed",
+    "rate": "Rate"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "bookingConfirmed": "Booking confirmed",
+    "bookingPending": "Waiting for confirmation"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info"
+  }
+}

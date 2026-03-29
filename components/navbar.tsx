@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { 
   Menu, 
   X, 
@@ -15,16 +16,12 @@ import {
   Shield,
   Gift
 } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth";
-
-const navLinks = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/cerca", label: "Cerca", icon: Search },
-  { href: "/offri", label: "Offri", icon: PlusCircle },
-];
 
 const ADMIN_EMAILS = [
   'cristianermurache@gmail.com',
@@ -43,13 +40,21 @@ interface UserData {
 }
 
 export function Navbar() {
+  const t = useTranslations('nav');
+  const locale = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const isHome = pathname === "/";
+  const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
   const supabase = createClient();
+  
+  const navLinks = [
+    { href: `/${locale}/`, label: t('home'), icon: Home },
+    { href: `/${locale}/cerca`, label: t('search'), icon: Search },
+    { href: `/${locale}/offri`, label: t('offer'), icon: PlusCircle },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -165,7 +170,7 @@ export function Navbar() {
               {user ? (
                 <div className="flex items-center gap-3">
                   {/* Admin Link */}
-                  {ADMIN_EMAILS.includes(user.email) && (
+                  {user?.email && ADMIN_EMAILS.includes(user.email) && (
                     <Link
                       href="/admin"
                       className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
@@ -179,24 +184,30 @@ export function Navbar() {
                     </Link>
                   )}
                   
+                  {/* Language Selector */}
+                  <LanguageSelector isHome={isHome} />
+
+                  {/* Theme Toggle */}
+                  <ThemeToggle isHome={isHome} />
+
                   {/* Notification Bell */}
                   <NotificationBell isHome={isHome} />
 
                   {/* Invite Friends Link */}
                   <Link
-                    href="/invita"
+                    href={`/${locale}/invita`}
                     className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
                       isHome 
                         ? "text-white/70 hover:bg-white/10 hover:text-white" 
                         : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
                     }`}
-                    title="Invita amici"
+                    title={t('invite')}
                   >
                     <Gift className="h-5 w-5" />
                   </Link>
 
                   <Link 
-                    href="/profilo"
+                    href={`/${locale}/profilo`}
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all ${
                       isHome
                         ? "border-white/10 bg-white/5 hover:bg-white/10 text-white"
@@ -226,7 +237,7 @@ export function Navbar() {
                         ? "text-white/70 hover:bg-white/10 hover:text-white" 
                         : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
                     }`}
-                    title="Esci"
+                    title={t('logout')}
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
@@ -242,7 +253,7 @@ export function Navbar() {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                   </svg>
-                  Accedi
+                  {t('login')}
                 </Button>
               )}
             </>
@@ -278,6 +289,17 @@ export function Navbar() {
             : "border-border bg-white"
         }`}>
           <div className="space-y-1 px-4 pb-4 pt-2">
+            {/* Language & Theme - Mobile */}
+            <div className={`flex items-center justify-between rounded-lg px-3 py-3 ${
+              isHome ? "text-white/70" : "text-gray-600"
+            }`}>
+              <span className="font-medium">Lingua / Language</span>
+              <div className="flex items-center gap-2">
+                <LanguageSelector isHome={isHome} />
+                <ThemeToggle isHome={isHome} />
+              </div>
+            </div>
+            
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -308,7 +330,7 @@ export function Navbar() {
                   {user ? (
                     <div className="space-y-2">
                       <Link
-                        href="/invita"
+                        href={`/${locale}/invita`}
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
                           isHome 
@@ -317,9 +339,9 @@ export function Navbar() {
                         }`}
                       >
                         <Gift className="h-5 w-5" />
-                        <span>Invita amici</span>
+                        <span>{t('invite')}</span>
                       </Link>
-                      {user?.email && ADMIN_EMAILS.includes(user.email) && (
+                      {user?.email && ADMIN_EMAILS.includes(user.email || '') && (
                         <Link
                           href="/admin"
                           onClick={() => setMobileMenuOpen(false)}
@@ -334,7 +356,7 @@ export function Navbar() {
                         </Link>
                       )}
                       <Link
-                        href="/profilo"
+                        href={`/${locale}/profilo`}
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
                           isHome ? "text-white" : "text-[#1a1a2e]"
@@ -365,7 +387,7 @@ export function Navbar() {
                         }`}
                       >
                         <LogOut className="h-5 w-5" />
-                        <span>Esci</span>
+                        <span>{t('logout')}</span>
                       </button>
                     </div>
                   ) : (
@@ -382,7 +404,7 @@ export function Navbar() {
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                       </svg>
-                      Accedi con Google
+                      {t('loginWithGoogle')}
                     </Button>
                   )}
                 </>

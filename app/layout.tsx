@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
-import { Toaster } from "react-hot-toast";
-import { SafetyButton } from "@/components/SafetyButton";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -35,8 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="it"
       className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <link rel="manifest" href="/manifest.json" />
@@ -45,32 +42,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="min-h-full flex flex-col font-sans">
-        <Navbar />
         {children}
-        <SafetyButton />
-        <Toaster 
-          position="top-center"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#1e2a4a',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.1)',
-            },
-            success: {
-              iconTheme: {
-                primary: '#22c55e',
-                secondary: '#1e2a4a',
-              },
-            },
-            error: {
-              iconTheme: {
-                primary: '#e63946',
-                secondary: '#1e2a4a',
-              },
-            },
-          }}
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

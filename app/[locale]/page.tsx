@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Car, Search, UserPlus, MessageCircle, MapPin, ArrowRight, Calendar, Users, Route, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,11 +13,23 @@ const sardinianCities = [
   "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer", "Bosa", "Castelsardo"
 ];
 
-const steps = [
-  { icon: UserPlus, title: "Registrati", description: "Crea un account gratis con Google in pochi secondi." },
-  { icon: Search, title: "Cerca o pubblica", description: "Trova una corsa che fa per te o offri il tuo posto libero." },
-  { icon: MessageCircle, title: "Viaggia insieme", description: "Contatta l'autista o il passeggero e parti insieme." },
-];
+export default function HomePage() {
+  const t = useTranslations();
+  const router = useRouter();
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [date, setDate] = useState("");
+  const [todayRides, setTodayRides] = useState<any[]>([]);
+  const [stats, setStats] = useState({ users: 0, rides: 0, cities: 20 });
+  const [loadingRides, setLoadingRides] = useState(true);
+  const supabase = createClient();
+  const today = new Date().toISOString().split("T")[0];
+
+  const steps = [
+    { icon: UserPlus, title: t('home.howItWorks.step1.title'), description: t('home.howItWorks.step1.description') },
+    { icon: Search, title: t('home.howItWorks.step2.title'), description: t('home.howItWorks.step2.description') },
+    { icon: MessageCircle, title: t('home.howItWorks.step3.title'), description: t('home.howItWorks.step3.description') },
+  ];
 
 // Animated counter component
 function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; duration?: number; suffix?: string }) {
@@ -43,16 +56,7 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
   return <span>{count.toLocaleString()}{suffix}</span>;
 }
 
-export default function HomePage() {
-  const router = useRouter();
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
-  const [todayRides, setTodayRides] = useState<any[]>([]);
-  const [stats, setStats] = useState({ users: 0, rides: 0, cities: 20 });
-  const [loadingRides, setLoadingRides] = useState(true);
-  const supabase = createClient();
-  const today = new Date().toISOString().split("T")[0];
+
 
   // Fetch today's rides
   useEffect(() => {
@@ -321,8 +325,8 @@ export default function HomePage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Come funziona</h2>
-            <p className="mt-4 text-white/60">In tre semplici passaggi</p>
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">{t('home.howItWorks.title')}</h2>
+            <p className="mt-4 text-white/60">{t('home.howItWorks.subtitle')}</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
@@ -347,8 +351,8 @@ export default function HomePage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e]">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Rotte popolari</h2>
-            <p className="mt-4 text-white/60">I passaggi più cercati in Sardegna</p>
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">{t('home.popularRoutes.title')}</h2>
+            <p className="mt-4 text-white/60">{t('home.popularRoutes.subtitle')}</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -371,7 +375,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <p className="font-semibold text-white">{route.from} → {route.to}</p>
-                    <p className="text-sm text-white/50">Cerca passaggi</p>
+                    <p className="text-sm text-white/50">{t('home.popularRoutes.search')}</p>
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-white/30 transition-all group-hover:text-[#e63946] group-hover:translate-x-1" />
@@ -494,19 +498,19 @@ export default function HomePage() {
               <p className="text-5xl font-bold text-[#e63946]">
                 <AnimatedCounter end={stats.users} suffix="+" />
               </p>
-              <p className="mt-2 text-white/60">Utenti registrati</p>
+              <p className="mt-2 text-white/60">{t('home.stats.users')}</p>
             </div>
             <div className="relative sm:border-x sm:border-white/10">
               <p className="text-5xl font-bold text-[#e63946]">
                 <AnimatedCounter end={stats.rides} suffix="+" />
               </p>
-              <p className="mt-2 text-white/60">Passaggi offerti</p>
+              <p className="mt-2 text-white/60">{t('home.stats.rides')}</p>
             </div>
             <div className="relative">
               <p className="text-5xl font-bold text-[#e63946]">
                 <AnimatedCounter end={stats.cities} />
               </p>
-              <p className="mt-2 text-white/60">Città coperte</p>
+              <p className="mt-2 text-white/60">{t('home.stats.cities')}</p>
             </div>
           </div>
         </div>
@@ -530,12 +534,12 @@ export default function HomePage() {
             </nav>
 
             <p className="text-sm text-white/40">
-              Fatto con <span className="text-[#e63946]">♥</span> in Sardegna
+              {t('home.footer.madeWith')} <span className="text-[#e63946]">♥</span> {t('home.footer.inSardinia')}
             </p>
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-8 text-center">
-            <p className="text-sm text-white/40">© {new Date().getFullYear()} Andamus. Tutti i diritti riservati.</p>
+            <p className="text-sm text-white/40">© {new Date().getFullYear()} Andamus. {t('home.footer.rights')}</p>
           </div>
         </div>
       </footer>

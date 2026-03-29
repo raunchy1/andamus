@@ -1,0 +1,202 @@
+{
+  "metadata": {
+    "title": "Andamus - Carpooling in Sardegna",
+    "description": "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme."
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Cerca",
+    "offer": "Offri",
+    "profile": "Profilo",
+    "admin": "Admin",
+    "invite": "Invita amici",
+    "login": "Accedi",
+    "logout": "Esci",
+    "loginWithGoogle": "Accedi con Google"
+  },
+  "theme": {
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "toggle": "Cambia tema"
+  },
+  "language": {
+    "it": "Italiano",
+    "en": "English",
+    "de": "Deutsch",
+    "select": "Seleziona lingua"
+  },
+  "home": {
+    "hero": {
+      "badge": "Carpooling sardo",
+      "title": "Viaggia insieme",
+      "titleHighlight": "in Sardegna",
+      "description": "Trova o offri un passaggio in tutta la Sardegna.",
+      "free": "Gratis.",
+      "from": "Da",
+      "to": "A",
+      "date": "Data",
+      "searchButton": "Cerca passaggio",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "thisWeek": "Questa settimana"
+    },
+    "todayRides": "Corse di oggi",
+    "noRidesToday": "Nessuna corsa per oggi",
+    "howItWorks": {
+      "title": "Come funziona",
+      "subtitle": "In tre semplici passaggi",
+      "step1": {
+        "title": "Registrati",
+        "description": "Crea un account gratis con Google in pochi secondi."
+      },
+      "step2": {
+        "title": "Cerca o pubblica",
+        "description": "Trova una corsa che fa per te o offri il tuo posto libero."
+      },
+      "step3": {
+        "title": "Viaggia insieme",
+        "description": "Contatta l'autista o il passeggero e parti insieme."
+      }
+    },
+    "popularRoutes": {
+      "title": "Rotte popolari",
+      "subtitle": "I passaggi più cercati in Sardegna"
+    },
+    "events": {
+      "title": "Eventi Speciali",
+      "subtitle": "Le tradizioni sarde più importanti - trova un passaggio!",
+      "searchRides": "Cerca passaggi"
+    },
+    "stats": {
+      "users": "Utenti registrati",
+      "rides": "Passaggi offerti",
+      "cities": "Città coperte"
+    },
+    "footer": {
+      "madeWith": "Fatto con",
+      "inSardinia": "in Sardegna",
+      "rights": "Tutti i diritti riservati."
+    }
+  },
+  "search": {
+    "title": "Cerca un passaggio",
+    "from": "Da",
+    "to": "A",
+    "date": "Data",
+    "filters": "Filtri",
+    "maxPrice": "Prezzo max",
+    "minSeats": "Posti min",
+    "verifiedOnly": "Solo verificati",
+    "freeOnly": "Solo gratis",
+    "availableOnly": "Solo con posti",
+    "results": "Risultati",
+    "noResults": "Nessuna corsa trovata",
+    "tryAdjust": "Prova ad allargare i filtri di ricerca",
+    "seats": "posti",
+    "free": "Gratis",
+    "book": "Prenota",
+    "driver": "Autista"
+  },
+  "offer": {
+    "title": "Offri un passaggio",
+    "loginRequired": "Devi accedere per pubblicare un passaggio.",
+    "form": {
+      "from": "Da",
+      "to": "A",
+      "date": "Data",
+      "time": "Orario",
+      "seats": "Posti disponibili",
+      "price": "Contributo",
+      "free": "Gratuito",
+      "meetingPoint": "Punto di incontro",
+      "notes": "Note",
+      "submit": "Pubblica passaggio",
+      "submitting": "Pubblicazione..."
+    },
+    "success": {
+      "title": "Passaggio pubblicato!",
+      "message": "La tua corsa è ora visibile a tutti gli utenti.",
+      "backHome": "Torna alla home",
+      "manage": "Gestisci corse"
+    },
+    "errors": {
+      "sameCity": "Partenza e destinazione non possono essere uguali",
+      "required": "Campo obbligatorio"
+    }
+  },
+  "ride": {
+    "details": "Dettagli corsa",
+    "route": "Percorso",
+    "date": "Data",
+    "time": "Orario",
+    "seats": "Posti disponibili",
+    "price": "Prezzo",
+    "free": "Gratis",
+    "driver": "Autista",
+    "meetingPoint": "Punto di incontro",
+    "notes": "Note",
+    "bookRide": "Richiedi passaggio",
+    "share": "Condividi",
+    "copyLink": "Copia link",
+    "copied": "Copiato!",
+    "reviews": "Recensioni",
+    "noReviews": "Nessuna recensione",
+    "similarRides": "Corse simili"
+  },
+  "profile": {
+    "title": "Profilo",
+    "rides": "Le mie corse",
+    "bookings": "I miei passaggi",
+    "reviews": "Recensioni",
+    "stats": {
+      "rating": "Valutazione",
+      "rides": "corse",
+      "verified": "Verificato"
+    },
+    "verification": {
+      "title": "Verifica profilo",
+      "level": "Livello di verifica",
+      "phone": "Telefono",
+      "email": "Email",
+      "id": "Documento",
+      "license": "Patente"
+    },
+    "gamification": {
+      "points": "punti",
+      "level": "Livello",
+      "badges": "Badge",
+      "howToEarn": "Come guadagnare punti"
+    },
+    "actions": {
+      "offerRide": "Offri passaggio",
+      "search": "Cerca",
+      "verify": "Verifica"
+    },
+    "bookingRequests": "Richieste in attesa",
+    "accept": "Accetta",
+    "reject": "Rifiuta",
+    "completed": "Completata",
+    "rate": "Recensisci"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Scrivi un messaggio...",
+    "send": "Invia",
+    "bookingConfirmed": "Prenotazione confermata",
+    "bookingPending": "In attesa di conferma"
+  },
+  "common": {
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "close": "Chiudi",
+    "back": "Indietro",
+    "continue": "Continua",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "warning": "Attenzione",
+    "info": "Info"
+  }
+}
