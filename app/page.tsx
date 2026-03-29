@@ -1,81 +1,317 @@
-import Link from "next/link";
-import { Car, Search, UserPlus, MessageCircle, MapPin, ArrowRight } from "lucide-react";
+"use client";
 
-const popularRoutes = [
-  { from: "Ogliastra", to: "Cagliari" },
-  { from: "Nuoro", to: "Cagliari" },
-  { from: "Sassari", to: "Cagliari" },
-  { from: "Olbia", to: "Sassari" },
-  { from: "Oristano", to: "Cagliari" },
-  { from: "Ogliastra", to: "Olbia" },
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Car, Search, UserPlus, MessageCircle, MapPin, ArrowRight, Calendar, Users, Route, Star, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+
+const sardinianCities = [
+  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
+  "Iglesias", "Carbonia", "Alghero", "Tempio Pausania", "La Maddalena",
+  "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer", "Bosa", "Castelsardo"
 ];
 
 const steps = [
-  {
-    icon: UserPlus,
-    title: "Registrati",
-    description: "Crea un account gratis con Google in pochi secondi.",
-  },
-  {
-    icon: Search,
-    title: "Cerca o pubblica",
-    description: "Trova una corsa che fa per te o offri il tuo posto libero.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Viaggia insieme",
-    description: "Contatta l'autista o il passeggero e parti insieme.",
-  },
+  { icon: UserPlus, title: "Registrati", description: "Crea un account gratis con Google in pochi secondi." },
+  { icon: Search, title: "Cerca o pubblica", description: "Trova una corsa che fa per te o offri il tuo posto libero." },
+  { icon: MessageCircle, title: "Viaggia insieme", description: "Contatta l'autista o il passeggero e parti insieme." },
 ];
 
+// Animated counter component
+function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; duration?: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    let startTime: number;
+    let animationFrame: number;
+    
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      setCount(Math.floor(progress * end));
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+    
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+  
+  return <span>{count.toLocaleString()}{suffix}</span>;
+}
+
 export default function HomePage() {
+  const router = useRouter();
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [date, setDate] = useState("");
+  const [todayRides, setTodayRides] = useState<any[]>([]);
+  const [stats, setStats] = useState({ users: 0, rides: 0, cities: 20 });
+  const [loadingRides, setLoadingRides] = useState(true);
+  const supabase = createClient();
+  const today = new Date().toISOString().split("T")[0];
+
+  // Fetch today's rides
+  useEffect(() => {
+    const fetchTodayRides = async () => {
+      const { data } = await supabase
+        .from("rides")
+        .select(`
+          *,
+          profiles(name, avatar_url, rating)
+        `)
+        .eq("date", today)
+        .eq("status", "active")
+        .order("time", { ascending: true })
+        .limit(6);
+      
+      setTodayRides(data || []);
+      setLoadingRides(false);
+    };
+
+    // Fetch stats
+    const fetchStats = async () => {
+      const { count: usersCount } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true });
+      
+      const { count: ridesCount } = await supabase
+        .from("rides")
+        .select("*", { count: "exact", head: true });
+      
+      setStats({
+        users: usersCount || 0,
+        rides: ridesCount || 0,
+        cities: 20
+      });
+    };
+
+    fetchTodayRides();
+    fetchStats();
+  }, [supabase, today]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (origin) params.set("from", origin);
+    if (destination) params.set("to", destination);
+    if (date) params.set("date", date);
+    router.push(`/cerca?${params.toString()}`);
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("it-IT", { 
+      weekday: "short", 
+      day: "numeric", 
+      month: "short" 
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1a2e]">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden px-4 pt-16 pb-20 sm:px-6 sm:pt-24 lg:px-8 lg:pt-32">
+      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden px-4 pt-24 pb-12 sm:px-6 lg:px-8">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+            backgroundSize: "40px 40px"
+          }} />
+        </div>
+        
         {/* Sardinia Map Background */}
-        <div className="absolute inset-0 opacity-10">
-          <svg
-            viewBox="0 0 400 500"
-            className="absolute right-0 top-1/2 h-[600px] w-auto -translate-y-1/2 translate-x-1/4 text-[#e63946]"
-            fill="currentColor"
-          >
-            {/* Simplified Sardinia outline */}
-            <path d="M200 20C150 30 100 60 80 100C60 140 50 180 60 220C70 260 90 300 120 340C140 370 150 400 145 430C140 460 160 480 200 485C240 480 260 460 255 430C250 400 260 370 280 340C310 300 330 260 340 220C350 180 340 140 320 100C300 60 250 30 200 20ZM200 450C180 445 170 435 175 420C180 405 200 395 225 420C230 435 220 445 200 450Z" />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-10">
+          <svg viewBox="0 0 400 500" className="h-[700px] w-auto text-[#e63946]" fill="currentColor">
+            <path d="M200 20C150 30 100 60 80 100C60 140 50 180 60 220C70 260 90 300 120 340C140 370 150 400 145 430C140 460 160 480 200 485C240 480 260 460 255 430C250 400 260 370 280 340C310 300 330 260 340 220C350 180 340 140 320 100C300 60 250 30 200 20Z" />
           </svg>
         </div>
 
-        <div className="relative mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur">
-            <Car className="h-4 w-4 text-[#e63946]" />
-            <span className="text-sm text-white/80">Carpooling sardo</span>
+        <div className="relative mx-auto max-w-6xl">
+          {/* Badge */}
+          <div className="mb-6 flex justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
+              <Car className="h-4 w-4 text-[#e63946]" />
+              <span className="text-sm text-white/80">Carpooling sardo</span>
+            </div>
           </div>
 
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          {/* Headline */}
+          <h1 className="text-center text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
             Viaggia insieme
             <br />
             <span className="text-[#e63946]">in Sardegna</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60">
-            Trova o offri un passaggio in tutta la Sardegna. Gratis.
+          <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-white/60">
+            Trova o offri un passaggio in tutta la Sardegna. 
+            <span className="text-white font-medium"> Gratis.</span>
           </p>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/cerca"
-              className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#e63946] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-[#c92a37] hover:shadow-lg hover:shadow-[#e63946]/25"
-            >
-              <Search className="h-5 w-5" />
-              Cerca un passaggio
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          {/* LIVE SEARCH BAR */}
+          <form onSubmit={handleSearch} className="mt-10 mx-auto max-w-4xl">
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 shadow-2xl">
+              <div className="grid gap-3 md:grid-cols-4">
+                {/* Origin */}
+                <div className="relative">
+                  <label className="mb-1 block text-xs font-medium text-white/50">Da</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
+                    <select
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value)}
+                      className="h-12 w-full appearance-none rounded-xl border border-white/10 bg-[#0f1729] pl-10 pr-8 text-sm text-white outline-none focus:border-[#e63946] [&>option]:bg-[#1a1a2e]"
+                    >
+                      <option value="">Da dove parti?</option>
+                      {sardinianCities.map((city) => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                    <ArrowRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 rotate-90 md:rotate-0" />
+                  </div>
+                </div>
+
+                {/* Destination */}
+                <div className="relative">
+                  <label className="mb-1 block text-xs font-medium text-white/50">A</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
+                    <select
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="h-12 w-full appearance-none rounded-xl border border-white/10 bg-[#0f1729] pl-10 pr-8 text-sm text-white outline-none focus:border-[#e63946] [&>option]:bg-[#1a1a2e]"
+                    >
+                      <option value="">Dove vai?</option>
+                      {sardinianCities.map((city) => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Date */}
+                <div className="relative">
+                  <label className="mb-1 block text-xs font-medium text-white/50">Data</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
+                    <input
+                      type="date"
+                      min={today}
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      className="h-12 w-full rounded-xl border border-white/10 bg-[#0f1729] pl-10 pr-4 text-sm text-white outline-none focus:border-[#e63946] [&::-webkit-calendar-picker-indicator]:invert"
+                    />
+                  </div>
+                </div>
+
+                {/* Search Button */}
+                <div className="flex items-end">
+                  <button
+                    type="submit"
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#e63946] text-sm font-semibold text-white shadow-lg shadow-[#e63946]/25 transition-all hover:bg-[#c92a37] hover:shadow-xl"
+                  >
+                    <Search className="h-4 w-4" />
+                    Cerca
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          {/* Quick Links */}
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link href="/cerca" className="text-sm text-white/50 hover:text-white transition-colors">
+              Popolari: <span className="text-[#e63946]">Tortolì → Cagliari</span>
             </Link>
-            <Link
-              href="/offri"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur transition-all hover:bg-white/10"
-            >
-              <Car className="h-5 w-5" />
-              Offri un passaggio
+            <span className="text-white/20">•</span>
+            <Link href="/cerca" className="text-sm text-white/50 hover:text-white transition-colors">
+              <span className="text-[#e63946]">Olbia → Sassari</span>
+            </Link>
+            <span className="text-white/20">•</span>
+            <Link href="/cerca" className="text-sm text-white/50 hover:text-white transition-colors">
+              <span className="text-[#e63946]">Nuoro → Cagliari</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* TODAY'S RIDES SECTION */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e]">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white sm:text-3xl">Corse disponibili oggi</h2>
+              <p className="mt-1 text-white/50">Passaggi programmati per oggi in tutta la Sardegna</p>
+            </div>
+            <Link href="/cerca" className="hidden sm:flex items-center gap-1 text-sm text-[#e63946] hover:text-white transition-colors">
+              Vedi tutte <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          {loadingRides ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-[#e63946]" />
+            </div>
+          ) : todayRides.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-12 text-center">
+              <Car className="mx-auto h-12 w-12 text-white/20" />
+              <p className="mt-4 text-white/50">Nessuna corsa disponibile oggi.</p>
+              <Link href="/offri" className="mt-4 inline-block text-[#e63946] hover:text-white">
+                Offri tu il primo passaggio →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {todayRides.map((ride) => (
+                <Link
+                  key={ride.id}
+                  href={`/corsa/${ride.id}`}
+                  className="group rounded-2xl border border-white/10 bg-[#1e2a4a] p-5 transition-all hover:border-[#e63946]/50 hover:shadow-lg hover:shadow-[#e63946]/10"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium text-[#e63946] bg-[#e63946]/10 px-2 py-1 rounded-full">
+                      Oggi alle {ride.time.slice(0, 5)}
+                    </span>
+                    <span className="text-lg font-bold text-white">
+                      {ride.price === 0 ? (
+                        <span className="text-green-400 text-sm">Gratis</span>
+                      ) : (
+                        `${ride.price}€`
+                      )}
+                    </span>
+                  </div>
+                  
+                  <h3 className="font-bold text-white text-lg">
+                    {ride.from_city} → {ride.to_city}
+                  </h3>
+                  
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
+                      {ride.profiles.avatar_url ? (
+                        <img src={ride.profiles.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                      ) : (
+                        <Users className="h-4 w-4" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white truncate">{ride.profiles.name}</p>
+                      <div className="flex items-center gap-1 text-xs text-white/50">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        <span>{ride.profiles.rating || 5.0}</span>
+                      </div>
+                    </div>
+                    <span className="text-xs text-white/50">{ride.seats} posti</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 text-center sm:hidden">
+            <Link href="/cerca" className="inline-flex items-center gap-1 text-sm text-[#e63946]">
+              Vedi tutte le corse <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -85,15 +321,11 @@ export default function HomePage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">
-              Come funziona
-            </h2>
-            <p className="mt-4 text-white/60">
-              In tre semplici passaggi
-            </p>
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">Come funziona</h2>
+            <p className="mt-4 text-white/60">In tre semplici passaggi</p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             {steps.map((step, index) => (
               <div
                 key={step.title}
@@ -102,15 +334,9 @@ export default function HomePage() {
                 <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[#e63946]/10 text-[#e63946]">
                   <step.icon className="h-7 w-7" />
                 </div>
-                <div className="absolute right-6 top-6 text-5xl font-bold text-white/5">
-                  {index + 1}
-                </div>
-                <h3 className="mb-3 text-xl font-semibold text-white">
-                  {step.title}
-                </h3>
-                <p className="text-white/60 leading-relaxed">
-                  {step.description}
-                </p>
+                <div className="absolute right-6 top-6 text-6xl font-bold text-white/5">{index + 1}</div>
+                <h3 className="mb-3 text-xl font-semibold text-white">{step.title}</h3>
+                <p className="text-white/60 leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>
@@ -118,32 +344,33 @@ export default function HomePage() {
       </section>
 
       {/* POPULAR ROUTES */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e]">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">
-              Rotte popolari
-            </h2>
-            <p className="mt-4 text-white/60">
-              I passaggi più cercati in Sardegna
-            </p>
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">Rotte popolari</h2>
+            <p className="mt-4 text-white/60">I passaggi più cercati in Sardegna</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {popularRoutes.map((route) => (
+            {[
+              { from: "Ogliastra", to: "Cagliari" },
+              { from: "Nuoro", to: "Cagliari" },
+              { from: "Sassari", to: "Cagliari" },
+              { from: "Olbia", to: "Sassari" },
+              { from: "Oristano", to: "Cagliari" },
+              { from: "Ogliastra", to: "Olbia" },
+            ].map((route) => (
               <Link
                 key={`${route.from}-${route.to}`}
-                href="/cerca"
-                className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur transition-all hover:border-[#e63946]/30 hover:bg-white/[0.07]"
+                href={`/cerca?from=${route.from}&to=${route.to}`}
+                className="group flex items-center justify-between rounded-xl border border-white/10 bg-[#1e2a4a] p-5 transition-all hover:border-[#e63946]/30"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e63946]/10 text-[#e63946]">
-                    <MapPin className="h-5 w-5" />
+                    <Route className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white">
-                      {route.from} → {route.to}
-                    </p>
+                    <p className="font-semibold text-white">{route.from} → {route.to}</p>
                     <p className="text-sm text-white/50">Cerca passaggi</p>
                   </div>
                 </div>
@@ -154,21 +381,27 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STATS BAR */}
-      <section className="border-y border-white/10 bg-[#12121e]">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* STATS BAR with Animated Counters */}
+      <section className="border-y border-white/10 bg-[#0d0d16] px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 text-center sm:grid-cols-3">
-            <div>
-              <p className="text-3xl font-bold text-[#e63946]">Gratuito</p>
-              <p className="mt-1 text-white/60">per sempre</p>
+            <div className="relative">
+              <p className="text-5xl font-bold text-[#e63946]">
+                <AnimatedCounter end={stats.users} suffix="+" />
+              </p>
+              <p className="mt-2 text-white/60">Utenti registrati</p>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-[#e63946]">Tutta</p>
-              <p className="mt-1 text-white/60">la Sardegna</p>
+            <div className="relative sm:border-x sm:border-white/10">
+              <p className="text-5xl font-bold text-[#e63946]">
+                <AnimatedCounter end={stats.rides} suffix="+" />
+              </p>
+              <p className="mt-2 text-white/60">Passaggi offerti</p>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-[#e63946]">Comunità</p>
-              <p className="mt-1 text-white/60">sarda</p>
+            <div className="relative">
+              <p className="text-5xl font-bold text-[#e63946]">
+                <AnimatedCounter end={stats.cities} />
+              </p>
+              <p className="mt-2 text-white/60">Città coperte</p>
             </div>
           </div>
         </div>
@@ -178,35 +411,26 @@ export default function HomePage() {
       <footer className="bg-[#0a0a12] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <Car className="h-6 w-6 text-[#e63946]" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#e63946]">
+                <Car className="h-6 w-6 text-white" />
+              </div>
               <span className="text-xl font-bold text-white">Andamus</span>
             </Link>
 
-            {/* Links */}
             <nav className="flex flex-wrap justify-center gap-6">
-              <Link href="/cerca" className="text-sm text-white/60 transition-colors hover:text-white">
-                Cerca
-              </Link>
-              <Link href="/offri" className="text-sm text-white/60 transition-colors hover:text-white">
-                Offri
-              </Link>
-              <Link href="/profilo" className="text-sm text-white/60 transition-colors hover:text-white">
-                Profilo
-              </Link>
+              <Link href="/cerca" className="text-sm text-white/60 transition-colors hover:text-white">Cerca</Link>
+              <Link href="/offri" className="text-sm text-white/60 transition-colors hover:text-white">Offri</Link>
+              <Link href="/profilo" className="text-sm text-white/60 transition-colors hover:text-white">Profilo</Link>
             </nav>
 
-            {/* Made with love */}
             <p className="text-sm text-white/40">
               Fatto con <span className="text-[#e63946]">♥</span> in Sardegna
             </p>
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-8 text-center">
-            <p className="text-sm text-white/40">
-              © {new Date().getFullYear()} Andamus. Tutti i diritti riservati.
-            </p>
+            <p className="text-sm text-white/40">© {new Date().getFullYear()} Andamus. Tutti i diritti riservati.</p>
           </div>
         </div>
       </footer>

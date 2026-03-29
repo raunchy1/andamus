@@ -11,6 +11,8 @@ import {
   User
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { notifyNewMessage } from "@/lib/notifications";
+import toast from "react-hot-toast";
 
 interface Message {
   id: string;
@@ -177,7 +179,7 @@ export default function ChatPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || sending) return;
+    if (!newMessage.trim() || !user || sending || !booking) return;
 
     setSending(true);
 
@@ -192,8 +194,21 @@ export default function ChatPage() {
 
     if (sendError) {
       console.error("Error sending message:", sendError);
+      toast.error("Errore nell'invio del messaggio");
     } else {
       setNewMessage("");
+      
+      // Notify the other party
+      const isDriver = user.id === booking.rides.driver_id;
+      const recipientId = isDriver ? booking.passenger_id : booking.rides.driver_id;
+      const senderName = user.user_metadata?.name || user.email?.split("@")[0] || "Utente";
+      
+      await notifyNewMessage(
+        recipientId,
+        senderName,
+        booking.ride_id,
+        booking.id
+      );
     }
 
     setSending(false);
