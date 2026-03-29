@@ -19,7 +19,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
 import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notifications";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
-import { BadgeDisplay, LevelProgress, PointsInfo, BadgeUnlockNotification } from "@/components/BadgeDisplay";
+import { BadgeDisplay, PointsInfo, BadgeUnlockNotification } from "@/components/BadgeDisplay";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 
 interface Profile {
@@ -338,101 +338,72 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#1a1a2e] pt-20">
-      {/* Profile Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#e63946] to-[#c92a37] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute -right-10 -top-10 h-60 w-60 rounded-full bg-white" />
-          <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-white" />
+      {/* Profile Header - Premium Dashboard */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-[#1e1a3e] to-[#2a1a3e] px-4 py-12 sm:px-6 lg:px-8">
+        {/* Animated background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#e63946]/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px]" />
         </div>
         
         <div className="relative mx-auto max-w-5xl">
           <div className="flex flex-col items-center gap-6 sm:flex-row">
+            {/* Avatar with colored ring based on level */}
             <div className="relative">
-              <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/20 ring-4 ring-white/30">
+              <div className={`flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-white/10 to-white/5 ring-4 ${
+                profile?.points && profile.points >= 1000 ? 'level-ring-platinum' :
+                profile?.points && profile.points >= 600 ? 'level-ring-gold' :
+                profile?.points && profile.points >= 300 ? 'level-ring-silver' :
+                'level-ring-bronze'
+              } transition-all duration-500`}>
                 {getUserAvatar() ? (
                   <Image src={getUserAvatar()!} alt="" width={112} height={112} className="h-full w-full rounded-full object-cover" />
                 ) : (
                   <User className="h-14 w-14 text-white" />
                 )}
               </div>
-              <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-green-400 ring-4 ring-[#e63946]">
+              {/* Online indicator */}
+              <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-green-400 ring-4 ring-[#1a1a2e] online-indicator">
                 <CheckCircle2 className="h-5 w-5 text-white" />
               </div>
+              {/* Level badge */}
+              {profile?.level && (
+                <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-sm shadow-lg">
+                  {getLevelInfo(profile?.points || 0).current.emoji}
+                </div>
+              )}
             </div>
             
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl font-bold text-white">{getUserName()}</h1>
-              <p className="mt-1 text-white/80">{user?.email}</p>
+              <h1 className="heading-premium text-3xl text-white">{getUserName()}</h1>
+              <p className="mt-1 text-white/60">{user?.email}</p>
               
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
-                <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-white">
-                  <Star className="h-4 w-4 fill-yellow-300 text-yellow-300" />
-                  <span className="font-semibold">{profile?.rating || 5.0}</span>
-                  <span className="text-white/70">({reviews.length} recensioni)</span>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                <div className="flex items-center gap-1.5 rounded-full bg-white/10 border border-white/10 px-3 py-1.5 text-white">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="font-semibold tabular-nums">{profile?.rating || 5.0}</span>
+                  <span className="text-white/50 text-sm">({reviews.length})</span>
                 </div>
-                <div className="flex items-center gap-1 rounded-full bg-white/20 px-4 py-1.5 text-sm text-white">
-                  <Car className="h-4 w-4" />
+                <div className="flex items-center gap-1 rounded-full bg-white/10 border border-white/10 px-3 py-1.5 text-sm text-white">
+                  <Car className="h-4 w-4 text-[#e63946]" />
                   <span>{myRides.length} corse</span>
                 </div>
-                <div className="flex items-center gap-1 rounded-full bg-white/20 px-4 py-1.5 text-sm text-white">
+                <div className="flex items-center gap-1 rounded-full bg-green-500/20 border border-green-500/20 px-3 py-1.5 text-sm text-green-300">
                   <Shield className="h-4 w-4" />
                   <span>Verificato</span>
                 </div>
-                {/* Level badge */}
                 {profile?.level && (
-                  <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border border-yellow-500/30 px-4 py-1.5 text-sm text-white">
+                  <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 px-3 py-1.5 text-sm text-white">
                     <Zap className="h-4 w-4 text-yellow-400" />
-                    <span>{getLevelInfo(profile?.points || 0).current.emoji} {profile.level}</span>
+                    <span>{profile.level}</span>
                   </div>
                 )}
-              </div>
-
-              {/* Mini Stats Bar - 2x2 Grid on Mobile */}
-              <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
-                {(() => {
-                  const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
-                  const completedBookings = myBookings.filter(b => b.status === 'confirmed');
-                  let totalKm = 0;
-                  let passengersHelped = 0;
-                  
-                  completedRides.forEach(ride => {
-                    const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
-                    if (dist) {
-                      totalKm += dist;
-                      passengersHelped += (ride.bookings_count || 0);
-                    }
-                  });
-                  
-                  completedBookings.forEach(booking => {
-                    const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
-                    if (dist) totalKm += dist;
-                  });
-                  
-                  const co2Saved = calculateCO2Saved(totalKm, passengersHelped);
-                  
-                  return (
-                    <>
-                      <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-white">
-                        <Route className="h-4 w-4" />
-                        <span className="text-sm font-medium">{totalKm} km</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 rounded-full bg-green-500/20 px-4 py-1.5 text-green-300">
-                        <Leaf className="h-4 w-4" />
-                        <span className="text-sm font-medium">{co2Saved} kg CO₂</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5 text-white">
-                        <Users className="h-4 w-4" />
-                        <span className="text-sm font-medium">{passengersHelped} aiutati</span>
-                      </div>
-                    </>
-                  );
-                })()}
               </div>
             </div>
 
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center gap-2 rounded-xl bg-white/20 px-5 py-3 text-sm font-medium text-white transition-all hover:bg-white/30 active:scale-95 touch-manipulation min-h-[44px]"
+              className="flex items-center gap-2 rounded-xl bg-white/10 border border-white/10 px-5 py-3 text-sm font-medium text-white transition-all hover:bg-white/20 active:scale-95 touch-manipulation min-h-[44px]"
             >
               <LogOut className="h-4 w-4" />
               Esci
@@ -441,20 +412,96 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Gamification Section */}
+      {/* Gamification Section - Premium Stats Cards */}
       {profile && (
         <div className="border-b border-white/10 bg-[#0f0f1a] px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
+            {/* Stats Cards Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {(() => {
+                const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
+                const completedBookings = myBookings.filter(b => b.status === 'confirmed');
+                let totalKm = 0;
+                let passengersHelped = 0;
+                
+                completedRides.forEach(ride => {
+                  const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
+                  if (dist) {
+                    totalKm += dist;
+                    passengersHelped += (ride.bookings_count || 0);
+                  }
+                });
+                
+                completedBookings.forEach(booking => {
+                  const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
+                  if (dist) totalKm += dist;
+                });
+                
+                const co2Saved = calculateCO2Saved(totalKm, passengersHelped);
+                
+                const statCards = [
+                  { icon: Route, value: totalKm, label: 'km percorsi', color: 'from-blue-500/20 to-blue-600/10', iconColor: 'text-blue-400' },
+                  { icon: Leaf, value: co2Saved, suffix: ' kg', label: 'CO₂ risparmiata', color: 'from-green-500/20 to-green-600/10', iconColor: 'text-green-400' },
+                  { icon: Users, value: passengersHelped, label: 'persone aiutate', color: 'from-purple-500/20 to-purple-600/10', iconColor: 'text-purple-400' },
+                  { icon: Car, value: myRides.length, label: 'corse offerte', color: 'from-[#e63946]/20 to-[#c92a37]/10', iconColor: 'text-[#e63946]' },
+                ];
+                
+                return statCards.map((stat) => (
+                  <div key={stat.label} className="card-lift relative overflow-hidden rounded-2xl bg-gradient-to-br border border-white/10 p-4" style={{ background: `linear-gradient(135deg, ${stat.color.includes('blue') ? 'rgba(59,130,246,0.1)' : stat.color.includes('green') ? 'rgba(34,197,94,0.1)' : stat.color.includes('purple') ? 'rgba(168,85,247,0.1)' : 'rgba(230,57,70,0.1)'}, transparent)` }}>
+                    <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 ${stat.iconColor} mb-3`}>
+                      <stat.icon className="h-5 w-5" />
+                    </div>
+                    <p className="heading-premium text-2xl text-white tabular-nums">{stat.value}{stat.suffix || ''}</p>
+                    <p className="text-xs text-white/50 mt-1">{stat.label}</p>
+                  </div>
+                ));
+              })()}
+            </div>
+            
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Level & Points */}
-              <LevelProgress points={profile?.points || 0} />
+              {/* Level & Points - With animated progress */}
+              <div className="glass rounded-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-white/50">Livello attuale</p>
+                    <p className="heading-premium text-xl text-white flex items-center gap-2">
+                      {getLevelInfo(profile?.points || 0).current.emoji} {profile.level}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-white/50">Punti</p>
+                    <p className="heading-premium text-2xl gradient-text tabular-nums">{profile.points}</p>
+                  </div>
+                </div>
+                {/* Animated progress bar */}
+                <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#e63946] to-[#ff5a66] rounded-full transition-all duration-1000 ease-out progress-shimmer"
+                    style={{ width: `${(() => {
+                      const levelInfo = getLevelInfo(profile.points);
+                      const range = levelInfo.next ? levelInfo.next.min - levelInfo.current.min : 100;
+                      const progress = profile.points - levelInfo.current.min;
+                      return Math.min(100, Math.max(0, (progress / range) * 100));
+                    })()}%` }}
+                  />
+                </div>
+                <p className="text-xs text-white/40 mt-2">
+                  {(() => {
+                    const levelInfo = getLevelInfo(profile.points);
+                    if (levelInfo.next) {
+                      return `${levelInfo.next.min - profile.points} punti al prossimo livello`;
+                    }
+                    return "Hai raggiunto il livello massimo!";
+                  })()}
+                </p>
+              </div>
               
               {/* Points Info */}
               <PointsInfo />
             </div>
             
-            {/* Badges */}
-            <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-6">
+            {/* Badges - Premium Display */}
+            <div className="mt-6 glass rounded-2xl p-6">
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <span className="text-[#e63946]">🏅</span>
                 I tuoi Badge

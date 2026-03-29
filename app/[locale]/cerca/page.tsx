@@ -8,8 +8,6 @@ import {
   MapPin, 
   Calendar, 
   User, 
-  Armchair, 
-  ArrowRight,
   Loader2,
   Star,
   Clock,
@@ -20,7 +18,8 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ChevronUp,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -48,6 +47,7 @@ interface Ride {
   time: string;
   seats: number;
   price: number;
+  created_at?: string;
   profiles: {
     name: string;
     avatar_url: string | null;
@@ -510,109 +510,123 @@ function SearchContent() {
           {/* Results Grid */}
           {!loading && rides.length > 0 && (
             <div className="grid gap-4 md:grid-cols-2">
-              {rides.map((ride) => (
-                <Link
-                  key={ride.id}
-                  href={`/corsa/${ride.id}`}
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] transition-all hover:border-[#e63946]/30 hover:shadow-lg hover:shadow-[#e63946]/5 active:scale-[0.98] touch-manipulation"
-                >
-                  {/* Mini Map */}
-                  <div className="mb-4">
-                    <MiniMap fromCity={ride.from_city} toCity={ride.to_city} />
-                  </div>
-
-                  {/* Content */}
-                  <div className="px-5 pb-5">
-                  {/* Header */}
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[#e63946]/10 px-3 py-1 text-xs font-medium text-[#e63946]">
-                      <Clock className="h-3 w-3" />
-                      {formatDate(ride.date)} • {ride.time.slice(0, 5)}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <WeatherWidget 
-                        city={ride.from_city} 
-                        date={ride.date}
-                        variant="compact"
-                      />
-                      <span className="text-lg font-bold">
-                        {ride.price === 0 ? (
-                          <span className="text-green-400">Gratis</span>
-                        ) : (
-                          <span className="text-white">{ride.price}€</span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Route Display */}
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="flex flex-col items-center">
-                      <div className="h-3 w-3 rounded-full bg-[#e63946] ring-4 ring-[#e63946]/20" />
-                      <div className="my-1 h-10 w-0.5 bg-gradient-to-b from-[#e63946] to-white/30" />
-                      <div className="h-3 w-3 rounded-full bg-white/50" />
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <div>
-                        <p className="text-xs text-white/40">Partenza</p>
-                        <p className="font-semibold text-white">{ride.from_city}</p>
+              {rides.map((ride) => {
+                // Check if ride was posted in last 2 hours
+                const rideCreated = new Date(ride.created_at || Date.now());
+                const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+                const isNew = rideCreated > twoHoursAgo;
+                
+                return (
+                  <Link
+                    key={ride.id}
+                    href={`/corsa/${ride.id}`}
+                    className="group card-lift relative overflow-hidden rounded-2xl border-l-4 border-l-[#e63946] border-y border-r border-white/10 bg-gradient-to-br from-[#1e2a4a] to-[#1a2339] transition-all active:scale-[0.98] touch-manipulation"
+                  >
+                    {/* "New" Badge */}
+                    {isNew && (
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className="badge-new inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#e63946] to-[#ff5a66] px-2.5 py-1 text-xs font-semibold text-white shadow-lg shadow-[#e63946]/30">
+                          <Sparkles className="h-3 w-3" />
+                          Nuovo
+                        </span>
                       </div>
-                      <div>
-                        <p className="text-xs text-white/40">Destinazione</p>
-                        <p className="font-semibold text-white">{ride.to_city}</p>
-                      </div>
+                    )}
+                    
+                    {/* Mini Map */}
+                    <div className="mb-4 opacity-80 group-hover:opacity-100 transition-opacity">
+                      <MiniMap fromCity={ride.from_city} toCity={ride.to_city} />
                     </div>
-                  </div>
 
-                  {/* Driver Info */}
-                  <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
-                          {ride.profiles.avatar_url ? (
-                            <Image 
-                              src={ride.profiles.avatar_url} 
-                              alt={ride.profiles.name}
-                              width={40}
-                              height={40}
-                              className="h-full w-full rounded-full object-cover"
-                            />
-                          ) : (
-                            <User className="h-5 w-5" />
-                          )}
+                    {/* Content */}
+                    <div className="px-5 pb-5">
+                      {/* Header */}
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e63946]/10 px-3 py-1 text-xs font-medium text-[#e63946]">
+                          <Clock className="h-3 w-3" />
+                          {formatDate(ride.date)} • {ride.time.slice(0, 5)}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <WeatherWidget 
+                            city={ride.from_city} 
+                            date={ride.date}
+                            variant="compact"
+                          />
+                          <span className="text-lg font-bold">
+                            {ride.price === 0 ? (
+                              <span className="text-green-400">Gratis</span>
+                            ) : (
+                              <span className="gradient-text-gold">{ride.price}€</span>
+                            )}
+                          </span>
                         </div>
-                        {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
-                          <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-green-400">
-                            <Shield className="h-2.5 w-2.5 text-white" />
+                      </div>
+
+                      {/* Route Display */}
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className="flex flex-col items-center">
+                          <div className="h-3 w-3 rounded-full bg-[#e63946] ring-4 ring-[#e63946]/20" />
+                          <div className="my-1 h-10 w-0.5 bg-gradient-to-b from-[#e63946] to-white/30" />
+                          <div className="h-3 w-3 rounded-full bg-white/50" />
+                        </div>
+                        <div className="flex-1 space-y-3">
+                          <div>
+                            <p className="text-xs text-white/40">Partenza</p>
+                            <p className="font-semibold text-white">{ride.from_city}</p>
                           </div>
-                        )}
+                          <div>
+                            <p className="text-xs text-white/40">Destinazione</p>
+                            <p className="font-semibold text-white">{ride.to_city}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{ride.profiles.name}</p>
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-3 w-3 ${i < Math.floor(ride.profiles.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} 
-                            />
-                          ))}
-                          <span className="ml-1 text-xs text-white/50">{ride.profiles.rating || 5.0}</span>
+
+                      {/* Driver Info */}
+                      <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] ring-2 ring-white/5 group-hover:ring-[#e63946]/20 transition-all">
+                              {ride.profiles.avatar_url ? (
+                                <Image 
+                                  src={ride.profiles.avatar_url} 
+                                  alt={ride.profiles.name}
+                                  width={40}
+                                  height={40}
+                                  className="h-full w-full rounded-full object-cover"
+                                />
+                              ) : (
+                                <User className="h-5 w-5" />
+                              )}
+                            </div>
+                            {/* Online indicator */}
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1e2a4a] online-indicator" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white">{ride.profiles.name}</p>
+                            <div className="flex items-center gap-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star 
+                                  key={i} 
+                                  className={`h-3 w-3 ${i < Math.floor(ride.profiles.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} 
+                                />
+                              ))}
+                              <span className="ml-1 text-xs text-white/50 tabular-nums">{ride.profiles.rating || 5.0}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          {/* Seat dots */}
+                          <div className="flex items-center gap-0.5">
+                            {Array.from({ length: Math.min(ride.seats, 4) }).map((_, i) => (
+                              <div key={i} className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                            ))}
+                          </div>
+                          <span className="text-xs text-white/50">{ride.seats} posti</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-white/60">
-                      <Armchair className="h-4 w-4 text-[#e63946]" />
-                      <span>{ride.seats} posti</span>
-                    </div>
-                  </div>
-
-                  {/* Hover Arrow */}
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-                    <ArrowRight className="h-6 w-6 text-[#e63946]" />
-                  </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
