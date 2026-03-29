@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -8,7 +8,16 @@ import {
   Send, 
   Loader2,
   AlertCircle,
-  User
+  User,
+  Camera,
+  MapPin,
+  Mic,
+  X,
+  Image as ImageIcon,
+  StopCircle,
+  Play,
+  Pause,
+  Maximize2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
@@ -20,6 +29,11 @@ interface Message {
   booking_id: string;
   sender_id: string;
   content: string;
+  type: 'text' | 'image' | 'location' | 'audio';
+  media_url?: string;
+  location_lat?: number;
+  location_lng?: number;
+  duration?: number;
   read: boolean;
   created_at: string;
   sender: {
@@ -63,10 +77,29 @@ export default function ChatPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   
+  // Image upload state
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Voice recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Audio playback state
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Image zoom modal
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
-  // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -80,7 +113,6 @@ export default function ChatPage() {
     const loadData = async () => {
       if (!bookingId) return;
 
-      // Check auth
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) {
         router.push("/");
@@ -88,7 +120,6 @@ export default function ChatPage() {
       }
       setUser(currentUser);
 
-      // Load booking with ride and passenger details
       const { data: bookingData, error: bookingError } = await supabase
         .from("bookings")
         .select(`
@@ -112,7 +143,6 @@ export default function ChatPage() {
         return;
       }
 
-      // Check if user is part of this booking (driver or passenger)
       const isDriver = bookingData.rides.driver_id === currentUser.id;
       const isPassenger = bookingData.passenger_id === currentUser.id;
       
@@ -124,7 +154,6 @@ export default function ChatPage() {
 
       setBooking(bookingData);
 
-      // Load messages
       const { data: messagesData } = await supabase
         .from("messages")
         .select(`
@@ -141,7 +170,7 @@ export default function ChatPage() {
     loadData();
   }, [bookingId, router, supabase]);
 
-  // Real-time subscription for new messages
+  // Real-time subscription
   useEffect(() => {
     if (!bookingId) return;
 
@@ -156,7 +185,6 @@ export default function ChatPage() {
           filter: `booking_id=eq.${bookingId}`,
         },
         async (payload) => {
-          // Fetch the complete message with sender info
           const { data: newMessage } = await supabase
             .from("messages")
             .select(`
@@ -178,8 +206,9 @@ export default function ChatPage() {
     };
   }, [bookingId, supabase]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Send text message
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!newMessage.trim() || !user || sending || !booking) return;
 
     setSending(true);
@@ -190,29 +219,235 @@ export default function ChatPage() {
         booking_id: bookingId,
         sender_id: user.id,
         content: newMessage.trim(),
+        type: 'text',
         read: false,
       });
 
     if (sendError) {
-      console.error("Error sending message:", sendError);
       toast.error("Errore nell'invio del messaggio");
     } else {
       setNewMessage("");
-      
-      // Notify the other party
-      const isDriver = user.id === booking.rides.driver_id;
-      const recipientId = isDriver ? booking.passenger_id : booking.rides.driver_id;
-      const senderName = user.user_metadata?.name || user.email?.split("@")[0] || "Utente";
-      
-      await notifyNewMessage(
-        recipientId,
-        senderName,
-        booking.ride_id,
-        booking.id
-      );
+      await notifyRecipient();
     }
 
     setSending(false);
+  };
+
+  // Send message with media/location
+  const sendMessage = async (data: {
+    content: string;
+    type: 'text' | 'image' | 'location' | 'audio';
+    media_url?: string;
+    location_lat?: number;
+    location_lng?: number;
+    duration?: number;
+  }) => {
+    if (!user || !booking) return;
+
+    setSending(true);
+
+    const { error: sendError } = await supabase
+      .from("messages")
+      .insert({
+        booking_id: bookingId,
+        sender_id: user.id,
+        content: data.content,
+        type: data.type,
+        media_url: data.media_url,
+        location_lat: data.location_lat,
+        location_lng: data.location_lng,
+        duration: data.duration,
+        read: false,
+      });
+
+    if (sendError) {
+      toast.error("Errore nell'invio del messaggio");
+    } else {
+      await notifyRecipient();
+    }
+
+    setSending(false);
+  };
+
+  const notifyRecipient = async () => {
+    if (!user || !booking) return;
+    const isDriver = user.id === booking.rides.driver_id;
+    const recipientId = isDriver ? booking.passenger_id : booking.rides.driver_id;
+    const senderName = user.user_metadata?.name || user.email?.split("@")[0] || "Utente";
+    
+    await notifyNewMessage(
+      recipientId,
+      senderName,
+      booking.ride_id,
+      booking.id
+    );
+  };
+
+  // Image upload
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("L'immagine deve essere inferiore a 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const sendImage = async () => {
+    if (!imagePreview || !bookingId) return;
+
+    setUploadingImage(true);
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imagePreview);
+      const blob = await response.blob();
+
+      const fileName = `${bookingId}/${Date.now()}.jpg`;
+      
+      const { data, error } = await supabase.storage
+        .from('chat-images')
+        .upload(fileName, blob, {
+          contentType: 'image/jpeg',
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('chat-images')
+        .getPublicUrl(fileName);
+
+      await sendMessage({
+        content: '📷 Immagine',
+        type: 'image',
+        media_url: publicUrl,
+      });
+
+      setImagePreview(null);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error("Errore nel caricamento dell'immagine");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  // Location sharing
+  const sendLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocalizzazione non supportata");
+      return;
+    }
+
+    toast.loading("Ottenendo posizione...");
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        toast.dismiss();
+        await sendMessage({
+          content: '📍 Posizione condivisa',
+          type: 'location',
+          location_lat: position.coords.latitude,
+          location_lng: position.coords.longitude,
+        });
+      },
+      (error) => {
+        toast.dismiss();
+        toast.error("Impossibile ottenere la posizione");
+      }
+    );
+  };
+
+  // Voice recording
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(audioBlob);
+        await sendAudioMessage(audioBlob, recordingTime);
+        setRecordingTime(0);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      toast.error("Impossibile accedere al microfono");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      setIsRecording(false);
+      
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    }
+  };
+
+  const sendAudioMessage = async (blob: Blob, duration: number) => {
+    if (!bookingId) return;
+
+    try {
+      const fileName = `${bookingId}/${Date.now()}.webm`;
+      
+      const { data, error } = await supabase.storage
+        .from('chat-audio')
+        .upload(fileName, blob, {
+          contentType: 'audio/webm',
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('chat-audio')
+        .getPublicUrl(fileName);
+
+      await sendMessage({
+        content: '🎵 Messaggio vocale',
+        type: 'audio',
+        media_url: publicUrl,
+        duration: duration,
+      });
+    } catch (error) {
+      console.error('Error uploading audio:', error);
+      toast.error("Errore nell'invio del messaggio vocale");
+    }
+  };
+
+  // Audio playback
+  const toggleAudio = (url: string) => {
+    if (playingAudio === url) {
+      audioRef.current?.pause();
+      setPlayingAudio(null);
+    } else {
+      audioRef.current?.pause();
+      audioRef.current = new Audio(url);
+      audioRef.current.onended = () => setPlayingAudio(null);
+      audioRef.current.play();
+      setPlayingAudio(url);
+    }
   };
 
   const formatTime = (dateStr: string) => {
@@ -220,6 +455,12 @@ export default function ChatPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const isMyMessage = (senderId: string) => senderId === user?.id;
@@ -296,7 +537,6 @@ export default function ChatPage() {
             </div>
           )}
           
-          {/* Navigation Buttons */}
           {booking && (
             <div className="ml-auto hidden sm:block">
               <NavigationButtons 
@@ -331,7 +571,73 @@ export default function ChatPage() {
                         : "bg-[#1e2a4a] text-white"
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    {/* Image Message */}
+                    {message.type === 'image' && message.media_url && (
+                      <div className="mb-2">
+                        <img
+                          src={message.media_url}
+                          alt="Immagine condivisa"
+                          className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setZoomedImage(message.media_url!)}
+                        />
+                      </div>
+                    )}
+
+                    {/* Location Message */}
+                    {message.type === 'location' && message.location_lat && message.location_lng && (
+                      <div className="mb-2">
+                        <a
+                          href={`https://maps.google.com/?q=${message.location_lat},${message.location_lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                        >
+                          <img
+                            src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                            alt="Mappa posizione"
+                            className="rounded-lg max-w-full"
+                            onError={(e) => {
+                              // Fallback if static map fails
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <div className="flex items-center gap-2 mt-2 text-sm">
+                            <MapPin className="w-4 h-4" />
+                            <span>Apri in Google Maps</span>
+                          </div>
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Audio Message */}
+                    {message.type === 'audio' && message.media_url && (
+                      <div className="flex items-center gap-3 mb-2">
+                        <button
+                          onClick={() => toggleAudio(message.media_url!)}
+                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20"
+                        >
+                          {playingAudio === message.media_url ? (
+                            <Pause className="h-5 w-5" />
+                          ) : (
+                            <Play className="h-5 w-5" />
+                          )}
+                        </button>
+                        <div className="flex-1">
+                          <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-white/60 w-1/3 rounded-full" />
+                          </div>
+                        </div>
+                        <span className="text-xs">
+                          {formatDuration(message.duration || 0)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Text Content */}
+                    {message.content && (
+                      <p className="text-sm">{message.content}</p>
+                    )}
+                    
                     <p
                       className={`mt-1 text-right text-xs ${
                         isMine ? "text-white/70" : "text-white/40"
@@ -359,30 +665,145 @@ export default function ChatPage() {
         </div>
       )}
 
+      {/* Image Preview Modal */}
+      {imagePreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="relative max-w-lg w-full">
+            <button
+              onClick={() => setImagePreview(null)}
+              className="absolute -top-10 right-0 text-white/60 hover:text-white"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-full rounded-lg"
+            />
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => setImagePreview(null)}
+                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={sendImage}
+                disabled={uploadingImage}
+                className="flex-1 py-3 rounded-xl bg-[#e63946] text-white font-medium hover:bg-[#c92a37] disabled:opacity-50"
+              >
+                {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Invia'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Zoom Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setZoomedImage(null)}
+        >
+          <button
+            onClick={() => setZoomedImage(null)}
+            className="absolute top-4 right-4 text-white/60 hover:text-white"
+          >
+            <X className="h-8 w-8" />
+          </button>
+          <img
+            src={zoomedImage}
+            alt="Immagine ingrandita"
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       {/* Message Input */}
       <form
         onSubmit={handleSendMessage}
         className="border-t border-white/10 bg-[#12121e] px-4 py-4"
       >
-        <div className="mx-auto flex max-w-4xl gap-3">
+        {/* Recording Indicator */}
+        {isRecording && (
+          <div className="mx-auto max-w-4xl mb-3 flex items-center justify-between bg-red-500/20 border border-red-500/30 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-red-400 font-medium">Registrazione in corso...</span>
+            </div>
+            <span className="text-red-400 font-mono">{formatDuration(recordingTime)}</span>
+          </div>
+        )}
+
+        <div className="mx-auto max-w-4xl flex items-center gap-2">
+          {/* Image Upload Button */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isRecording}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+          >
+            <ImageIcon className="h-5 w-5" />
+          </button>
+
+          {/* Location Button */}
+          <button
+            type="button"
+            onClick={sendLocation}
+            disabled={isRecording}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+          >
+            <MapPin className="h-5 w-5" />
+          </button>
+
+          {/* Text Input */}
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Scrivi un messaggio..."
-            className="flex-1 rounded-xl border border-white/10 bg-[#1e2a4a] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#e63946] focus:ring-1 focus:ring-[#e63946]"
+            placeholder={isRecording ? "Registrazione in corso..." : "Scrivi un messaggio..."}
+            disabled={isRecording}
+            className="flex-1 rounded-xl border border-white/10 bg-[#1e2a4a] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#e63946] focus:ring-1 focus:ring-[#e63946] disabled:opacity-50"
           />
-          <button
-            type="submit"
-            disabled={!newMessage.trim() || sending}
-            className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#e63946] text-white transition-all hover:bg-[#c92a37] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {sending ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
-          </button>
+
+          {/* Voice/Message Button */}
+          {newMessage.trim() ? (
+            <button
+              type="submit"
+              disabled={sending}
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#e63946] text-white transition-all hover:bg-[#c92a37] disabled:opacity-50"
+            >
+              {sending ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Send className="h-5 w-5" />
+              )}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onMouseDown={startRecording}
+              onMouseUp={stopRecording}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+              onMouseLeave={isRecording ? stopRecording : undefined}
+              className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all ${
+                isRecording 
+                  ? "bg-red-500 text-white" 
+                  : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
+              }`}
+            >
+              {isRecording ? <StopCircle className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+            </button>
+          )}
         </div>
       </form>
     </div>

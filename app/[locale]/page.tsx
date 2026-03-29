@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Car, Search, UserPlus, MessageCircle, MapPin, ArrowRight, Calendar, Users, Route, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { OnboardingModal } from "@/components/OnboardingModal";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -116,6 +117,9 @@ function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; d
 
   return (
     <div className="min-h-screen bg-[#1a1a2e]">
+      {/* Onboarding Modal */}
+      <OnboardingModal />
+      
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex flex-col justify-center overflow-hidden px-4 pt-24 pb-12 sm:px-6 lg:px-8">
         {/* Background Pattern */}
