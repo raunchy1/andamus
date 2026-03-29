@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0f0f1a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e63946"/>
+      <stop offset="100%" style="stop-color:#c92a37"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="1000" cy="100" r="200" fill="#e63946" opacity="0.05"/>
+  <circle cx="150" cy="500" r="150" fill="#e63946" opacity="0.08"/>
+  
+  <!-- Logo container -->
+  <g transform="translate(600, 280)">
+    <!-- Car icon -->
+    <rect x="-60" y="-50" width="120" height="80" rx="20" fill="url(#accent)"/>
+    <circle cx="-35" cy="45" r="15" fill="#1a1a2e"/>
+    <circle cx="35" cy="45" r="15" fill="#1a1a2e"/>
+    <circle cx="-35" cy="45" r="8" fill="#e63946"/>
+    <circle cx="35" cy="45" r="8" fill="#e63946"/>
+    <rect x="-45" y="-30" width="90" height="40" rx="5" fill="#1a1a2e" opacity="0.3"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#ffffff">Andamus</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="480" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" opacity="0.8">Carpooling gratuito in Sardegna</text>
+  
+  <!-- Sardinia shape hint (stylized) -->
+  <path d="M 200 500 Q 250 480 300 500 Q 350 520 320 560 Q 280 590 220 580 Q 180 560 200 500" fill="#e63946" opacity="0.3"/>
+</svg>
