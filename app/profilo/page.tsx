@@ -1,19 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { 
   User, Car, Star, Calendar, LogOut, MapPin, Loader2,
   Armchair, Clock, MessageCircle, PlusCircle, Search, 
-  Shield, CheckCircle2, Check, X, BadgeCheck
+  Shield, CheckCircle2, Check, X, BadgeCheck, Zap
 } from "lucide-react";
 import { ReportUser } from "@/components/ReportUser";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import { RatingModal } from "@/components/RatingModal";
 import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notifications";
+import { BadgeDisplay, LevelProgress, PointsInfo, BadgeUnlockNotification } from "@/components/BadgeDisplay";
+import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 
 interface Ride {
   id: string;
@@ -122,6 +125,9 @@ export default function ProfilePage() {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingRideId, setRatingRideId] = useState<string>("");
   const [ratingUser, setRatingUser] = useState<{ id: string; name: string; avatar_url: string | null }>({ id: "", name: "", avatar_url: null });
+  
+  // Gamification state
+  const [newBadge, setNewBadge] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -227,6 +233,12 @@ export default function ProfilePage() {
         profile?.name || "Conducente",
         request.ride_id,
         request.id
+      );
+
+      // Add gamification points for confirmed booking (to passenger)
+      const result = await completeGamificationAction(
+        request.passenger_id,
+        'booking_confirmed'
       );
 
       // Update local state
@@ -371,6 +383,13 @@ export default function ProfilePage() {
                   <Shield className="h-4 w-4" />
                   <span>Verificato</span>
                 </div>
+                {/* Level badge */}
+                {profile?.level && (
+                  <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border border-yellow-500/30 px-4 py-1.5 text-sm text-white">
+                    <Zap className="h-4 w-4 text-yellow-400" />
+                    <span>{getLevelInfo(profile?.points || 0).current.emoji} {profile.level}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -384,6 +403,30 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Gamification Section */}
+      {profile && (
+        <div className="border-b border-white/10 bg-[#0f0f1a] px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Level & Points */}
+              <LevelProgress points={profile?.points || 0} level={profile?.level || 'Viaggiatore'} />
+              
+              {/* Points Info */}
+              <PointsInfo />
+            </div>
+            
+            {/* Badges */}
+            <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <span className="text-[#e63946]">🏅</span>
+                I tuoi Badge
+              </h3>
+              <BadgeDisplay userId={user?.id || ''} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Reviews Section */}
       {reviews.length > 0 && (
@@ -751,6 +794,16 @@ export default function ProfilePage() {
             .then(({ data }) => setReviews(data || []));
         }}
       />
+
+      {/* Badge Unlock Notification */}
+      <AnimatePresence>
+        {newBadge && (
+          <BadgeUnlockNotification
+            badgeType={newBadge}
+            onClose={() => setNewBadge(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewReview } from "@/lib/notifications";
+import { completeGamificationAction } from "@/lib/gamification";
 import toast from "react-hot-toast";
 
 interface RatingModalProps {
@@ -83,6 +84,18 @@ export function RatingModal({
         
         // Notify reviewed user
         await notifyNewReview(reviewedUser.id, reviewerName, rideId);
+        
+        // Add gamification points for 5-star review (to reviewed user)
+        if (rating === 5) {
+          const result = await completeGamificationAction(
+            reviewedUser.id,
+            'five_star_review'
+          );
+          
+          if (result.pointsAdded > 0) {
+            toast.success(`Il conducente ha guadagnato +${result.pointsAdded} punti per la recensione 5 stelle! ⭐`);
+          }
+        }
         
         toast.success("Recensione inviata!");
         onSuccess?.();

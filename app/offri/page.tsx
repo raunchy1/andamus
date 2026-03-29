@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
+import { completeGamificationAction } from "@/lib/gamification";
+import { toast } from "react-hot-toast";
 
 const sardinianCities = [
   "Cagliari",
@@ -153,6 +155,37 @@ export default function OfferPage() {
       }
 
       console.log("Ride created:", data);
+      
+      // Add gamification points
+      if (currentUser) {
+        // Check if this is the first ride
+        const { count } = await supabase
+          .from('rides')
+          .select('*', { count: 'exact', head: true })
+          .eq('driver_id', currentUser.id);
+        
+        const isFirstRide = (count || 0) === 1;
+        
+        const result = await completeGamificationAction(
+          currentUser.id,
+          'ride_published',
+          isFirstRide
+        );
+        
+        if (result.pointsAdded > 0) {
+          toast.success(`+${result.pointsAdded} punti! 🎉`);
+          if (result.leveledUp) {
+            toast.success(`Congratulazioni! Sei salito a livello ${result.newLevel}! ${result.newLevel === 'Esploratore' ? '🗺️' : result.newLevel === 'Sardo DOC' ? '🦁' : result.newLevel === 'Re della Strada' ? '👑' : '⭐'}`);
+          }
+        }
+        
+        if (result.newBadges.length > 0) {
+          result.newBadges.forEach(badge => {
+            // Badge notification will be shown via component
+          });
+        }
+      }
+      
       setIsSubmitted(true);
     } catch (err) {
       console.error("Unexpected error:", err);

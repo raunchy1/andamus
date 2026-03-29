@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
+import { completeGamificationAction } from "@/lib/gamification";
 
 const ADMIN_EMAILS = [
   'cristianermurache@gmail.com',
@@ -310,6 +311,11 @@ export default function AdminDashboard() {
           .eq('id', verification.user_id);
         
         if (profileError) throw profileError;
+      }
+      
+      // Add gamification points for identity verification (only for ID and driver license)
+      if (verification.type === 'id_document' || verification.type === 'driver_license') {
+        await completeGamificationAction(verification.user_id, 'identity_verified');
       }
       
       toast.success("Verifica approvata");
