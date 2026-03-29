@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { RouteMap } from "@/components/RouteMap";
 import { ShareRide } from "@/components/ShareRide";
+import { WeatherWidget } from "@/components/WeatherWidget";
+import { NavigationButtons } from "@/components/NavigationButtons";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { notifyBookingRequest } from "@/lib/notifications";

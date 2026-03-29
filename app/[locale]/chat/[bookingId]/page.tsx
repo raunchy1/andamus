@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
+import { NavigationButtons } from "@/components/NavigationButtons";
 import toast from "react-hot-toast";
 
 interface Message {
@@ -294,6 +295,17 @@ export default function ChatPage() {
               </div>
             </div>
           )}
+          
+          {/* Navigation Buttons */}
+          {booking && (
+            <div className="ml-auto hidden sm:block">
+              <NavigationButtons 
+                destination={booking.rides.to_city}
+                label={booking.rides.to_city}
+                variant="compact"
+              />
+            </div>
+          )}
         </div>
       </header>
 
@@ -335,6 +347,17 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {/* Mobile Navigation Buttons */}
+      {booking && (
+        <div className="sm:hidden border-t border-white/10 bg-[#12121e] px-4 py-2">
+          <NavigationButtons 
+            destination={booking.rides.to_city}
+            label={booking.rides.to_city}
+            variant="compact"
+          />
+        </div>
+      )}
 
       {/* Message Input */}
       <form

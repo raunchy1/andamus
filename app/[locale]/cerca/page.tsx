@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { MiniMap } from "@/components/RouteMap";
+import { WeatherWidget } from "@/components/WeatherWidget";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -433,13 +434,20 @@ function SearchContent() {
                       <Clock className="h-3 w-3" />
                       {formatDate(ride.date)} • {ride.time.slice(0, 5)}
                     </span>
-                    <span className="text-lg font-bold">
-                      {ride.price === 0 ? (
-                        <span className="text-green-400">Gratis</span>
-                      ) : (
-                        <span className="text-white">{ride.price}€</span>
-                      )}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <WeatherWidget 
+                        city={ride.from_city} 
+                        date={ride.date}
+                        variant="compact"
+                      />
+                      <span className="text-lg font-bold">
+                        {ride.price === 0 ? (
+                          <span className="text-green-400">Gratis</span>
+                        ) : (
+                          <span className="text-white">{ride.price}€</span>
+                        )}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Route Display */}
