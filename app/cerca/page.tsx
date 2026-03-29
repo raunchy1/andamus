@@ -22,6 +22,7 @@ import {
   SlidersHorizontal
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { MiniMap } from "@/components/RouteMap";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -417,8 +418,15 @@ function SearchContent() {
                 <Link
                   key={ride.id}
                   href={`/corsa/${ride.id}`}
-                  className="group relative rounded-2xl border border-white/10 bg-[#1e2a4a] p-5 transition-all hover:border-[#e63946]/30 hover:shadow-lg hover:shadow-[#e63946]/5"
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] transition-all hover:border-[#e63946]/30 hover:shadow-lg hover:shadow-[#e63946]/5"
                 >
+                  {/* Mini Map */}
+                  <div className="mb-4">
+                    <MiniMap fromCity={ride.from_city} toCity={ride.to_city} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="px-5 pb-5">
                   {/* Header */}
                   <div className="mb-4 flex items-center justify-between">
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#e63946]/10 px-3 py-1 text-xs font-medium text-[#e63946]">
@@ -496,6 +504,7 @@ function SearchContent() {
                   {/* Hover Arrow */}
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
                     <ArrowRight className="h-6 w-6 text-[#e63946]" />
+                  </div>
                   </div>
                 </Link>
               ))}

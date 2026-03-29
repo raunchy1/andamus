@@ -8,6 +8,7 @@ import {
   MapPinned, FileText, User, Star, Loader2, AlertCircle,
   Check, MessageCircle, Share2, Copy, CheckCircle2, Route, Car
 } from "lucide-react";
+import { RouteMap } from "@/components/RouteMap";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { notifyBookingRequest } from "@/lib/notifications";
@@ -396,6 +397,19 @@ export default function RideDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Route Map */}
+            <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6">
+              <h3 className="mb-4 text-lg font-semibold text-white flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-[#e63946]" />
+                Percorso
+              </h3>
+              <RouteMap 
+                fromCity={ride.from_city} 
+                toCity={ride.to_city} 
+                height="400px"
+              />
+            </div>
 
             {/* Similar Rides */}
             {similarRides.length > 0 && (
