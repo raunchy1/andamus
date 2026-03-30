@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowRight, Search, MapPin, Calendar, Car, MessageCircle, Shield, Plus, Minus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { SardiniaMap } from "@/components/SardiniaMap";
 
 // Stats counter with Intersection Observer
 function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -480,63 +481,8 @@ export default function HomePage() {
             Da nord a sud, da est a ovest.
           </p>
 
-          {/* Real SVG Map of Sardinia - Geographic Coordinates */}
-          <div className="relative mx-auto max-w-[450px] mb-8">
-            <svg viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-              {/* Accurate Sardinia coastline from real geographic data */}
-              <path
-                d="M 56,37 L 93,47 Q 93,47 130,58 Q 130,58 186,52 Q 186,52 242,47 Q 242,47 298,52 Q 298,52 335,62 Q 335,62 353,71 Q 353,71 363,108 Q 363,108 359,155 Q 359,155 353,193 Q 353,193 348,221 Q 348,221 344,249 Q 344,249 340,277 Q 340,277 335,305 Q 335,305 326,352 Q 326,352 307,398 Q 307,398 288,436 Q 288,436 260,455 Q 260,455 214,473 Q 214,473 167,483 Q 167,483 121,473 Q 121,473 93,455 Q 93,455 65,417 Q 65,417 47,361 Q 47,361 37,305 Q 37,305 43,249 Q 43,249 56,193 Q 56,193 65,137 Q 65,137 61,90 Q 61,90 56,52 Q 56,52 56,37 Z"
-                fill="#1a1a1a"
-                stroke="#333"
-                strokeWidth="1.5"
-              />
-              
-              {/* City dots at real geographic coordinates */}
-              {/* Cagliari: lon 9.1217, lat 39.2238 */}
-              <circle cx="237" cy="413" r="5" fill="white" />
-              <text x="245" y="417" fill="white" fontSize="11" fontWeight="500">Cagliari</text>
-              
-              {/* Sassari: lon 8.5556, lat 40.7259 */}
-              <circle cx="131" cy="132" r="5" fill="white" />
-              <text x="71" y="136" fill="white" fontSize="11" fontWeight="500">Sassari</text>
-              
-              {/* Olbia: lon 9.4992, lat 40.9234 */}
-              <circle cx="307" cy="95" r="5" fill="white" />
-              <text x="315" y="99" fill="white" fontSize="11" fontWeight="500">Olbia</text>
-              
-              {/* Nuoro: lon 9.3310, lat 40.3217 */}
-              <circle cx="276" cy="207" r="5" fill="white" />
-              <text x="284" y="199" fill="white" fontSize="11" fontWeight="500">Nuoro</text>
-              
-              {/* Oristano: lon 8.5916, lat 39.9036 */}
-              <circle cx="138" cy="286" r="5" fill="white" />
-              <text x="73" y="290" fill="white" fontSize="11" fontWeight="500">Oristano</text>
-              
-              {/* Tortolì: lon 9.6580, lat 39.9281 */}
-              <circle cx="336" cy="281" r="5" fill="white" />
-              <text x="344" y="285" fill="white" fontSize="11" fontWeight="500">Tortolì</text>
-
-              {/* Animated route lines between cities */}
-              {/* Cagliari-Nuoro */}
-              <line x1="237" y1="413" x2="276" y2="207" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="210" strokeDashoffset="210" className="animate-draw-line" />
-              {/* Cagliari-Sassari */}
-              <line x1="237" y1="413" x2="131" y2="132" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="300" strokeDashoffset="300" className="animate-draw-line" style={{ animationDelay: '0.5s' }} />
-              {/* Nuoro-Sassari */}
-              <line x1="276" y1="207" x2="131" y2="132" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="163" strokeDashoffset="163" className="animate-draw-line" style={{ animationDelay: '1s' }} />
-              {/* Nuoro-Olbia */}
-              <line x1="276" y1="207" x2="307" y2="95" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="116" strokeDashoffset="116" className="animate-draw-line" style={{ animationDelay: '1.5s' }} />
-              {/* Tortolì-Cagliari */}
-              <line x1="336" y1="281" x2="237" y2="413" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="165" strokeDashoffset="165" className="animate-draw-line" style={{ animationDelay: '2s' }} />
-              {/* Tortolì-Nuoro */}
-              <line x1="336" y1="281" x2="276" y2="207" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="95" strokeDashoffset="95" className="animate-draw-line" style={{ animationDelay: '2.5s' }} />
-            </svg>
-          </div>
+          {/* Real SVG Map of Sardinia - From Natural Earth geographic data */}
+          <SardiniaMap />
 
           {/* Distance chips */}
           <div className="flex flex-wrap justify-center gap-3">
