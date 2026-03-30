@@ -480,92 +480,61 @@ export default function HomePage() {
             Da nord a sud, da est a ovest.
           </p>
 
-          {/* Real SVG Map of Sardinia */}
+          {/* Real SVG Map of Sardinia - Geographic Coordinates */}
           <div className="relative mx-auto max-w-[450px] mb-8">
-            <svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-              {/* Accurate Sardinia island outline */}
+            <svg viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+              {/* Accurate Sardinia coastline from real geographic data */}
               <path
-                d="M 185,20 
-                  C 195,18 210,22 220,28
-                  C 235,35 245,42 252,50
-                  C 262,60 268,72 265,85
-                  C 270,95 278,102 282,112
-                  C 288,125 285,138 280,150
-                  C 290,160 298,172 295,185
-                  C 292,198 285,208 278,218
-                  C 285,230 290,245 285,258
-                  C 280,270 270,278 265,290
-                  C 272,302 275,318 268,330
-                  C 260,342 248,350 240,362
-                  C 248,375 252,390 245,402
-                  C 238,414 225,420 215,428
-                  C 220,442 222,458 215,470
-                  C 208,480 195,485 185,490
-                  C 175,495 162,495 152,490
-                  C 142,485 132,478 125,468
-                  C 118,458 118,445 122,433
-                  C 112,422 100,415 95,403
-                  C 88,390 90,375 98,363
-                  C 90,350 80,338 78,325
-                  C 75,310 80,295 88,283
-                  C 80,272 72,260 72,247
-                  C 72,234 80,222 88,212
-                  C 80,202 72,190 75,177
-                  C 78,165 88,155 95,145
-                  C 88,133 82,120 85,107
-                  C 88,93 98,83 108,75
-                  C 115,63 118,50 128,42
-                  C 138,33 152,28 162,23
-                  C 170,19 178,20 185,20 Z"
+                d="M 56,37 L 93,47 Q 93,47 130,58 Q 130,58 186,52 Q 186,52 242,47 Q 242,47 298,52 Q 298,52 335,62 Q 335,62 353,71 Q 353,71 363,108 Q 363,108 359,155 Q 359,155 353,193 Q 353,193 348,221 Q 348,221 344,249 Q 344,249 340,277 Q 340,277 335,305 Q 335,305 326,352 Q 326,352 307,398 Q 307,398 288,436 Q 288,436 260,455 Q 260,455 214,473 Q 214,473 167,483 Q 167,483 121,473 Q 121,473 93,455 Q 93,455 65,417 Q 65,417 47,361 Q 47,361 37,305 Q 37,305 43,249 Q 43,249 56,193 Q 56,193 65,137 Q 65,137 61,90 Q 61,90 56,52 Q 56,52 56,37 Z"
                 fill="#1a1a1a"
                 stroke="#333"
                 strokeWidth="1.5"
               />
               
-              {/* City dots at correct geographic positions */}
-              {/* Cagliari: bottom center (south) - 50% left, 82% top */}
-              <circle cx="200" cy="492" r="5" fill="white" />
-              <text x="210" y="497" fill="white" fontSize="11" fontWeight="500">Cagliari</text>
+              {/* City dots at real geographic coordinates */}
+              {/* Cagliari: lon 9.1217, lat 39.2238 */}
+              <circle cx="237" cy="413" r="5" fill="white" />
+              <text x="245" y="417" fill="white" fontSize="11" fontWeight="500">Cagliari</text>
               
-              {/* Sassari: upper left (northwest) - 28% left, 22% top */}
-              <circle cx="112" cy="132" r="5" fill="white" />
-              <text x="75" y="127" fill="white" fontSize="11" fontWeight="500">Sassari</text>
+              {/* Sassari: lon 8.5556, lat 40.7259 */}
+              <circle cx="131" cy="132" r="5" fill="white" />
+              <text x="71" y="136" fill="white" fontSize="11" fontWeight="500">Sassari</text>
               
-              {/* Olbia: upper right (northeast) - 72% left, 18% top */}
-              <circle cx="288" cy="108" r="5" fill="white" />
-              <text x="298" y="113" fill="white" fontSize="11" fontWeight="500">Olbia</text>
+              {/* Olbia: lon 9.4992, lat 40.9234 */}
+              <circle cx="307" cy="95" r="5" fill="white" />
+              <text x="315" y="99" fill="white" fontSize="11" fontWeight="500">Olbia</text>
               
-              {/* Nuoro: center-right - 58% left, 48% top */}
-              <circle cx="232" cy="288" r="5" fill="white" />
-              <text x="242" y="293" fill="white" fontSize="11" fontWeight="500">Nuoro</text>
+              {/* Nuoro: lon 9.3310, lat 40.3217 */}
+              <circle cx="276" cy="207" r="5" fill="white" />
+              <text x="284" y="199" fill="white" fontSize="11" fontWeight="500">Nuoro</text>
               
-              {/* Oristano: left-center (west) - 30% left, 52% top */}
-              <circle cx="120" cy="312" r="5" fill="white" />
-              <text x="65" y="317" fill="white" fontSize="11" fontWeight="500">Oristano</text>
+              {/* Oristano: lon 8.5916, lat 39.9036 */}
+              <circle cx="138" cy="286" r="5" fill="white" />
+              <text x="73" y="290" fill="white" fontSize="11" fontWeight="500">Oristano</text>
               
-              {/* Tortolì: right-center (east coast) - 70% left, 58% top */}
-              <circle cx="280" cy="348" r="5" fill="white" />
-              <text x="290" y="353" fill="white" fontSize="11" fontWeight="500">Tortolì</text>
+              {/* Tortolì: lon 9.6580, lat 39.9281 */}
+              <circle cx="336" cy="281" r="5" fill="white" />
+              <text x="344" y="285" fill="white" fontSize="11" fontWeight="500">Tortolì</text>
 
               {/* Animated route lines between cities */}
               {/* Cagliari-Nuoro */}
-              <line x1="200" y1="492" x2="232" y2="288" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="220" strokeDashoffset="220" className="animate-draw-line" />
+              <line x1="237" y1="413" x2="276" y2="207" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
+                strokeDasharray="210" strokeDashoffset="210" className="animate-draw-line" />
               {/* Cagliari-Sassari */}
-              <line x1="200" y1="492" x2="112" y2="132" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="400" strokeDashoffset="400" className="animate-draw-line" style={{ animationDelay: '0.5s' }} />
+              <line x1="237" y1="413" x2="131" y2="132" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
+                strokeDasharray="300" strokeDashoffset="300" className="animate-draw-line" style={{ animationDelay: '0.5s' }} />
               {/* Nuoro-Sassari */}
-              <line x1="232" y1="288" x2="112" y2="132" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="180" strokeDashoffset="180" className="animate-draw-line" style={{ animationDelay: '1s' }} />
+              <line x1="276" y1="207" x2="131" y2="132" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
+                strokeDasharray="163" strokeDashoffset="163" className="animate-draw-line" style={{ animationDelay: '1s' }} />
               {/* Nuoro-Olbia */}
-              <line x1="232" y1="288" x2="288" y2="108" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="200" strokeDashoffset="200" className="animate-draw-line" style={{ animationDelay: '1.5s' }} />
+              <line x1="276" y1="207" x2="307" y2="95" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
+                strokeDasharray="116" strokeDashoffset="116" className="animate-draw-line" style={{ animationDelay: '1.5s' }} />
               {/* Tortolì-Cagliari */}
-              <line x1="280" y1="348" x2="200" y2="492" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="180" strokeDashoffset="180" className="animate-draw-line" style={{ animationDelay: '2s' }} />
+              <line x1="336" y1="281" x2="237" y2="413" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
+                strokeDasharray="165" strokeDashoffset="165" className="animate-draw-line" style={{ animationDelay: '2s' }} />
               {/* Tortolì-Nuoro */}
-              <line x1="280" y1="348" x2="232" y2="288" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
-                strokeDasharray="90" strokeDashoffset="90" className="animate-draw-line" style={{ animationDelay: '2.5s' }} />
+              <line x1="336" y1="281" x2="276" y2="207" stroke="#e63946" strokeWidth="2" strokeOpacity="0.8" 
+                strokeDasharray="95" strokeDashoffset="95" className="animate-draw-line" style={{ animationDelay: '2.5s' }} />
             </svg>
           </div>
 
