@@ -19,12 +19,10 @@ import {
   ChevronDown,
   ChevronUp,
   RefreshCw,
-  Sparkles
+  ArrowRight
 } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { MiniMap } from "@/components/RouteMap";
-import { WeatherWidget } from "@/components/WeatherWidget";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -34,8 +32,8 @@ const sardinianCities = [
 
 const filterOptions = [
   { id: "all", label: "Tutti" },
-  { id: "free", label: "Solo gratuiti" },
-  { id: "verified", label: "Solo verificati" },
+  { id: "free", label: "Gratis" },
+  { id: "verified", label: "Verificati" },
   { id: "today", label: "Oggi" },
 ];
 
@@ -57,31 +55,16 @@ interface Ride {
   };
 }
 
-// Skeleton Card Component
-function SkeletonCard() {
+// Skeleton for loading state
+function SkeletonRow() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-5 animate-pulse">
-      <div className="flex items-center justify-between mb-4">
-        <div className="h-6 w-24 bg-white/10 rounded" />
-        <div className="h-6 w-16 bg-white/10 rounded" />
-      </div>
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex flex-col items-center gap-1">
-          <div className="h-3 w-3 bg-white/10 rounded-full" />
-          <div className="h-8 w-0.5 bg-white/10" />
-          <div className="h-3 w-3 bg-white/10 rounded-full" />
+    <div className="py-5 animate-pulse">
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <div className="h-5 w-32 bg-muted rounded mb-2" />
+          <div className="h-4 w-24 bg-muted rounded" />
         </div>
-        <div className="flex-1 space-y-2">
-          <div className="h-5 w-32 bg-white/10 rounded" />
-          <div className="h-5 w-32 bg-white/10 rounded" />
-        </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 bg-white/10 rounded-full" />
-        <div className="flex-1 space-y-1">
-          <div className="h-4 w-24 bg-white/10 rounded" />
-          <div className="h-3 w-16 bg-white/10 rounded" />
-        </div>
+        <div className="h-8 w-8 bg-muted rounded-full" />
       </div>
     </div>
   );
@@ -107,10 +90,27 @@ function SearchContent() {
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const searchBarRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toISOString().split("T")[0];
   
   const supabase = createClient();
+
+  // Sticky search bar on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (searchBarRef.current) {
+        const rect = searchBarRef.current.getBoundingClientRect();
+        if (rect.top <= 64) {
+          searchBarRef.current.classList.add("shadow-sm");
+        } else {
+          searchBarRef.current.classList.remove("shadow-sm");
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const fetchRides = useCallback(async () => {
     setLoading(true);
@@ -157,7 +157,7 @@ function SearchContent() {
     } finally {
       setLoading(false);
     }
-  }, [activeFilter, date, destination, maxPrice, minSeats, onlyVerified, origin, supabase, today, setRides]);
+  }, [activeFilter, date, destination, maxPrice, minSeats, onlyVerified, origin, supabase, today]);
 
   useEffect(() => {
     fetchRides();
@@ -194,8 +194,6 @@ function SearchContent() {
     await fetchRides();
     setIsRefreshing(false);
   };
-
-  
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -237,13 +235,16 @@ function SearchContent() {
     (onlyVerified ? 1 : 0);
 
   return (
-    <>
-      {/* SEARCH BAR SECTION - Collapsible on Mobile */}
-      <section className="sticky top-16 z-30 border-b border-white/10 bg-[#12121e]/95 backdrop-blur">
+    <div className="min-h-screen bg-background">
+      {/* Sticky Search Bar */}
+      <div 
+        ref={searchBarRef}
+        className="sticky top-16 z-30 border-b border-border bg-background transition-shadow"
+      >
         {/* Mobile Search Toggle */}
         <div className="md:hidden px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-white">
-            <Search className="w-4 h-4 text-[#e63946]" />
+          <div className="flex items-center gap-2 text-foreground">
+            <Search className="w-4 h-4 text-accent" />
             <span className="text-sm">
               {origin || destination || date 
                 ? `${origin || "Da"} → ${destination || "A"}${date ? ` • ${formatDate(date)}` : ""}`
@@ -253,166 +254,161 @@ function SearchContent() {
           <button
             type="button"
             onClick={() => setShowSearchBar(!showSearchBar)}
-            className="p-2 rounded-lg bg-white/5 text-white/70 active:scale-95 transition-all"
+            className="p-2 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
           >
             {showSearchBar ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
         
         <div className={`${showSearchBar ? 'block' : 'hidden md:block'} px-4 py-4 sm:px-6 lg:px-8`}>
-        <div className="mx-auto max-w-6xl">
-          <form onSubmit={handleSearch} className="grid gap-3 md:grid-cols-4 lg:grid-cols-5">
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
-              <select
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-white/10 bg-[#0f1729] pl-10 pr-8 text-sm text-white outline-none focus:border-[#e63946] [&>option]:bg-[#1a1a2e]"
-              >
-                <option value="">Da dove parti?</option>
-                {sardinianCities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
-              <select
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-white/10 bg-[#0f1729] pl-10 pr-8 text-sm text-white outline-none focus:border-[#e63946] [&>option]:bg-[#1a1a2e]"
-              >
-                <option value="">Dove vai?</option>
-                {sardinianCities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
-              <input
-                type="date"
-                min={today}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="h-12 w-full rounded-xl border border-white/10 bg-[#0f1729] pl-10 pr-4 text-sm text-white outline-none focus:border-[#e63946] [&::-webkit-calendar-picker-indicator]:invert"
-              />
-            </div>
-
-            <button 
-              type="submit"
-              disabled={loading}
-              className="flex h-12 items-center justify-center gap-2 rounded-xl bg-[#e63946] px-6 text-sm font-semibold text-white transition-all hover:bg-[#c92a37] disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              Cerca
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowFilters(!showFilters)}
-              className="hidden lg:flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition-all hover:bg-white/10"
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              Filtri
-              {activeFiltersCount > 0 && (
-                <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-xs">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
-          </form>
-
-          {/* Advanced Filters Panel */}
-          {showFilters && (
-            <div className="mt-4 rounded-xl border border-white/10 bg-[#0f1729] p-4">
-              <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {/* Max Price */}
-                <div>
-                  <label className="mb-2 block text-xs font-medium text-white/50">
-                    Prezzo massimo
-                  </label>
-                  <div className="relative">
-                    <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="Qualsiasi"
-                      value={maxPrice || ""}
-                      onChange={(e) => setMaxPrice(e.target.value ? parseInt(e.target.value) : null)}
-                      className="h-10 w-full rounded-lg border border-white/10 bg-[#1a1a2e] pl-10 pr-4 text-sm text-white outline-none focus:border-[#e63946]"
-                    />
-                  </div>
-                </div>
-
-                {/* Min Seats */}
-                <div>
-                  <label className="mb-2 block text-xs font-medium text-white/50">
-                    Posti minimi
-                  </label>
-                  <select
-                    value={minSeats || ""}
-                    onChange={(e) => setMinSeats(e.target.value ? parseInt(e.target.value) : null)}
-                    className="h-10 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 text-sm text-white outline-none focus:border-[#e63946] [&>option]:bg-[#1a1a2e]"
-                  >
-                    <option value="">Qualsiasi</option>
-                    <option value="1">1 posto</option>
-                    <option value="2">2+ posti</option>
-                    <option value="3">3+ posti</option>
-                    <option value="4">4+ posti</option>
-                  </select>
-                </div>
-
-                {/* Verified Only */}
-                <div className="flex items-end">
-                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-[#1a1a2e] p-3 transition-colors hover:bg-white/5">
-                    <input
-                      type="checkbox"
-                      checked={onlyVerified}
-                      onChange={(e) => setOnlyVerified(e.target.checked)}
-                      className="h-4 w-4 accent-[#e63946]"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-green-400" />
-                      <span className="text-sm text-white">Solo verificati</span>
-                    </div>
-                  </label>
-                </div>
-
-                {/* Clear Filters */}
-                {activeFiltersCount > 0 && (
-                  <div className="flex items-end">
-                    <button
-                      onClick={clearFilters}
-                      className="flex h-10 items-center gap-2 rounded-lg border border-white/10 px-4 text-sm text-white/70 transition-colors hover:bg-white/5"
-                    >
-                      <X className="h-4 w-4" />
-                      Cancella filtri
-                    </button>
-                  </div>
-                )}
+          <div className="mx-auto max-w-6xl">
+            <form onSubmit={handleSearch} className="grid gap-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <select
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  className="h-12 w-full appearance-none rounded-full border border-border bg-muted pl-10 pr-8 text-sm text-foreground outline-none focus:border-accent [&>option]:bg-card"
+                >
+                  <option value="">Da dove parti?</option>
+                  {sardinianCities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
               </div>
-            </div>
-          )}
-        </div>
-        </div>
-      </section>
 
-      {/* QUICK FILTERS */}
-      <section className="border-b border-white/10 px-4 py-3 sm:px-6 lg:px-8">
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <select
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="h-12 w-full appearance-none rounded-full border border-border bg-muted pl-10 pr-8 text-sm text-foreground outline-none focus:border-accent [&>option]:bg-card"
+                >
+                  <option value="">Dove vai?</option>
+                  {sardinianCities.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <input
+                  type="date"
+                  min={today}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="h-12 w-full rounded-full border border-border bg-muted pl-10 pr-4 text-sm text-foreground outline-none focus:border-accent"
+                />
+              </div>
+
+              <button 
+                type="submit"
+                disabled={loading}
+                className="flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-white transition-colors hover:bg-accent/90 disabled:opacity-50"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                Cerca
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                className="hidden lg:flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filtri
+                {activeFiltersCount > 0 && (
+                  <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-white">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+            </form>
+
+            {/* Advanced Filters Panel */}
+            {showFilters && (
+              <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+                <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+                  <div>
+                    <label className="mb-2 block text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Prezzo max
+                    </label>
+                    <div className="relative">
+                      <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Qualsiasi"
+                        value={maxPrice || ""}
+                        onChange={(e) => setMaxPrice(e.target.value ? parseInt(e.target.value) : null)}
+                        className="h-10 w-full rounded-full border border-border bg-muted pl-10 pr-4 text-sm text-foreground outline-none focus:border-accent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Posti minimi
+                    </label>
+                    <select
+                      value={minSeats || ""}
+                      onChange={(e) => setMinSeats(e.target.value ? parseInt(e.target.value) : null)}
+                      className="h-10 w-full rounded-full border border-border bg-muted px-4 text-sm text-foreground outline-none focus:border-accent [&>option]:bg-card"
+                    >
+                      <option value="">Qualsiasi</option>
+                      <option value="1">1 posto</option>
+                      <option value="2">2+ posti</option>
+                      <option value="3">3+ posti</option>
+                      <option value="4">4+ posti</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-end">
+                    <label className="flex cursor-pointer items-center gap-3 rounded-full border border-border bg-muted p-3 transition-colors hover:bg-muted/80">
+                      <input
+                        type="checkbox"
+                        checked={onlyVerified}
+                        onChange={(e) => setOnlyVerified(e.target.checked)}
+                        className="h-4 w-4 accent-accent"
+                      />
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-green-500" />
+                        <span className="text-sm text-foreground">Solo verificati</span>
+                      </div>
+                    </label>
+                  </div>
+
+                  {activeFiltersCount > 0 && (
+                    <div className="flex items-end">
+                      <button
+                        onClick={clearFilters}
+                        className="flex h-10 items-center gap-2 rounded-full border border-border px-4 text-sm text-muted-foreground transition-colors hover:bg-muted"
+                      >
+                        <X className="h-4 w-4" />
+                        Cancella filtri
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Filters - Pill Style */}
+      <div className="border-b border-border px-4 py-3 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            {/* Mobile Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex-shrink-0 flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/70 transition-all hover:bg-white/10 lg:hidden"
+              className="flex-shrink-0 flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4" />
               Filtri
               {activeFiltersCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-xs text-white">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-white">
                   {activeFiltersCount}
                 </span>
               )}
@@ -421,10 +417,10 @@ function SearchContent() {
               <button
                 key={option.id}
                 onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
-                className={`flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all ${
                   activeFilter === option.id
-                    ? "bg-[#e63946] text-white"
-                    : "border border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
+                    ? "bg-accent text-white"
+                    : "border border-border bg-card text-foreground hover:bg-muted"
                 }`}
               >
                 {option.label}
@@ -432,9 +428,9 @@ function SearchContent() {
             ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* RESULTS LIST */}
+      {/* Results List - Clean List Style */}
       <section 
         ref={resultsRef}
         className="px-4 py-6 sm:px-6 lg:px-8 overscroll-contain"
@@ -448,22 +444,21 @@ function SearchContent() {
             className="flex justify-center items-center h-0 overflow-visible transition-all duration-200"
             style={{ height: pullDistance > 0 ? pullDistance : 0 }}
           >
-            <div className={`flex items-center gap-2 text-white/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
+            <div className={`flex items-center gap-2 text-muted-foreground transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
               <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 2}deg)` }} />
               <span className="text-sm">{pullDistance > 60 ? 'Rilascia per aggiornare' : 'Tira per aggiornare'}</span>
             </div>
           </div>
           
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-white/50">
+          <div className="mb-6 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
               {loading ? "Caricamento..." : `${rides.length} corse trovate`}
             </p>
             <div className="flex items-center gap-2">
-              {/* Refresh button for mobile */}
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="md:hidden p-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 active:scale-95 transition-all"
+                className="md:hidden p-2 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
                 aria-label="Aggiorna"
               >
                 <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -471,9 +466,9 @@ function SearchContent() {
               {activeFiltersCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="text-sm text-[#e63946] hover:text-white"
+                  className="text-sm text-accent hover:text-accent/80"
                 >
-                  Cancella tutti i filtri
+                  Cancella tutti
                 </button>
               )}
             </div>
@@ -481,25 +476,25 @@ function SearchContent() {
 
           {/* Loading Skeleton */}
           {loading && (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="divide-y divide-border">
               {[1, 2, 3, 4].map((i) => (
-                <SkeletonCard key={i} />
+                <SkeletonRow key={i} />
               ))}
             </div>
           )}
 
           {/* Empty State */}
           {!loading && rides.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-white/20 bg-white/5 p-12 text-center">
-              <Route className="mx-auto h-16 w-16 text-white/20" />
-              <p className="mt-4 text-lg text-white/60">Nessun passaggio trovato.</p>
-              <p className="mt-1 text-sm text-white/40">
-                Prova a modificare i filtri o cerca un&apos;altra data.
+            <div className="py-20 text-center">
+              <Route className="mx-auto h-12 w-12 text-muted-foreground/50" />
+              <p className="mt-4 text-lg font-medium text-foreground">Nessun passaggio trovato</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Prova a modificare i filtri o cerca un&apos;altra data
               </p>
               {activeFiltersCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="mt-6 rounded-xl bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20"
+                  className="mt-6 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent/90"
                 >
                   Cancella filtri
                 </button>
@@ -507,140 +502,84 @@ function SearchContent() {
             </div>
           )}
 
-          {/* Results Grid */}
+          {/* Results List - Clean Row Style */}
           {!loading && rides.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2">
-              {rides.map((ride) => {
-                // Check if ride was posted in last 2 hours
-                const rideCreated = new Date(ride.created_at || Date.now());
-                const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-                const isNew = rideCreated > twoHoursAgo;
-                
-                return (
-                  <Link
-                    key={ride.id}
-                    href={`/corsa/${ride.id}`}
-                    className="group card-lift relative overflow-hidden rounded-2xl border-l-4 border-l-[#e63946] border-y border-r border-white/10 bg-gradient-to-br from-[#1e2a4a] to-[#1a2339] transition-all active:scale-[0.98] touch-manipulation"
-                  >
-                    {/* "New" Badge */}
-                    {isNew && (
-                      <div className="absolute top-3 right-3 z-10">
-                        <span className="badge-new inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#e63946] to-[#ff5a66] px-2.5 py-1 text-xs font-semibold text-white shadow-lg shadow-[#e63946]/30">
-                          <Sparkles className="h-3 w-3" />
-                          Nuovo
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Mini Map */}
-                    <div className="mb-4 opacity-80 group-hover:opacity-100 transition-opacity">
-                      <MiniMap fromCity={ride.from_city} toCity={ride.to_city} />
+            <div className="divide-y divide-border">
+              {rides.map((ride) => (
+                <Link
+                  key={ride.id}
+                  href={`/corsa/${ride.id}`}
+                  className="group flex items-center gap-4 py-5 transition-colors hover:bg-muted/30"
+                >
+                  {/* Route Info - Left */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-foreground truncate">
+                      {ride.from_city} <span className="text-muted-foreground mx-1">→</span> {ride.to_city}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{formatDate(ride.date)}</span>
+                      <span>•</span>
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>{ride.time.slice(0, 5)}</span>
+                      <span>•</span>
+                      <span>{ride.seats} posti</span>
                     </div>
+                  </div>
 
-                    {/* Content */}
-                    <div className="px-5 pb-5">
-                      {/* Header */}
-                      <div className="mb-4 flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e63946]/10 px-3 py-1 text-xs font-medium text-[#e63946]">
-                          <Clock className="h-3 w-3" />
-                          {formatDate(ride.date)} • {ride.time.slice(0, 5)}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <WeatherWidget 
-                            city={ride.from_city} 
-                            date={ride.date}
-                            variant="compact"
+                  {/* Driver Info - Center */}
+                  <div className="hidden sm:flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted overflow-hidden">
+                      {ride.profiles.avatar_url ? (
+                        <Image 
+                          src={ride.profiles.avatar_url} 
+                          alt={ride.profiles.name}
+                          width={32}
+                          height={32}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="text-sm">
+                      <p className="font-medium text-foreground">{ride.profiles.name}</p>
+                      <div className="flex items-center gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`h-3 w-3 ${i < Math.floor(ride.profiles.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-muted"}`} 
                           />
-                          <span className="text-lg font-bold">
-                            {ride.price === 0 ? (
-                              <span className="text-green-400">Gratis</span>
-                            ) : (
-                              <span className="gradient-text-gold">{ride.price}€</span>
-                            )}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Route Display */}
-                      <div className="mb-4 flex items-center gap-3">
-                        <div className="flex flex-col items-center">
-                          <div className="h-3 w-3 rounded-full bg-[#e63946] ring-4 ring-[#e63946]/20" />
-                          <div className="my-1 h-10 w-0.5 bg-gradient-to-b from-[#e63946] to-white/30" />
-                          <div className="h-3 w-3 rounded-full bg-white/50" />
-                        </div>
-                        <div className="flex-1 space-y-3">
-                          <div>
-                            <p className="text-xs text-white/40">Partenza</p>
-                            <p className="font-semibold text-white">{ride.from_city}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-white/40">Destinazione</p>
-                            <p className="font-semibold text-white">{ride.to_city}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Driver Info */}
-                      <div className="flex items-center justify-between border-t border-white/5 pt-4">
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] ring-2 ring-white/5 group-hover:ring-[#e63946]/20 transition-all">
-                              {ride.profiles.avatar_url ? (
-                                <Image 
-                                  src={ride.profiles.avatar_url} 
-                                  alt={ride.profiles.name}
-                                  width={40}
-                                  height={40}
-                                  className="h-full w-full rounded-full object-cover"
-                                />
-                              ) : (
-                                <User className="h-5 w-5" />
-                              )}
-                            </div>
-                            {/* Online indicator */}
-                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1e2a4a] online-indicator" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-white">{ride.profiles.name}</p>
-                            <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star 
-                                  key={i} 
-                                  className={`h-3 w-3 ${i < Math.floor(ride.profiles.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-white/20"}`} 
-                                />
-                              ))}
-                              <span className="ml-1 text-xs text-white/50 tabular-nums">{ride.profiles.rating || 5.0}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          {/* Seat dots */}
-                          <div className="flex items-center gap-0.5">
-                            {Array.from({ length: Math.min(ride.seats, 4) }).map((_, i) => (
-                              <div key={i} className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                            ))}
-                          </div>
-                          <span className="text-xs text-white/50">{ride.seats} posti</span>
-                        </div>
+                        ))}
                       </div>
                     </div>
-                  </Link>
-                );
-              })}
+                  </div>
+
+                  {/* Price & Action - Right */}
+                  <div className="flex items-center gap-4">
+                    <span className={`text-lg font-bold ${ride.price === 0 ? "text-green-500" : "text-foreground"}`}>
+                      {ride.price === 0 ? "Gratis" : `${ride.price}€`}
+                    </span>
+                    <span className="flex items-center gap-1 text-sm font-medium text-accent group-hover:underline">
+                      Vedi
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </div>
+                </Link>
+              ))}
             </div>
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-[#1a1a2e] pt-20">
+    <div className="min-h-screen bg-background pt-16">
       <Suspense fallback={
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-10 w-10 animate-spin text-[#e63946]" />
+          <Loader2 className="h-10 w-10 animate-spin text-accent" />
         </div>
       }>
         <SearchContent />

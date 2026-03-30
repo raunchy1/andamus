@@ -20,7 +20,6 @@ import {
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
-import { NavigationButtons } from "@/components/NavigationButtons";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 
@@ -77,12 +76,10 @@ export default function ChatPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   
-  // Image upload state
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Voice recording state
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
 
@@ -90,11 +87,9 @@ export default function ChatPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Audio playback state
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Image zoom modal
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -108,7 +103,6 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  // Load user, booking and messages
   useEffect(() => {
     const loadData = async () => {
       if (!bookingId) return;
@@ -170,7 +164,6 @@ export default function ChatPage() {
     loadData();
   }, [bookingId, router, supabase]);
 
-  // Real-time subscription
   useEffect(() => {
     if (!bookingId) return;
 
@@ -206,7 +199,6 @@ export default function ChatPage() {
     };
   }, [bookingId, supabase]);
 
-  // Send text message
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!newMessage.trim() || !user || sending || !booking) return;
@@ -233,7 +225,6 @@ export default function ChatPage() {
     setSending(false);
   };
 
-  // Send message with media/location
   const sendMessage = async (data: {
     content: string;
     type: 'text' | 'image' | 'location' | 'audio';
@@ -283,7 +274,6 @@ export default function ChatPage() {
     );
   };
 
-  // Image upload
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -305,7 +295,6 @@ export default function ChatPage() {
 
     setUploadingImage(true);
     try {
-      // Convert base64 to blob
       const response = await fetch(imagePreview);
       const blob = await response.blob();
 
@@ -331,14 +320,12 @@ export default function ChatPage() {
 
       setImagePreview(null);
     } catch {
-      // console.error('Error uploading image:', _error);
       toast.error("Errore nel caricamento dell'immagine");
     } finally {
       setUploadingImage(false);
     }
   };
 
-  // Location sharing
   const sendLocation = () => {
     if (!navigator.geolocation) {
       toast.error("Geolocalizzazione non supportata");
@@ -364,7 +351,6 @@ export default function ChatPage() {
     );
   };
 
-  // Voice recording
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -430,12 +416,10 @@ export default function ChatPage() {
         duration: duration,
       });
     } catch {
-      // console.error('Error uploading audio:', _error);
       toast.error("Errore nell'invio del messaggio vocale");
     }
   };
 
-  // Audio playback
   const toggleAudio = (url: string) => {
     if (playingAudio === url) {
       audioRef.current?.pause();
@@ -472,28 +456,24 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e]">
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-[#e63946]" />
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-accent" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e]">
-        <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4">
-          <AlertCircle className="mb-4 h-16 w-16 text-red-400" />
-          <h1 className="mb-2 text-2xl font-bold text-white">{error}</h1>
-          <Link
-            href="/profilo"
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#e63946] px-6 py-3 text-sm font-semibold text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Torna al profilo
-          </Link>
-        </div>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+        <AlertCircle className="mb-4 h-16 w-16 text-destructive" />
+        <h1 className="mb-2 text-2xl font-bold text-foreground">{error}</h1>
+        <Link
+          href="/profilo"
+          className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Torna al profilo
+        </Link>
       </div>
     );
   }
@@ -501,50 +481,40 @@ export default function ChatPage() {
   const otherParticipant = getOtherParticipant();
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-[#1a1a2e] pb-[72px] md:pb-0">
+    <div className="flex h-[100dvh] flex-col bg-background">
       {/* Chat Header */}
-      <header className="border-b border-white/10 bg-[#12121e] px-4 py-4">
+      <header className="border-b border-border bg-card px-4 py-4">
         <div className="mx-auto flex max-w-4xl items-center gap-4">
           <Link
             href="/profilo"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
           
           {otherParticipant && (
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted overflow-hidden">
                 {otherParticipant.avatar_url ? (
                   <Image
                     src={otherParticipant.avatar_url}
                     alt={otherParticipant.name}
                     width={40}
                     height={40}
-                    className="h-full w-full rounded-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
-                  <User className="h-5 w-5" />
+                  <User className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
               <div>
-                <h2 className="font-semibold text-white">{otherParticipant.name}</h2>
+                <h2 className="font-semibold text-foreground">{otherParticipant.name}</h2>
                 {booking && (
-                  <p className="text-xs text-white/50">
+                  <p className="text-xs text-muted-foreground">
                     {booking.rides.from_city} → {booking.rides.to_city}
                   </p>
                 )}
               </div>
-            </div>
-          )}
-          
-          {booking && (
-            <div className="ml-auto hidden sm:block">
-              <NavigationButtons 
-                destination={booking.rides.to_city}
-                label={booking.rides.to_city}
-                variant="compact"
-              />
             </div>
           )}
         </div>
@@ -552,13 +522,13 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div 
-        className="flex-1 overflow-y-auto px-4 py-4 overscroll-contain"
+        className="flex-1 overflow-y-auto px-4 py-4"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
-        <div className="mx-auto max-w-4xl space-y-4 pb-4">
+        <div className="mx-auto max-w-4xl space-y-3 pb-4">
           {messages.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-white/40">Inizia la conversazione...</p>
+              <p className="text-muted-foreground">Inizia la conversazione...</p>
             </div>
           ) : (
             messages.map((message) => {
@@ -569,10 +539,10 @@ export default function ChatPage() {
                   className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                       isMine
-                        ? "bg-[#e63946] text-white"
-                        : "bg-[#1e2a4a] text-white"
+                        ? "bg-accent text-white"
+                        : "bg-muted text-foreground"
                     }`}
                   >
                     {/* Image Message */}
@@ -604,9 +574,6 @@ export default function ChatPage() {
                             width={300}
                             height={150}
                             className="rounded-lg max-w-full"
-                            onError={() => {
-                              // Fallback handled by parent
-                            }}
                           />
                           <div className="flex items-center gap-2 mt-2 text-sm">
                             <MapPin className="w-4 h-4" />
@@ -621,17 +588,17 @@ export default function ChatPage() {
                       <div className="flex items-center gap-3 mb-2">
                         <button
                           onClick={() => toggleAudio(message.media_url!)}
-                          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20"
+                          className={`flex h-9 w-9 items-center justify-center rounded-full ${isMine ? 'bg-white/20' : 'bg-foreground/10'}`}
                         >
                           {playingAudio === message.media_url ? (
-                            <Pause className="h-5 w-5" />
+                            <Pause className="h-4 w-4" />
                           ) : (
-                            <Play className="h-5 w-5" />
+                            <Play className="h-4 w-4" />
                           )}
                         </button>
                         <div className="flex-1">
-                          <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                            <div className="h-full bg-white/60 w-1/3 rounded-full" />
+                          <div className={`h-1.5 rounded-full overflow-hidden ${isMine ? 'bg-white/20' : 'bg-foreground/10'}`}>
+                            <div className={`h-full w-1/3 rounded-full ${isMine ? 'bg-white/60' : 'bg-foreground/40'}`} />
                           </div>
                         </div>
                         <span className="text-xs">
@@ -645,11 +612,7 @@ export default function ChatPage() {
                       <p className="text-sm">{message.content}</p>
                     )}
                     
-                    <p
-                      className={`mt-1 text-right text-xs ${
-                        isMine ? "text-white/70" : "text-white/40"
-                      }`}
-                    >
+                    <p className={`mt-1 text-right text-xs ${isMine ? "text-white/70" : "text-muted-foreground"}`}>
                       {formatTime(message.created_at)}
                     </p>
                   </div>
@@ -660,17 +623,6 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
       </div>
-
-      {/* Mobile Navigation Buttons */}
-      {booking && (
-        <div className="sm:hidden border-t border-white/10 bg-[#12121e] px-4 py-2">
-          <NavigationButtons 
-            destination={booking.rides.to_city}
-            label={booking.rides.to_city}
-            variant="compact"
-          />
-        </div>
-      )}
 
       {/* Image Preview Modal */}
       {imagePreview && (
@@ -692,14 +644,14 @@ export default function ChatPage() {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={() => setImagePreview(null)}
-                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20"
+                className="flex-1 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20"
               >
                 Annulla
               </button>
               <button
                 onClick={sendImage}
                 disabled={uploadingImage}
-                className="flex-1 py-3 rounded-xl bg-[#e63946] text-white font-medium hover:bg-[#c92a37] disabled:opacity-50"
+                className="flex-1 py-3 rounded-full bg-accent text-white font-medium hover:bg-accent/90 disabled:opacity-50"
               >
                 {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Invia'}
               </button>
@@ -731,23 +683,23 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Message Input - Fixed at bottom */}
+      {/* Message Input */}
       <form
         onSubmit={handleSendMessage}
-        className="fixed bottom-0 left-0 right-0 border-t border-white/10 bg-[#12121e] px-3 sm:px-4 py-3 sm:py-4 safe-area-pb z-40 md:relative"
+        className="border-t border-border bg-card px-3 sm:px-4 py-3 safe-area-pb"
       >
         {/* Recording Indicator */}
         {isRecording && (
-          <div className="mx-auto max-w-4xl mb-3 flex items-center justify-between bg-red-500/20 border border-red-500/30 rounded-xl px-4 py-3">
+          <div className="mx-auto max-w-4xl mb-3 flex items-center justify-between bg-destructive/10 border border-destructive/20 rounded-full px-4 py-2">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-red-400 font-medium">Registrazione in corso...</span>
+              <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+              <span className="text-destructive text-sm font-medium">Registrazione...</span>
             </div>
-            <span className="text-red-400 font-mono">{formatDuration(recordingTime)}</span>
+            <span className="text-destructive font-mono text-sm">{formatDuration(recordingTime)}</span>
           </div>
         )}
 
-        <div className="mx-auto max-w-4xl flex items-center gap-1.5 sm:gap-2">
+        <div className="mx-auto max-w-4xl flex items-center gap-2">
           {/* Image Upload Button */}
           <input
             type="file"
@@ -760,7 +712,7 @@ export default function ChatPage() {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isRecording}
-            className="flex h-11 w-11 sm:h-10 sm:w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 active:scale-95 touch-manipulation min-w-[44px] min-h-[44px]"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50"
             aria-label="Invia foto"
           >
             <ImageIcon className="h-5 w-5" />
@@ -771,7 +723,7 @@ export default function ChatPage() {
             type="button"
             onClick={sendLocation}
             disabled={isRecording}
-            className="flex h-11 w-11 sm:h-10 sm:w-10 items-center justify-center rounded-full text-white/60 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50 active:scale-95 touch-manipulation min-w-[44px] min-h-[44px]"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50"
             aria-label="Invia posizione"
           >
             <MapPin className="h-5 w-5" />
@@ -784,7 +736,7 @@ export default function ChatPage() {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={isRecording ? "Registrazione..." : "Messaggio..."}
             disabled={isRecording}
-            className="flex-1 rounded-xl border border-white/10 bg-[#1e2a4a] px-3 sm:px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-[#e63946] focus:ring-1 focus:ring-[#e63946] disabled:opacity-50 min-h-[44px]"
+            className="flex-1 rounded-full border border-border bg-muted px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-accent disabled:opacity-50"
           />
 
           {/* Voice/Message Button */}
@@ -792,7 +744,7 @@ export default function ChatPage() {
             <button
               type="submit"
               disabled={sending}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#e63946] text-white transition-all hover:bg-[#c92a37] disabled:opacity-50 active:scale-95 touch-manipulation min-w-[48px] min-h-[48px]"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-white transition-colors hover:bg-accent/90 disabled:opacity-50"
               aria-label="Invia messaggio"
             >
               {sending ? (
@@ -809,10 +761,10 @@ export default function ChatPage() {
               onTouchStart={startRecording}
               onTouchEnd={stopRecording}
               onMouseLeave={isRecording ? stopRecording : undefined}
-              className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all active:scale-95 touch-manipulation min-w-[48px] min-h-[48px] ${
+              className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors ${
                 isRecording 
-                  ? "bg-red-500 text-white" 
-                  : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
+                  ? "bg-destructive text-white" 
+                  : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
               aria-label={isRecording ? "Ferma registrazione" : "Registra audio"}
             >

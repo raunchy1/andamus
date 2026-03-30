@@ -1,90 +1,93 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { Car, Search, UserPlus, MessageCircle, MapPin, ArrowRight, Calendar, Users, Route, Star, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, Search, MapPin, Calendar, Car, MessageCircle, Shield, Plus, Minus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { OnboardingModal } from "@/components/OnboardingModal";
 
-const sardinianCities = [
-  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Carbonia", "Alghero", "Tempio Pausania", "La Maddalena",
-  "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer", "Bosa", "Castelsardo"
-];
-
-// Animated counter component
-function AnimatedCounter({ end, duration = 2000, suffix = "" }: { end: number; duration?: number; suffix?: string }) {
+// Stats counter with Intersection Observer
+function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
   const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
-  
+  const hasAnimated = useRef(false);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
-          let startTime: number;
-          let animationFrame: number;
+        if (entries[0].isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          let start = 0;
+          const end = value;
+          const duration = 2000;
+          const increment = end / (duration / 16);
           
-          const animate = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-            setCount(Math.floor(easeOutQuart * end));
-            
-            if (progress < 1) {
-              animationFrame = requestAnimationFrame(animate);
+          const timer = setInterval(() => {
+            start += increment;
+            if (start >= end) {
+              setCount(end);
+              clearInterval(timer);
+            } else {
+              setCount(Math.floor(start));
             }
-          };
-          
-          animationFrame = requestAnimationFrame(animate);
-          return () => cancelAnimationFrame(animationFrame);
+          }, 16);
         }
       },
       { threshold: 0.5 }
     );
-    
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-    
-    return () => observer.disconnect();
-  }, [end, duration, hasAnimated]);
-  
-  return <span ref={ref} className="tabular-nums">{count.toLocaleString()}{suffix}</span>;
-}
 
-// Scroll reveal hook
-function useScrollReveal() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-    
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
-}
+  }, [value]);
 
-// Floating car icon component
-function FloatingCar({ className, delay = 0 }: { className?: string; delay?: number }) {
   return (
-    <div 
-      className={`absolute pointer-events-none opacity-10 ${className}`}
-      style={{ animationDelay: `${delay}s` }}
-    >
-      <Car className="w-full h-full text-white animate-float" strokeWidth={1} />
+    <span ref={ref} className="tabular-nums" style={{ fontVariantNumeric: 'tabular-nums' }}>
+      {count.toLocaleString()}{suffix}
+    </span>
+  );
+}
+
+// FAQ Accordion Item
+function FAQItem({ question, answer, isOpen, onClick }: { 
+  question: string; 
+  answer: string; 
+  isOpen: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div className="border-b border-[#e5e5e5] dark:border-[#2a2a2a]">
+      <button
+        onClick={onClick}
+        className="w-full py-6 flex items-center justify-between text-left group"
+      >
+        <span className={`text-lg transition-all duration-200 ${isOpen ? 'font-semibold text-[#0f0f0f] dark:text-white' : 'font-normal text-[#333] dark:text-[#ccc]'}`}>
+          {question}
+        </span>
+        <span className="ml-4 flex-shrink-0 w-6 h-6 flex items-center justify-center text-[#666] dark:text-[#999]">
+          {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+        </span>
+      </button>
+      <div 
+        className="overflow-hidden transition-all duration-300 ease-out"
+        style={{ maxHeight: isOpen ? '200px' : '0', opacity: isOpen ? 1 : 0 }}
+      >
+        <p className="pb-6 text-[#666] dark:text-[#999] leading-relaxed">
+          {answer}
+        </p>
+      </div>
+      {/* CSS Animations */}
+      <style jsx global>{`
+        @keyframes draw-line {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        .animate-draw-line {
+          animation: draw-line 2s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }
@@ -95,75 +98,23 @@ export default function HomePage() {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState("");
-  
-  interface TodayRide {
-    id: string;
-    from_city: string;
-    to_city: string;
-    time: string;
-    price: number;
-    seats: number;
-    profiles: {
-      name: string;
-      avatar_url: string | null;
-      rating: number;
-    };
-  }
-  
-  const [todayRides, setTodayRides] = useState<TodayRide[]>([]);
-  const [stats, setStats] = useState({ users: 0, rides: 0, cities: 20 });
-  const [loadingRides, setLoadingRides] = useState(true);
-  const [totalRidesToday, setTotalRidesToday] = useState(0);
+  const [totalRides, setTotalRides] = useState(0);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(0);
   const supabase = createClient();
-  const today = new Date().toISOString().split("T")[0];
 
-  const steps = [
-    { icon: UserPlus, title: t('home.howItWorks.step1.title'), description: t('home.howItWorks.step1.description') },
-    { icon: Search, title: t('home.howItWorks.step2.title'), description: t('home.howItWorks.step2.description') },
-    { icon: MessageCircle, title: t('home.howItWorks.step3.title'), description: t('home.howItWorks.step3.description') },
+  const sardinianCities = [
+    "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì",
+    "Lanusei", "Iglesias", "Carbonia", "Alghero", "Tempio Pausania",
+    "La Maddalena", "Siniscola", "Dorgali", "Muravera"
   ];
 
-  useScrollReveal();
-
-  // Fetch today's rides
   useEffect(() => {
-    const fetchTodayRides = async () => {
-      const { data, count } = await supabase
-        .from("rides")
-        .select(`
-          *,
-          profiles(name, avatar_url, rating)
-        `, { count: 'exact' })
-        .eq("date", today)
-        .eq("status", "active")
-        .order("time", { ascending: true })
-        .limit(6);
-      
-      setTodayRides(data || []);
-      setTotalRidesToday(count || 0);
-      setLoadingRides(false);
-    };
-
-    // Fetch stats
     const fetchStats = async () => {
-      const { count: usersCount } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true });
-      
-      const { count: ridesCount } = await supabase
-        .from("rides")
-        .select("*", { count: "exact", head: true });
-      
-      setStats({
-        users: usersCount || 0,
-        rides: ridesCount || 0,
-        cities: 20
-      });
+      const { count } = await supabase.from("rides").select("*", { count: "exact", head: true });
+      setTotalRides(count || 0);
     };
-
-    fetchTodayRides();
     fetchStats();
-  }, [supabase, today]);
+  }, [supabase]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,465 +125,573 @@ export default function HomePage() {
     router.push(`/cerca?${params.toString()}`);
   };
 
-  return (
-    <div className="min-h-screen bg-[#1a1a2e]">
-      {/* Onboarding Modal */}
-      <OnboardingModal />
-      
-      {/* HERO SECTION */}
-      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-        {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#1e1a3e] to-[#2a1a3e] animate-gradient" />
-        
-        {/* Floating Car Icons */}
-        <FloatingCar className="top-20 left-[10%] w-24 h-24" delay={0} />
-        <FloatingCar className="top-40 right-[15%] w-16 h-16" delay={2} />
-        <FloatingCar className="bottom-40 left-[20%] w-20 h-20" delay={4} />
-        <FloatingCar className="top-1/3 right-[8%] w-12 h-12" delay={1} />
-        <FloatingCar className="bottom-1/4 right-[25%] w-14 h-14" delay={3} />
-        
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 opacity-[0.03]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px"
-          }} />
-        </div>
-        
-        {/* Radial Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e] via-transparent to-transparent" />
-        
-        {/* Glow Effects */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#e63946]/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px]" />
+  const recentRoutes = [
+    { from: "Tortolì", to: "Cagliari" },
+    { from: "Nuoro", to: "Sassari" },
+    { from: "Olbia", to: "Cagliari" }
+  ];
 
-        <div className="relative mx-auto max-w-6xl px-4 pt-24 pb-12 sm:px-6 lg:px-8">
-          {/* Badge */}
-          <div className="mb-6 flex justify-center reveal">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur px-4 py-2">
-              <Sparkles className="h-4 w-4 text-[#e63946]" />
-              <span className="text-sm text-white/80">Carpooling sardo</span>
-            </div>
+  const faqs = [
+    {
+      q: "È davvero gratuito?",
+      a: "Sì, Andamus è completamente gratuito. Nessun abbonamento, nessuna commissione nascosta. I guidatori scelgono se chiedere un contributo benzina o offrire il passaggio gratis."
+    },
+    {
+      q: "Come so che l'autista è affidabile?",
+      a: "Ogni profilo mostra recensioni verificate, badge guadagnati e corse completate. Puoi vedere il rating prima di prenotare. Usiamo anche un sistema di verifica identità opzionale."
+    },
+    {
+      q: "Devo registrarmi per cercare?",
+      a: "Puoi sfogliare le corse disponibili senza registrarti. Per prenotare o pubblicare un passaggio serve un account — la registrazione è gratuita e richiede solo un clic con Google."
+    },
+    {
+      q: "Posso offrire un passaggio gratis?",
+      a: "Assolutamente. Molti guidatori offrono passaggi gratuiti a chi fa la loro stessa strada. Sei tu a decidere se e quanto chiedere per la benzina."
+    },
+    {
+      q: "Cosa succede se il guidatore non si presenta?",
+      a: "Puoi segnalare l'utente direttamente dall'app. Gli utenti con segnalazioni vengono esaminati dal nostro team. Consigliamo sempre di confermare via chat prima di partire."
+    },
+    {
+      q: "In quali città funziona?",
+      a: "Andamus copre tutta la Sardegna: Cagliari, Sassari, Olbia, Nuoro, Oristano, Ogliastra e tutti i paesi intermediari. Se la tua zona non è coperta, scrivici — stiamo espandendo."
+    }
+  ];
+
+  const today = new Date().toISOString().split("T")[0];
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-[#0f0f0f] text-[#0f0f0f] dark:text-white font-sans">
+      {/* SECTION 1 — HERO (asymmetric split) */}
+      <section className="min-h-screen flex flex-col lg:flex-row">
+        {/* LEFT: Content (60%) */}
+        <div className="flex-1 lg:flex-[1.4] flex flex-col justify-center px-6 sm:px-12 lg:px-16 py-16 lg:py-0">
+          {/* Label */}
+          <div className="mb-6">
+            <span className="text-sm text-[#e63946] font-medium tracking-wide uppercase">
+              Carpooling · Sardegna · Gratuito
+            </span>
           </div>
 
           {/* Headline */}
-          <h1 className="heading-premium text-balance text-center text-3xl text-white sm:text-5xl md:text-6xl lg:text-7xl reveal reveal-delay-1">
-            Viaggia insieme
-            <br />
-            <span className="gradient-text">in Sardegna</span>
+          <h1 className="text-[40px] sm:text-[56px] lg:text-[64px] font-extrabold leading-[1.05] tracking-[-0.02em] text-[#0f0f0f] dark:text-white mb-6">
+            Il modo più semplice<br />
+            di spostarsi in Sardegna.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-white/60 reveal reveal-delay-2">
-            Trova o offri un passaggio in tutta la Sardegna. 
-            <span className="text-white font-medium"> Gratis.</span>
+          {/* Subtitle */}
+          <p className="text-lg text-[#666] dark:text-[#999] max-w-[480px] mb-8 leading-relaxed">
+            Trova chi va nella tua stessa direzione.<br />
+            Gratis, ogni giorno, in tutta l&apos;isola.
           </p>
 
-          {/* LIVE SEARCH BAR - Glass Morphism */}
-          <form onSubmit={handleSearch} className="mt-10 mx-auto max-w-4xl reveal reveal-delay-3">
-            <div className="glass rounded-3xl p-2 shadow-2xl shadow-black/50">
-              <div className="grid gap-2 md:grid-cols-4">
-                {/* Origin */}
-                <div className="relative group">
-                  <label className="mb-1.5 ml-3 block text-xs font-medium text-white/40 group-focus-within:text-[#e63946] transition-colors">Da</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
-                    <select
-                      value={origin}
-                      onChange={(e) => setOrigin(e.target.value)}
-                      className="h-12 w-full appearance-none rounded-xl border-0 bg-white/5 pl-10 pr-8 text-sm text-white outline-none transition-all focus:bg-white/10 focus:ring-2 focus:ring-[#e63946]/50 [&>option]:bg-[#1a1a2e]"
-                    >
-                      <option value="">Da dove parti?</option>
-                      {sardinianCities.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                    <ArrowRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 rotate-90 md:rotate-0" />
-                  </div>
-                </div>
+          {/* Search Bar - clean card */}
+          <form onSubmit={handleSearch} className="bg-white dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-2xl p-4 max-w-[560px] mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+              {/* Origin */}
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+                <select
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  className="w-full h-12 pl-9 pr-3 bg-[#f5f5f0] dark:bg-[#0f0f0f] border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-full text-sm text-[#0f0f0f] dark:text-white outline-none focus:border-[#e63946] appearance-none cursor-pointer"
+                >
+                  <option value="">Da dove parti?</option>
+                  {sardinianCities.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
 
-                {/* Destination */}
-                <div className="relative group">
-                  <label className="mb-1.5 ml-3 block text-xs font-medium text-white/40 group-focus-within:text-[#e63946] transition-colors">A</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
-                    <select
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      className="h-12 w-full appearance-none rounded-xl border-0 bg-white/5 pl-10 pr-8 text-sm text-white outline-none transition-all focus:bg-white/10 focus:ring-2 focus:ring-[#e63946]/50 [&>option]:bg-[#1a1a2e]"
-                    >
-                      <option value="">Dove vai?</option>
-                      {sardinianCities.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+              {/* Destination */}
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+                <select
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="w-full h-12 pl-9 pr-3 bg-[#f5f5f0] dark:bg-[#0f0f0f] border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-full text-sm text-[#0f0f0f] dark:text-white outline-none focus:border-[#e63946] appearance-none cursor-pointer"
+                >
+                  <option value="">Dove vai?</option>
+                  {sardinianCities.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
 
-                {/* Date */}
-                <div className="relative group">
-                  <label className="mb-1.5 ml-3 block text-xs font-medium text-white/40 group-focus-within:text-[#e63946] transition-colors">Data</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#e63946]" />
-                    <input
-                      type="date"
-                      min={today}
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="h-12 w-full rounded-xl border-0 bg-white/5 pl-10 pr-4 text-sm text-white outline-none transition-all focus:bg-white/10 focus:ring-2 focus:ring-[#e63946]/50 [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50"
-                    />
-                  </div>
-                </div>
-
-                {/* Search Button */}
-                <div className="flex items-end">
-                  <button
-                    type="submit"
-                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#e63946] to-[#ff5a66] text-sm font-semibold text-white shadow-lg shadow-[#e63946]/25 transition-all hover:shadow-xl hover:shadow-[#e63946]/40 active:scale-[0.98] touch-manipulation min-h-[48px] btn-press"
-                  >
-                    <Search className="h-4 w-4" />
-                    Cerca
-                  </button>
+              {/* Date + Button */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+                  <input
+                    type="date"
+                    min={today}
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full h-12 pl-9 pr-2 bg-[#f5f5f0] dark:bg-[#0f0f0f] border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-full text-sm text-[#0f0f0f] dark:text-white outline-none focus:border-[#e63946]"
+                  />
                 </div>
               </div>
             </div>
+            
+            <button
+              type="submit"
+              className="w-full h-12 bg-[#e63946] hover:bg-[#c92a37] text-white font-semibold rounded-full flex items-center justify-center gap-2 transition-colors"
+            >
+              <Search className="w-4 h-4" />
+              Cerca
+            </button>
           </form>
 
-          {/* Real-time Counter Badge */}
-          <div className="mt-6 flex justify-center reveal reveal-delay-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-2 animate-pulse-glow">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-sm text-white/70">
-                <span className="font-semibold text-white tabular-nums">{totalRidesToday}</span> corse disponibili oggi
-              </span>
-            </div>
-          </div>
-
-          {/* Popular Routes - Horizontal Scroll on Mobile */}
-          <div className="mt-8 reveal reveal-delay-4">
-            <p className="text-center text-sm text-white/40 mb-3 hidden sm:block">Percorsi popolari:</p>
-            <div className="flex overflow-x-auto gap-2 pb-2 px-4 sm:px-0 sm:flex-wrap sm:justify-center sm:gap-3 no-scrollbar">
-              {[
-                { from: "Tortolì", to: "Cagliari" },
-                { from: "Olbia", to: "Sassari" },
-                { from: "Nuoro", to: "Cagliari" },
-                { from: "Oristano", to: "Cagliari" },
-                { from: "Sassari", to: "Cagliari" },
-              ].map((route, i) => (
-                <Link
-                  key={`${route.from}-${route.to}`}
-                  href={`/cerca?from=${route.from}&to=${route.to}`}
-                  className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/70 hover:bg-white/10 hover:border-[#e63946]/30 transition-all whitespace-nowrap active:scale-95 touch-manipulation"
-                  style={{ animationDelay: `${i * 0.1}s` }}
-                >
-                  <span className="text-[#e63946] font-medium">{route.from}</span>
-                  <ArrowRight className="w-3 h-3 text-white/30" />
-                  <span>{route.to}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TODAY'S RIDES SECTION */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e] pb-24 md:pb-16">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-8 flex items-center justify-between reveal">
-            <div>
-              <h2 className="heading-premium text-2xl text-white sm:text-3xl">Corse disponibili oggi</h2>
-              <p className="mt-1 text-white/50">Passaggi programmati per oggi in tutta la Sardegna</p>
-            </div>
-            <Link href="/cerca" className="hidden sm:flex items-center gap-1 text-sm text-[#e63946] hover:text-white transition-colors group">
-              Vedi tutte <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {loadingRides ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-[#e63946]" />
-            </div>
-          ) : todayRides.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/5 p-12 text-center reveal">
-              <div className="empty-illustration">
-                <Car className="mx-auto h-16 w-16 text-white/20" />
-              </div>
-              <p className="mt-4 text-lg text-white/60">Nessuna corsa disponibile oggi</p>
-              <p className="mt-2 text-sm text-white/40">Sii il primo a offrire un passaggio!</p>
-              <Link href="/offri" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#e63946] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#c92a37] btn-press">
-                <Car className="h-4 w-4" />
-                Offri un passaggio
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {todayRides.map((ride, i) => (
-                <Link
-                  key={ride.id}
-                  href={`/corsa/${ride.id}`}
-                  className="group card-lift relative rounded-2xl border-l-4 border-l-[#e63946] border-y border-r border-white/10 bg-gradient-to-br from-[#1e2a4a] to-[#1a2339] p-5 active:scale-[0.98] touch-manipulation reveal"
-                  style={{ transitionDelay: `${i * 0.1}s` }}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e63946]/10 px-3 py-1 text-xs font-medium text-[#e63946]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#e63946] animate-pulse" />
-                      Oggi alle {ride.time.slice(0, 5)}
-                    </span>
-                    <span className="text-lg font-bold">
-                      {ride.price === 0 ? (
-                        <span className="text-green-400 text-sm">Gratis</span>
-                      ) : (
-                        <span className="gradient-text-gold">{ride.price}€</span>
-                      )}
-                    </span>
-                  </div>
-                  
-                  <h3 className="font-bold text-white text-lg mb-1">
-                    {ride.from_city} <span className="text-white/30">→</span> {ride.to_city}
-                  </h3>
-                  
-                  {/* Seat indicators */}
-                  <div className="flex items-center gap-1 mb-4">
-                    {Array.from({ length: ride.seats }).map((_, i) => (
-                      <div key={i} className="w-2 h-2 rounded-full bg-green-400" />
-                    ))}
-                    <span className="ml-2 text-xs text-white/50">{ride.seats} posti liberi</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 pt-3 border-t border-white/5">
-                    <div className="relative">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] ring-2 ring-white/5">
-                        {ride.profiles.avatar_url ? (
-                          <Image src={ride.profiles.avatar_url} alt="" width={40} height={40} className="h-full w-full rounded-full object-cover" />
-                        ) : (
-                          <Users className="h-5 w-5" />
-                        )}
-                      </div>
-                      {/* Online indicator */}
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1e2a4a] online-indicator" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white font-medium truncate">{ride.profiles.name}</p>
-                      <div className="flex items-center gap-1 text-xs text-white/50">
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        <span className="tabular-nums">{ride.profiles.rating || 5.0}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          <div className="mt-6 text-center sm:hidden">
-            <Link href="/cerca" className="inline-flex items-center gap-1 text-sm text-[#e63946]">
-              Vedi tutte le corse <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center reveal">
-            <h2 className="heading-premium text-3xl text-white sm:text-4xl">Come funziona</h2>
-            <p className="mt-4 text-white/60">In tre semplici passaggi</p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {steps.map((step, index) => (
-              <div
-                key={step.title}
-                className="group relative rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur transition-all hover:border-[#e63946]/30 hover:bg-white/[0.07] card-lift reveal"
-                style={{ transitionDelay: `${index * 0.15}s` }}
-              >
-                {/* Step number with animation */}
-                <div className="absolute -top-4 -left-2 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#e63946] to-[#c92a37] text-white font-bold text-lg shadow-lg shadow-[#e63946]/30">
-                  {index + 1}
-                </div>
-                
-                <div className="mb-6 mt-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e63946]/20 to-[#e63946]/5 text-[#e63946] ring-1 ring-[#e63946]/20 group-hover:scale-110 transition-transform">
-                  <step.icon className="h-8 w-8" />
-                </div>
-                
-                <h3 className="mb-3 text-xl font-semibold text-white">{step.title}</h3>
-                <p className="text-white/60 leading-relaxed">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* POPULAR ROUTES */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#12121e]">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-8 text-center reveal">
-            <h2 className="heading-premium text-3xl text-white sm:text-4xl">{t('home.popularRoutes.title')}</h2>
-            <p className="mt-4 text-white/60">{t('home.popularRoutes.subtitle')}</p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { from: "Ogliastra", to: "Cagliari" },
-              { from: "Nuoro", to: "Cagliari" },
-              { from: "Sassari", to: "Cagliari" },
-              { from: "Olbia", to: "Sassari" },
-              { from: "Oristano", to: "Cagliari" },
-              { from: "Ogliastra", to: "Olbia" },
-            ].map((route, i) => (
+          {/* Recent searches */}
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-[#999] mr-2">Cercato di recente:</span>
+            {recentRoutes.map((route) => (
               <Link
                 key={`${route.from}-${route.to}`}
                 href={`/cerca?from=${route.from}&to=${route.to}`}
-                className="group flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-[#1e2a4a] to-[#1a2339] p-5 transition-all hover:border-[#e63946]/30 card-lift reveal"
-                style={{ transitionDelay: `${i * 0.1}s` }}
+                className="px-3 py-1.5 bg-[#f5f5f0] dark:bg-[#1a1a1a] rounded-full text-[#333] dark:text-[#ccc] hover:bg-[#e5e5e5] dark:hover:bg-[#2a2a2a] transition-colors text-xs"
               >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#e63946]/20 to-[#e63946]/5 text-[#e63946] group-hover:scale-110 transition-transform">
-                    <Route className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-white">{route.from} → {route.to}</p>
-                    <p className="text-sm text-white/50">{t('home.popularRoutes.search')}</p>
+                {route.from} → {route.to}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT: iPhone Mockup (40%) */}
+        <div className="hidden lg:flex flex-1 items-center justify-center p-8 relative">
+          {/* Phone Frame */}
+          <div className="relative w-[280px] h-[560px] bg-[#0f0f0f] rounded-[40px] p-2 shadow-2xl">
+            {/* Screen */}
+            <div className="w-full h-full bg-white dark:bg-[#0f0f0f] rounded-[32px] overflow-hidden relative">
+              {/* App UI */}
+              <div className="h-full flex flex-col">
+                {/* Status bar */}
+                <div className="h-6 bg-[#f5f5f0] dark:bg-[#1a1a1a]" />
+                
+                {/* App header */}
+                <div className="px-4 py-3 border-b border-[#e5e5e5] dark:border-[#2a2a2a]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-[#e63946] rounded-lg flex items-center justify-center">
+                      <Car className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-semibold text-[#0f0f0f] dark:text-white">Andamus</span>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-white/30 transition-all group-hover:text-[#e63946] group-hover:translate-x-1" />
-              </Link>
+
+                {/* Ride cards */}
+                <div className="p-3 space-y-3">
+                  {/* Card 1 */}
+                  <div className="p-3 border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-xl">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-sm font-semibold text-[#0f0f0f] dark:text-white">Tortolì → Cagliari</p>
+                        <p className="text-xs text-[#999]">Oggi, 14:30</p>
+                      </div>
+                      <span className="text-sm font-bold text-[#e63946]">Gratis</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-[#e5e5e5] rounded-full" />
+                      <span className="text-xs text-[#666]">Marco</span>
+                    </div>
+                  </div>
+
+                  {/* Card 2 */}
+                  <div className="p-3 border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-xl">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-sm font-semibold text-[#0f0f0f] dark:text-white">Nuoro → Sassari</p>
+                        <p className="text-xs text-[#999]">Domani, 08:00</p>
+                      </div>
+                      <span className="text-sm font-bold text-[#0f0f0f] dark:text-white">15€</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-[#e5e5e5] rounded-full" />
+                      <span className="text-xs text-[#666]">Anna</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom nav */}
+                <div className="mt-auto border-t border-[#e5e5e5] dark:border-[#2a2a2a] p-3">
+                  <div className="flex justify-around">
+                    <div className="w-6 h-6 rounded-full bg-[#e63946]" />
+                    <div className="w-6 h-6 rounded-full bg-[#e5e5e5]" />
+                    <div className="w-6 h-6 rounded-full bg-[#e5e5e5]" />
+                    <div className="w-6 h-6 rounded-full bg-[#e5e5e5]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Reflection */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
+            </div>
+
+            {/* Notch */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#0f0f0f] rounded-full" />
+          </div>
+
+          {/* Floating badge */}
+          <div className="absolute top-1/4 right-8 bg-white dark:bg-[#1a1a1a] border border-[#e5e5e5] dark:border-[#2a2a2a] rounded-xl px-4 py-3 shadow-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🚗</span>
+              <div>
+                <p className="text-lg font-bold text-[#e63946]">{totalRides}</p>
+                <p className="text-xs text-[#999]">corse oggi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 2 — STATS BAR (thin, clean) */}
+      <section className="border-y border-[#e5e5e5] dark:border-[#2a2a2a] py-6">
+        <div className="max-w-5xl mx-auto px-6 sm:px-12">
+          <div className="grid grid-cols-3 divide-x divide-[#e5e5e5] dark:divide-[#2a2a2a]">
+            <div className="text-center px-4">
+              <p className="text-2xl sm:text-3xl font-bold text-[#0f0f0f] dark:text-white mb-1">
+                <AnimatedNumber value={2400} suffix="+" />
+              </p>
+              <p className="text-sm text-[#999]">sardi registrati</p>
+            </div>
+            <div className="text-center px-4">
+              <p className="text-2xl sm:text-3xl font-bold text-[#0f0f0f] dark:text-white mb-1">
+                <AnimatedNumber value={1800} suffix="+" />
+              </p>
+              <p className="text-sm text-[#999]">passaggi completati</p>
+            </div>
+            <div className="text-center px-4">
+              <p className="text-2xl sm:text-3xl font-bold text-[#0f0f0f] dark:text-white mb-1">
+                <AnimatedNumber value={48} />
+              </p>
+              <p className="text-sm text-[#999]">città collegate</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3 — COME FUNZIONA (alternating rows) */}
+      <section className="py-20 sm:py-24 px-6 sm:px-12 lg:px-16">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#0f0f0f] dark:text-white mb-16 text-center">
+            Come funziona
+          </h2>
+
+          {/* Row 1 - Text left, visual right */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20 pb-20 border-b border-[#e5e5e5] dark:border-[#2a2a2a]">
+            <div>
+              <span className="text-6xl font-bold text-[#e5e5e5] dark:text-[#2a2a2a]">01</span>
+              <h3 className="text-2xl font-bold text-[#0f0f0f] dark:text-white mt-2 mb-4">
+                Cerca il tuo percorso
+              </h3>
+              <p className="text-[#666] dark:text-[#999] leading-relaxed text-lg">
+                Inserisci partenza e destinazione. In pochi secondi vedi tutti i passaggi disponibili sulla tua rotta.
+              </p>
+            </div>
+            <div className="bg-[#0f0f0f] rounded-2xl p-6 sm:p-8">
+              {/* Search illustration */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-[#1a1a1a] rounded-lg">
+                  <MapPin className="w-5 h-5 text-[#e63946]" />
+                  <span className="text-white text-sm">Cagliari</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-[#1a1a1a] rounded-lg">
+                  <MapPin className="w-5 h-5 text-[#e63946]" />
+                  <span className="text-white text-sm">Sassari</span>
+                </div>
+                <div className="pt-3 space-y-2">
+                  <div className="p-3 border border-[#333] rounded-lg">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-white">Oggi, 15:00</span>
+                      <span className="text-[#e63946]">Gratis</span>
+                    </div>
+                  </div>
+                  <div className="p-3 border border-[#333] rounded-lg">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-white">Domani, 09:30</span>
+                      <span className="text-white">12€</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2 - Visual left, text right */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20 pb-20 border-b border-[#e5e5e5] dark:border-[#2a2a2a]">
+            <div className="order-2 lg:order-1 bg-[#f5f5f0] dark:bg-[#1a1a1a] rounded-2xl p-6 sm:p-8">
+              {/* Chat illustration */}
+              <div className="space-y-3">
+                <div className="flex justify-end">
+                  <div className="bg-[#e63946] text-white px-4 py-2 rounded-2xl rounded-br-md text-sm max-w-[200px]">
+                    Ciao! A che ora passi da Tortolì?
+                  </div>
+                </div>
+                <div className="flex justify-start">
+                  <div className="bg-white dark:bg-[#2a2a2a] text-[#0f0f0f] dark:text-white px-4 py-2 rounded-2xl rounded-bl-md text-sm max-w-[200px]">
+                    Ciao! Verso le 14:30. Ti va bene?
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <div className="bg-[#e63946] text-white px-4 py-2 rounded-2xl rounded-br-md text-sm max-w-[200px]">
+                    Perfetto, ci vediamo allora!
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 lg:order-2">
+              <span className="text-6xl font-bold text-[#e5e5e5] dark:text-[#2a2a2a]">02</span>
+              <h3 className="text-2xl font-bold text-[#0f0f0f] dark:text-white mt-2 mb-4">
+                Scriviti con il guidatore
+              </h3>
+              <p className="text-[#666] dark:text-[#999] leading-relaxed text-lg">
+                Contatta direttamente chi offre il passaggio. Niente WhatsApp, niente gruppi. Tutto in app, in sicurezza.
+              </p>
+            </div>
+          </div>
+
+          {/* Row 3 - Text left, visual right */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div>
+              <span className="text-6xl font-bold text-[#e5e5e5] dark:text-[#2a2a2a]">03</span>
+              <h3 className="text-2xl font-bold text-[#0f0f0f] dark:text-white mt-2 mb-4">
+                Parti insieme
+              </h3>
+              <p className="text-[#666] dark:text-[#999] leading-relaxed text-lg">
+                Condividi il viaggio, dividi i costi della benzina se vuoi, e conosci qualcuno nuovo lungo la strada.
+              </p>
+            </div>
+            <div className="bg-[#f5f5f0] dark:bg-[#1a1a1a] rounded-2xl p-6 sm:p-8 flex items-center justify-center">
+              {/* Car + people illustration */}
+              <div className="relative">
+                <Car className="w-24 h-24 text-[#0f0f0f] dark:text-white" />
+                <div className="absolute -bottom-2 -left-2 flex -space-x-2">
+                  <div className="w-8 h-8 bg-[#e63946] rounded-full border-2 border-white dark:border-[#0f0f0f]" />
+                  <div className="w-8 h-8 bg-[#333] rounded-full border-2 border-white dark:border-[#0f0f0f]" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4 — MAPPA SARDEGNA (always dark) */}
+      <section className="bg-[#0f0f0f] py-24 px-6 sm:px-12">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white text-center mb-4">
+            Colleghi tutta la Sardegna
+          </h2>
+          <p className="text-[#999] text-center mb-12 text-lg">
+            Da nord a sud, da est a ovest.
+          </p>
+
+          {/* SVG Map of Sardinia */}
+          <div className="relative h-[400px] mb-8">
+            <svg viewBox="0 0 400 400" className="w-full h-full">
+              {/* Sardinia island shape (simplified but recognizable) */}
+              <path
+                d="M200 20
+                   C150 25, 100 60, 80 110
+                   C70 140, 60 180, 65 220
+                   C70 260, 90 300, 120 330
+                   C140 350, 170 370, 200 380
+                   C240 370, 270 350, 290 330
+                   C320 300, 340 260, 345 220
+                   C350 180, 340 140, 330 110
+                   C310 60, 260 25, 200 20Z"
+                fill="#1a1a1a"
+                stroke="#333"
+                strokeWidth="2"
+              />
+              
+              {/* City dots and labels */}
+              {/* Cagliari - south */}
+              <circle cx="200" cy="350" r="6" fill="white" />
+              <text x="215" y="355" fill="white" fontSize="12">Cagliari</text>
+              
+              {/* Sassari - northwest */}
+              <circle cx="120" cy="120" r="6" fill="white" />
+              <text x="85" y="110" fill="white" fontSize="12">Sassari</text>
+              
+              {/* Olbia - northeast */}
+              <circle cx="280" cy="140" r="6" fill="white" />
+              <text x="295" y="145" fill="white" fontSize="12">Olbia</text>
+              
+              {/* Nuoro - center-east */}
+              <circle cx="240" cy="200" r="6" fill="white" />
+              <text x="255" y="205" fill="white" fontSize="12">Nuoro</text>
+              
+              {/* Oristano - west */}
+              <circle cx="100" cy="220" r="6" fill="white" />
+              <text x="60" y="235" fill="white" fontSize="12">Oristano</text>
+              
+              {/* Tortolì - east coast */}
+              <circle cx="310" cy="230" r="6" fill="white" />
+              <text x="325" y="235" fill="white" fontSize="12">Tortolì</text>
+
+              {/* Animated route lines */}
+              {/* Cagliari-Nuoro */}
+              <line x1="200" y1="350" x2="240" y2="200" stroke="#e63946" strokeWidth="2" strokeOpacity="0.7" 
+                strokeDasharray="200" strokeDashoffset="200" className="animate-draw-line" />
+              {/* Cagliari-Sassari */}
+              <line x1="200" y1="350" x2="120" y2="120" stroke="#e63946" strokeWidth="2" strokeOpacity="0.7" 
+                strokeDasharray="300" strokeDashoffset="300" className="animate-draw-line" style={{ animationDelay: '0.5s' }} />
+              {/* Nuoro-Sassari */}
+              <line x1="240" y1="200" x2="120" y2="120" stroke="#e63946" strokeWidth="2" strokeOpacity="0.7" 
+                strokeDasharray="150" strokeDashoffset="150" className="animate-draw-line" style={{ animationDelay: '1s' }} />
+              {/* Nuoro-Olbia */}
+              <line x1="240" y1="200" x2="280" y2="140" stroke="#e63946" strokeWidth="2" strokeOpacity="0.7" 
+                strokeDasharray="100" strokeDashoffset="100" className="animate-draw-line" style={{ animationDelay: '1.5s' }} />
+              {/* Tortolì-Cagliari */}
+              <line x1="310" y1="230" x2="200" y2="350" stroke="#e63946" strokeWidth="2" strokeOpacity="0.7" 
+                strokeDasharray="180" strokeDashoffset="180" className="animate-draw-line" style={{ animationDelay: '2s' }} />
+            </svg>
+          </div>
+
+          {/* Distance chips */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { route: "Tortolì → Cagliari", dist: "150 km", time: "~2h" },
+              { route: "Nuoro → Sassari", dist: "130 km", time: "~1h30" },
+              { route: "Olbia → Cagliari", dist: "270 km", time: "~3h" }
+            ].map((item) => (
+              <div key={item.route} className="px-4 py-2 bg-[#1a1a1a] rounded-full text-sm">
+                <span className="text-white">{item.route}</span>
+                <span className="text-[#666] mx-2">·</span>
+                <span className="text-[#999]">{item.dist}</span>
+                <span className="text-[#666] mx-2">·</span>
+                <span className="text-[#e63946]">{item.time}</span>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SOCIAL PROOF BAR */}
-      <section className="px-4 py-8 sm:px-6 lg:px-8 bg-gradient-to-r from-[#e63946]/10 via-[#e63946]/5 to-[#e63946]/10 border-y border-[#e63946]/10">
-        <div className="mx-auto max-w-4xl text-center reveal">
-          <p className="text-lg text-white/80">
-            Unisciti a <span className="font-bold text-white tabular-nums"><AnimatedCounter end={stats.users} /></span> sardi che viaggiano insieme
+      {/* SECTION 5 — APP DOWNLOAD */}
+      <section className="bg-[#f5f5f0] dark:bg-[#0f0f0f] py-20 px-6 sm:px-12 text-center">
+        <div className="max-w-xl mx-auto">
+          <p className="text-sm text-[#e63946] font-medium uppercase tracking-wide mb-4">
+            Mobile App
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#0f0f0f] dark:text-white mb-4">
+            Presto su iOS e Android
+          </h2>
+          <p className="text-[#666] dark:text-[#999] mb-8 text-lg">
+            Nel frattempo, Andamus funziona perfettamente dal browser del tuo telefono.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <button disabled className="px-6 py-3 bg-[#0f0f0f] text-white rounded-lg opacity-50 cursor-not-allowed flex items-center gap-2">
+              <span>🍎</span> App Store
+              <span className="text-xs text-[#999]">Coming Soon</span>
+            </button>
+            <button disabled className="px-6 py-3 bg-[#0f0f0f] text-white rounded-lg opacity-50 cursor-not-allowed flex items-center gap-2">
+              <span>▶</span> Google Play
+              <span className="text-xs text-[#999]">Coming Soon</span>
+            </button>
+          </div>
+          <p className="text-sm text-[#999]">
+            Aggiungi alla schermata home per un&apos;esperienza app nativa →
           </p>
         </div>
       </section>
 
-      {/* EVENTI SPECIALI */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-[#0d0d16]">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-8 text-center reveal">
-            <h2 className="heading-premium text-3xl text-white sm:text-4xl">Eventi Speciali</h2>
-            <p className="mt-4 text-white/60">Le tradizioni sarde più importanti - trova un passaggio!</p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { name: "Sartiglia di Oristano", date: "02-25", month: 2, day: 25, description: "La giostra equestre più famosa della Sardegna", icon: "🏇", city: "Oristano" },
-              { name: "Cavalcata Sarda", date: "05-18", month: 5, day: 18, description: "Grande sfilata a cavallo per le vie di Sassari", icon: "🐴", city: "Sassari" },
-              { name: "Fiera di Cagliari", date: "05-01", month: 5, day: 1, description: "Tradizionale fiera di Sant'Efisio", icon: "🎪", city: "Cagliari" },
-              { name: "Ferragosto", date: "08-15", month: 8, day: 15, description: "Il grande esodo estivo - prenota il tuo passaggio", icon: "🏖️", city: "" },
-              { name: "Pasqua", date: "04-20", month: 4, day: 20, description: "Torna a casa per le festività pasquali", icon: "🐣", city: "" },
-              { name: "Natale", date: "12-25", month: 12, day: 25, description: "Riunisciti con la famiglia per le feste", icon: "🎄", city: "" },
-            ].map((event, i) => {
-              const currentYear = new Date().getFullYear();
-              const eventDate = new Date(currentYear, event.month - 1, event.day);
-              if (eventDate < new Date()) {
-                eventDate.setFullYear(currentYear + 1);
-              }
-              const dateStr = eventDate.toISOString().split('T')[0];
-              
-              return (
-                <Link
-                  key={event.name}
-                  href={`/cerca?date=${dateStr}${event.city ? `&to=${event.city}` : ''}`}
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#1e2a4a] to-[#1a2339] p-6 transition-all hover:border-[#e63946]/30 card-lift reveal"
-                  style={{ transitionDelay: `${i * 0.1}s` }}
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#e63946]/10 to-transparent rounded-bl-full" />
-                  
-                  <div className="relative">
-                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{event.icon}</div>
-                    <h3 className="text-lg font-semibold text-white mb-1">{event.name}</h3>
-                    <p className="text-sm text-white/60 mb-3">{event.description}</p>
-                    
-                    <div className="flex items-center gap-2 text-[#e63946]">
-                      <Calendar className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        {eventDate.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })}
-                      </span>
-                    </div>
-                    
-                    <div className="mt-4 flex items-center gap-1 text-sm text-white/40 group-hover:text-[#e63946] transition-colors">
-                      <span>Cerca passaggi</span>
-                      <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+      {/* SECTION 6 — FAQ ACCORDION */}
+      <section className="py-20 px-6 sm:px-12">
+        <div className="max-w-[720px] mx-auto">
+          <h2 className="text-3xl font-bold text-[#0f0f0f] dark:text-white mb-12 text-center">
+            Domande frequenti
+          </h2>
+          <div>
+            {faqs.map((faq, i) => (
+              <FAQItem
+                key={i}
+                question={faq.q}
+                answer={faq.a}
+                isOpen={openFAQ === i}
+                onClick={() => setOpenFAQ(openFAQ === i ? null : i)}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* STATS BAR with Animated Counters */}
-      <section className="border-y border-white/10 bg-[#0a0a12] px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-8 text-center sm:grid-cols-3 reveal">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-b from-[#e63946]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative p-6">
-                <p className="heading-premium text-5xl text-[#e63946]">
-                  <AnimatedCounter end={stats.users} suffix="+" />
-                </p>
-                <p className="mt-2 text-white/60">{t('home.stats.users')}</p>
-              </div>
-            </div>
-            <div className="relative group sm:border-x sm:border-white/10">
-              <div className="absolute inset-0 bg-gradient-to-b from-[#e63946]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative p-6">
-                <p className="heading-premium text-5xl text-[#e63946]">
-                  <AnimatedCounter end={stats.rides} suffix="+" />
-                </p>
-                <p className="mt-2 text-white/60">{t('home.stats.rides')}</p>
-              </div>
-            </div>
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-b from-[#e63946]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative p-6">
-                <p className="heading-premium text-5xl text-[#e63946]">
-                  <AnimatedCounter end={stats.cities} />
-                </p>
-                <p className="mt-2 text-white/60">{t('home.stats.cities')}</p>
-              </div>
-            </div>
+      {/* SECTION 7 — FINAL CTA (dark) */}
+      <section className="bg-[#0f0f0f] py-24 px-6 sm:px-12 text-center">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
+            Pronto a viaggiare?
+          </h2>
+          <p className="text-[#999] text-lg mb-10">
+            Unisciti a migliaia di sardi che viaggiano insieme ogni giorno.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <Link
+              href="/cerca"
+              className="px-8 py-4 bg-[#e63946] hover:bg-[#c92a37] text-white font-semibold rounded-full inline-flex items-center gap-2 transition-colors"
+            >
+              Cerca un passaggio
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/offri"
+              className="px-8 py-4 border border-white text-white hover:bg-white hover:text-[#0f0f0f] font-semibold rounded-full transition-colors"
+            >
+              Offri un passaggio
+            </Link>
           </div>
+          <p className="text-sm text-[#666]">
+            Gratuito · Nessuna carta richiesta · Funziona subito
+          </p>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#0a0a12] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#e63946] to-[#c92a37]">
-                <Car className="h-6 w-6 text-white" />
+      <footer className="border-t border-[#e5e5e5] dark:border-[#2a2a2a] py-16 px-6 sm:px-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+            {/* Col 1 */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-[#e63946] rounded-lg flex items-center justify-center">
+                  <Car className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-[#0f0f0f] dark:text-white">Andamus</span>
               </div>
-              <span className="text-xl font-bold text-white">Andamus</span>
-            </Link>
+              <p className="text-sm text-[#999] mb-4">Il carpooling dei sardi.</p>
+              <p className="text-xs text-[#999]">© {new Date().getFullYear()} Andamus</p>
+            </div>
 
-            <nav className="flex flex-wrap justify-center gap-6">
-              <Link href="/cerca" className="text-sm text-white/60 transition-colors hover:text-white">Cerca</Link>
-              <Link href="/offri" className="text-sm text-white/60 transition-colors hover:text-white">Offri</Link>
-              <Link href="/profilo" className="text-sm text-white/60 transition-colors hover:text-white">Profilo</Link>
-            </nav>
+            {/* Col 2 */}
+            <div>
+              <h4 className="font-semibold text-[#0f0f0f] dark:text-white mb-4">Prodotto</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/cerca" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Cerca</Link></li>
+                <li><Link href="/offri" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Offri</Link></li>
+                <li><Link href="/" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Come funziona</Link></li>
+                <li><Link href="/" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">FAQ</Link></li>
+              </ul>
+            </div>
 
-            <p className="text-sm text-white/40">
-              {t('home.footer.madeWith')} <span className="text-[#e63946]">♥</span> {t('home.footer.inSardinia')}
-            </p>
-          </div>
+            {/* Col 3 */}
+            <div>
+              <h4 className="font-semibold text-[#0f0f0f] dark:text-white mb-4">Account</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Accedi</Link></li>
+                <li><Link href="/" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Registrati</Link></li>
+                <li><Link href="/profilo" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Profilo</Link></li>
+                <li><Link href="/" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Sicurezza</Link></li>
+              </ul>
+            </div>
 
-          <div className="mt-8 border-t border-white/10 pt-8 text-center">
-            <p className="text-sm text-white/40">© {new Date().getFullYear()} Andamus. {t('home.footer.rights')}</p>
+            {/* Col 4 */}
+            <div>
+              <h4 className="font-semibold text-[#0f0f0f] dark:text-white mb-4">Contatti</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="mailto:info@andamus.it" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Email</a></li>
+                <li><a href="#" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Instagram</a></li>
+                <li><a href="#" className="text-[#666] hover:text-[#0f0f0f] dark:hover:text-white transition-colors">Facebook</a></li>
+              </ul>
+              <p className="text-xs text-[#e63946] mt-4">Fatto con ❤️ in Sardegna</p>
+            </div>
           </div>
         </div>
       </footer>
+
     </div>
   );
 }
