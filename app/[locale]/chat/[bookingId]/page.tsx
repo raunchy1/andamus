@@ -3,20 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { 
-  ArrowLeft, 
-  Send, 
-  Loader2,
-  AlertCircle,
-  User,
-  MapPin,
-  Mic,
-  X,
-  Image as ImageIcon,
-  StopCircle,
-  Play,
-  Pause
-} from "lucide-react";
+import { Loader2, AlertCircle, X, Mic, Play, Pause } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
@@ -456,22 +443,22 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-accent" />
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <AlertCircle className="mb-4 h-16 w-16 text-destructive" />
-        <h1 className="mb-2 text-2xl font-bold text-foreground">{error}</h1>
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+        <AlertCircle className="mb-4 h-16 w-16 text-error" />
+        <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-on-surface">{error}</h1>
         <Link
           href="/profilo"
-          className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <span className="material-symbols-outlined text-sm">arrow_back</span>
           Torna al profilo
         </Link>
       </div>
@@ -481,147 +468,162 @@ export default function ChatPage() {
   const otherParticipant = getOtherParticipant();
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-background">
+    <div className="flex h-[100dvh] flex-col bg-[#0a0a0a]">
       {/* Chat Header */}
-      <header className="border-b border-border bg-card px-4 py-4">
-        <div className="mx-auto flex max-w-4xl items-center gap-4">
-          <Link
-            href="/profilo"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          
-          {otherParticipant && (
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted overflow-hidden">
-                {otherParticipant.avatar_url ? (
-                  <Image
-                    src={otherParticipant.avatar_url}
-                    alt={otherParticipant.name}
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <User className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <div>
-                <h2 className="font-semibold text-foreground">{otherParticipant.name}</h2>
-                {booking && (
-                  <p className="text-xs text-muted-foreground">
-                    {booking.rides.from_city} → {booking.rides.to_city}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
+      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-14 pb-4 shrink-0">
+        <div className="flex flex-col">
+          <span className="font-semibold uppercase tracking-widest text-[11px] text-primary">ANDAMUS LIVE</span>
+          <h1 className="font-extrabold tracking-tighter text-2xl uppercase text-on-surface">
+            {otherParticipant?.name || "Chat"}
+          </h1>
+        </div>
+        <div className="flex items-center gap-4 pb-1">
+          <button className="material-symbols-outlined text-on-surface hover:opacity-80 transition-opacity">tune</button>
+          <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
+            {otherParticipant?.avatar_url ? (
+              <img src={otherParticipant.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="material-symbols-outlined text-on-surface-variant">person</span>
+            )}
+          </div>
         </div>
       </header>
 
+      {/* Route Context Header */}
+      <div className="bg-[#131313] px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <div className="w-[1px] h-4 bg-outline-variant/30" />
+            <div className="w-2 h-2 rounded-full bg-outline" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80">
+              {booking?.rides.from_city} → {booking?.rides.to_city}
+            </span>
+            <span className="text-xs text-on-surface/60">
+              {booking?.rides.date} · {booking?.rides.time.slice(0,5)}
+            </span>
+          </div>
+        </div>
+        <div className="bg-surface-container-high px-3 py-2 rounded-lg">
+          <span className="text-[10px] font-extrabold text-primary">LIVE TRACKING</span>
+        </div>
+      </div>
+
       {/* Messages */}
       <div 
-        className="flex-1 overflow-y-auto px-4 py-4"
+        className="flex-1 overflow-y-auto px-6 py-8 chat-scroll flex flex-col gap-8"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
-        <div className="mx-auto max-w-4xl space-y-3 pb-4">
-          {messages.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">Inizia la conversazione...</p>
-            </div>
-          ) : (
-            messages.map((message) => {
-              const isMine = isMyMessage(message.sender_id);
-              return (
-                <div
-                  key={message.id}
-                  className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                      isMine
-                        ? "bg-accent text-white"
-                        : "bg-muted text-foreground"
-                    }`}
-                  >
-                    {/* Image Message */}
-                    {message.type === 'image' && message.media_url && (
-                      <div className="mb-2">
-                        <Image
-                          src={message.media_url}
-                          alt="Immagine condivisa"
-                          width={400}
-                          height={300}
-                          className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => setZoomedImage(message.media_url!)}
-                        />
-                      </div>
-                    )}
+        {/* Date Divider */}
+        <div className="flex justify-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface/40">Oggi</span>
+        </div>
 
-                    {/* Location Message */}
-                    {message.type === 'location' && message.location_lat && message.location_lng && (
-                      <div className="mb-2">
-                        <a
-                          href={`https://maps.google.com/?q=${message.location_lat},${message.location_lng}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
-                        >
+        {messages.length === 0 ? (
+          <div className="py-12 text-center">
+            <p className="text-on-surface-variant">Inizia la conversazione...</p>
+          </div>
+        ) : (
+          messages.map((message) => {
+            const isMine = isMyMessage(message.sender_id);
+            return (
+              <div
+                key={message.id}
+                className={`flex flex-col ${isMine ? "items-end self-end" : "items-start"} max-w-[85%] gap-2`}
+              >
+                <div
+                  className={`${
+                    isMine
+                      ? "bg-primary/10 border border-primary/20 rounded-xl rounded-br-none"
+                      : "bg-surface-container-low rounded-xl rounded-bl-none"
+                  } p-4 text-sm leading-relaxed text-on-surface`}
+                >
+                  {/* Image Message */}
+                  {message.type === 'image' && message.media_url && (
+                    <div className="mb-2">
+                      <Image
+                        src={message.media_url}
+                        alt="Immagine condivisa"
+                        width={400}
+                        height={300}
+                        className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setZoomedImage(message.media_url!)}
+                      />
+                    </div>
+                  )}
+
+                  {/* Location Message */}
+                  {message.type === 'location' && message.location_lat && message.location_lng && (
+                    <div className="mb-2">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-primary">location_on</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-xs uppercase tracking-tight text-primary">Posizione Condivisa</span>
+                          <span className="text-[10px] text-primary/70">Lat: {message.location_lat.toFixed(4)}</span>
+                        </div>
+                      </div>
+                      <a
+                        href={`https://maps.google.com/?q=${message.location_lat},${message.location_lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
                           <Image
                             src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
                             alt="Mappa posizione"
-                            width={300}
-                            height={150}
-                            className="rounded-lg max-w-full"
+                            fill
+                            className="object-cover grayscale opacity-60"
                           />
-                          <div className="flex items-center gap-2 mt-2 text-sm">
-                            <MapPin className="w-4 h-4" />
-                            <span>Apri in Google Maps</span>
-                          </div>
-                        </a>
-                      </div>
-                    )}
-
-                    {/* Audio Message */}
-                    {message.type === 'audio' && message.media_url && (
-                      <div className="flex items-center gap-3 mb-2">
-                        <button
-                          onClick={() => toggleAudio(message.media_url!)}
-                          className={`flex h-9 w-9 items-center justify-center rounded-full ${isMine ? 'bg-white/20' : 'bg-foreground/10'}`}
-                        >
-                          {playingAudio === message.media_url ? (
-                            <Pause className="h-4 w-4" />
-                          ) : (
-                            <Play className="h-4 w-4" />
-                          )}
-                        </button>
-                        <div className="flex-1">
-                          <div className={`h-1.5 rounded-full overflow-hidden ${isMine ? 'bg-white/20' : 'bg-foreground/10'}`}>
-                            <div className={`h-full w-1/3 rounded-full ${isMine ? 'bg-white/60' : 'bg-foreground/40'}`} />
-                          </div>
                         </div>
-                        <span className="text-xs">
-                          {formatDuration(message.duration || 0)}
-                        </span>
-                      </div>
-                    )}
+                        <div className="flex items-center gap-2 mt-2 text-sm text-primary">
+                          <span className="material-symbols-outlined text-sm">location_on</span>
+                          <span>Apri in Google Maps</span>
+                        </div>
+                      </a>
+                    </div>
+                  )}
 
-                    {/* Text Content */}
-                    {message.content && (
-                      <p className="text-sm">{message.content}</p>
-                    )}
-                    
-                    <p className={`mt-1 text-right text-xs ${isMine ? "text-white/70" : "text-muted-foreground"}`}>
-                      {formatTime(message.created_at)}
-                    </p>
-                  </div>
+                  {/* Audio Message */}
+                  {message.type === 'audio' && message.media_url && (
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => toggleAudio(message.media_url!)}
+                        className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary"
+                      >
+                        {playingAudio === message.media_url ? (
+                          <Pause className="w-5 h-5" />
+                        ) : (
+                          <Play className="w-5 h-5 ml-0.5" />
+                        )}
+                      </button>
+                      <div className="flex items-end gap-[2px] h-8">
+                        {[2, 4, 6, 3, 5, 8, 4, 6, 3, 5, 2, 7, 4, 5].map((h, i) => (
+                          <div key={i} className="waveform-bar" style={{ height: `${h * 3}px` }} />
+                        ))}
+                      </div>
+                      <span className="text-[10px] font-bold text-primary">{formatDuration(message.duration || 0)}</span>
+                    </div>
+                  )}
+
+                  {/* Text Content */}
+                  {message.content && message.type === 'text' && (
+                    <p className={isMine ? "text-primary" : "text-on-surface"}>{message.content}</p>
+                  )}
+                  {message.content && message.type !== 'text' && (
+                    <p className="text-on-surface/60 text-xs mt-2">{message.content}</p>
+                  )}
                 </div>
-              );
-            })
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+                <span className="text-[10px] font-medium text-on-surface/40 px-1">{formatTime(message.created_at)}</span>
+              </div>
+            );
+          })
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Image Preview Modal */}
@@ -644,14 +646,14 @@ export default function ChatPage() {
             <div className="flex gap-2 mt-4">
               <button
                 onClick={() => setImagePreview(null)}
-                className="flex-1 py-3 rounded-full bg-white/10 text-white font-medium hover:bg-white/20"
+                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20"
               >
                 Annulla
               </button>
               <button
                 onClick={sendImage}
                 disabled={uploadingImage}
-                className="flex-1 py-3 rounded-full bg-accent text-white font-medium hover:bg-accent/90 disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-medium hover:opacity-90 disabled:opacity-50"
               >
                 {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Invia'}
               </button>
@@ -684,23 +686,18 @@ export default function ChatPage() {
       )}
 
       {/* Message Input */}
-      <form
-        onSubmit={handleSendMessage}
-        className="border-t border-border bg-card px-3 sm:px-4 py-3 safe-area-pb"
-      >
-        {/* Recording Indicator */}
+      <footer className="bg-[#131313] px-6 pb-10 pt-6 shrink-0 safe-area-pb">
         {isRecording && (
-          <div className="mx-auto max-w-4xl mb-3 flex items-center justify-between bg-destructive/10 border border-destructive/20 rounded-full px-4 py-2">
+          <div className="mb-3 flex items-center justify-between bg-error/10 border border-error/20 rounded-full px-4 py-2">
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-              <span className="text-destructive text-sm font-medium">Registrazione...</span>
+              <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
+              <span className="text-error text-sm font-medium">Registrazione...</span>
             </div>
-            <span className="text-destructive font-mono text-sm">{formatDuration(recordingTime)}</span>
+            <span className="text-error font-mono text-sm">{formatDuration(recordingTime)}</span>
           </div>
         )}
 
-        <div className="mx-auto max-w-4xl flex items-center gap-2">
-          {/* Image Upload Button */}
+        <div className="flex items-center gap-4 bg-surface-container-highest rounded-2xl px-4 py-3 border-b-2 border-primary">
           <input
             type="file"
             accept="image/*"
@@ -712,48 +709,30 @@ export default function ChatPage() {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isRecording}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50"
-            aria-label="Invia foto"
+            className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
           >
-            <ImageIcon className="h-5 w-5" />
+            <span className="material-symbols-outlined">add</span>
           </button>
 
-          {/* Location Button */}
-          <button
-            type="button"
-            onClick={sendLocation}
-            disabled={isRecording}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50"
-            aria-label="Invia posizione"
-          >
-            <MapPin className="h-5 w-5" />
-          </button>
-
-          {/* Text Input */}
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder={isRecording ? "Registrazione..." : "Messaggio..."}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            placeholder={isRecording ? "Registrazione..." : "Scrivi un messaggio..."}
             disabled={isRecording}
-            className="flex-1 rounded-full border border-border bg-muted px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-accent disabled:opacity-50"
+            className="flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-on-surface/30 text-on-surface disabled:opacity-50"
           />
 
-          {/* Voice/Message Button */}
-          {newMessage.trim() ? (
+          <div className="flex items-center gap-3">
             <button
-              type="submit"
-              disabled={sending}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-white transition-colors hover:bg-accent/90 disabled:opacity-50"
-              aria-label="Invia messaggio"
+              type="button"
+              onClick={sendLocation}
+              disabled={isRecording}
+              className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
             >
-              {sending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
+              <span className="material-symbols-outlined">location_on</span>
             </button>
-          ) : (
             <button
               type="button"
               onMouseDown={startRecording}
@@ -761,18 +740,25 @@ export default function ChatPage() {
               onTouchStart={startRecording}
               onTouchEnd={stopRecording}
               onMouseLeave={isRecording ? stopRecording : undefined}
-              className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors ${
-                isRecording 
-                  ? "bg-destructive text-white" 
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-              aria-label={isRecording ? "Ferma registrazione" : "Registra audio"}
+              disabled={!!newMessage.trim()}
+              className={`text-on-surface/60 hover:text-primary transition-colors disabled:opacity-0 ${isRecording ? 'text-error' : ''}`}
             >
-              {isRecording ? <StopCircle className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              <span className="material-symbols-outlined">mic</span>
             </button>
-          )}
+            <button
+              onClick={() => handleSendMessage()}
+              disabled={sending || !newMessage.trim() || isRecording}
+              className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50"
+            >
+              {sending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>send</span>
+              )}
+            </button>
+          </div>
         </div>
-      </form>
+      </footer>
     </div>
   );
 }

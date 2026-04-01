@@ -12,7 +12,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#e63946",
+  themeColor: "#131313",
 };
 
 export async function generateMetadata({ 
@@ -119,7 +119,7 @@ export async function generateMetadata({
     },
     appleWebApp: {
       capable: true,
-      statusBarStyle: "default",
+      statusBarStyle: "black-translucent",
       title: "Andamus",
     },
     formatDetection: {
@@ -139,7 +139,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
         {/* JSON-LD Structured Data */}
         <Script
@@ -179,7 +179,7 @@ export default async function LocaleLayout({
           }}
         />
       </head>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className="antialiased bg-[#131313] text-[#e5e2e1]" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider>
             <Navbar />
@@ -191,20 +191,20 @@ export default async function LocaleLayout({
               toastOptions={{
                 duration: 4000,
                 style: {
-                  background: "var(--card)",
-                  color: "var(--card-foreground)",
-                  border: "1px solid var(--border)",
+                  background: "#1c1b1b",
+                  color: "#e5e2e1",
+                  border: "1px solid #2a2a2a",
                 },
                 success: {
                   iconTheme: {
-                    primary: "#22c55e",
-                    secondary: "var(--card)",
+                    primary: "#6fd8cc",
+                    secondary: "#1c1b1b",
                   },
                 },
                 error: {
                   iconTheme: {
                     primary: "#e63946",
-                    secondary: "var(--card)",
+                    secondary: "#1c1b1b",
                   },
                 },
               }}

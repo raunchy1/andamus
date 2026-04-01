@@ -10,14 +10,15 @@ import {
   Star, 
   X,
   CheckCheck,
-  Loader2
+  Loader2,
+  BellRing
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 
 interface Notification {
   id: string;
-  type: 'booking_request' | 'booking_accepted' | 'booking_rejected' | 'new_message' | 'new_review';
+  type: 'booking_request' | 'booking_accepted' | 'booking_rejected' | 'new_message' | 'new_review' | 'ride_alert';
   title: string;
   body: string;
   read: boolean;
@@ -36,6 +37,7 @@ const notificationIcons = {
   booking_rejected: X,
   new_message: MessageCircle,
   new_review: Star,
+  ride_alert: BellRing,
 };
 
 const notificationColors = {
@@ -44,6 +46,7 @@ const notificationColors = {
   booking_rejected: "bg-red-500/20 text-red-400",
   new_message: "bg-purple-500/20 text-purple-400",
   new_review: "bg-yellow-500/20 text-yellow-400",
+  ride_alert: "bg-orange-500/20 text-orange-400",
 };
 
 function timeAgo(date: string) {

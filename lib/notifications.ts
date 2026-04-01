@@ -5,7 +5,8 @@ export type NotificationType =
   | 'booking_accepted' 
   | 'booking_rejected' 
   | 'new_message' 
-  | 'new_review';
+  | 'new_review'
+  | 'ride_alert';
 
 interface CreateNotificationParams {
   userId: string;
@@ -96,6 +97,16 @@ export async function notifyNewReview(reviewedId: string, reviewerName: string, 
     type: 'new_review',
     title: 'Hai ricevuto una recensione',
     body: `${reviewerName} ha lasciato una recensione sul tuo passaggio`,
+    rideId,
+  });
+}
+
+export async function notifyRideAlert(userId: string, fromCity: string, toCity: string, rideId: string) {
+  return createNotification({
+    userId,
+    type: 'ride_alert',
+    title: 'Nuovo passaggio disponibile!',
+    body: `Trovato un passaggio da ${fromCity} a ${toCity}`,
     rideId,
   });
 }

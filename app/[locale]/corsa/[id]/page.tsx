@@ -3,15 +3,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { 
-  ArrowLeft, MapPin, Calendar, Clock,
-  User, Star, Loader2, AlertCircle,
-  MessageCircle, Share2, CheckCircle2, Car,
-  MapPinned, FileText, ChevronLeft
-} from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { RouteMap } from "@/components/RouteMap";
-import { WeatherWidget } from "@/components/WeatherWidget";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -49,37 +42,18 @@ interface Ride {
   notes: string | null;
   status: string;
   created_at: string;
+  smoking_allowed?: boolean | null;
+  pets_allowed?: boolean | null;
+  large_luggage?: boolean | null;
+  music_preference?: "quiet" | "music" | "talk" | null;
+  women_only?: boolean | null;
+  students_only?: boolean | null;
   profiles: {
     name: string;
     avatar_url: string | null;
     rating: number;
     rides_count: number;
   };
-}
-
-function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md" | "lg" }) {
-  const sizeClasses = {
-    sm: "h-3.5 w-3.5",
-    md: "h-4 w-4",
-    lg: "h-5 w-5"
-  };
-  
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          className={`${sizeClasses[size]} ${
-            star <= rating
-              ? "fill-yellow-400 text-yellow-400"
-              : star - 0.5 <= rating
-              ? "fill-yellow-400/50 text-yellow-400"
-              : "text-muted"
-          }`}
-        />
-      ))}
-    </div>
-  );
 }
 
 export default function RideDetailPage() {
@@ -96,6 +70,7 @@ export default function RideDetailPage() {
   const [similarRides, setSimilarRides] = useState<Ride[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [existingBooking, setExistingBooking] = useState<Booking | null>(null);
+  const [stops, setStops] = useState<{ city: string; order_index: number }[]>([]);
 
   const supabase = createClient();
 
@@ -122,12 +97,16 @@ export default function RideDetailPage() {
 
         setRide(data);
 
+        const { data: stopsData } = await supabase
+          .from("ride_stops")
+          .select("city, order_index")
+          .eq("ride_id", rideId)
+          .order("order_index", { ascending: true });
+        setStops(stopsData || []);
+
         const { data: reviewsData } = await supabase
           .from("reviews")
-          .select(`
-            *,
-            reviewer:profiles(name, avatar_url)
-          `)
+          .select(`*, reviewer:profiles(name, avatar_url)`)
           .eq("reviewed_id", data.driver_id)
           .order("created_at", { ascending: false })
           .limit(3);
@@ -177,7 +156,6 @@ export default function RideDetailPage() {
       weekday: "long", 
       day: "numeric", 
       month: "long",
-      year: "numeric"
     });
   };
 
@@ -255,19 +233,19 @@ export default function RideDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-accent" />
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!ride) {
     return (
-      <div className="min-h-screen bg-background pt-20 flex flex-col items-center justify-center px-4">
-        <AlertCircle className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-bold text-foreground">Passaggio non trovato</h1>
-        <Link href="/cerca" className="mt-6 flex items-center gap-2 text-accent">
-          <ArrowLeft className="h-4 w-4" /> Torna alla ricerca
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4">
+        <AlertCircle className="h-16 w-16 text-error mb-4" />
+        <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Passaggio non trovato</h1>
+        <Link href="/cerca" className="mt-6 flex items-center gap-2 text-primary">
+          <span className="material-symbols-outlined text-sm">arrow_back</span> Torna alla ricerca
         </Link>
       </div>
     );
@@ -276,262 +254,288 @@ export default function RideDetailPage() {
   const isMyRide = user?.id === ride.driver_id;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card px-4 py-4">
-        <div className="mx-auto max-w-5xl flex items-center justify-between">
-          <Link href="/cerca" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ChevronLeft className="h-5 w-5" />
-            <span className="hidden sm:inline">Indietro</span>
-          </Link>
-          <button 
-            onClick={handleShare}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {copied ? <CheckCircle2 className="h-4 w-4 text-green-500" /> : <Share2 className="h-4 w-4" />}
-            {copied ? "Copiato" : "Condividi"}
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-surface pb-32">
+      {/* Top Navigation */}
+      <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-6 pt-12">
+        <button onClick={() => router.back()} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
+          <span className="material-symbols-outlined text-2xl">arrow_back</span>
+        </button>
+        <button onClick={handleShare} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
+          <span className="material-symbols-outlined text-2xl">share</span>
+        </button>
+      </header>
 
-      <div className="mx-auto max-w-5xl px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Route Header - Large Typography */}
-            <div>
-              <h1 className="text-4xl sm:text-5xl font-bold text-foreground tracking-tight">
-                {ride.from_city} <span className="text-muted-foreground">→</span> {ride.to_city}
-              </h1>
-              
-              {/* Date/Time/Seats Row */}
-              <div className="mt-4 flex flex-wrap items-center gap-4 text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  <span className="font-medium">{formatDate(ride.date)}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  <span>{ride.time.slice(0, 5)}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  <span>{ride.seats} posti</span>
-                </div>
-              </div>
+      <main className="h-full overflow-y-auto hide-scrollbar pb-32">
+        {/* Full Bleed Map Header */}
+        <section className="relative h-[380px] w-full">
+          <div className="absolute inset-0 bg-surface-container-low">
+            <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center grayscale" />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
+          {/* Weather Widget */}
+          <div className="absolute bottom-6 left-6 flex items-center space-x-3 bg-surface-container-highest/60 backdrop-blur-md px-4 py-2 rounded-xl">
+            <span className="material-symbols-outlined text-primary">sunny</span>
+            <div className="flex flex-col">
+              <span className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/60">{ride.from_city}</span>
+              <span className="font-headline font-bold text-lg text-on-surface leading-none">24°C</span>
             </div>
+          </div>
+        </section>
 
-            {/* Driver Section */}
-            <div className="flex items-center gap-4 py-4 border-y border-border">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted overflow-hidden">
+        {/* Route Details */}
+        <div className="px-6 -mt-8 relative z-10">
+          <div className="flex justify-between items-start mb-10">
+            <div>
+              <h1 className="font-headline font-extrabold text-4xl tracking-tighter text-on-surface mb-1">
+                {ride.from_city} <span className="text-primary tracking-normal">→</span> {ride.to_city}
+              </h1>
+              <p className="font-label font-semibold text-[11px] uppercase tracking-[0.15em] text-primary">Partenza • {formatDate(ride.date)} · {ride.time.slice(0,5)}</p>
+            </div>
+            <div className="text-right">
+              <span className="font-headline font-extrabold text-3xl tracking-tighter text-on-surface">
+                {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+              </span>
+              <p className="font-label font-semibold text-[10px] uppercase tracking-widest text-on-surface/40">per posto</p>
+            </div>
+          </div>
+
+          {/* Driver Profile Card */}
+          <div className="bg-surface-container-low p-5 rounded-xl flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
                 {ride.profiles.avatar_url ? (
-                  <Image src={ride.profiles.avatar_url} alt="" width={48} height={48} className="h-full w-full object-cover" />
+                  <Image src={ride.profiles.avatar_url} alt="" width={56} height={56} className="w-14 h-14 rounded-full object-cover grayscale" />
                 ) : (
-                  <User className="h-6 w-6 text-muted-foreground" />
+                  <div className="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center">
+                    <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                  </div>
                 )}
+                <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1 border-4 border-surface-container-low">
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span>
+                </div>
               </div>
               <div>
-                <p className="font-semibold text-foreground">{ride.profiles.name}</p>
-                <div className="flex items-center gap-2">
-                  <StarRating rating={ride.profiles.rating} size="sm" />
-                  <span className="text-sm text-muted-foreground">{ride.profiles.rides_count || 0} viaggi</span>
+                <h3 className="font-headline font-bold text-lg text-on-surface leading-tight">{ride.profiles.name}</h3>
+                <div className="flex items-center space-x-2">
+                  <span className="material-symbols-outlined text-[16px] text-primary" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>star</span>
+                  <span className="text-sm font-semibold text-on-surface">{ride.profiles.rating}</span>
+                  <span className="text-on-surface/40 text-xs">• {ride.profiles.rides_count || 0} viaggi</span>
                 </div>
               </div>
-              <div className="ml-auto text-right">
-                <p className="text-2xl font-bold text-accent">
-                  {ride.price === 0 ? "Gratis" : `${ride.price}€`}
-                </p>
+            </div>
+            {existingBooking && !isMyRide && (
+              <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
+                <span className="material-symbols-outlined">chat_bubble</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Bento Style Journey Info */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="bg-surface-container-low p-5 rounded-xl flex flex-col justify-between min-h-[140px]">
+              <span className="material-symbols-outlined text-primary mb-4">meeting_room</span>
+              <div>
+                <p className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/40 mb-1">Ritiro</p>
+                <p className="font-body font-semibold text-on-surface text-sm">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
               </div>
             </div>
+            <div className="bg-surface-container-low p-5 rounded-xl flex flex-col justify-between min-h-[140px]">
+              <span className="material-symbols-outlined text-primary mb-4">directions_car</span>
+              <div>
+                <p className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/40 mb-1">Auto</p>
+                <p className="font-body font-semibold text-on-surface text-sm">Auto del guidatore</p>
+              </div>
+            </div>
+          </div>
 
-            {/* Details List */}
-            {(ride.meeting_point || ride.notes) && (
+          {/* The Path Indicator */}
+          {stops.length > 0 && (
+            <div className="mb-10 px-2">
+              <h4 className="font-label font-bold text-[11px] uppercase tracking-[0.2em] text-on-surface/40 mb-6">Fermate Intermedie</h4>
+              <div className="space-y-8 relative">
+                <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-surface-container-highest" />
+                <div className="flex items-center space-x-6 relative">
+                  <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-primary z-10 flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  </div>
+                  <span className="font-headline font-semibold text-on-surface">{ride.from_city}</span>
+                </div>
+                {stops.map((stop, idx) => (
+                  <div key={idx} className="flex items-center space-x-6 relative">
+                    <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-surface-container-highest z-10 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-surface-container-highest" />
+                    </div>
+                    <span className="font-headline font-semibold text-on-surface/60">{stop.city}</span>
+                  </div>
+                ))}
+                <div className="flex items-center space-x-6 relative">
+                  <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-primary z-10 flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  </div>
+                  <span className="font-headline font-semibold text-on-surface">{ride.to_city}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Rules/Amenities */}
+          <div className="flex flex-wrap gap-3 mb-10">
+            {!ride.smoking_allowed && (
+              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
+                <span className="material-symbols-outlined text-[18px]">smoke_free</span>
+                <span className="font-label font-bold text-[10px] uppercase">No fumo</span>
+              </div>
+            )}
+            {ride.pets_allowed && (
+              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
+                <span className="material-symbols-outlined text-[18px]">pets</span>
+                <span className="font-label font-bold text-[10px] uppercase">Animali ok</span>
+              </div>
+            )}
+            {ride.large_luggage && (
+              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
+                <span className="material-symbols-outlined text-[18px]">luggage</span>
+                <span className="font-label font-bold text-[10px] uppercase">Bagaglio grande</span>
+              </div>
+            )}
+            {ride.women_only && (
+              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
+                <span className="material-symbols-outlined text-[18px]">female</span>
+                <span className="font-label font-bold text-[10px] uppercase">Solo donne</span>
+              </div>
+            )}
+            {ride.students_only && (
+              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
+                <span className="material-symbols-outlined text-[18px]">school</span>
+                <span className="font-label font-bold text-[10px] uppercase">Solo studenti</span>
+              </div>
+            )}
+            {ride.music_preference && (
+              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
+                <span className="material-symbols-outlined text-[18px]">
+                  {ride.music_preference === "quiet" ? "volume_off" : ride.music_preference === "music" ? "music_note" : "chat"}
+                </span>
+                <span className="font-label font-bold text-[10px] uppercase">
+                  {ride.music_preference === "quiet" ? "Silenzio" : ride.music_preference === "music" ? "Musica" : "Chiacchiere"}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Reviews */}
+          {reviews.length > 0 && (
+            <div className="mb-10">
+              <h4 className="font-label font-bold text-[11px] uppercase tracking-[0.2em] text-on-surface/40 mb-4">Recensioni</h4>
               <div className="space-y-4">
-                {ride.meeting_point && (
-                  <div className="flex gap-3">
-                    <MapPinned className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-foreground">Punto di ritrovo</p>
-                      <p className="text-muted-foreground">{ride.meeting_point}</p>
-                    </div>
-                  </div>
-                )}
-                
-                {ride.notes && (
-                  <div className="flex gap-3">
-                    <FileText className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-foreground">Note</p>
-                      <p className="text-muted-foreground">{ride.notes}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Map */}
-            <div className="border border-border rounded-2xl overflow-hidden">
-              <RouteMap 
-                fromCity={ride.from_city} 
-                toCity={ride.to_city} 
-                height="300px"
-              />
-            </div>
-
-            {/* Weather */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <WeatherWidget 
-                city={ride.from_city} 
-                date={ride.date}
-                variant="compact"
-              />
-            </div>
-
-            {/* Reviews */}
-            {reviews.length > 0 && (
-              <div className="border-t border-border pt-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Recensioni recenti</h3>
-                <div className="space-y-4">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="border-b border-border pb-4 last:border-0 last:pb-0">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-bold">
-                          {review.reviewer.avatar_url ? (
-                            <Image src={review.reviewer.avatar_url} alt="" width={40} height={40} className="h-full w-full rounded-full object-cover" />
-                          ) : (
-                            review.reviewer.name.charAt(0).toUpperCase()
-                          )}
+                {reviews.map((review) => (
+                  <div key={review.id} className="bg-surface-container-low p-4 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      {review.reviewer.avatar_url ? (
+                        <Image src={review.reviewer.avatar_url} alt="" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                          <span className="material-symbols-outlined text-sm text-on-surface-variant">person</span>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <p className="font-medium text-foreground">{review.reviewer.name}</p>
-                            <span className="text-xs text-muted-foreground">{formatReviewDate(review.created_at)}</span>
-                          </div>
-                          <div className="mt-1">
-                            <StarRating rating={review.rating} size="sm" />
-                          </div>
-                          {review.comment && (
-                            <p className="mt-2 text-sm text-muted-foreground">&ldquo;{review.comment}&rdquo;</p>
-                          )}
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <p className="font-bold text-on-surface">{review.reviewer.name}</p>
+                          <span className="text-xs text-on-surface-variant">{formatReviewDate(review.created_at)}</span>
                         </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          {[...Array(5)].map((_, i) => (
+                            <span
+                              key={i}
+                              className={`material-symbols-outlined text-[14px] ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
+                              style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
+                            >
+                              star
+                            </span>
+                          ))}
+                        </div>
+                        {review.comment && (
+                          <p className="mt-2 text-sm text-on-surface-variant">&ldquo;{review.comment}&rdquo;</p>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Similar Rides */}
-            {similarRides.length > 0 && (
-              <div className="border-t border-border pt-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Corse simili</h3>
-                <div className="space-y-3">
-                  {similarRides.map((similar) => (
-                    <Link
-                      key={similar.id}
-                      href={`/corsa/${similar.id}`}
-                      className="flex items-center justify-between rounded-xl border border-border p-4 transition-colors hover:bg-muted"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          <Calendar className="h-5 w-5 text-accent" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {similar.date === ride.date ? "Stesso giorno" : new Date(similar.date).toLocaleDateString("it-IT", { weekday: "short", day: "numeric" })}
-                            <span className="mx-2 text-muted-foreground">•</span>
-                            {similar.time.slice(0, 5)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">{similar.profiles.name}</p>
-                        </div>
-                      </div>
-                      <span className="font-bold text-foreground">
-                        {similar.price === 0 ? "Gratis" : `${similar.price}€`}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar - Sticky Action */}
-          <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-24 space-y-4">
-              {/* Action Button */}
-              {isMyRide ? (
-                <div className="rounded-2xl border border-border bg-card p-4 text-center">
-                  <p className="text-muted-foreground">Questa è la tua corsa</p>
-                  <Link href="/profilo" className="mt-2 inline-block text-sm text-accent hover:underline">
-                    Gestisci dal profilo →
-                  </Link>
-                </div>
-              ) : existingBooking ? (
-                <Link
-                  href={`/chat/${existingBooking.id}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-4 text-lg font-semibold text-white transition-colors hover:bg-accent/90"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  Apri chat
-                </Link>
-              ) : (
-                <button
-                  onClick={handleRequestRide}
-                  disabled={requesting}
-                  className="w-full rounded-2xl bg-accent py-4 text-lg font-semibold text-white transition-colors hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {requesting ? "Prenotazione..." : "Richiedi passaggio"}
-                </button>
-              )}
-
-              {/* Mobile: Fixed bottom button */}
-              <div className="sm:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border z-50">
-                {isMyRide ? (
-                  <Link
-                    href="/profilo"
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-muted py-4 text-lg font-semibold text-foreground"
-                  >
-                    Gestisci dal profilo
-                  </Link>
-                ) : existingBooking ? (
-                  <Link
-                    href={`/chat/${existingBooking.id}`}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-4 text-lg font-semibold text-white"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    Apri chat
-                  </Link>
-                ) : (
-                  <button
-                    onClick={handleRequestRide}
-                    disabled={requesting}
-                    className="w-full rounded-2xl bg-accent py-4 text-lg font-semibold text-white disabled:opacity-50"
-                  >
-                    {requesting ? "Prenotazione..." : "Richiedi passaggio"}
-                  </button>
-                )}
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Similar Rides */}
+          {similarRides.length > 0 && (
+            <div className="mb-10">
+              <h4 className="font-label font-bold text-[11px] uppercase tracking-[0.2em] text-on-surface/40 mb-4">Corse simili</h4>
+              <div className="space-y-3">
+                {similarRides.map((similar) => (
+                  <Link
+                    key={similar.id}
+                    href={`/corsa/${similar.id}`}
+                    className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl transition-colors hover:bg-surface-container-high"
+                  >
+                    <div>
+                      <p className="font-bold text-on-surface">{similar.from_city} → {similar.to_city}</p>
+                      <p className="text-sm text-on-surface-variant">{similar.time.slice(0,5)} · {similar.profiles.name}</p>
+                    </div>
+                    <span className="font-extrabold text-on-surface">
+                      {similar.price === 0 ? "Gratis" : `€${similar.price}`}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+      </main>
+
+      {/* Fixed Action Button */}
+      <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-12 z-40">
+        {isMyRide ? (
+          <Link
+            href="/profilo"
+            className="w-full bg-surface-container-highest text-on-surface py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
+          >
+            <span>Gestisci dal profilo</span>
+            <ChevronRight className="w-5 h-5" />
+          </Link>
+        ) : existingBooking ? (
+          <Link
+            href={`/chat/${existingBooking.id}`}
+            className="w-full bg-[#e63946] text-white py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
+          >
+            <span>Apri chat</span>
+            <ChevronRight className="w-5 h-5" />
+          </Link>
+        ) : (
+          <button
+            onClick={handleRequestRide}
+            disabled={requesting}
+            className="w-full bg-[#e63946] text-white py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-70"
+          >
+            <span>{requesting ? "Prenotazione..." : "Richiedi passaggio"}</span>
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Login Modal */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6">
-            <h3 className="mb-2 text-xl font-bold text-foreground">Accedi per prenotare</h3>
-            <p className="mb-6 text-muted-foreground">Devi essere autenticato per richiedere un passaggio.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-6">
+            <h3 className="mb-2 text-xl font-extrabold tracking-tight text-on-surface">Accedi per prenotare</h3>
+            <p className="mb-6 text-on-surface-variant">Devi essere autenticato per richiedere un passaggio.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLoginModal(false)}
-                className="flex-1 rounded-xl border border-border bg-muted py-3 text-sm font-semibold text-foreground"
+                className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-highest"
               >
                 Annulla
               </button>
               <button
                 onClick={signInWithGoogle}
-                className="flex-1 rounded-xl bg-accent py-3 text-sm font-semibold text-white"
+                className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary hover:opacity-90"
               >
                 Accedi
               </button>

@@ -15,7 +15,8 @@ import {
   Home,
   Shield,
   Gift,
-  BarChart3
+  BarChart3,
+  Users
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
@@ -55,7 +56,10 @@ export function Navbar() {
   const navLinks = [
     { href: `/${locale}/`, label: t('home'), icon: Home },
     { href: `/${locale}/cerca`, label: t('search'), icon: Search },
+    { href: `/${locale}/richieste`, label: "Richieste", icon: User },
     { href: `/${locale}/offri`, label: t('offer'), icon: PlusCircle },
+    { href: `/${locale}/eventi`, label: "Eventi", icon: Car },
+    { href: `/${locale}/gruppi`, label: "Gruppi", icon: Users },
   ];
 
   useEffect(() => {

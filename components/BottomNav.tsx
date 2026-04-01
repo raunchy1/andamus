@@ -3,79 +3,51 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
-import { Home, Search, PlusCircle, User } from "lucide-react";
-import { motion } from "framer-motion";
 
 const navItems = [
-  { href: "/", icon: Home, label: "Home" },
-  { href: "/cerca", icon: Search, label: "Cerca" },
-  { href: "/offri", icon: PlusCircle, label: "Offri", isAction: true },
-  { href: "/profilo", icon: User, label: "Profilo" },
+  { href: "/", icon: "explore", label: "Explore" },
+  { href: "/cerca", icon: "route", label: "Routes" },
+  { href: "/offri", icon: "directions_car", label: "Trips" },
+  { href: "/profilo", icon: "person", label: "Profile" },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
   const locale = useLocale();
 
-  // Get current path without locale prefix
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#12121e]/95 backdrop-blur-lg border-t border-white/10 md:hidden safe-area-pb">
-      <div className="flex items-center justify-around h-16">
-        {navItems.map((item) => {
-          const fullHref = `/${locale}${item.href}`;
-          const isActive = 
-            item.href === "/" 
-              ? currentPath === "/" 
-              : currentPath.startsWith(item.href);
+    <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#131313] md:hidden safe-area-pb">
+      {navItems.map((item) => {
+        const fullHref = `/${locale}${item.href}`;
+        const isActive =
+          item.href === "/"
+            ? currentPath === "/"
+            : currentPath.startsWith(item.href);
 
-          if (item.isAction) {
-            return (
-              <Link
-                key={item.href}
-                href={fullHref}
-                className="relative -top-4"
-              >
-                <motion.div
-                  whileTap={{ scale: 0.9 }}
-                  className="flex items-center justify-center w-14 h-14 rounded-full bg-[#e63946] shadow-lg shadow-[#e63946]/30"
-                >
-                  <item.icon className="w-7 h-7 text-white" strokeWidth={2.5} />
-                </motion.div>
-              </Link>
-            );
-          }
-
-          return (
-            <Link
-              key={item.href}
-              href={fullHref}
-              className="relative flex flex-col items-center justify-center w-16 h-full"
+        return (
+          <Link
+            key={item.href}
+            href={fullHref}
+            className={`flex flex-col items-center justify-center group ${
+              isActive
+                ? "text-[#ffb3b1] font-bold"
+                : "text-[#353534] hover:text-[#e5e2e1]"
+            } transition-colors active:scale-90 duration-300`}
+          >
+            <span
+              className="material-symbols-outlined text-2xl group-active:scale-90 transition-all duration-300"
+              style={isActive ? { fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" } : undefined}
             >
-              <motion.div
-                whileTap={{ scale: 0.9 }}
-                className={`flex flex-col items-center gap-1 transition-colors ${
-                  isActive ? "text-[#e63946]" : "text-white/50"
-                }`}
-              >
-                <item.icon 
-                  className="w-5 h-5" 
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-                <span className="text-[10px] font-medium">{item.label}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="bottomNavIndicator"
-                    className="absolute -top-0.5 w-1 h-1 rounded-full bg-[#e63946]"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </motion.div>
-            </Link>
-          );
-        })}
-      </div>
+              {item.icon}
+            </span>
+            <span className="font-bold uppercase tracking-[0.05em] text-[10px] mt-1">
+              {item.label}
+            </span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }

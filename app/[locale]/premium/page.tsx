@@ -108,14 +108,47 @@ export default function PremiumPage() {
       toast.error("Devi essere loggato per abbonarti");
       return;
     }
-    
+
     if (planId === "free") {
       toast.success("Stai già usando il piano gratuito!");
       return;
     }
-    
-    // In a real app, this would redirect to Stripe or similar
-    toast(`Piano ${planId} in arrivo presto!`);
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId, locale: "it" }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data.error || "Errore nel checkout");
+        setLoading(false);
+      }
+    } catch {
+      toast.error("Errore nel checkout");
+      setLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data.error || "Errore");
+        setLoading(false);
+      }
+    } catch {
+      toast.error("Errore nel gestire l'abbonamento");
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -151,6 +184,18 @@ export default function PremiumPage() {
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
             Sblocca funzionalità esclusive e viaggia senza limiti con i nostri piani Premium
           </p>
+
+          {currentPlan !== "free" && (
+            <div className="mt-6">
+              <button
+                onClick={handleManageSubscription}
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+              >
+                Gestisci abbonamento
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Plans */}

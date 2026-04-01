@@ -2,23 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { 
-  Car, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  Users, 
-  Banknote,
-  MapPinned,
-  FileText,
-  Check,
-  ArrowLeft,
-  AlertCircle,
-  Loader2
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Loader2, Check, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
+import { getDistanceBetweenCities } from "@/lib/sardinia-cities";
 import { toast } from "react-hot-toast";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -32,6 +21,7 @@ const sardinianCities = [
 export default function OfferPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const router = useRouter();
   
   const [formData, setFormData] = useState({
     origin: "",
@@ -42,18 +32,41 @@ export default function OfferPage() {
     isFree: true,
     price: "",
     meetingPoint: "",
-    notes: ""
+    notes: "",
+    smokingAllowed: false,
+    petsAllowed: false,
+    largeLuggage: false,
+    musicPreference: "",
+    womenOnly: false,
+    studentsOnly: false,
+    isRecurring: false,
+    recurrenceDays: [] as number[],
+    stops: [] as string[],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
   const supabase = createClient();
 
-  // Check auth state
+  useEffect(() => {
+    if (formData.origin && formData.destination && formData.origin !== formData.destination) {
+      const distance = getDistanceBetweenCities(formData.origin, formData.destination);
+      if (distance) {
+        const suggestion = Math.round(distance * 0.12 * 2) / 2;
+        setSuggestedPrice(Math.max(2, suggestion));
+      } else {
+        setSuggestedPrice(null);
+      }
+    } else {
+      setSuggestedPrice(null);
+    }
+  }, [formData.origin, formData.destination]);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -72,7 +85,7 @@ export default function OfferPage() {
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const handleChange = (field: string, value: string | boolean | number[] | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => { const newErrors = { ...prev }; delete newErrors[field]; return newErrors; });
@@ -96,6 +109,15 @@ export default function OfferPage() {
     if (!formData.time) newErrors.time = "Seleziona un orario";
     if (!formData.seats) newErrors.seats = "Inserisci il numero di posti";
     if (!formData.isFree && !formData.price) newErrors.price = "Inserisci il contributo richiesto";
+    if (formData.musicPreference && !['quiet','music','talk'].includes(formData.musicPreference)) {
+      newErrors.musicPreference = "Preferenza musica non valida";
+    }
+    if (formData.isRecurring && formData.recurrenceDays.length === 0) {
+      newErrors.recurrenceDays = "Seleziona almeno un giorno per la ripetizione";
+    }
+    if (formData.stops.some((s) => s === formData.origin || s === formData.destination)) {
+      newErrors.stops = "Le fermate non possono coincidere con partenza o destinazione";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -116,28 +138,85 @@ export default function OfferPage() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from("rides")
-        .insert({
-          driver_id: currentUser.id,
-          from_city: formData.origin,
-          to_city: formData.destination,
-          date: formData.date,
-          time: formData.time,
-          seats: parseInt(formData.seats),
-          price: formData.isFree ? 0 : parseFloat(formData.price),
-          meeting_point: formData.meetingPoint || null,
-          notes: formData.notes || null,
-          status: "active"
-        })
-        .select();
+      let rideId: string | null = null;
 
-      if (error) {
-        setSubmitError("Errore durante la pubblicazione. Riprova più tardi.");
-        return;
+      if (formData.isRecurring) {
+        const { error: templateError } = await supabase
+          .from("ride_templates")
+          .insert({
+            user_id: currentUser.id,
+            from_city: formData.origin,
+            to_city: formData.destination,
+            time: formData.time,
+            seats: parseInt(formData.seats),
+            price: formData.isFree ? 0 : parseFloat(formData.price),
+            meeting_point: formData.meetingPoint || null,
+            notes: formData.notes || null,
+            preferences: {
+              smoking_allowed: formData.smokingAllowed || null,
+              pets_allowed: formData.petsAllowed || null,
+              large_luggage: formData.largeLuggage || null,
+              music_preference: formData.musicPreference || null,
+              women_only: formData.womenOnly || null,
+              students_only: formData.studentsOnly || null,
+            },
+            recurrence_days: formData.recurrenceDays,
+          });
+
+        if (templateError) {
+          setSubmitError("Errore durante la pubblicazione. Riprova più tardi.");
+          return;
+        }
+
+        await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
+      } else {
+        const { data: inserted, error } = await supabase
+          .from("rides")
+          .insert({
+            driver_id: currentUser.id,
+            from_city: formData.origin,
+            to_city: formData.destination,
+            date: formData.date,
+            time: formData.time,
+            seats: parseInt(formData.seats),
+            price: formData.isFree ? 0 : parseFloat(formData.price),
+            meeting_point: formData.meetingPoint || null,
+            notes: formData.notes || null,
+            status: "active",
+            smoking_allowed: formData.smokingAllowed || null,
+            pets_allowed: formData.petsAllowed || null,
+            large_luggage: formData.largeLuggage || null,
+            music_preference: formData.musicPreference || null,
+            women_only: formData.womenOnly || null,
+            students_only: formData.studentsOnly || null,
+          })
+          .select();
+
+        if (error) {
+          setSubmitError("Errore durante la pubblicazione. Riprova più tardi.");
+          return;
+        }
+
+        rideId = inserted?.[0]?.id || null;
+        if (rideId) {
+          if (formData.stops.length > 0) {
+            await supabase.from("ride_stops").insert(
+              formData.stops.map((city, index) => ({
+                ride_id: rideId,
+                city,
+                order_index: index,
+              }))
+            );
+          }
+
+          fetch("/api/alerts/check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rideId }),
+          }).catch(() => {});
+        }
       }
       
-      // Add gamification points
       if (currentUser) {
         const { count } = await supabase
           .from('rides')
@@ -172,34 +251,34 @@ export default function OfferPage() {
     try {
       await signInWithGoogle();
     } catch {
-      // console.error("Login failed:", error);
+      // ignore
     }
   };
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-accent" />
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
         <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-            <Car className="h-8 w-8 text-accent" />
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high">
+            <span className="material-symbols-outlined text-4xl text-primary">directions_car</span>
           </div>
-          <h1 className="mb-4 text-2xl font-bold text-foreground">
+          <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-on-surface">
             Offri un passaggio
           </h1>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-8 text-on-surface-variant">
             Devi accedere per pubblicare un passaggio.
           </p>
           <button
             onClick={handleLogin}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-accent/90"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 text-base font-extrabold text-on-primary transition-colors hover:opacity-90 active:scale-95"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -212,9 +291,9 @@ export default function OfferPage() {
           <div className="mt-6">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
               Torna alla home
             </Link>
           </div>
@@ -225,29 +304,29 @@ export default function OfferPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
         <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-            <Check className="h-8 w-8 text-green-500" />
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-tertiary/20">
+            <Check className="h-8 w-8 text-tertiary" />
           </div>
-          <h1 className="mb-4 text-2xl font-bold text-foreground">
+          <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-on-surface">
             Passaggio pubblicato!
           </h1>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-8 text-on-surface-variant">
             Presto potrai gestirlo dal tuo profilo.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/profilo"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent/90"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary transition-colors hover:opacity-90"
             >
               Vai al profilo
             </Link>
             <Link
               href="/cerca"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-6 py-3 text-sm font-extrabold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
               Cerca altri passaggi
             </Link>
           </div>
@@ -257,188 +336,137 @@ export default function OfferPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-2 inline-flex items-center gap-2 text-accent text-sm font-medium uppercase tracking-wide">
-            <Car className="h-4 w-4" />
-            <span>Offri un passaggio</span>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">
-            Pubblica la tua corsa
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            Aiuta qualcuno a spostarsi in Sardegna
-          </p>
+    <div className="min-h-screen bg-[#0a0a0a] pb-32">
+      {/* Top Navigation */}
+      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-12 pb-4 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <button onClick={() => router.back()} className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity">
+            arrow_back
+          </button>
+          <h1 className="font-extrabold tracking-tighter text-3xl text-[#e5e2e1]">Andamus</h1>
         </div>
-      </div>
+        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+          {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+            <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+          )}
+        </div>
+      </header>
 
-      {/* Form */}
-      <div className="px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Error Message */}
-            {submitError && (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4">
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="h-5 w-5 text-destructive" />
-                  <p className="text-sm text-destructive">{submitError}</p>
+      <main className="px-6 py-8 space-y-10 max-w-2xl mx-auto">
+        {/* Hero Heading */}
+        <section>
+          <span className="font-semibold uppercase tracking-widest text-[11px] text-primary mb-2 block">Nuovo Viaggio</span>
+          <h2 className="text-4xl font-extrabold tracking-tighter leading-none text-on-surface">Crea un<br/>passaggio.</h2>
+        </section>
+
+        {/* Error Message */}
+        {submitError && (
+          <div className="rounded-xl border border-error/30 bg-error/10 p-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-error" />
+              <p className="text-sm text-error">{submitError}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Route Form Section */}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <section className="space-y-6">
+            {/* Location Inputs */}
+            <div className="space-y-4">
+              <div className="relative">
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">Partenza</label>
+                <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
+                  <span className="material-symbols-outlined text-primary">trip_origin</span>
+                  <select
+                    value={formData.origin}
+                    onChange={(e) => handleChange("origin", e.target.value)}
+                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer"
+                  >
+                    <option value="" className="bg-surface-container-highest">Da dove parti?</option>
+                    {sardinianCities.map((city) => (
+                      <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
+                    ))}
+                  </select>
+                </div>
+                {errors.origin && <p className="mt-1 text-sm text-error">{errors.origin}</p>}
+              </div>
+              <div className="flex justify-center -my-2 relative z-10">
+                <div className="w-8 h-8 bg-background flex items-center justify-center rounded-full border border-surface-container-highest">
+                  <span className="material-symbols-outlined text-[18px] text-outline">south</span>
                 </div>
               </div>
-            )}
-
-            {/* Route Section */}
-            <div className="space-y-4">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Percorso
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <select
-                      value={formData.origin}
-                      onChange={(e) => handleChange("origin", e.target.value)}
-                      className={`h-14 w-full appearance-none rounded-2xl border bg-card pl-12 pr-10 text-foreground outline-none transition-colors [&>option]:bg-card ${
-                        errors.origin || errors.sameCity
-                          ? "border-destructive focus:border-destructive"
-                          : "border-border focus:border-accent"
-                      }`}
-                    >
-                      <option value="">Da dove parti?</option>
-                      {sardinianCities.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {errors.origin && (
-                    <p className="mt-1 text-sm text-destructive">{errors.origin}</p>
-                  )}
+              <div className="relative">
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">Arrivo</label>
+                <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
+                  <span className="material-symbols-outlined text-primary">location_on</span>
+                  <select
+                    value={formData.destination}
+                    onChange={(e) => handleChange("destination", e.target.value)}
+                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer"
+                  >
+                    <option value="" className="bg-surface-container-highest">Dove vai?</option>
+                    {sardinianCities.map((city) => (
+                      <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
+                    ))}
+                  </select>
                 </div>
-
-                <div>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <select
-                      value={formData.destination}
-                      onChange={(e) => handleChange("destination", e.target.value)}
-                      className={`h-14 w-full appearance-none rounded-2xl border bg-card pl-12 pr-10 text-foreground outline-none transition-colors [&>option]:bg-card ${
-                        errors.destination || errors.sameCity
-                          ? "border-destructive focus:border-destructive"
-                          : "border-border focus:border-accent"
-                      }`}
-                    >
-                      <option value="">Dove vai?</option>
-                      {sardinianCities.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {errors.destination && (
-                    <p className="mt-1 text-sm text-destructive">{errors.destination}</p>
-                  )}
-                  {errors.sameCity && (
-                    <p className="mt-1 text-sm text-destructive">{errors.sameCity}</p>
-                  )}
-                </div>
+                {errors.destination && <p className="mt-1 text-sm text-error">{errors.destination}</p>}
+                {errors.sameCity && <p className="mt-1 text-sm text-error">{errors.sameCity}</p>}
               </div>
             </div>
 
-            <div className="h-px bg-border" />
-
-            {/* Date & Time Section */}
-            <div className="space-y-4">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Data e ora
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <div className="relative">
-                    <Calendar className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="date"
-                      min={today}
-                      value={formData.date}
-                      onChange={(e) => handleChange("date", e.target.value)}
-                      className={`h-14 w-full rounded-2xl border bg-card pl-12 pr-4 text-foreground outline-none transition-colors ${
-                        errors.date
-                          ? "border-destructive focus:border-destructive"
-                          : "border-border focus:border-accent"
-                      }`}
-                    />
-                  </div>
-                  {errors.date && (
-                    <p className="mt-1 text-sm text-destructive">{errors.date}</p>
-                  )}
-                </div>
-
-                <div>
-                  <div className="relative">
-                    <Clock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="time"
-                      value={formData.time}
-                      onChange={(e) => handleChange("time", e.target.value)}
-                      className={`h-14 w-full rounded-2xl border bg-card pl-12 pr-4 text-foreground outline-none transition-colors ${
-                        errors.time
-                          ? "border-destructive focus:border-destructive"
-                          : "border-border focus:border-accent"
-                      }`}
-                    />
-                  </div>
-                  {errors.time && (
-                    <p className="mt-1 text-sm text-destructive">{errors.time}</p>
-                  )}
-                </div>
+            {/* Date & Time Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Data</label>
+                <input
+                  type="date"
+                  min={today}
+                  value={formData.date}
+                  onChange={(e) => handleChange("date", e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
+                />
+                {errors.date && <p className="text-sm text-error">{errors.date}</p>}
+              </div>
+              <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.time ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Ora</label>
+                <input
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => handleChange("time", e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
+                />
+                {errors.time && <p className="text-sm text-error">{errors.time}</p>}
               </div>
             </div>
-
-            <div className="h-px bg-border" />
 
             {/* Seats */}
-            <div className="space-y-4">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Posti disponibili
-              </h2>
-              <div>
-                <div className="relative">
-                  <Users className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="number"
-                    min="1"
-                    max="8"
-                    placeholder="1-8 posti"
-                    value={formData.seats}
-                    onChange={(e) => handleChange("seats", e.target.value)}
-                    className={`h-14 w-full rounded-2xl border bg-card pl-12 pr-4 text-foreground outline-none transition-colors placeholder:text-muted-foreground ${
-                      errors.seats
-                        ? "border-destructive focus:border-destructive"
-                        : "border-border focus:border-accent"
-                    }`}
-                  />
-                </div>
-                {errors.seats && (
-                  <p className="mt-1 text-sm text-destructive">{errors.seats}</p>
-                )}
-              </div>
+            <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.seats ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Posti disponibili</label>
+              <input
+                type="number"
+                min="1"
+                max="8"
+                placeholder="1-8 posti"
+                value={formData.seats}
+                onChange={(e) => handleChange("seats", e.target.value)}
+                className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
+              />
+              {errors.seats && <p className="text-sm text-error">{errors.seats}</p>}
             </div>
 
-            <div className="h-px bg-border" />
-
-            {/* Price Toggle */}
-            <div className="space-y-4">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Contributo richiesto
-              </h2>
-              <div className="flex gap-3">
+            {/* Payment Toggle Section */}
+            <div className="space-y-4 pt-4">
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Modalità di viaggio</label>
+              <div className="flex p-1 bg-surface-container-lowest rounded-xl border border-surface-container-highest">
                 <button
                   type="button"
                   onClick={() => handleChange("isFree", true)}
-                  className={`flex-1 rounded-2xl px-4 py-4 text-sm font-medium transition-all ${
-                    formData.isFree
-                      ? "bg-accent text-white"
-                      : "border border-border bg-card text-foreground hover:bg-muted"
+                  className={`flex-1 py-3 px-2 rounded-lg font-extrabold text-[12px] uppercase tracking-wider transition-all ${
+                    formData.isFree ? 'bg-primary text-on-primary' : 'text-outline hover:text-on-surface'
                   }`}
                 >
                   Gratuito
@@ -446,99 +474,223 @@ export default function OfferPage() {
                 <button
                   type="button"
                   onClick={() => handleChange("isFree", false)}
-                  className={`flex-1 rounded-2xl px-4 py-4 text-sm font-medium transition-all ${
-                    !formData.isFree
-                      ? "bg-accent text-white"
-                      : "border border-border bg-card text-foreground hover:bg-muted"
+                  className={`flex-1 py-3 px-2 rounded-lg font-extrabold text-[12px] uppercase tracking-wider transition-all ${
+                    !formData.isFree ? 'bg-primary text-on-primary' : 'text-outline hover:text-on-surface'
                   }`}
                 >
                   A pagamento
                 </button>
               </div>
+              <p className="text-[11px] text-outline leading-relaxed italic px-1">
+                I viaggi gratuiti favoriscono la community e aumentano il tuo punteggio &quot;Nomad&quot; del 20%.
+              </p>
+            </div>
 
-              {!formData.isFree && (
-                <div>
-                  <div className="relative">
-                    <Banknote className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Importo in euro"
-                      value={formData.price}
-                      onChange={(e) => handleChange("price", e.target.value)}
-                      className={`h-14 w-full rounded-2xl border bg-card pl-12 pr-12 text-foreground outline-none transition-colors placeholder:text-muted-foreground ${
-                        errors.price
-                          ? "border-destructive focus:border-destructive"
-                          : "border-border focus:border-accent"
-                      }`}
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
+            {!formData.isFree && (
+              <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Prezzo (€)</label>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="Importo in euro"
+                  value={formData.price}
+                  onChange={(e) => handleChange("price", e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
+                />
+                {suggestedPrice !== null && !formData.price && (
+                  <p className="text-[11px] text-outline">
+                    Suggerimento: circa <span className="font-medium text-on-surface">{suggestedPrice}€</span> in base alla distanza
+                  </p>
+                )}
+                {errors.price && <p className="text-sm text-error">{errors.price}</p>}
+              </div>
+            )}
+
+            {/* Meeting Point & Notes */}
+            <div className="space-y-4">
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Dettagli opzionali</label>
+              <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
+                <input
+                  type="text"
+                  placeholder="Punto di ritrovo (es. Piazza Matteotti)"
+                  value={formData.meetingPoint}
+                  onChange={(e) => handleChange("meetingPoint", e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight"
+                />
+              </div>
+              <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
+                <textarea
+                  rows={3}
+                  placeholder="Note aggiuntive (es. Ho posto per un bagaglio grande)"
+                  value={formData.notes}
+                  onChange={(e) => handleChange("notes", e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Intermediate Stops */}
+            <div className="space-y-4">
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Fermate intermedie</label>
+              <div className="space-y-3">
+                {formData.stops.map((stop, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <select
+                      value={stop}
+                      onChange={(e) => {
+                        const next = [...formData.stops];
+                        next[index] = e.target.value;
+                        handleChange("stops", next);
+                      }}
+                      className="h-12 flex-1 rounded-xl border-none bg-surface-container-highest pl-4 pr-10 text-on-surface font-semibold outline-none focus:ring-1 focus:ring-primary appearance-none"
+                    >
+                      <option value="">Seleziona città</option>
+                      {sardinianCities.map((city) => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = formData.stops.filter((_, i) => i !== index);
+                        handleChange("stops", next);
+                      }}
+                      className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80"
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
                   </div>
-                  {errors.price && (
-                    <p className="mt-1 text-sm text-destructive">{errors.price}</p>
-                  )}
+                ))}
+                {formData.stops.length < 3 && (
+                  <button
+                    type="button"
+                    onClick={() => handleChange("stops", [...formData.stops, ""])}
+                    className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">add</span>
+                    Aggiungi fermata
+                  </button>
+                )}
+                {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
+              </div>
+            </div>
+
+            {/* Preferences */}
+            <div className="space-y-4">
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Preferenze di viaggio</label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
+                  <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
+                  <span className="text-sm font-semibold">Fumatori ammessi</span>
+                </label>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.petsAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
+                  <input type="checkbox" checked={formData.petsAllowed} onChange={(e) => handleChange("petsAllowed", e.target.checked)} className="hidden" />
+                  <span className="text-sm font-semibold">Animali ammessi</span>
+                </label>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.largeLuggage ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
+                  <input type="checkbox" checked={formData.largeLuggage} onChange={(e) => handleChange("largeLuggage", e.target.checked)} className="hidden" />
+                  <span className="text-sm font-semibold">Bagaglio grande</span>
+                </label>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.womenOnly ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
+                  <input type="checkbox" checked={formData.womenOnly} onChange={(e) => handleChange("womenOnly", e.target.checked)} className="hidden" />
+                  <span className="text-sm font-semibold">Solo donne</span>
+                </label>
+              </div>
+
+              <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block mb-2">Musica in macchina</label>
+                <select
+                  value={formData.musicPreference}
+                  onChange={(e) => handleChange("musicPreference", e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold appearance-none cursor-pointer"
+                >
+                  <option value="" className="bg-surface-container-highest">Qualsiasi</option>
+                  <option value="quiet" className="bg-surface-container-highest">Silenzio</option>
+                  <option value="music" className="bg-surface-container-highest">Musica</option>
+                  <option value="talk" className="bg-surface-container-highest">Chiacchiere</option>
+                </select>
+              </div>
+              {errors.musicPreference && <p className="text-sm text-error">{errors.musicPreference}</p>}
+            </div>
+
+            {/* Recurring Option */}
+            <div className="space-y-4">
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Ripetizione</label>
+              <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.isRecurring ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
+                <input type="checkbox" checked={formData.isRecurring} onChange={(e) => handleChange("isRecurring", e.target.checked)} className="hidden" />
+                <span className="text-sm font-semibold">Ripeti questa corsa settimanalmente</span>
+              </label>
+
+              {formData.isRecurring && (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { day: 1, label: "Lun" },
+                      { day: 2, label: "Mar" },
+                      { day: 3, label: "Mer" },
+                      { day: 4, label: "Gio" },
+                      { day: 5, label: "Ven" },
+                      { day: 6, label: "Sab" },
+                      { day: 0, label: "Dom" },
+                    ].map(({ day, label }) => {
+                      const selected = formData.recurrenceDays.includes(day);
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => {
+                            const next = selected
+                              ? formData.recurrenceDays.filter((d) => d !== day)
+                              : [...formData.recurrenceDays, day];
+                            handleChange("recurrenceDays", next);
+                          }}
+                          className={`h-10 w-12 rounded-xl text-sm font-semibold transition-colors ${
+                            selected
+                              ? "bg-primary text-on-primary"
+                              : "bg-surface-container-highest text-on-surface hover:bg-surface-container-highest/80"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {errors.recurrenceDays && <p className="text-sm text-error">{errors.recurrenceDays}</p>}
+                  <p className="text-xs text-outline">
+                    Verranno generate automaticamente le corse per i prossimi 30 giorni.
+                  </p>
                 </div>
               )}
             </div>
 
-            <div className="h-px bg-border" />
-
-            {/* Optional Fields */}
-            <div className="space-y-4">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Dettagli opzionali
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <div className="relative">
-                    <MapPinned className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Punto di ritrovo (es. Piazza Matteotti)"
-                      value={formData.meetingPoint}
-                      onChange={(e) => handleChange("meetingPoint", e.target.value)}
-                      className="h-14 w-full rounded-2xl border border-border bg-card pl-12 pr-4 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-accent"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="relative">
-                    <FileText className="absolute left-4 top-4 h-5 w-5 text-muted-foreground" />
-                    <textarea
-                      rows={3}
-                      placeholder="Note aggiuntive (es. Ho posto per un bagaglio grande)"
-                      value={formData.notes}
-                      onChange={(e) => handleChange("notes", e.target.value)}
-                      className="w-full rounded-2xl border border-border bg-card py-4 pl-12 pr-4 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-accent resize-none"
-                    />
-                  </div>
+            {/* Map Preview */}
+            <div className="pt-6">
+              <div className="w-full h-32 rounded-2xl overflow-hidden grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative bg-surface-container-high">
+                <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface">Tracciamento Live Attivo</span>
                 </div>
               </div>
             </div>
+          </section>
 
-            {/* Submit Button */}
+          {/* Action Button */}
+          <div className="pt-4 pb-12">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-accent py-4 text-base font-semibold text-white transition-colors hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-xl shadow-lg transform active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
             >
-              {isSubmitting ? "Pubblicazione in corso..." : "Pubblica il passaggio"}
+              {isSubmitting
+                ? formData.isRecurring ? "Creazione in corso..." : "Pubblicazione in corso..."
+                : formData.isRecurring ? "CREA CORSA RICORRENTE" : "PUBBLICA PASSAGGIO"
+              }
+              <span className="material-symbols-outlined">chevron_right</span>
             </button>
-
-            {/* Back Link */}
-            <div className="text-center">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Torna indietro
-              </Link>
-            </div>
-          </form>
-        </div>
-      </div>
+          </div>
+        </form>
+      </main>
     </div>
   );
 }

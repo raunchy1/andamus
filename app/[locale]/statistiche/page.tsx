@@ -15,7 +15,8 @@ import {
   Download,
   Trophy,
   MapPin,
-  Clock
+  Clock,
+  Check
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
@@ -161,6 +162,16 @@ export default function StatisticsPage() {
     // CO2 saved
     const co2Saved = calculateCO2Saved(totalDistance, passengersHelped);
 
+    // Estimated earnings
+    const totalEarnings = myRides.reduce((sum, ride) => sum + (ride.price || 0), 0);
+
+    // Booking acceptance rate
+    const totalBookingRequests = myRides.reduce((sum, ride) => sum + (ride.bookings_count || 0), 0);
+    // We don't have confirmed count per ride in this data, so we'll use a proxy
+    const acceptanceRate = totalBookingRequests > 0
+      ? Math.round((passengersHelped / totalBookingRequests) * 100)
+      : 0;
+
     // Activity data for chart (last 12 months)
     const activityData = [];
     const now = new Date();
@@ -207,6 +218,8 @@ export default function StatisticsPage() {
       passengersHelped,
       totalPoints: profile?.points || 0,
       badgesCount: badges.length,
+      totalEarnings,
+      acceptanceRate,
       activityData,
       favoriteRoutes
     };
@@ -327,7 +340,7 @@ export default function StatisticsPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
           <StatCard 
             icon={<Route className="w-6 h-6 text-blue-400" />}
             value={stats.totalDistance}
@@ -359,6 +372,18 @@ export default function StatisticsPage() {
             icon={<Trophy className="w-6 h-6 text-yellow-400" />}
             value={stats.badgesCount}
             label="Badge sbloccati"
+          />
+          <StatCard 
+            icon={<Download className="w-6 h-6 text-pink-400" />}
+            value={stats.totalEarnings}
+            label="Guadagni stimati"
+            suffix="€"
+          />
+          <StatCard 
+            icon={<Check className="w-6 h-6 text-cyan-400" />}
+            value={stats.acceptanceRate}
+            label="Tasso accettazione"
+            suffix="%"
           />
         </div>
 
