@@ -36,10 +36,6 @@ export function ViewModeProvider({ children }: { children: ReactNode }) {
     setViewMode(next);
   };
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <ViewModeContext.Provider value={{ viewMode, setViewMode, toggleViewMode }}>
       {children}

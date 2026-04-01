@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
@@ -7,6 +6,7 @@ import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 import { Toaster } from "react-hot-toast";
 import { SafetyButton } from "@/components/SafetyButton";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { LangSetter } from "@/components/LangSetter";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -139,80 +139,39 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="dark" suppressHydrationWarning>
-      <head>
-        {/* JSON-LD Structured Data */}
-        <Script
-          id="json-ld"
-          type="application/ld+json"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              name: "Andamus",
-              applicationCategory: "TravelApplication",
-              operatingSystem: "Any",
-              description:
-                "Carpooling gratuito in Sardegna. Trova o offri passaggi in modo sicuro e sostenibile.",
-              url: "https://andamus.it",
-              image: "https://andamus.it/og-image.png",
-              author: {
-                "@type": "Organization",
-                name: "Andamus",
+    <>
+      <NextIntlClientProvider messages={messages} locale={locale}>
+        <ThemeProvider>
+          <Navbar />
+          <ClientLayoutWrapper>
+            {children}
+          </ClientLayoutWrapper>
+          <SafetyButton />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#1c1b1b",
+                color: "#e5e2e1",
+                border: "1px solid #2a2a2a",
               },
-              offers: {
-                "@type": "Offer",
-                price: "0",
-                priceCurrency: "EUR",
-              },
-              areaServed: {
-                "@type": "Place",
-                name: "Sardegna",
-                address: {
-                  "@type": "PostalAddress",
-                  addressRegion: "Sardegna",
-                  addressCountry: "IT",
+              success: {
+                iconTheme: {
+                  primary: "#6fd8cc",
+                  secondary: "#1c1b1b",
                 },
               },
-            }),
-          }}
-        />
-      </head>
-      <body className="antialiased bg-[#131313] text-[#e5e2e1]" suppressHydrationWarning>
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <ThemeProvider>
-            <Navbar />
-            <ClientLayoutWrapper>
-              {children}
-            </ClientLayoutWrapper>
-            <SafetyButton />
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: "#1c1b1b",
-                  color: "#e5e2e1",
-                  border: "1px solid #2a2a2a",
+              error: {
+                iconTheme: {
+                  primary: "#e63946",
+                  secondary: "#1c1b1b",
                 },
-                success: {
-                  iconTheme: {
-                    primary: "#6fd8cc",
-                    secondary: "#1c1b1b",
-                  },
-                },
-                error: {
-                  iconTheme: {
-                    primary: "#e63946",
-                    secondary: "#1c1b1b",
-                  },
-                },
-              }}
-            />
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+              },
+            }}
+          />
+        </ThemeProvider>
+      </NextIntlClientProvider>
+    </>
   );
 }
