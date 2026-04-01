@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useViewMode } from "@/components/view-mode";
+import { SardiniaMap } from "@/components/SardiniaMap";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì",
@@ -98,31 +99,15 @@ function HomeMobile({
           <div className="relative w-full aspect-[4/5] bg-surface-container-low rounded-xl overflow-hidden sardinia-map-container mb-8">
             <div className="absolute inset-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-luminosity grayscale" />
 
-            {/* Abstract Map UI */}
-            <div className="absolute inset-0 flex items-center justify-center p-8">
-              <div className="relative w-full h-full border border-primary/10 rounded-full flex items-center justify-center">
-                <div className="w-48 h-64 bg-surface-container-highest/30 rounded-full blur-3xl absolute" />
-
-                {/* City Nodes */}
-                <div className="absolute top-[20%] left-[50%] -translate-x-1/2 flex flex-col items-center">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_12px_#ffb3b1]" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest mt-1 text-on-surface">Olbia</span>
-                </div>
-                <div className="absolute top-[40%] left-[20%] flex flex-col items-center">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_12px_#ffb3b1]" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest mt-1 text-on-surface">Sassari</span>
-                </div>
-                <div className="absolute bottom-[20%] left-[55%] -translate-x-1/2 flex flex-col items-center">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_12px_#ffb3b1]" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest mt-1 text-on-surface">Cagliari</span>
-                </div>
-
-                {/* Animated Route Lines */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
-                  <path d="M196,80 Q150,150 78,160" fill="none" stroke="#ffb3b1" strokeDasharray="4 4" strokeWidth="1.5" />
-                  <path d="M196,80 Q220,250 216,340" fill="none" stroke="#ffb3b1" strokeDasharray="4 4" strokeWidth="1.5" />
-                </svg>
-              </div>
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+              <SardiniaMap
+                mode="mobile"
+                className="w-full h-full"
+                onRouteClick={(_, from, to) => {
+                  setOrigin(from);
+                  setDestination(to);
+                }}
+              />
             </div>
 
             {/* Smart Search Bar */}
@@ -302,16 +287,33 @@ function HomeDesktop({
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#ffb3b110_0%,_transparent_50%)]" />
         <div className="max-w-7xl mx-auto px-8 pt-20 pb-16 relative">
-          <div className="max-w-3xl">
-            <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#ffb3b1] mb-6">
-              {userName ? `Bentornato, ${userName.split(" ")[0]}` : "Il carpooling in Sardegna"}
-            </span>
-            <h1 className="text-6xl md:text-7xl font-extrabold tracking-tighter leading-[0.95] mb-8">
-              Il modo più semplice di <span className="text-[#ffb3b1]">spostarsi</span> in Sardegna
-            </h1>
-            <p className="text-lg md:text-xl text-[#e5e2e1]/60 max-w-xl leading-relaxed">
-              Connetti con chi viaggia nella tua stessa direzione. Risparmia, riduci le emissioni e scopri nuove storie.
-            </p>
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1 max-w-3xl">
+              <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#ffb3b1] mb-6">
+                {userName ? `Bentornato, ${userName.split(" ")[0]}` : "Il carpooling in Sardegna"}
+              </span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[0.95] mb-8">
+                Il modo più semplice di <span className="text-[#ffb3b1]">spostarsi</span> in Sardegna
+              </h1>
+              <p className="text-lg md:text-xl text-[#e5e2e1]/60 max-w-xl leading-relaxed">
+                Connetti con chi viaggia nella tua stessa direzione. Risparmia, riduci le emissioni e scopri nuove storie.
+              </p>
+            </div>
+            <div className="w-full lg:w-[420px] xl:w-[480px]">
+              <div className="relative aspect-[4/5] bg-[#181818]/50 rounded-2xl border border-white/5 overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-15 mix-blend-luminosity grayscale" />
+                <div className="absolute inset-0 flex items-center justify-center p-6">
+                  <SardiniaMap
+                    mode="desktop"
+                    className="w-full h-full"
+                    onRouteClick={(_, from, to) => {
+                      setOrigin(from);
+                      setDestination(to);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
