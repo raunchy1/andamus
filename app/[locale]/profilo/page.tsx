@@ -14,6 +14,7 @@ import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notification
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
+import { useViewMode } from "@/components/view-mode";
 
 interface Profile {
   id: string;
@@ -142,6 +143,8 @@ export default function ProfilePage() {
   const [cancelReason, setCancelReason] = useState("");
 
   const supabase = createClient();
+
+  const { viewMode } = useViewMode();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -351,7 +354,7 @@ export default function ProfilePage() {
       toast.error("Errore nell'aggiornamento");
     } else {
       setRideTemplates((prev) =>
-        prev.map((t) => (t.id === template.id ? { ...t, is_active: !t.is_active } : t))
+        prev.map((t) => (t.id === template.id ? { ...t, is_active: !template.is_active } : t))
       );
       toast.success(!template.is_active ? "Template attivato" : "Template disattivato");
     }
@@ -425,7 +428,6 @@ export default function ProfilePage() {
     );
   }
 
-  // Calculate stats
   const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
   const completedBookings = myBookings.filter(b => b.status === 'confirmed');
   let totalKm = 0;
@@ -447,488 +449,940 @@ export default function ProfilePage() {
   const co2Saved = calculateCO2Saved(totalKm, passengersHelped);
   const levelInfo = profile ? getLevelInfo(profile.points) : null;
 
-  return (
-    <div className="min-h-screen bg-surface-container-lowest pb-32">
-      {/* TopAppBar Shell */}
-      <header className="bg-[#0e0e0e] text-primary docked full-width top-0 flex justify-between items-end w-full px-6 pt-12 pb-4">
-        <div className="flex items-center gap-3">
-          <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20">
-            {getUserAvatar() ? (
-              <img src={getUserAvatar()!} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-on-surface-variant">person</span>
-              </div>
-            )}
-          </Link>
-          <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase">Andamus</h1>
-        </div>
-        <button
-          onClick={() => setShowLogoutConfirm(true)}
-          className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out"
-        >
-          <span className="material-symbols-outlined text-3xl">logout</span>
-        </button>
-      </header>
-
-      <main className="max-w-md mx-auto">
-        {/* Profile Hero Section */}
-        <section className="px-6 py-8 flex flex-col items-center">
-          <div className="relative w-40 h-40 flex items-center justify-center">
-            {/* Circular Progress Ring */}
-            <svg className="custom-ring w-full h-full absolute">
-              <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
-              <circle
-                className="text-primary"
-                cx="80"
-                cy="80"
-                fill="transparent"
-                r="74"
-                stroke="currentColor"
-                strokeDasharray="465"
-                strokeDashoffset={profile ? 465 - (465 * Math.min((profile.points % 100) / 100, 1)) : 120}
-                strokeWidth="6"
-              />
-            </svg>
-            <div className="text-center z-10">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">Livello</span>
-              <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
-            </div>
-            {/* Badge Overlay */}
-            <div className="absolute -bottom-2 bg-primary text-on-primary px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl">
-              {profile?.level || "Member"}
-            </div>
-          </div>
-          <div className="mt-8 text-center">
-            <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{getUserName()}</h2>
-            <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
-              Esploratore dal {user?.created_at ? new Date(user.created_at).getFullYear() : "2022"}
-            </p>
-          </div>
-        </section>
-
-        {/* Horizontal Stats Scroll */}
-        <section className="overflow-x-auto no-scrollbar px-6 mb-12">
-          <div className="flex gap-4 min-w-max">
-            <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-              <span className="material-symbols-outlined text-primary">directions_car</span>
-              <div>
-                <p className="text-2xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
-              </div>
-            </div>
-            <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-              <span className="material-symbols-outlined text-primary">route</span>
-              <div>
-                <p className="text-2xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
-              </div>
-            </div>
-            <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-              <span className="material-symbols-outlined text-primary">star</span>
-              <div>
-                <p className="text-2xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
-              </div>
-            </div>
-            <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-              <span className="material-symbols-outlined text-primary">eco</span>
-              <div>
-                <p className="text-2xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Push Notifications */}
-        <section className="px-6 mb-8">
-          <div className="bg-surface-container p-4 rounded-xl">
-            <h3 className="mb-3 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
-              <span className="material-symbols-outlined text-primary">notifications</span>
-              Notifiche push
-            </h3>
-            <PushNotificationToggle />
-          </div>
-        </section>
-
-        {/* Level Progress */}
-        {profile && levelInfo && (
-          <section className="px-6 mb-8">
-            <div className="bg-surface-container p-4 rounded-xl">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Livello attuale</p>
-                  <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
+  function ProfileMobile() {
+    return (
+      <div className="min-h-screen bg-surface-container-lowest pb-32">
+        <header className="bg-[#0e0e0e] text-primary docked full-width top-0 flex justify-between items-end w-full px-6 pt-12 pb-4">
+          <div className="flex items-center gap-3">
+            <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20">
+              {getUserAvatar() ? (
+                <img src={getUserAvatar()!} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="material-symbols-outlined text-on-surface-variant">person</span>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Punti</p>
-                  <p className="font-extrabold text-primary text-xl">{profile.points}</p>
-                </div>
-              </div>
-              <div className="relative h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                <div 
-                  className="absolute inset-y-0 left-0 bg-primary rounded-full"
-                  style={{ width: `${(() => {
-                    const range = levelInfo.next ? levelInfo.next.min - levelInfo.current.min : 100;
-                    const progress = profile.points - levelInfo.current.min;
-                    return Math.min(100, Math.max(0, (progress / range) * 100));
-                  })()}%` }}
+              )}
+            </Link>
+            <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase">Andamus</h1>
+          </div>
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out"
+          >
+            <span className="material-symbols-outlined text-3xl">logout</span>
+          </button>
+        </header>
+
+        <main className="max-w-md mx-auto">
+          <section className="px-6 py-8 flex flex-col items-center">
+            <div className="relative w-40 h-40 flex items-center justify-center">
+              <svg className="custom-ring w-full h-full absolute">
+                <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
+                <circle
+                  className="text-primary"
+                  cx="80"
+                  cy="80"
+                  fill="transparent"
+                  r="74"
+                  stroke="currentColor"
+                  strokeDasharray="465"
+                  strokeDashoffset={profile ? 465 - (465 * Math.min((profile.points % 100) / 100, 1)) : 120}
+                  strokeWidth="6"
                 />
+              </svg>
+              <div className="text-center z-10">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">Livello</span>
+                <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
               </div>
-              <p className="text-xs text-on-surface-variant mt-2">
-                {levelInfo.next
-                  ? `${levelInfo.next.min - profile.points} punti al prossimo livello`
-                  : "Hai raggiunto il livello massimo!"}
+              <div className="absolute -bottom-2 bg-primary text-on-primary px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl">
+                {profile?.level || "Member"}
+              </div>
+            </div>
+            <div className="mt-8 text-center">
+              <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{getUserName()}</h2>
+              <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
+                Esploratore dal {user?.created_at ? new Date(user.created_at).getFullYear() : "2022"}
               </p>
             </div>
           </section>
-        )}
 
-        {/* Booking Requests */}
-        {bookingRequests.length > 0 && (
+          <section className="overflow-x-auto no-scrollbar px-6 mb-12">
+            <div className="flex gap-4 min-w-max">
+              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
+                <span className="material-symbols-outlined text-primary">directions_car</span>
+                <div>
+                  <p className="text-2xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
+                </div>
+              </div>
+              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
+                <span className="material-symbols-outlined text-primary">route</span>
+                <div>
+                  <p className="text-2xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
+                </div>
+              </div>
+              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
+                <span className="material-symbols-outlined text-primary">star</span>
+                <div>
+                  <p className="text-2xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
+                </div>
+              </div>
+              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
+                <span className="material-symbols-outlined text-primary">eco</span>
+                <div>
+                  <p className="text-2xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section className="px-6 mb-8">
-            <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
-              Richieste in attesa ({bookingRequests.length})
-            </h3>
-            <div className="space-y-3">
-              {bookingRequests.map((request) => (
-                <div key={request.id} className="rounded-xl bg-surface-container p-4">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
-                        {request.passenger.avatar_url ? (
-                          <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="material-symbols-outlined text-on-surface-variant">person</span>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-bold text-on-surface">{request.passenger.name}</p>
-                        <p className="text-sm text-on-surface-variant">
-                          {request.ride.from_city} → {request.ride.to_city}
-                        </p>
-                        <p className="text-xs text-on-surface-variant">
-                          {formatDate(request.ride.date)} alle {request.ride.time.slice(0, 5)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleRejectBooking(request)}
-                        disabled={processingBooking === request.id}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
-                      >
-                        <X className="h-4 w-4" />
-                        Rifiuta
-                      </button>
-                      <button
-                        onClick={() => handleAcceptBooking(request)}
-                        disabled={processingBooking === request.id}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
-                      >
-                        {processingBooking === request.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Check className="h-4 w-4" />
-                        )}
-                        Accetta
-                      </button>
-                    </div>
+            <div className="bg-surface-container p-4 rounded-xl">
+              <h3 className="mb-3 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                <span className="material-symbols-outlined text-primary">notifications</span>
+                Notifiche push
+              </h3>
+              <PushNotificationToggle />
+            </div>
+          </section>
+
+          {profile && levelInfo && (
+            <section className="px-6 mb-8">
+              <div className="bg-surface-container p-4 rounded-xl">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Livello attuale</p>
+                    <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Punti</p>
+                    <p className="font-extrabold text-primary text-xl">{profile.points}</p>
                   </div>
                 </div>
+                <div className="relative h-2 bg-surface-container-highest rounded-full overflow-hidden">
+                  <div 
+                    className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                    style={{ width: `${(() => {
+                      const range = levelInfo.next ? levelInfo.next.min - levelInfo.current.min : 100;
+                      const progress = profile.points - levelInfo.current.min;
+                      return Math.min(100, Math.max(0, (progress / range) * 100));
+                    })()}%` }}
+                  />
+                </div>
+                <p className="text-xs text-on-surface-variant mt-2">
+                  {levelInfo.next
+                    ? `${levelInfo.next.min - profile.points} punti al prossimo livello`
+                    : "Hai raggiunto il livello massimo!"}
+                </p>
+              </div>
+            </section>
+          )}
+
+          {bookingRequests.length > 0 && (
+            <section className="px-6 mb-8">
+              <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
+                Richieste in attesa ({bookingRequests.length})
+              </h3>
+              <div className="space-y-3">
+                {bookingRequests.map((request) => (
+                  <div key={request.id} className="rounded-xl bg-surface-container p-4">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+                          {request.passenger.avatar_url ? (
+                            <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-bold text-on-surface">{request.passenger.name}</p>
+                          <p className="text-sm text-on-surface-variant">
+                            {request.ride.from_city} → {request.ride.to_city}
+                          </p>
+                          <p className="text-xs text-on-surface-variant">
+                            {formatDate(request.ride.date)} alle {request.ride.time.slice(0, 5)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleRejectBooking(request)}
+                          disabled={processingBooking === request.id}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
+                        >
+                          <X className="h-4 w-4" />
+                          Rifiuta
+                        </button>
+                        <button
+                          onClick={() => handleAcceptBooking(request)}
+                          disabled={processingBooking === request.id}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
+                        >
+                          {processingBooking === request.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Check className="h-4 w-4" />
+                          )}
+                          Accetta
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="px-6 mb-6">
+            <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
+              {[
+                { id: "rides", label: "Corse" },
+                { id: "bookings", label: "Passaggi" },
+                { id: "templates", label: "Ricorrenti" },
+                { id: "alerts", label: "Alert" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`pb-4 px-4 text-xs font-bold uppercase tracking-widest relative whitespace-nowrap ${
+                    activeTab === tab.id ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
+                  } transition-colors`}
+                >
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <span className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
+                  )}
+                </button>
               ))}
             </div>
           </section>
-        )}
 
-        {/* Tabs */}
-        <section className="px-6 mb-6">
-          <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
-            {[
-              { id: "rides", label: "Corse" },
-              { id: "bookings", label: "Passaggi" },
-              { id: "templates", label: "Ricorrenti" },
-              { id: "alerts", label: "Alert" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`pb-4 px-4 text-xs font-bold uppercase tracking-widest relative whitespace-nowrap ${
-                  activeTab === tab.id ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
-                } transition-colors`}
-              >
-                {tab.label}
-                {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
-                )}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Tab Content */}
-        <section className="px-6 space-y-4 pb-8">
-          {/* My Rides */}
-          {activeTab === "rides" && (
-            <>
-              {myRides.length === 0 ? (
-                <div className="py-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">directions_car</span>
-                  <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
-                  <Link href="/offri" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
-                    Offri un passaggio
-                  </Link>
-                </div>
-              ) : (
-                myRides.map((ride) => (
-                  <Link
-                    key={ride.id}
-                    href={`/corsa/${ride.id}`}
-                    className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-primary shadow-sm active:scale-[0.98] transition-transform"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">
-                          {formatDate(ride.date)} · {ride.time.slice(0, 5)}
-                        </span>
-                        <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xl font-extrabold text-on-surface">{ride.price === 0 ? "Gratis" : `€${ride.price}`}</span>
-                        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">
-                          {isRideCompleted(ride.date) ? "Completata" : "Attiva"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                        <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
-                      </div>
-                      <span className="text-[11px] font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </>
-          )}
-
-          {/* My Bookings */}
-          {activeTab === "bookings" && (
-            <>
-              {myBookings.length === 0 ? (
-                <div className="py-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">location_on</span>
-                  <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
-                  <Link href="/cerca" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
-                    Cerca passaggio
-                  </Link>
-                </div>
-              ) : (
-                myBookings.map((booking) => {
-                  const completed = isRideCompleted(booking.rides.date);
-                  return (
-                    <div key={booking.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+          <section className="px-6 space-y-4 pb-8">
+            {activeTab === "rides" && (
+              <>
+                {myRides.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">directions_car</span>
+                    <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
+                    <Link href="/offri" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
+                      Offri un passaggio
+                    </Link>
+                  </div>
+                ) : (
+                  myRides.map((ride) => (
+                    <Link
+                      key={ride.id}
+                      href={`/corsa/${ride.id}`}
+                      className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-primary shadow-sm active:scale-[0.98] transition-transform"
+                    >
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col">
-                          <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
-                            {getStatusLabel(booking.status)}
+                          <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">
+                            {formatDate(ride.date)} · {ride.time.slice(0, 5)}
                           </span>
-                          <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
+                          <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
                         </div>
                         <div className="text-right">
-                          <span className="text-xl font-extrabold text-on-surface">{booking.rides.price === 0 ? "Gratis" : `€${booking.rides.price}`}</span>
-                          {completed && <p className="text-[10px] font-bold text-tertiary uppercase tracking-tighter">Completata</p>}
+                          <span className="text-xl font-extrabold text-on-surface">{ride.price === 0 ? "Gratis" : `€${ride.price}`}</span>
+                          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">
+                            {isRideCompleted(ride.date) ? "Completata" : "Attiva"}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                        </div>
+                        <span className="text-[11px] font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
+                      </div>
+                    </Link>
+                  ))
+                )}
+              </>
+            )}
+
+            {activeTab === "bookings" && (
+              <>
+                {myBookings.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">location_on</span>
+                    <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
+                    <Link href="/cerca" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
+                      Cerca passaggio
+                    </Link>
+                  </div>
+                ) : (
+                  myBookings.map((booking) => {
+                    const completed = isRideCompleted(booking.rides.date);
+                    return (
+                      <div key={booking.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                        <div className="flex justify-between items-start">
+                          <div className="flex flex-col">
+                            <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
+                              {getStatusLabel(booking.status)}
+                            </span>
+                            <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
                           </div>
-                          <span className="text-[11px] font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
+                          <div className="text-right">
+                            <span className="text-xl font-extrabold text-on-surface">{booking.rides.price === 0 ? "Gratis" : `€${booking.rides.price}`}</span>
+                            {completed && <p className="text-[10px] font-bold text-tertiary uppercase tracking-tighter">Completata</p>}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
+                              <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                            </div>
+                            <span className="text-[11px] font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {completed ? (
+                              <button
+                                onClick={() => openRatingModal(booking.rides.id, {
+                                  id: booking.rides.profiles.id,
+                                  name: booking.rides.profiles.name,
+                                  avatar_url: booking.rides.profiles.avatar_url
+                                })}
+                                className="flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1.5 text-sm font-bold text-primary"
+                              >
+                                <Star className="h-3 w-3" />
+                                Recensisci
+                              </button>
+                            ) : (
+                              <>
+                                {booking.status !== "canceled" && (
+                                  <>
+                                    <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
+                                      <MessageCircle className="h-3 w-3" />
+                                      Chat
+                                    </Link>
+                                    <button
+                                      onClick={() => setCancelBookingId(booking.id)}
+                                      className="flex items-center gap-1 rounded-full bg-error/20 px-3 py-1.5 text-sm font-bold text-error"
+                                    >
+                                      Annulla
+                                    </button>
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </>
+            )}
+
+            {activeTab === "templates" && (
+              <>
+                {rideTemplates.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">repeat</span>
+                    <p className="mt-4 text-lg font-bold text-on-surface">Nessuna corsa ricorrente</p>
+                  </div>
+                ) : (
+                  rideTemplates.map((template) => (
+                    <div key={template.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                      <div className="flex justify-between items-start">
+                        <div className="flex flex-col">
+                          <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
+                          <p className="text-sm text-on-surface-variant mt-1">
+                            {template.time.slice(0, 5)} · {template.seats} posti · {template.price === 0 ? "Gratis" : `€${template.price}`}
+                          </p>
+                          <p className="text-xs text-on-surface-variant mt-1">
+                            {template.recurrence_days.map((d) => ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"][d]).join(", ")}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          {completed ? (
-                            <button
-                              onClick={() => openRatingModal(booking.rides.id, {
-                                id: booking.rides.profiles.id,
-                                name: booking.rides.profiles.name,
-                                avatar_url: booking.rides.profiles.avatar_url
-                              })}
-                              className="flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1.5 text-sm font-bold text-primary"
-                            >
-                              <Star className="h-3 w-3" />
-                              Recensisci
-                            </button>
-                          ) : (
-                            <>
-                              {booking.status !== "canceled" && (
-                                <>
-                                  <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
-                                    <MessageCircle className="h-3 w-3" />
-                                    Chat
-                                  </Link>
-                                  <button
-                                    onClick={() => setCancelBookingId(booking.id)}
-                                    className="flex items-center gap-1 rounded-full bg-error/20 px-3 py-1.5 text-sm font-bold text-error"
-                                  >
-                                    Annulla
-                                  </button>
-                                </>
-                              )}
-                            </>
-                          )}
+                          <button
+                            onClick={() => handleToggleTemplate(template)}
+                            className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
+                          >
+                            {template.is_active ? "Sospendi" : "Attiva"}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTemplate(template.id)}
+                            className="p-2 rounded-full bg-error/20 text-error"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
                     </div>
-                  );
-                })
-              )}
-            </>
-          )}
+                  ))
+                )}
+              </>
+            )}
 
-          {/* Templates */}
-          {activeTab === "templates" && (
-            <>
-              {rideTemplates.length === 0 ? (
-                <div className="py-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">repeat</span>
-                  <p className="mt-4 text-lg font-bold text-on-surface">Nessuna corsa ricorrente</p>
-                </div>
-              ) : (
-                rideTemplates.map((template) => (
-                  <div key={template.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
-                    <div className="flex justify-between items-start">
-                      <div className="flex flex-col">
-                        <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
-                        <p className="text-sm text-on-surface-variant mt-1">
-                          {template.time.slice(0, 5)} · {template.seats} posti · {template.price === 0 ? "Gratis" : `€${template.price}`}
-                        </p>
-                        <p className="text-xs text-on-surface-variant mt-1">
-                          {template.recurrence_days.map((d) => ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"][d]).join(", ")}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleToggleTemplate(template)}
-                          className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
-                        >
-                          {template.is_active ? "Sospendi" : "Attiva"}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteTemplate(template.id)}
-                          className="p-2 rounded-full bg-error/20 text-error"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
+            {activeTab === "alerts" && (
+              <>
+                {rideAlerts.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">notifications</span>
+                    <p className="mt-4 text-lg font-bold text-on-surface">Nessun alert salvato</p>
                   </div>
-                ))
-              )}
-            </>
-          )}
-
-          {/* Alerts */}
-          {activeTab === "alerts" && (
-            <>
-              {rideAlerts.length === 0 ? (
-                <div className="py-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">notifications</span>
-                  <p className="mt-4 text-lg font-bold text-on-surface">Nessun alert salvato</p>
-                </div>
-              ) : (
-                rideAlerts.map((alert) => (
-                  <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-surface-container-highest">
-                    <div>
-                      <h3 className="font-bold text-on-surface">{alert.from_city || "Qualsiasi"} → {alert.to_city || "Qualsiasi"}</h3>
-                      <p className="text-sm text-on-surface-variant">
-                        {alert.start_date && `Dal ${formatDate(alert.start_date)}`}
-                        {alert.end_date && ` al ${formatDate(alert.end_date)}`}
-                        {alert.min_seats !== null && ` · Min ${alert.min_seats} posti`}
-                        {alert.max_price !== null && ` · Max ${alert.max_price}€`}
-                      </p>
+                ) : (
+                  rideAlerts.map((alert) => (
+                    <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-surface-container-highest">
+                      <div>
+                        <h3 className="font-bold text-on-surface">{alert.from_city || "Qualsiasi"} → {alert.to_city || "Qualsiasi"}</h3>
+                        <p className="text-sm text-on-surface-variant">
+                          {alert.start_date && `Dal ${formatDate(alert.start_date)}`}
+                          {alert.end_date && ` al ${formatDate(alert.end_date)}`}
+                          {alert.min_seats !== null && ` · Min ${alert.min_seats} posti`}
+                          {alert.max_price !== null && ` · Max ${alert.max_price}€`}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteAlert(alert.id)}
+                        className="p-2 rounded-full bg-error/20 text-error"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
+                  ))
+                )}
+              </>
+            )}
+          </section>
+        </main>
+
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">Vuoi uscire?</h3>
+              <p className="text-sm text-on-surface-variant mb-6">Dovrai accedere di nuovo per usare l&apos;app.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
+                >
+                  Esci
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {cancelBookingId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">Annulla prenotazione</h3>
+              <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
+                rows={3}
+                placeholder="Motivo..."
+              />
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
+                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleCancelBooking}
+                  disabled={!cancelReason.trim()}
+                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
+                >
+                  Conferma
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showRatingModal && user && (
+          <RatingModal
+            isOpen={showRatingModal}
+            onClose={() => setShowRatingModal(false)}
+            rideId={ratingRideId}
+            reviewedUser={ratingUser}
+            currentUserId={user.id}
+          />
+        )}
+      </div>
+    );
+  }
+  function ProfileDesktop() {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-on-surface pb-16">
+        <div className="max-w-6xl mx-auto px-8 py-10">
+          <section className="flex items-center gap-10 mb-12">
+            <div className="relative w-48 h-48 flex items-center justify-center">
+              <svg className="custom-ring w-full h-full absolute">
+                <circle className="text-surface-container-highest" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
+                <circle
+                  className="text-primary"
+                  cx="96"
+                  cy="96"
+                  fill="transparent"
+                  r="90"
+                  stroke="currentColor"
+                  strokeDasharray="565"
+                  strokeDashoffset={profile ? 565 - (565 * Math.min((profile.points % 100) / 100, 1)) : 120}
+                  strokeWidth="6"
+                />
+              </svg>
+              <div className="text-center z-10">
+                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-primary mb-1">Livello</span>
+                <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
+              </div>
+              <div className="absolute -bottom-2 bg-primary text-on-primary px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl">
+                {profile?.level || "Member"}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-5xl font-extrabold tracking-tight mb-2 text-on-surface">{getUserName()}</h2>
+              <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
+                Esploratore dal {user?.created_at ? new Date(user.created_at).getFullYear() : "2022"}
+              </p>
+            </div>
+          </section>
+
+          <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
+              <span className="material-symbols-outlined text-primary text-3xl">directions_car</span>
+              <div>
+                <p className="text-3xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
+              </div>
+            </div>
+            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
+              <span className="material-symbols-outlined text-primary text-3xl">route</span>
+              <div>
+                <p className="text-3xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
+              </div>
+            </div>
+            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
+              <span className="material-symbols-outlined text-primary text-3xl">star</span>
+              <div>
+                <p className="text-3xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
+              </div>
+            </div>
+            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
+              <span className="material-symbols-outlined text-primary text-3xl">eco</span>
+              <div>
+                <p className="text-3xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
+              </div>
+            </div>
+          </section>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              {bookingRequests.length > 0 && (
+                <section>
+                  <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
+                    Richieste in attesa ({bookingRequests.length})
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    {bookingRequests.map((request) => (
+                      <div key={request.id} className="rounded-2xl bg-surface-container p-6">
+                        <div className="flex flex-col gap-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+                              {request.passenger.avatar_url ? (
+                                <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-bold text-lg text-on-surface">{request.passenger.name}</p>
+                              <p className="text-sm text-on-surface-variant">
+                                {request.ride.from_city} → {request.ride.to_city}
+                              </p>
+                              <p className="text-xs text-on-surface-variant">
+                                {formatDate(request.ride.date)} alle {request.ride.time.slice(0, 5)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => handleRejectBooking(request)}
+                              disabled={processingBooking === request.id}
+                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
+                            >
+                              <X className="h-4 w-4" />
+                              Rifiuta
+                            </button>
+                            <button
+                              onClick={() => handleAcceptBooking(request)}
+                              disabled={processingBooking === request.id}
+                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
+                            >
+                              {processingBooking === request.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Check className="h-4 w-4" />
+                              )}
+                              Accetta
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              <section>
+                <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
+                  {[
+                    { id: "rides", label: "Corse" },
+                    { id: "bookings", label: "Passaggi" },
+                    { id: "templates", label: "Ricorrenti" },
+                    { id: "alerts", label: "Alert" },
+                  ].map((tab) => (
                     <button
-                      onClick={() => handleDeleteAlert(alert.id)}
-                      className="p-2 rounded-full bg-error/20 text-error"
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`pb-4 px-6 text-sm font-bold uppercase tracking-widest relative whitespace-nowrap ${
+                        activeTab === tab.id ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
+                      } transition-colors`}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {tab.label}
+                      {activeTab === tab.id && (
+                        <span className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
+                      )}
                     </button>
+                  ))}
+                </div>
+              </section>
+
+              <section className="space-y-6">
+                {activeTab === "rides" && (
+                  <>
+                    {myRides.length === 0 ? (
+                      <div className="py-16 text-center bg-surface-container rounded-2xl">
+                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">directions_car</span>
+                        <p className="mt-4 text-xl font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
+                        <Link href="/offri" className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
+                          Offri un passaggio
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {myRides.map((ride) => (
+                          <Link
+                            key={ride.id}
+                            href={`/corsa/${ride.id}`}
+                            className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-primary shadow-sm hover:scale-[1.01] transition-transform"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex flex-col">
+                                <span className="text-xs font-bold text-primary uppercase tracking-widest mb-1">
+                                  {formatDate(ride.date)} · {ride.time.slice(0, 5)}
+                                </span>
+                                <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-2xl font-extrabold text-on-surface">{ride.price === 0 ? "Gratis" : `€${ride.price}`}</span>
+                                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">
+                                  {isRideCompleted(ride.date) ? "Completata" : "Attiva"}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                              </div>
+                              <span className="text-sm font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {activeTab === "bookings" && (
+                  <>
+                    {myBookings.length === 0 ? (
+                      <div className="py-16 text-center bg-surface-container rounded-2xl">
+                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">location_on</span>
+                        <p className="mt-4 text-xl font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
+                        <Link href="/cerca" className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
+                          Cerca passaggio
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {myBookings.map((booking) => {
+                          const completed = isRideCompleted(booking.rides.date);
+                          return (
+                            <div key={booking.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                              <div className="flex justify-between items-start">
+                                <div className="flex flex-col">
+                                  <span className={`text-xs font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
+                                    {getStatusLabel(booking.status)}
+                                  </span>
+                                  <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
+                                </div>
+                                <div className="text-right">
+                                  <span className="text-2xl font-extrabold text-on-surface">{booking.rides.price === 0 ? "Gratis" : `€${booking.rides.price}`}</span>
+                                  {completed && <p className="text-xs font-bold text-tertiary uppercase tracking-tighter">Completata</p>}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                                  </div>
+                                  <span className="text-sm font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {completed ? (
+                                    <button
+                                      onClick={() => openRatingModal(booking.rides.id, {
+                                        id: booking.rides.profiles.id,
+                                        name: booking.rides.profiles.name,
+                                        avatar_url: booking.rides.profiles.avatar_url
+                                      })}
+                                      className="flex items-center gap-1 rounded-full bg-primary/20 px-4 py-2 text-sm font-bold text-primary"
+                                    >
+                                      <Star className="h-4 w-4" />
+                                      Recensisci
+                                    </button>
+                                  ) : (
+                                    <>
+                                      {booking.status !== "canceled" && (
+                                        <>
+                                          <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary">
+                                            <MessageCircle className="h-4 w-4" />
+                                            Chat
+                                          </Link>
+                                          <button
+                                            onClick={() => setCancelBookingId(booking.id)}
+                                            className="flex items-center gap-1 rounded-full bg-error/20 px-4 py-2 text-sm font-bold text-error"
+                                          >
+                                            Annulla
+                                          </button>
+                                        </>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {activeTab === "templates" && (
+                  <>
+                    {rideTemplates.length === 0 ? (
+                      <div className="py-16 text-center bg-surface-container rounded-2xl">
+                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">repeat</span>
+                        <p className="mt-4 text-xl font-bold text-on-surface">Nessuna corsa ricorrente</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {rideTemplates.map((template) => (
+                          <div key={template.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                            <div className="flex justify-between items-start">
+                              <div className="flex flex-col">
+                                <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
+                                <p className="text-sm text-on-surface-variant mt-1">
+                                  {template.time.slice(0, 5)} · {template.seats} posti · {template.price === 0 ? "Gratis" : `€${template.price}`}
+                                </p>
+                                <p className="text-xs text-on-surface-variant mt-1">
+                                  {template.recurrence_days.map((d) => ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"][d]).join(", ")}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleToggleTemplate(template)}
+                                  className={`rounded-full px-4 py-2 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
+                                >
+                                  {template.is_active ? "Sospendi" : "Attiva"}
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteTemplate(template.id)}
+                                  className="p-2 rounded-full bg-error/20 text-error"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {activeTab === "alerts" && (
+                  <>
+                    {rideAlerts.length === 0 ? (
+                      <div className="py-16 text-center bg-surface-container rounded-2xl">
+                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">notifications</span>
+                        <p className="mt-4 text-xl font-bold text-on-surface">Nessun alert salvato</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {rideAlerts.map((alert) => (
+                          <div key={alert.id} className="bg-surface p-6 rounded-2xl flex items-center justify-between border-l-4 border-surface-container-highest">
+                            <div>
+                              <h3 className="font-bold text-lg text-on-surface">{alert.from_city || "Qualsiasi"} → {alert.to_city || "Qualsiasi"}</h3>
+                              <p className="text-sm text-on-surface-variant">
+                                {alert.start_date && `Dal ${formatDate(alert.start_date)}`}
+                                {alert.end_date && ` al ${formatDate(alert.end_date)}`}
+                                {alert.min_seats !== null && ` · Min ${alert.min_seats} posti`}
+                                {alert.max_price !== null && ` · Max ${alert.max_price}€`}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleDeleteAlert(alert.id)}
+                              className="p-3 rounded-full bg-error/20 text-error"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
+            </div>
+
+            <div className="lg:col-span-1 space-y-8">
+              <div className="bg-surface-container p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary">notifications</span>
+                  Notifiche push
+                </h3>
+                <PushNotificationToggle />
+              </div>
+
+              {profile && levelInfo && (
+                <div className="bg-surface-container p-6 rounded-2xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-primary">Livello attuale</p>
+                      <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-bold uppercase tracking-widest text-primary">Punti</p>
+                      <p className="font-extrabold text-primary text-2xl">{profile.points}</p>
+                    </div>
                   </div>
-                ))
+                  <div className="relative h-3 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div 
+                      className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                      style={{ width: `${(() => {
+                        const range = levelInfo.next ? levelInfo.next.min - levelInfo.current.min : 100;
+                        const progress = profile.points - levelInfo.current.min;
+                        return Math.min(100, Math.max(0, (progress / range) * 100));
+                      })()}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-on-surface-variant mt-3">
+                    {levelInfo.next
+                      ? `${levelInfo.next.min - profile.points} punti al prossimo livello`
+                      : "Hai raggiunto il livello massimo!"}
+                  </p>
+                </div>
               )}
-            </>
-          )}
-        </section>
-      </main>
 
-      {/* Logout Modal */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-            <h3 className="text-lg font-extrabold text-on-surface mb-2">Vuoi uscire?</h3>
-            <p className="text-sm text-on-surface-variant mb-6">Dovrai accedere di nuovo per usare l&apos;app.</p>
-            <div className="flex gap-3">
               <button
-                onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                onClick={() => setShowLogoutConfirm(true)}
+                className="w-full bg-error/10 text-error rounded-2xl p-4 font-bold uppercase tracking-widest text-sm hover:bg-error/20 transition-colors"
               >
-                Annulla
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
-              >
-                Esci
+                Logout
               </button>
             </div>
           </div>
         </div>
-      )}
 
-      {/* Cancel Booking Modal */}
-      {cancelBookingId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-            <h3 className="text-lg font-extrabold text-on-surface mb-2">Annulla prenotazione</h3>
-            <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
-            <textarea
-              value={cancelReason}
-              onChange={(e) => setCancelReason(e.target.value)}
-              className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
-              rows={3}
-              placeholder="Motivo..."
-            />
-            <div className="flex gap-3 mt-4">
-              <button
-                onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
-                className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
-              >
-                Annulla
-              </button>
-              <button
-                onClick={handleCancelBooking}
-                disabled={!cancelReason.trim()}
-                className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
-              >
-                Conferma
-              </button>
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">Vuoi uscire?</h3>
+              <p className="text-sm text-on-surface-variant mb-6">Dovrai accedere di nuovo per usare l&apos;app.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
+                >
+                  Esci
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {showRatingModal && user && (
-        <RatingModal
-          isOpen={showRatingModal}
-          onClose={() => setShowRatingModal(false)}
-          rideId={ratingRideId}
-          reviewedUser={ratingUser}
-          currentUserId={user.id}
-        />
-      )}
-    </div>
-  );
+        {cancelBookingId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">Annulla prenotazione</h3>
+              <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
+                rows={3}
+                placeholder="Motivo..."
+              />
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
+                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleCancelBooking}
+                  disabled={!cancelReason.trim()}
+                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
+                >
+                  Conferma
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showRatingModal && user && (
+          <RatingModal
+            isOpen={showRatingModal}
+            onClose={() => setShowRatingModal(false)}
+            rideId={ratingRideId}
+            reviewedUser={ratingUser}
+            currentUserId={user.id}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return viewMode === "desktop" ? <ProfileDesktop /> : <ProfileMobile />;
 }

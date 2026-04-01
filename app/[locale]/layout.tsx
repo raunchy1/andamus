@@ -3,7 +3,7 @@ import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
-import { BottomNav } from "@/components/BottomNav";
+import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 import { Toaster } from "react-hot-toast";
 import { SafetyButton } from "@/components/SafetyButton";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -183,8 +183,9 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ThemeProvider>
             <Navbar />
-            {children}
-            <BottomNav />
+            <ClientLayoutWrapper>
+              {children}
+            </ClientLayoutWrapper>
             <SafetyButton />
             <Toaster
               position="top-center"
