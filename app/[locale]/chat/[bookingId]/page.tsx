@@ -565,7 +565,7 @@ export default function ChatPage() {
   function ChatMobile() {
     return (
       <div className="flex h-[100dvh] flex-col bg-[#0a0a0a]">
-        <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-14 pb-4 shrink-0">
+        <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-14 pb-4 shrink-0">
           <div className="flex flex-col">
             <span className="font-semibold uppercase tracking-widest text-[11px] text-primary">ANDAMUS LIVE</span>
             <h1 className="font-extrabold tracking-tighter text-2xl uppercase text-on-surface">
@@ -584,7 +584,7 @@ export default function ChatPage() {
           </div>
         </header>
 
-        <div className="bg-[#131313] px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="bg-[#131313] px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex flex-col items-center">
               <div className="w-2 h-2 rounded-full bg-primary" />
@@ -606,7 +606,7 @@ export default function ChatPage() {
         </div>
 
         <div 
-          className="flex-1 overflow-y-auto px-6 py-8 chat-scroll flex flex-col gap-8"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-8 chat-scroll flex flex-col gap-8"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div className="flex justify-center">
@@ -625,9 +625,9 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        <footer className="bg-[#131313] px-6 pb-10 pt-6 shrink-0 safe-area-pb">
+        <footer className="bg-[#131313] px-4 sm:px-6 pb-10 pt-6 shrink-0 safe-area-pb">
           {isRecording && (
-            <div className="mb-3 flex items-center justify-between bg-error/10 border border-error/20 rounded-full px-4 py-2">
+            <div className="mb-3 flex items-center justify-between bg-error/10 border border-error/20 rounded-full px-4 py-2 text-sm truncate">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
                 <span className="text-error text-sm font-medium">Registrazione...</span>

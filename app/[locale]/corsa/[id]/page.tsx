@@ -96,7 +96,7 @@ function RideDetailMobile({
   return (
     <div className="min-h-screen bg-surface pb-32">
       {/* Top Navigation */}
-      <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-6 pt-12">
+      <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 pt-12">
         <button onClick={() => router.back()} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
           <span className="material-symbols-outlined text-2xl">arrow_back</span>
         </button>
@@ -105,7 +105,7 @@ function RideDetailMobile({
         </button>
       </header>
 
-      <main className="h-full overflow-y-auto hide-scrollbar pb-32">
+      <main className="h-full overflow-y-auto overflow-x-hidden hide-scrollbar pb-32">
         {/* Full Bleed Map Header */}
         <section className="relative h-[380px] w-full">
           <div className="absolute inset-0 bg-surface-container-low">
@@ -123,7 +123,7 @@ function RideDetailMobile({
         </section>
 
         {/* Route Details */}
-        <div className="px-6 -mt-8 relative z-10">
+        <div className="px-4 sm:px-6 -mt-8 relative z-10">
           <div className="flex justify-between items-start mb-10">
             <div>
               <h1 className="font-headline font-extrabold text-4xl tracking-tighter text-on-surface mb-1">
@@ -916,7 +916,7 @@ export default function RideDetailPage() {
 
   if (!ride) {
     return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4 sm:px-6">
         <AlertCircle className="h-16 w-16 text-error mb-4" />
         <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Passaggio non trovato</h1>
         <Link href="/cerca" className="mt-6 flex items-center gap-2 text-primary">

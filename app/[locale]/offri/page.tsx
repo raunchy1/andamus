@@ -67,7 +67,7 @@ function OfferMobile({
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-32">
       {/* Top Navigation */}
-      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-12 pb-4 sticky top-0 z-50">
+      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-12 pb-4 sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity">
             arrow_back
@@ -83,7 +83,7 @@ function OfferMobile({
         </div>
       </header>
 
-      <main className="px-6 py-8 space-y-10 max-w-2xl mx-auto">
+      <main className="px-4 sm:px-6 py-6 sm:py-8 space-y-8 sm:space-y-10 max-w-2xl mx-auto overflow-x-hidden">
         {/* Hero Heading */}
         <section>
           <span className="font-semibold uppercase tracking-widest text-[11px] text-primary mb-2 block">Nuovo Viaggio</span>
@@ -441,7 +441,7 @@ function OfferDesktop({
     <div className="min-h-screen bg-[#0a0a0a]">
       {/* Top Navigation */}
       <header className="bg-[#0e0e0e] border-b border-white/5 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-8 h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => router.back()} className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity">
               arrow_back
@@ -458,7 +458,7 @@ function OfferDesktop({
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-10">
+      <main className="max-w-5xl mx-auto px-6 lg:px-8 py-8 lg:py-10 overflow-x-hidden">
         {/* Hero Heading */}
         <section className="mb-10">
           <span className="font-semibold uppercase tracking-widest text-xs text-primary mb-2 block">Nuovo Viaggio</span>
@@ -1054,7 +1054,7 @@ export default function OfferPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4 sm:px-6">
         <div className="mx-auto max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high">
             <span className="material-symbols-outlined text-4xl text-primary">directions_car</span>

@@ -286,14 +286,14 @@ function SearchMobile(props: SearchViewProps) {
   } = props;
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e] text-[#e5e2e1] pb-32">
+    <div className="min-h-screen bg-[#0e0e0e] text-[#e5e2e1] overflow-x-hidden">
       {/* TopAppBar */}
-      <header className="bg-[#0e0e0e] fixed top-0 left-0 w-full z-50 flex justify-between items-end w-full px-6 pt-12 pb-4">
-        <div className="flex items-center gap-3">
-          <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+      <header className="bg-[#0e0e0e] fixed top-0 left-0 w-full z-50 flex justify-between items-end px-4 sm:px-6 pt-12 pb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden flex-shrink-0">
             <span className="material-symbols-outlined text-on-surface">person</span>
           </Link>
-          <h1 className="font-extrabold tracking-tighter text-3xl text-[#e5e2e1] uppercase">Andamus</h1>
+          <h1 className="font-extrabold tracking-tighter text-2xl sm:text-3xl text-[#e5e2e1] uppercase truncate">Andamus</h1>
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
@@ -308,7 +308,7 @@ function SearchMobile(props: SearchViewProps) {
         </button>
       </header>
 
-      <main className="pt-32 pb-32 px-6 max-w-2xl mx-auto" ref={resultsRef}
+      <main className="pt-32 pb-32 px-4 sm:px-6 max-w-2xl mx-auto overflow-x-hidden" ref={resultsRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -325,15 +325,15 @@ function SearchMobile(props: SearchViewProps) {
         </div>
 
         {/* Sticky Minimal Search Bar */}
-        <div className="sticky top-24 z-40 mb-8">
-          <div className="bg-surface-container-high rounded-xl p-4 flex items-center gap-4 shadow-2xl">
-            <span className="material-symbols-outlined text-primary">search</span>
-            <div className="flex flex-col flex-1">
+        <div className="sticky top-24 z-40 mb-6 sm:mb-8">
+          <div className="bg-surface-container-high rounded-xl p-3 sm:p-4 flex items-center gap-2 sm:gap-4 shadow-2xl">
+            <span className="material-symbols-outlined text-primary flex-shrink-0">search</span>
+            <div className="flex flex-col flex-1 min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Partenza</span>
               <select
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
-                className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-lg w-full appearance-none cursor-pointer"
+                className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-base sm:text-lg w-full appearance-none cursor-pointer truncate"
               >
                 <option value="" className="bg-surface-container-high">Da dove parti?</option>
                 {sardinianCities.map((city) => (
@@ -341,13 +341,13 @@ function SearchMobile(props: SearchViewProps) {
                 ))}
               </select>
             </div>
-            <div className="h-8 w-[1px] bg-outline-variant opacity-30" />
-            <div className="flex flex-col flex-1">
+            <div className="h-8 w-[1px] bg-outline-variant opacity-30 flex-shrink-0" />
+            <div className="flex flex-col flex-1 min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Destinazione</span>
               <select
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-lg w-full appearance-none cursor-pointer"
+                className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-base sm:text-lg w-full appearance-none cursor-pointer truncate"
               >
                 <option value="" className="bg-surface-container-high">Dove vai?</option>
                 {sardinianCities.map((city) => (
@@ -359,12 +359,12 @@ function SearchMobile(props: SearchViewProps) {
         </div>
 
         {/* Elegant Filter Pills */}
-        <div className="flex gap-3 mb-10 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex gap-2 sm:gap-3 mb-8 sm:mb-10 overflow-x-auto no-scrollbar pb-2">
           {filterOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
-              className={`whitespace-nowrap px-6 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all active:scale-95 ${
+              className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all active:scale-95 flex-shrink-0 ${
                 activeFilter === option.id
                   ? "bg-primary text-on-primary"
                   : "bg-surface-container-high text-on-surface border border-outline-variant border-opacity-20 hover:bg-surface-container-highest"
@@ -375,7 +375,7 @@ function SearchMobile(props: SearchViewProps) {
           ))}
           <button
             onClick={() => setShowAlertModal(true)}
-            className="whitespace-nowrap px-6 py-2 bg-surface-container-high text-primary rounded-full font-bold text-[11px] uppercase tracking-widest border border-outline-variant border-opacity-20 hover:bg-surface-container-highest transition-all active:scale-95 flex items-center gap-2"
+            className="whitespace-nowrap px-4 sm:px-6 py-2 bg-surface-container-high text-primary rounded-full font-bold text-[11px] uppercase tracking-widest border border-outline-variant border-opacity-20 hover:bg-surface-container-highest transition-all active:scale-95 flex items-center gap-2 flex-shrink-0"
           >
             <Bell className="w-3 h-3" />
             Alerta
@@ -384,7 +384,7 @@ function SearchMobile(props: SearchViewProps) {
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="mb-8 bg-surface-container-low rounded-xl p-4 space-y-4">
+          <div className="mb-6 sm:mb-8 bg-surface-container-low rounded-xl p-3 sm:p-4 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">Filtri avanzati</h3>
               <button onClick={() => setShowFilters(false)} className="text-on-surface-variant hover:text-on-surface">
@@ -455,7 +455,7 @@ function SearchMobile(props: SearchViewProps) {
         )}
 
         {/* Results count */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-4 sm:mb-6 flex items-center justify-between">
           <p className="text-sm text-on-surface-variant">
             {loading ? "Caricamento..." : `${rides.length} corse trovate`}
           </p>
@@ -472,7 +472,7 @@ function SearchMobile(props: SearchViewProps) {
         </div>
 
         {/* Innovative Ride List (Asymmetric Editorial Style) */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {loading && (
             <>
               <SkeletonRow />
@@ -492,17 +492,17 @@ function SearchMobile(props: SearchViewProps) {
             <Link
               key={ride.id}
               href={`/corsa/${ride.id}`}
-              className="group relative bg-surface p-6 rounded-xl transition-all duration-300 hover:bg-surface-container-low cursor-pointer block"
+              className="group relative bg-surface p-4 sm:p-6 rounded-xl transition-all duration-300 hover:bg-surface-container-low cursor-pointer block overflow-hidden"
             >
-              <div className="flex justify-between items-start mb-6">
-                <div className="space-y-1">
+              <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
+                <div className="space-y-1 min-w-0">
                   <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
                     {ride.date === today ? "Disponibile" : formatDate(ride.date)}
                   </span>
-                  <h3 className="text-4xl font-extrabold tracking-tighter text-on-surface">{ride.time.slice(0, 5)}</h3>
+                  <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tighter text-on-surface">{ride.time.slice(0, 5)}</h3>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-extrabold tracking-tighter text-on-surface">
+                <div className="text-right flex-shrink-0">
+                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tighter text-on-surface">
                     {ride.price === 0 ? "Gratis" : `€${ride.price}`}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface opacity-50">Posto singolo</div>
@@ -510,25 +510,25 @@ function SearchMobile(props: SearchViewProps) {
               </div>
 
               {/* Path Indicator */}
-              <div className="relative py-8 flex items-center justify-between">
+              <div className="relative py-6 sm:py-8 flex items-center justify-between">
                 <div className="absolute left-0 right-0 h-[2px] bg-surface-container-highest" />
                 <div className="absolute left-0 right-0 h-[2px] bg-primary scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
-                <div className="relative z-10 flex flex-col items-start bg-surface pr-4 group-hover:bg-surface-container-low transition-colors">
-                  <span className="text-[11px] font-bold uppercase text-primary mb-1">{ride.from_city}</span>
+                <div className="relative z-10 flex flex-col items-start bg-surface pr-2 sm:pr-4 group-hover:bg-surface-container-low transition-colors max-w-[40%]">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-primary mb-1 truncate max-w-full">{ride.from_city}</span>
                   <div className="w-3 h-3 rounded-full bg-primary ring-4 ring-background" />
                 </div>
-                <div className="relative z-10 flex flex-col items-center bg-surface px-4 group-hover:bg-surface-container-low transition-colors">
-                  <span className="material-symbols-outlined text-primary text-xl">directions_car</span>
+                <div className="relative z-10 flex flex-col items-center bg-surface px-2 sm:px-4 group-hover:bg-surface-container-low transition-colors flex-shrink-0">
+                  <span className="material-symbols-outlined text-primary text-lg sm:text-xl">directions_car</span>
                 </div>
-                <div className="relative z-10 flex flex-col items-end bg-surface pl-4 group-hover:bg-surface-container-low transition-colors">
-                  <span className="text-[11px] font-bold uppercase text-on-surface mb-1 opacity-50">{ride.to_city}</span>
+                <div className="relative z-10 flex flex-col items-end bg-surface pl-2 sm:pl-4 group-hover:bg-surface-container-low transition-colors max-w-[40%]">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-on-surface mb-1 opacity-50 truncate max-w-full">{ride.to_city}</span>
                   <div className="w-3 h-3 rounded-full bg-surface-container-highest ring-4 ring-background" />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-6">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 rounded-full border-2 border-primary overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+              <div className="flex items-center justify-between mt-4 sm:mt-6">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-primary overflow-hidden grayscale group-hover:grayscale-0 transition-all flex-shrink-0">
                     {ride.profiles.avatar_url ? (
                       <Image
                         src={ride.profiles.avatar_url}
@@ -542,8 +542,8 @@ function SearchMobile(props: SearchViewProps) {
                       </div>
                     )}
                   </div>
-                  <div>
-                    <p className="font-bold text-on-surface">{ride.profiles.name}</p>
+                  <div className="min-w-0">
+                    <p className="font-bold text-on-surface truncate">{ride.profiles.name}</p>
                     <div className="flex items-center gap-1">
                       <span
                         className="material-symbols-outlined text-[12px] text-primary"
@@ -557,7 +557,7 @@ function SearchMobile(props: SearchViewProps) {
                     </div>
                   </div>
                 </div>
-                <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-2 transition-transform">
+                <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-2 transition-transform flex-shrink-0">
                   arrow_forward_ios
                 </span>
               </div>

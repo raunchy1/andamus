@@ -456,7 +456,7 @@ export default function ProfilePage() {
   function ProfileMobile() {
     return (
       <div className="min-h-screen bg-surface-container-lowest pb-32">
-        <header className="bg-[#0e0e0e] text-primary docked full-width top-0 flex justify-between items-end w-full px-6 pt-12 pb-4">
+        <header className="bg-[#0e0e0e] text-primary docked full-width top-0 flex justify-between items-end w-full px-4 sm:px-6 pt-12 pb-4">
           <div className="flex items-center gap-3">
             <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20">
               {getUserAvatar() ? (
@@ -483,7 +483,7 @@ export default function ProfilePage() {
         </header>
 
         <main className="max-w-md mx-auto">
-          <section className="px-6 py-8 flex flex-col items-center">
+          <section className="px-4 sm:px-6 py-8 flex flex-col items-center overflow-x-hidden">
             <div className="relative w-40 h-40 flex items-center justify-center">
               <svg className="custom-ring w-full h-full absolute">
                 <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
@@ -515,7 +515,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <section className="overflow-x-auto no-scrollbar px-6 mb-12">
+          <section className="overflow-x-auto no-scrollbar px-4 sm:px-6 mb-12">
             <div className="flex gap-4 min-w-max">
               <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
                 <span className="material-symbols-outlined text-primary">directions_car</span>
@@ -548,7 +548,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <section className="px-6 mb-8">
+          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
             <div className="bg-surface-container p-4 rounded-xl">
               <h3 className="mb-3 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                 <span className="material-symbols-outlined text-primary">notifications</span>
@@ -559,7 +559,7 @@ export default function ProfilePage() {
           </section>
 
           {profile && levelInfo && (
-            <section className="px-6 mb-8">
+            <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
               <div className="bg-surface-container p-4 rounded-xl">
                 <div className="flex items-center justify-between mb-3">
                   <div>
@@ -591,7 +591,7 @@ export default function ProfilePage() {
           )}
 
           {bookingRequests.length > 0 && (
-            <section className="px-6 mb-8">
+            <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
               <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
                 Richieste in attesa ({bookingRequests.length})
               </h3>
@@ -646,7 +646,7 @@ export default function ProfilePage() {
             </section>
           )}
 
-          <section className="px-6 mb-6">
+          <section className="px-4 sm:px-6 mb-6 overflow-x-hidden">
             <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
               {[
                 { id: "rides", label: "Corse" },
@@ -670,7 +670,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <section className="px-6 space-y-4 pb-8">
+          <section className="px-4 sm:px-6 space-y-4 pb-8 overflow-x-hidden">
             {activeTab === "rides" && (
               <>
                 {myRides.length === 0 ? (

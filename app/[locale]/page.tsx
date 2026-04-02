@@ -89,15 +89,15 @@ function HomeMobile({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
         {/* Hero & Map Section */}
-        <section className="relative px-6 pt-6">
-          <h2 className="font-headline font-extrabold tracking-tighter text-[2.75rem] leading-[0.95] mb-8 max-w-[280px]">
+        <section className="relative px-4 sm:px-6 pt-6">
+          <h2 className="font-headline font-extrabold tracking-tighter text-[2.25rem] sm:text-[2.75rem] leading-[0.95] mb-6 sm:mb-8 word-break">
             Il modo più semplice di spostarsi in Sardegna
           </h2>
 
           {/* Interactive Sardinia Map Area */}
-          <div className="relative w-full aspect-[4/5] bg-surface-container-low rounded-xl overflow-hidden sardinia-map-container mb-8">
+          <div className="relative w-full aspect-[4/5] bg-surface-container-low rounded-xl overflow-hidden sardinia-map-container mb-6 sm:mb-8">
             <div className="absolute inset-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-luminosity grayscale" />
 
             <div className="absolute inset-0 flex items-center justify-center p-4">
@@ -114,14 +114,14 @@ function HomeMobile({
             {/* Smart Search Bar */}
             <form
               onSubmit={handleSearch}
-              className="absolute bottom-6 left-4 right-4 bg-surface-container-high/90 backdrop-blur-md p-1 rounded-lg flex items-center shadow-xl border border-white/5"
+              className="absolute bottom-4 sm:bottom-6 left-3 sm:left-4 right-3 sm:right-4 bg-surface-container-high/90 backdrop-blur-md p-1.5 rounded-lg flex items-center shadow-xl border border-white/5"
             >
-              <div className="flex-1 flex items-center px-3 gap-2">
-                <span className="material-symbols-outlined text-primary text-sm">search</span>
+              <div className="flex-1 flex items-center px-2 sm:px-3 gap-2 min-w-0">
+                <span className="material-symbols-outlined text-primary text-sm flex-shrink-0">search</span>
                 <select
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
-                  className="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full appearance-none cursor-pointer"
+                  className="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full appearance-none cursor-pointer truncate"
                 >
                   <option value="" className="bg-surface-container-high text-on-surface/50">Dove vuoi andare?</option>
                   {sardinianCities.map((city) => (
@@ -131,7 +131,7 @@ function HomeMobile({
               </div>
               <button
                 type="submit"
-                className="bg-primary text-on-primary px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity"
+                className="bg-primary text-on-primary px-3 sm:px-4 py-2 rounded-md font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity flex-shrink-0"
               >
                 Cerca
               </button>
@@ -140,43 +140,43 @@ function HomeMobile({
         </section>
 
         {/* Horizontal Carousel Section */}
-        <section className="mb-12">
-          <div className="px-6 flex justify-between items-end mb-6">
-            <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-on-surface">Corse disponibili oggi</h3>
-            <Link href="/cerca" className="text-[11px] font-bold text-primary border-b border-primary/30 pb-0.5 hover:text-primary/80 transition-colors">
+        <section className="mb-8 sm:mb-12">
+          <div className="px-4 sm:px-6 flex justify-between items-end mb-4 sm:mb-6">
+            <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-on-surface truncate pr-2">Corse disponibili oggi</h3>
+            <Link href="/cerca" className="text-[11px] font-bold text-primary border-b border-primary/30 pb-0.5 hover:text-primary/80 transition-colors flex-shrink-0">
               Vedi tutte
             </Link>
           </div>
 
           {loading ? (
-            <div className="flex gap-4 overflow-x-auto px-6 pb-4 snap-x no-scrollbar">
+            <div className="flex gap-3 sm:gap-4 overflow-x-auto px-4 sm:px-6 pb-4 snap-x no-scrollbar">
               {[1, 2].map((i) => (
-                <div key={i} className="snap-start flex-shrink-0 w-[280px] bg-surface-container-high p-5 rounded-xl h-[180px] animate-pulse" />
+                <div key={i} className="snap-start flex-shrink-0 w-[260px] sm:w-[280px] bg-surface-container-high p-4 sm:p-5 rounded-xl h-[160px] sm:h-[180px] animate-pulse" />
               ))}
             </div>
           ) : todayRides.length > 0 ? (
-            <div className="flex gap-4 overflow-x-auto px-6 pb-4 snap-x no-scrollbar">
+            <div className="flex gap-3 sm:gap-4 overflow-x-auto px-4 sm:px-6 pb-4 snap-x no-scrollbar">
               {todayRides.map((ride, idx) => (
                 <Link
                   key={ride.id}
                   href={`/corsa/${ride.id}`}
-                  className={`snap-start flex-shrink-0 w-[280px] bg-surface-container-high p-5 rounded-xl flex flex-col justify-between h-[180px] transition-transform active:scale-95 ${
+                  className={`snap-start flex-shrink-0 w-[260px] sm:w-[280px] bg-surface-container-high p-4 sm:p-5 rounded-xl flex flex-col justify-between h-[160px] sm:h-[180px] transition-transform active:scale-95 ${
                     idx === 0 ? "border-l-4 border-primary" : ""
                   }`}
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="flex flex-col">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="flex flex-col min-w-0">
                       <span className={`text-[10px] font-bold ${idx === 0 ? "text-primary" : "text-on-surface/40"} uppercase tracking-widest`}>
                         Oggi · {ride.time.slice(0, 5)}
                       </span>
-                      <h4 className="text-lg font-bold mt-1 text-on-surface">{ride.from_city} → {ride.to_city}</h4>
+                      <h4 className="text-base sm:text-lg font-bold mt-1 text-on-surface truncate">{ride.from_city} → {ride.to_city}</h4>
                     </div>
-                    <div className="text-xl font-extrabold tracking-tight text-on-surface">
+                    <div className="text-lg sm:text-xl font-extrabold tracking-tight text-on-surface flex-shrink-0">
                       {ride.price === 0 ? "Gratis" : `€${ride.price}`}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-surface-container overflow-hidden flex-shrink-0">
                       {ride.profiles.avatar_url ? (
                         <img src={ride.profiles.avatar_url} alt={ride.profiles.name} className="w-full h-full object-cover" />
                       ) : (
@@ -185,8 +185,8 @@ function HomeMobile({
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-on-surface">{ride.profiles.name}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-on-surface truncate">{ride.profiles.name}</span>
                       <div className="flex items-center gap-1">
                         <span
                           className="material-symbols-outlined text-[10px] text-primary"
@@ -202,8 +202,8 @@ function HomeMobile({
               ))}
             </div>
           ) : (
-            <div className="px-6">
-              <div className="bg-surface-container-high p-5 rounded-xl">
+            <div className="px-4 sm:px-6">
+              <div className="bg-surface-container-high p-4 sm:p-5 rounded-xl">
                 <p className="text-sm text-on-surface/60">Nessuna corsa disponibile oggi.</p>
                 <Link href="/cerca" className="text-primary text-sm font-bold mt-2 inline-block">Cerca altre date →</Link>
               </div>
@@ -212,20 +212,20 @@ function HomeMobile({
         </section>
 
         {/* Quick Actions Grid */}
-        <section className="px-6 grid grid-cols-2 gap-4">
+        <section className="px-4 sm:px-6 grid grid-cols-2 gap-3 sm:gap-4">
           <Link
             href="/offri"
-            className="aspect-square bg-primary-container/20 rounded-xl p-6 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95"
+            className="aspect-square bg-primary-container/20 rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95 min-h-[140px]"
           >
-            <span className="material-symbols-outlined text-primary text-3xl">add_circle</span>
-            <span className="text-sm font-bold uppercase tracking-wider text-on-surface">Offri un passaggio</span>
+            <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">add_circle</span>
+            <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-on-surface">Offri un passaggio</span>
           </Link>
           <Link
             href="/profilo"
-            className="aspect-square bg-surface-container-highest rounded-xl p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95"
+            className="aspect-square bg-surface-container-highest rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95 min-h-[140px]"
           >
-            <span className="material-symbols-outlined text-on-surface/60 text-3xl">history</span>
-            <span className="text-sm font-bold uppercase tracking-wider text-on-surface">I tuoi viaggi</span>
+            <span className="material-symbols-outlined text-on-surface/60 text-2xl sm:text-3xl">history</span>
+            <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-on-surface">I tuoi viaggi</span>
           </Link>
         </section>
       </main>

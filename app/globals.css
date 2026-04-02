@@ -142,6 +142,12 @@
   html {
     @apply font-sans;
   }
+  
+  /* Global spacing system - prevent overflow */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
 }
 
 /* Material Symbols Outlined base styles */
@@ -241,6 +247,124 @@
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   SPACING & LAYOUT CONSISTENCY SYSTEM
+   ============================================ */
+
+/* Container consistency */
+.container-mobile {
+  width: 100%;
+  max-width: 393px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-desktop {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .container-desktop {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Consistent section spacing */
+.section-spacing {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-spacing {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+/* Card consistency */
+.card-standard {
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .card-standard {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+}
+
+/* Text overflow utilities */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Word break for long text */
+.word-break {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Prevent text overflow in containers */
+.prevent-overflow {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Safe area for bottom nav */
+.pb-safe {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Consistent button sizing */
+.btn-standard {
+  min-height: 44px;
+  padding: 0.625rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .btn-standard {
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Form input consistency */
+.input-standard {
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .input-standard {
+    min-height: 48px;
+    padding: 0.625rem 1rem;
+  }
 }
 
 /* Scrollbar styling - minimal dark */
