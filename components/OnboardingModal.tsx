@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface OnboardingModalProps {
   onComplete?: () => void;
@@ -28,6 +30,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [hasChecked, setHasChecked] = useState(false);
   const locale = useLocale();
+  const router = useRouter();
 
   useEffect(() => {
     if (hasChecked) return;
@@ -126,6 +129,11 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     localStorage.setItem("onboarding_done_v2", "true");
     setIsOpen(false);
     onComplete?.();
+    // Redirect to search with welcome toast
+    router.push(`/${locale}/cerca`);
+    setTimeout(() => {
+      toast.success("Benvenuto su Andamus! 🎉 Inizia a cercare passaggi in Sardegna.");
+    }, 500);
   };
 
   if (!isOpen) return null;

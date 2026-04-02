@@ -1,16 +1,16 @@
 {
-  "name": "Andamus",
+  "name": "Andamus - Carpooling in Sardegna",
   "short_name": "Andamus",
-  "description": "Carpooling gratuito in Sardegna",
+  "description": "Trova e offri passaggi in Sardegna. Il carpooling sardo gratuito per viaggiare insieme, risparmiare sui costi e ridurre le emissioni.",
   "start_url": "/it",
   "display": "standalone",
-  "background_color": "#1a1a2e",
+  "background_color": "#0a0a0a",
   "theme_color": "#e63946",
   "orientation": "portrait",
   "scope": "/",
   "lang": "it",
   "dir": "ltr",
-  "categories": ["travel", "navigation", "social"],
+  "categories": ["travel", "navigation", "social", "lifestyle"],
   "screenshots": [
     {
       "src": "/screenshot-home.png",
@@ -101,5 +101,6 @@
     }
   ],
   "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "id": "andamus-carpooling"
 }

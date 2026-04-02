@@ -17,10 +17,9 @@ import {
   Gift,
   BarChart3,
   Users,
-  Siren,
-  Share2
+  Siren
 } from "lucide-react";
-import toast from "react-hot-toast";
+
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
@@ -29,6 +28,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth";
 import { openSOSModal } from "./SafetyButton";
+import { ShareApp } from "./ShareApp";
 
 const ADMIN_EMAILS = [
   'cristianermurache@gmail.com',
@@ -107,23 +107,7 @@ export function Navbar() {
     }
   };
 
-  const handleShare = async () => {
-    const shareText = "🚗 Scopri Andamus - Il carpooling dei sardi! https://andamus.it";
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Andamus",
-          text: shareText,
-          url: "https://andamus.it",
-        });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(shareText);
-        toast.success("Link copiato!");
-      }
-    } catch {
-      // User cancelled
-    }
-  };
+
 
   const getUserName = () => {
     if (!user) return "";
@@ -222,17 +206,13 @@ export function Navbar() {
                   <NotificationBell isHome={isHome} />
 
                   {/* Share App */}
-                  <button
-                    onClick={handleShare}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                      isHome 
-                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
-                        : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-                    }`}
-                    title="Condividi Andamus"
-                  >
-                    <Share2 className="h-5 w-5" />
-                  </button>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                    isHome 
+                      ? "text-white/70 hover:bg-white/10 hover:text-white" 
+                      : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
+                  }`}>
+                    <ShareApp variant="icon" className={isHome ? "text-white/70" : "text-gray-500"} />
+                  </div>
 
                   {/* Invite Friends Link -->
                   <Link

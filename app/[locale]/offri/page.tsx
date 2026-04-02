@@ -10,6 +10,7 @@ import { completeGamificationAction } from "@/lib/gamification";
 import { getDistanceBetweenCities } from "@/lib/sardinia-cities";
 import { toast } from "react-hot-toast";
 import { useViewMode } from "@/components/view-mode";
+import { ShareApp } from "@/components/ShareApp";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const sardinianCities = [
@@ -832,6 +833,7 @@ export default function OfferPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isFirstRide, setIsFirstRide] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
@@ -1009,12 +1011,13 @@ export default function OfferPage() {
           .select('*', { count: 'exact', head: true })
           .eq('driver_id', currentUser.id);
         
-        const isFirstRide = (count || 0) === 1;
+        const firstRide = (count || 0) === 0;
+        setIsFirstRide(firstRide);
         
         const result = await completeGamificationAction(
           currentUser.id,
           'ride_published',
-          isFirstRide
+          firstRide
         );
         
         if (result.pointsAdded > 0) {
@@ -1089,18 +1092,33 @@ export default function OfferPage() {
   }
 
   if (isSubmitted) {
+    
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
         <div className="mx-auto max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-tertiary/20">
             <Check className="h-8 w-8 text-tertiary" />
           </div>
-          <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-on-surface">
+          <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-on-surface">
             Passaggio pubblicato!
           </h1>
-          <p className="mb-8 text-on-surface-variant">
+          {isFirstRide && (
+            <p className="mb-4 text-sm text-primary font-medium">
+              🎉 Prima ta cursă a fost publicată! Oamenii o vor vedea acum.
+            </p>
+          )}
+          <p className="mb-6 text-on-surface-variant">
             Presto potrai gestirlo dal tuo profilo.
           </p>
+          
+          {/* Share Section */}
+          <div className="mb-6 p-4 rounded-2xl bg-surface-container border border-outline-variant/30">
+            <p className="text-sm font-medium text-on-surface mb-3">
+              Condividi la tua corsa e trova passeggeri più velocemente!
+            </p>
+            <ShareApp variant="button" className="w-full justify-center" />
+          </div>
+          
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/profilo"

@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 import { Toaster } from "react-hot-toast";
 import { SafetyButton } from "@/components/SafetyButton";
+import { VersionBadge } from "@/components/VersionBadge";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { LangSetter } from "@/components/LangSetter";
 
@@ -147,6 +148,7 @@ export default async function LocaleLayout({
             {children}
           </ClientLayoutWrapper>
           <SafetyButton />
+          <VersionBadge />
           <Toaster
             position="top-center"
             toastOptions={{

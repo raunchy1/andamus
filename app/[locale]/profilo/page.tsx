@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, ChevronRight, MessageCircle, Star, Share2 } from "lucide-react";
+import { Loader2, Check, X, Trash2, ChevronRight, MessageCircle, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -16,6 +16,7 @@ import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useViewMode } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
+import { ShareApp } from "@/components/ShareApp";
 
 interface Profile {
   id: string;
@@ -307,24 +308,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleShare = async () => {
-    const shareText = "🚗 Scopri Andamus - Il carpooling dei sardi!";
-    const shareUrl = "https://andamus.it";
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Andamus",
-          text: shareText,
-          url: shareUrl,
-        });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success("Link copiato!");
-      }
-    } catch {
-      // User cancelled
-    }
-  };
+
 
   const openRatingModal = (rideId: string, userToRate: { id: string; name: string; avatar_url: string | null }) => {
     setRatingRideId(rideId);
@@ -486,13 +470,9 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase">Andamus</h1>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleShare}
-              className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out p-2"
-              title="Condividi"
-            >
-              <Share2 className="h-6 w-6" />
-            </button>
+            <div className="text-primary p-2">
+              <ShareApp variant="icon" className="text-primary" />
+            </div>
             <button
               onClick={() => setShowLogoutConfirm(true)}
               className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out p-2"
@@ -1320,13 +1300,7 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              <button
-                onClick={handleShare}
-                className="w-full bg-primary/10 text-primary rounded-2xl p-4 font-bold uppercase tracking-widest text-sm hover:bg-primary/20 transition-colors flex items-center justify-center gap-2"
-              >
-                <Share2 className="h-4 w-4" />
-                Condividi App
-              </button>
+              <ShareApp variant="card" />
 
               <button
                 onClick={() => setShowLogoutConfirm(true)}
