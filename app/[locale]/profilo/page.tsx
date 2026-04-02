@@ -14,7 +14,7 @@ import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notification
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
-import { useViewMode } from "@/components/view-mode";
+import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
 import { ShareApp } from "@/components/ShareApp";
 
@@ -146,7 +146,7 @@ export default function ProfilePage() {
 
   const supabase = createClient();
 
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -1379,5 +1379,5 @@ export default function ProfilePage() {
     );
   }
 
-  return viewMode === "desktop" ? <ProfileDesktop /> : <ProfileMobile />;
+  return deviceType === "desktop" ? <ProfileDesktop /> : <ProfileMobile />;
 }

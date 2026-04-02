@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
-import { useViewMode } from "@/components/view-mode";
+import { useDeviceType } from "@/components/view-mode";
 
 interface Message {
   id: string;
@@ -83,7 +83,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -929,7 +929,7 @@ export default function ChatPage() {
 
   return (
     <>
-      {viewMode === "desktop" ? <ChatDesktop /> : <ChatMobile />}
+      {deviceType === "desktop" ? <ChatDesktop /> : <ChatMobile />}
 
       {imagePreview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">

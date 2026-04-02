@@ -7,7 +7,7 @@ import { Loader2, RefreshCw, Bell, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { createClient } from "@/lib/supabase/client";
-import { useViewMode } from "@/components/view-mode";
+import { useDeviceType } from "@/components/view-mode";
 import { EmptyStateSearch } from "@/components/EmptyState";
 
 const sardinianCities = [
@@ -911,7 +911,7 @@ function SearchDesktop(props: SearchViewProps) {
 
 function SearchContent() {
   const searchParams = useSearchParams();
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [origin, setOrigin] = useState(searchParams.get("from") || "");
@@ -1166,7 +1166,7 @@ function SearchContent() {
     supabase,
   };
 
-  if (viewMode === "mobile") {
+  if (deviceType === "mobile") {
     return <SearchMobile {...sharedProps} />;
   }
   return <SearchDesktop {...sharedProps} />;

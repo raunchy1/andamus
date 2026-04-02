@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useViewMode } from "@/components/view-mode";
+import { useDeviceType } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
 
@@ -513,7 +513,7 @@ function HomeDesktop({
 
 export default function HomePage() {
   const router = useRouter();
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [todayRides, setTodayRides] = useState<Ride[]>([]);
@@ -573,7 +573,7 @@ export default function HomePage() {
   return (
     <>
       <LaunchBanner />
-      {viewMode === "mobile" ? <HomeMobile {...props} /> : <HomeDesktop {...props} />}
+      {deviceType === "mobile" ? <HomeMobile {...props} /> : <HomeDesktop {...props} />}
     </>
   );
 }

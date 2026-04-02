@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notifications";
-import { useViewMode } from "@/components/view-mode";
+import { useDeviceType } from "@/components/view-mode";
 import toast from "react-hot-toast";
 
 interface Review {
@@ -734,7 +734,7 @@ export default function RideDetailPage() {
   const params = useParams();
   const router = useRouter();
   const rideId = params.id as string;
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
   
   const [ride, setRide] = useState<Ride | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -943,5 +943,5 @@ export default function RideDetailPage() {
     formatReviewDate,
   };
 
-  return viewMode === "desktop" ? <RideDetailDesktop {...commonProps} /> : <RideDetailMobile {...commonProps} />;
+  return deviceType === "desktop" ? <RideDetailDesktop {...commonProps} /> : <RideDetailMobile {...commonProps} />;
 }

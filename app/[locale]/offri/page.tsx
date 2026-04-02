@@ -9,7 +9,7 @@ import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
 import { getDistanceBetweenCities } from "@/lib/sardinia-cities";
 import { toast } from "react-hot-toast";
-import { useViewMode } from "@/components/view-mode";
+import { useDeviceType } from "@/components/view-mode";
 import { ShareApp } from "@/components/ShareApp";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -808,7 +808,7 @@ export default function OfferPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const router = useRouter();
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
   
   const [formData, setFormData] = useState({
     origin: "",
@@ -1151,5 +1151,5 @@ export default function OfferPage() {
     handleSubmit,
   };
 
-  return viewMode === "desktop" ? <OfferDesktop {...commonProps} /> : <OfferMobile {...commonProps} />;
+  return deviceType === "desktop" ? <OfferDesktop {...commonProps} /> : <OfferMobile {...commonProps} />;
 }

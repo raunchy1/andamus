@@ -1,17 +1,15 @@
 "use client";
 
-import { useViewMode } from "./view-mode";
-import { ViewModeToggle } from "./ViewModeToggle";
+import { useDeviceType } from "./view-mode";
 import { BottomNav } from "./BottomNav";
 import { DesktopNav } from "./DesktopNav";
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { viewMode } = useViewMode();
+  const deviceType = useDeviceType();
 
   return (
     <>
-      <ViewModeToggle />
-      {viewMode === "mobile" ? (
+      {deviceType === "mobile" ? (
         <MobileLayout>{children}</MobileLayout>
       ) : (
         <DesktopLayout>{children}</DesktopLayout>
@@ -22,12 +20,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function MobileLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#050505] flex items-start justify-center py-0 md:py-8">
-      {/* iPhone 16 Pro Frame */}
-      <div className="relative w-full max-w-[393px] min-h-[852px] md:min-h-[852px] md:h-auto bg-[#0a0a0a] md:rounded-[55px] md:border-[8px] md:border-[#1a1a1a] md:shadow-2xl overflow-hidden">
-        {/* Dynamic Island */}
-        <div className="hidden md:block absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-[20px] z-[100]" />
-        <div className="relative z-0">
+    <div className="min-h-screen bg-[#050505] flex items-start justify-center py-0">
+      {/* Mobile container - full width on actual mobile devices */}
+      <div className="relative w-full max-w-[393px] min-h-screen bg-[#0a0a0a] overflow-hidden">
+        <div className="relative z-0 pb-20">
           {children}
           <BottomNav />
         </div>

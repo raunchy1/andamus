@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useViewMode } from "./view-mode";
+import { useDeviceType } from "./view-mode";
 
 interface SardiniaMapProps {
   highlightedRoute?: string;
@@ -134,8 +134,8 @@ export function SardiniaMap({
   mode: propMode,
   className = "",
 }: SardiniaMapProps) {
-  const { viewMode } = useViewMode();
-  const mode = propMode || viewMode || "desktop";
+  const deviceType = useDeviceType();
+  const mode = propMode || deviceType || "desktop";
   const isMobile = mode === "mobile";
 
   const [hoveredRoute, setHoveredRoute] = useState<string | null>(null);

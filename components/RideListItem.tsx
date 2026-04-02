@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useViewMode } from "./view-mode";
+import { useDeviceType } from "./view-mode";
 
 interface RideListItemProps {
   id: string;
@@ -19,8 +19,8 @@ interface RideListItemProps {
 }
 
 export function RideListItem(props: RideListItemProps) {
-  const { viewMode } = useViewMode();
-  return viewMode === "mobile" ? <RideListItemMobile {...props} /> : <RideListItemDesktop {...props} />;
+  const deviceType = useDeviceType();
+  return deviceType === "mobile" ? <RideListItemMobile {...props} /> : <RideListItemDesktop {...props} />;
 }
 
 function RideListItemMobile({
