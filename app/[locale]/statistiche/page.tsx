@@ -70,6 +70,7 @@ interface HistoryItem {
   price: number;
   status: string;
   created_at: string;
+  type: 'driver' | 'passenger';
 }
 
 export default function StatisticsPage() {
@@ -227,16 +228,19 @@ export default function StatisticsPage() {
 
   // Filter history
   const filteredHistory = useMemo(() => {
-    let items = activeTab === "driver" ? myRides : myBookings.map(b => ({
-      id: b.id,
-      from_city: b.rides.from_city,
-      to_city: b.rides.to_city,
-      date: b.rides.date,
-      time: b.rides.time,
-      price: b.rides.price,
-      status: b.status,
-      created_at: b.created_at
-    }));
+    let items: HistoryItem[] = activeTab === "driver"
+      ? myRides.map(r => ({ ...r, type: 'driver' as const }))
+      : myBookings.map(b => ({
+          id: b.id,
+          from_city: b.rides.from_city,
+          to_city: b.rides.to_city,
+          date: b.rides.date,
+          time: b.rides.time,
+          price: b.rides.price,
+          status: b.status,
+          created_at: b.created_at,
+          type: 'passenger' as const,
+        }));
 
     if (selectedYear !== "all") {
       items = items.filter(item => item.date.startsWith(selectedYear));
@@ -272,7 +276,34 @@ export default function StatisticsPage() {
     return Array.from(yearsSet).sort().reverse();
   }, [myRides, myBookings]);
 
-  const generatePDFReport = () => {
+  const generateReport = (format: 'txt' | 'csv' = 'csv') => {
+    const dateStr = new Date().toISOString().split('T')[0];
+
+    if (format === 'csv') {
+      const csvRows = [
+        ['Data', 'Tipo', 'Da', 'A', 'Prezzo (€)', 'KM', 'CO2 risparmiata (kg)'],
+        ...filteredHistory.map(item => [
+          item.date,
+          item.type === 'driver' ? 'Autista' : 'Passeggero',
+          item.from_city,
+          item.to_city,
+          item.price === 0 ? '0' : String(item.price),
+          String(getDistanceBetweenCities(item.from_city, item.to_city) || ''),
+          String(calculateCO2Saved(getDistanceBetweenCities(item.from_city, item.to_city) || 0, item.type === 'driver' ? 1 : 0) || ''),
+        ]),
+      ];
+      const csvContent = csvRows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `andamus-storico-${dateStr}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("CSV scaricato!");
+      return;
+    }
+
     const reportLines = [
       "ANDAMUS - REPORT PERSONALE",
       "=".repeat(40),
@@ -296,7 +327,7 @@ export default function StatisticsPage() {
       "",
       "STORICO CORSE",
       "-".repeat(40),
-      ...filteredHistory.map(item => 
+      ...filteredHistory.map(item =>
         `${item.date} | ${item.from_city} → ${item.to_city} | ${item.price === 0 ? 'Gratis' : item.price + '€'}`
       ),
     ];
@@ -305,10 +336,9 @@ export default function StatisticsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `andamus-report-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `andamus-report-${dateStr}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    
     toast.success("Report scaricato!");
   };
 
@@ -468,14 +498,23 @@ export default function StatisticsPage() {
               Storico completo
             </h2>
             
-            {/* Export Button */}
-            <button
-              onClick={generatePDFReport}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#e63946] text-white rounded-lg hover:bg-[#c92a37] transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              Scarica report
-            </button>
+            {/* Export Buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => generateReport('csv')}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#e63946] text-white rounded-lg hover:bg-[#c92a37] transition-colors text-sm"
+              >
+                <Download className="w-4 h-4" />
+                CSV
+              </button>
+              <button
+                onClick={() => generateReport('txt')}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm"
+              >
+                <Download className="w-4 h-4" />
+                TXT
+              </button>
+            </div>
           </div>
 
           {/* Tabs */}

@@ -71,9 +71,15 @@ export default function VerificationPage() {
         .select("*")
         .eq("user_id", user.id);
 
+      // Email is auto-verified for Google OAuth users (email_confirmed_at is set)
+      const isEmailVerified = profileData?.email_verified || !!user.email_confirmed_at;
+      if (isEmailVerified && !profileData?.email_verified) {
+        await supabase.from("profiles").update({ email_verified: true }).eq("id", user.id);
+      }
+
       const newStatus: VerificationStatus = {
         phone: profileData?.phone_verified ? "verified" : "none",
-        email: profileData?.email_verified ? "verified" : "none",
+        email: isEmailVerified ? "verified" : "none",
         id: profileData?.id_verified ? "verified" : "none",
         driver: profileData?.driver_verified ? "verified" : "none",
       };
@@ -98,38 +104,76 @@ export default function VerificationPage() {
   }, [router, supabase]);
 
   const handlePhoneVerify = async () => {
-    if (!phoneNumber || phoneNumber.length < 10) {
+    if (!phoneNumber || phoneNumber.length < 8) {
       toast.error("Inserisci un numero di telefono valido");
       return;
     }
 
-    // Simulate OTP send
-    toast.success("Codice OTP inviato! (Demo: usa 123456)");
-    setShowOtpInput(true);
+    const formatted = phoneNumber.startsWith("+") ? phoneNumber : `+39${phoneNumber.replace(/\s/g, "")}`;
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ phone: formatted });
+      if (error) {
+        // Supabase phone auth non configurato: crea verifica pending per admin
+        if (!user) { toast.error("Utente non autenticato"); return; }
+        await supabase.from("verifications").upsert({
+          user_id: user.id,
+          type: "phone",
+          status: "pending",
+          document_url: null,
+        }, { onConflict: "user_id,type" });
+        await supabase.from("profiles").update({ phone_number: formatted }).eq("id", user.id);
+        toast.success("Richiesta inviata! Un amministratore verificherà il tuo numero.");
+        setStatus((s) => ({ ...s, phone: "pending" }));
+        return;
+      }
+      toast.success("Codice OTP inviato al tuo numero!");
+      setShowOtpInput(true);
+    } catch {
+      toast.error("Errore nell'invio del codice");
+    }
   };
 
   const handleOtpVerify = async () => {
-    if (otpCode !== "123456") {
-      toast.error("Codice OTP non valido");
+    if (!otpCode || otpCode.length < 4) {
+      toast.error("Inserisci un codice valido");
       return;
     }
-
     if (!user) {
       toast.error("Utente non autenticato");
       return;
     }
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ phone_verified: true, phone_number: phoneNumber })
-      .eq("id", user.id);
+    const formatted = phoneNumber.startsWith("+") ? phoneNumber : `+39${phoneNumber.replace(/\s/g, "")}`;
 
-    if (error) {
-      toast.error("Errore nella verifica");
-    } else {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: formatted,
+        token: otpCode,
+        type: "sms",
+      });
+
+      if (error) {
+        toast.error("Codice OTP non valido o scaduto");
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ phone_verified: true, phone_number: formatted })
+        .eq("id", user.id);
+
+      if (updateError) {
+        toast.error("Errore nella verifica");
+        return;
+      }
+
       toast.success("Numero di telefono verificato!");
       setStatus((s) => ({ ...s, phone: "verified" }));
       setShowOtpInput(false);
+      setOtpCode("");
+    } catch {
+      toast.error("Errore durante la verifica");
     }
   };
 
@@ -287,7 +331,7 @@ export default function VerificationPage() {
                   <>
                     <input
                       type="text"
-                      placeholder="Codice OTP (123456)"
+                      placeholder="Codice OTP a 6 cifre"
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value)}
                       className="w-full rounded-xl border border-white/10 bg-[#0f1729] px-4 py-3 text-white outline-none focus:border-[#e63946]"
@@ -327,10 +371,15 @@ export default function VerificationPage() {
               )}
             </div>
 
+            {status.email === "verified" && (
+              <div className="rounded-xl bg-green-500/10 p-3">
+                <p className="text-sm text-green-400 truncate">{user?.email}</p>
+              </div>
+            )}
             {status.email !== "verified" && (
               <div className="rounded-xl bg-yellow-500/10 p-4">
                 <p className="text-sm text-yellow-400">
-                  La tua email è stata verificata tramite Google OAuth
+                  Accedi con Google per verificare automaticamente la tua email.
                 </p>
               </div>
             )}
