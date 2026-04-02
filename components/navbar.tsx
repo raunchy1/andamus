@@ -134,29 +134,29 @@ export function Navbar() {
           : "bg-white/95 backdrop-blur-md border-b border-border shadow-sm"
       }`}
     >
-      <nav className="mx-auto flex h-16 md:h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <nav className="mx-auto flex h-16 md:h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <Link 
           href="/" 
-          className={`flex items-center gap-3 transition-all hover:scale-105 ${
+          className={`flex items-center gap-2 md:gap-3 transition-all hover:scale-105 flex-shrink-0 ${
             isHome ? "text-white" : "text-[#1a1a2e]"
           }`}
         >
-          <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-[#e63946]">
-            <Car className="h-6 w-6 md:h-7 md:w-7 text-white" />
+          <div className="flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-xl bg-[#e63946] flex-shrink-0">
+            <Car className="h-5 w-5 md:h-6 md:w-6 text-white" />
           </div>
-          <span className="text-2xl md:text-3xl font-bold tracking-tight">Andamus</span>
+          <span className="text-xl md:text-2xl font-bold tracking-tight whitespace-nowrap">Andamus</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:items-center md:gap-1">
-          {navLinks.map((link) => {
+        <div className="hidden lg:flex lg:items-center lg:gap-1 flex-1 justify-center mx-4">
+          {navLinks.slice(0, 4).map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative px-4 py-2 text-sm font-medium transition-all rounded-lg ${
+                className={`relative px-3 xl:px-4 py-2 text-sm font-medium transition-all rounded-lg whitespace-nowrap ${
                   isHome 
                     ? isActive
                       ? "text-white bg-white/10"
@@ -176,7 +176,7 @@ export function Navbar() {
         </div>
 
         {/* Desktop Auth Section */}
-        <div className="hidden md:flex md:items-center md:gap-3">
+        <div className="hidden md:flex md:items-center md:gap-2 lg:gap-3 flex-shrink-0">
           {!loading && (
             <>
               {user ? (
@@ -255,22 +255,23 @@ export function Navbar() {
 
                   <Link 
                     href={`/${locale}/profilo`}
-                    className={`flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all ${
+                    className={`flex items-center gap-2 rounded-full border px-2 lg:px-3 py-1.5 transition-all min-w-0 ${
                       isHome
                         ? "border-white/10 bg-white/5 hover:bg-white/10 text-white"
                         : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-[#1a1a2e]"
                     }`}
                   >
+                    <span className="text-sm font-medium truncate max-w-[80px] lg:max-w-[120px] hidden sm:block">{getUserName()}</span>
                     {getUserAvatar() ? (
                       <Image 
                         src={getUserAvatar()!} 
                         alt={getUserName()}
                         width={32}
                         height={32}
-                        className="h-8 w-8 rounded-full object-cover"
+                        className="h-8 w-8 rounded-full object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] flex-shrink-0">
                         <User className="h-4 w-4" />
                       </div>
                     )}

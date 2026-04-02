@@ -260,17 +260,20 @@ function HomeDesktop({
     <div className="min-h-screen bg-[#0f0f0f] text-[#e5e2e1]">
       {/* Navbar */}
       <nav className="w-full border-b border-white/5 bg-[#0f0f0f]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-extrabold tracking-tighter uppercase text-[#e5e2e1]">Andamus</span>
-            <span className="hidden sm:inline-block h-1.5 w-1.5 rounded-full bg-[#ffb3b1]" />
-          </div>
-          <div className="flex items-center gap-8">
-            <Link href="/cerca" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors">Esplora</Link>
-            <Link href="/offri" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors">Offri</Link>
-            <Link href="/profilo" className="flex items-center gap-3 pl-6 border-l border-white/10">
-              <span className="text-sm font-medium">{userName ? userName.split(" ")[0] : "Profilo"}</span>
-              <div className="w-10 h-10 rounded-full bg-white/5 overflow-hidden border border-white/10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+            <span className="material-symbols-outlined text-[#e63946] text-3xl">directions_car</span>
+            <span className="text-xl lg:text-2xl font-extrabold tracking-tighter uppercase text-[#e5e2e1] whitespace-nowrap">Andamus</span>
+          </Link>
+          
+          {/* Navigation */}
+          <div className="flex items-center gap-4 lg:gap-8">
+            <Link href="/cerca" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors whitespace-nowrap hidden sm:block">Esplora</Link>
+            <Link href="/offri" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors whitespace-nowrap hidden sm:block">Offri</Link>
+            <Link href="/profilo" className="flex items-center gap-2 lg:gap-3 pl-4 lg:pl-6 border-l border-white/10 min-w-0">
+              <span className="text-sm font-medium truncate max-w-[100px] hidden sm:block">{userName ? userName.split(" ")[0] : "Profilo"}</span>
+              <div className="w-10 h-10 rounded-full bg-white/5 overflow-hidden border border-white/10 flex-shrink-0">
                 {userAvatar ? (
                   <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -287,7 +290,7 @@ function HomeDesktop({
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#ffb3b110_0%,_transparent_50%)]" />
-        <div className="max-w-7xl mx-auto px-8 pt-20 pb-16 relative">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 lg:pt-20 pb-12 lg:pb-16 relative">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 max-w-3xl">
               <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#ffb3b1] mb-6">
@@ -321,20 +324,21 @@ function HomeDesktop({
 
       {/* Search Bar */}
       <section className="relative -mt-4 z-10">
-        <div className="max-w-5xl mx-auto px-8">
+        <div className="max-w-5xl mx-auto px-6 lg:px-10">
           <form
             onSubmit={onSubmit}
-            className="bg-[#131313] border border-white/10 rounded-2xl p-3 shadow-2xl shadow-black/40"
+            className="bg-[#131313] border border-white/10 rounded-2xl p-4 lg:p-5 shadow-2xl shadow-black/40"
           >
-            <div className="flex flex-col md:flex-row items-stretch gap-2">
-              <div className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5">
-                <span className="material-symbols-outlined text-[#ffb3b1]">trip_origin</span>
-                <div className="flex flex-col w-full">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40">Partenza</label>
+            <div className="flex flex-col md:flex-row items-stretch gap-3">
+              {/* Partenza */}
+              <div className="flex-1 flex items-center gap-4 px-5 py-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 min-w-0">
+                <span className="material-symbols-outlined text-[#ffb3b1] text-xl flex-shrink-0">trip_origin</span>
+                <div className="flex flex-col w-full min-w-0">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Partenza</label>
                   <select
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full appearance-none cursor-pointer p-0"
+                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full appearance-none cursor-pointer p-0 text-base truncate"
                   >
                     <option value="" className="bg-[#131313]">Seleziona città</option>
                     {sardinianCities.map((city) => (
@@ -344,14 +348,15 @@ function HomeDesktop({
                 </div>
               </div>
 
-              <div className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5">
-                <span className="material-symbols-outlined text-[#ffb3b1]">location_on</span>
-                <div className="flex flex-col w-full">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40">Destinazione</label>
+              {/* Destinazione */}
+              <div className="flex-1 flex items-center gap-4 px-5 py-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 min-w-0">
+                <span className="material-symbols-outlined text-[#ffb3b1] text-xl flex-shrink-0">location_on</span>
+                <div className="flex flex-col w-full min-w-0">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Destinazione</label>
                   <select
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full appearance-none cursor-pointer p-0"
+                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full appearance-none cursor-pointer p-0 text-base truncate"
                   >
                     <option value="" className="bg-[#131313]">Seleziona città</option>
                     {sardinianCities.map((city) => (
@@ -361,23 +366,25 @@ function HomeDesktop({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 md:max-w-[200px]">
-                <span className="material-symbols-outlined text-[#ffb3b1]">calendar_today</span>
-                <div className="flex flex-col w-full">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40">Data</label>
+              {/* Data */}
+              <div className="flex items-center gap-4 px-5 py-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 md:max-w-[180px] min-w-0">
+                <span className="material-symbols-outlined text-[#ffb3b1] text-xl flex-shrink-0">calendar_today</span>
+                <div className="flex flex-col w-full min-w-0">
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Data</label>
                   <input
                     type="date"
                     value={date}
                     min={today}
                     onChange={(e) => setDate(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full p-0"
+                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full p-0 text-base"
                   />
                 </div>
               </div>
 
+              {/* Cerca Button */}
               <button
                 type="submit"
-                className="bg-[#e63946] hover:bg-[#d32f3c] text-white px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+                className="bg-[#e63946] hover:bg-[#d32f3c] text-white px-8 lg:px-10 py-5 rounded-xl font-bold text-base uppercase tracking-wider transition-colors flex items-center justify-center gap-2 flex-shrink-0 min-w-[120px]"
               >
                 <span className="material-symbols-outlined">search</span>
                 Cerca
@@ -388,7 +395,7 @@ function HomeDesktop({
       </section>
 
       {/* Featured Rides */}
-      <section className="max-w-7xl mx-auto px-8 py-20">
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20">
         <div className="flex items-end justify-between mb-10">
           <div>
             <h3 className="text-3xl font-extrabold tracking-tight">Corse disponibili oggi</h3>
@@ -465,28 +472,37 @@ function HomeDesktop({
 
       {/* Quick Stats / Info */}
       <section className="border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="flex flex-col gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-2xl">savings</span>
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Card 1 */}
+            <div className="flex flex-col gap-5 p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[280px]">
+              <div className="w-14 h-14 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#ffb3b1] text-3xl">savings</span>
               </div>
-              <h4 className="text-lg font-bold">Risparmia sui viaggi</h4>
-              <p className="text-[#e5e2e1]/50 leading-relaxed">Condividi le spese con altri passeggeri e riduci i costi del tuo spostamento fino al 70%.</p>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-xl font-bold">Risparmia sui viaggi</h4>
+                <p className="text-[#e5e2e1]/50 leading-relaxed text-base">Condividi le spese con altri passeggeri e riduci i costi del tuo spostamento fino al 70%.</p>
+              </div>
             </div>
-            <div className="flex flex-col gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-2xl">eco</span>
+            {/* Card 2 */}
+            <div className="flex flex-col gap-5 p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[280px]">
+              <div className="w-14 h-14 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#ffb3b1] text-3xl">eco</span>
               </div>
-              <h4 className="text-lg font-bold">Viaggia sostenibile</h4>
-              <p className="text-[#e5e2e1]/50 leading-relaxed">Ogni passaggio condiviso riduce le emissioni di CO₂ e il traffico sulle strade sarde.</p>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-xl font-bold">Viaggia sostenibile</h4>
+                <p className="text-[#e5e2e1]/50 leading-relaxed text-base">Ogni passaggio condiviso riduce le emissioni di CO₂ e il traffico sulle strade sarde.</p>
+              </div>
             </div>
-            <div className="flex flex-col gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-2xl">verified_user</span>
+            {/* Card 3 */}
+            <div className="flex flex-col gap-5 p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[280px]">
+              <div className="w-14 h-14 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#ffb3b1] text-3xl">verified_user</span>
               </div>
-              <h4 className="text-lg font-bold">Community affidabile</h4>
-              <p className="text-[#e5e2e1]/50 leading-relaxed">Profili verificati e recensioni reali per viaggiare sempre con tranquillità.</p>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-xl font-bold">Community affidabile</h4>
+                <p className="text-[#e5e2e1]/50 leading-relaxed text-base">Profili verificati e recensioni reali per viaggiare sempre con tranquillità.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -494,7 +510,7 @@ function HomeDesktop({
 
       {/* CTA */}
       <section className="border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-8 py-20 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h3 className="text-2xl font-extrabold tracking-tight mb-2">Hai un posto libero in macchina?</h3>
             <p className="text-[#e5e2e1]/50">Offri un passaggio e aiuta qualcuno a raggiungere la sua destinazione.</p>
