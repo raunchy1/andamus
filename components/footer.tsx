@@ -7,6 +7,11 @@ const footerLinks = [
   { href: "/profilo", label: "Il tuo profilo" },
 ];
 
+const legalLinks = [
+  { href: "/termini-e-condizioni", label: "Termini e Condizioni" },
+  { href: "/privacy-policy", label: "Privacy Policy" },
+];
+
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -45,12 +50,24 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Info */}
+          {/* Legal */}
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
-              Info
+              Legale
             </h3>
-            <p className="text-sm text-gray-400">
+            <ul className="space-y-3">
+              {legalLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-sm text-gray-400">
               Made with{" "}
               <Heart className="inline h-4 w-4 text-[#e63946]" />{" "}
               in Sardegna

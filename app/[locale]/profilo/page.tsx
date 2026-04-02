@@ -15,6 +15,7 @@ import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-citi
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useViewMode } from "@/components/view-mode";
+import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
 
 interface Profile {
   id: string;
@@ -665,13 +666,7 @@ export default function ProfilePage() {
             {activeTab === "rides" && (
               <>
                 {myRides.length === 0 ? (
-                  <div className="py-12 text-center">
-                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">directions_car</span>
-                    <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
-                    <Link href="/offri" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
-                      Offri un passaggio
-                    </Link>
-                  </div>
+                  <EmptyStateProfile type="rides" />
                 ) : (
                   myRides.map((ride) => (
                     <Link
@@ -708,13 +703,7 @@ export default function ProfilePage() {
             {activeTab === "bookings" && (
               <>
                 {myBookings.length === 0 ? (
-                  <div className="py-12 text-center">
-                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">location_on</span>
-                    <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
-                    <Link href="/cerca" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
-                      Cerca passaggio
-                    </Link>
-                  </div>
+                  <EmptyStateProfile type="bookings" />
                 ) : (
                   myBookings.map((booking) => {
                     const completed = isRideCompleted(booking.rides.date);
@@ -782,10 +771,12 @@ export default function ProfilePage() {
             {activeTab === "templates" && (
               <>
                 {rideTemplates.length === 0 ? (
-                  <div className="py-12 text-center">
-                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">repeat</span>
-                    <p className="mt-4 text-lg font-bold text-on-surface">Nessuna corsa ricorrente</p>
-                  </div>
+                  <EmptyState
+                    title="Nessuna corsa ricorrente"
+                    description="Crea una corsa ricorrente per i tuoi viaggi abituali e risparmia tempo."
+                    icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">repeat</span>}
+                    action={{ label: "Crea ricorrente", href: "/offri", variant: "outline" }}
+                  />
                 ) : (
                   rideTemplates.map((template) => (
                     <div key={template.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
@@ -823,10 +814,12 @@ export default function ProfilePage() {
             {activeTab === "alerts" && (
               <>
                 {rideAlerts.length === 0 ? (
-                  <div className="py-12 text-center">
-                    <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">notifications</span>
-                    <p className="mt-4 text-lg font-bold text-on-surface">Nessun alert salvato</p>
-                  </div>
+                  <EmptyState
+                    title="Nessun alert salvato"
+                    description="Crea un alert per ricevere notifiche quando ci sono nuovi passaggi sulla tua tratta preferita."
+                    icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">notifications</span>}
+                    action={{ label: "Cerca e crea alert", href: "/cerca", variant: "outline" }}
+                  />
                 ) : (
                   rideAlerts.map((alert) => (
                     <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-surface-container-highest">
@@ -1072,13 +1065,7 @@ export default function ProfilePage() {
                 {activeTab === "rides" && (
                   <>
                     {myRides.length === 0 ? (
-                      <div className="py-16 text-center bg-surface-container rounded-2xl">
-                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">directions_car</span>
-                        <p className="mt-4 text-xl font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
-                        <Link href="/offri" className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
-                          Offri un passaggio
-                        </Link>
-                      </div>
+                      <EmptyStateProfile type="rides" />
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {myRides.map((ride) => (
@@ -1117,13 +1104,7 @@ export default function ProfilePage() {
                 {activeTab === "bookings" && (
                   <>
                     {myBookings.length === 0 ? (
-                      <div className="py-16 text-center bg-surface-container rounded-2xl">
-                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">location_on</span>
-                        <p className="mt-4 text-xl font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
-                        <Link href="/cerca" className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
-                          Cerca passaggio
-                        </Link>
-                      </div>
+                      <EmptyStateProfile type="bookings" />
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {myBookings.map((booking) => {
@@ -1193,10 +1174,12 @@ export default function ProfilePage() {
                 {activeTab === "templates" && (
                   <>
                     {rideTemplates.length === 0 ? (
-                      <div className="py-16 text-center bg-surface-container rounded-2xl">
-                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">repeat</span>
-                        <p className="mt-4 text-xl font-bold text-on-surface">Nessuna corsa ricorrente</p>
-                      </div>
+                      <EmptyState
+                        title="Nessuna corsa ricorrente"
+                        description="Crea una corsa ricorrente per i tuoi viaggi abituali e risparmia tempo."
+                        icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">repeat</span>}
+                        action={{ label: "Crea ricorrente", href: "/offri", variant: "outline" }}
+                      />
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {rideTemplates.map((template) => (
@@ -1236,10 +1219,12 @@ export default function ProfilePage() {
                 {activeTab === "alerts" && (
                   <>
                     {rideAlerts.length === 0 ? (
-                      <div className="py-16 text-center bg-surface-container rounded-2xl">
-                        <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">notifications</span>
-                        <p className="mt-4 text-xl font-bold text-on-surface">Nessun alert salvato</p>
-                      </div>
+                      <EmptyState
+                        title="Nessun alert salvato"
+                        description="Crea un alert per ricevere notifiche quando ci sono nuovi passaggi sulla tua tratta preferita."
+                        icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">notifications</span>}
+                        action={{ label: "Cerca e crea alert", href: "/cerca", variant: "outline" }}
+                      />
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {rideAlerts.map((alert) => (

@@ -1,140 +1,183 @@
 "use client";
 
 import Link from "next/link";
-import { Car, Search, MessageCircle, Calendar, MapPin, PlusCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface EmptyStateProps {
-  type: "rides" | "bookings" | "messages" | "search" | "notifications";
-  title?: string;
-  description?: string;
-  actionLabel?: string;
-  actionHref?: string;
-  showAction?: boolean;
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
+  action?: {
+    label: string;
+    href: string;
+    variant?: "default" | "outline" | "secondary";
+  };
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
+  className?: string;
 }
 
-const configs = {
-  rides: {
-    icon: Car,
-    defaultTitle: "Nessun passaggio trovato",
-    defaultDescription: "Non ci sono corse disponibili per i filtri selezionati.",
-    defaultActionLabel: "Offri un passaggio",
-    defaultActionHref: "/offri",
-    illustration: "🚗",
-  },
-  bookings: {
-    icon: Calendar,
-    defaultTitle: "Non hai ancora prenotato",
-    defaultDescription: "Inizia a viaggiare con Andamus! Trova il tuo primo passaggio.",
-    defaultActionLabel: "Cerca un passaggio",
-    defaultActionHref: "/cerca",
-    illustration: "📅",
-  },
-  messages: {
-    icon: MessageCircle,
-    defaultTitle: "Nessun messaggio",
-    defaultDescription: "Inizia una conversazione con il conducente o il passeggero.",
-    defaultActionLabel: "Torna al profilo",
-    defaultActionHref: "/profilo",
-    illustration: "💬",
-  },
-  search: {
-    icon: Search,
-    defaultTitle: "Nessun risultato",
-    defaultDescription: "Prova a modificare i filtri di ricerca o cerca un'altra data.",
-    defaultActionLabel: "Cancella filtri",
-    defaultActionHref: "#",
-    illustration: "🔍",
-  },
-  notifications: {
-    icon: MapPin,
-    defaultTitle: "Nessuna notifica",
-    defaultDescription: "Le tue notifiche appariranno qui quando arriveranno.",
-    defaultActionLabel: "Torna alla home",
-    defaultActionHref: "/",
-    illustration: "🔔",
-  },
-};
-
 export function EmptyState({
-  type,
   title,
   description,
-  actionLabel,
-  actionHref,
-  showAction = true,
+  icon,
+  action,
+  secondaryAction,
+  className = "",
 }: EmptyStateProps) {
-  const config = configs[type];
-  const Icon = config.icon;
-
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      {/* Animated Illustration */}
-      <div className="relative mb-8">
-        {/* Background glow */}
-        <div className="absolute inset-0 bg-[#e63946]/20 rounded-full blur-3xl scale-150 animate-pulse" />
-        
-        {/* Main icon container */}
-        <div className="relative flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-[#1e2a4a] to-[#1a2339] border border-white/10 empty-illustration">
-          <span className="text-6xl">{config.illustration}</span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`flex flex-col items-center justify-center py-16 px-4 text-center ${className}`}
+    >
+      {/* Icon Container */}
+      <div className="relative mb-6">
+        <div className="absolute inset-0 bg-[#e63946]/20 blur-2xl rounded-full" />
+        <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-white/10 shadow-2xl">
+          {icon || (
+            <svg
+              className="w-12 h-12 text-[#e63946]/50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+          )}
         </div>
-        
-        {/* Floating elements */}
-        <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-[#e63946]/20 animate-float" />
-        <div className="absolute -bottom-2 -left-2 w-6 h-6 rounded-full bg-white/10 animate-float-delayed" />
       </div>
 
       {/* Text Content */}
-      <h3 className="heading-premium text-2xl text-white mb-3">
-        {title || config.defaultTitle}
-      </h3>
-      <p className="text-white/60 max-w-md mb-8 leading-relaxed">
-        {description || config.defaultDescription}
-      </p>
+      <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+      <p className="text-white/60 max-w-md mb-6 leading-relaxed">{description}</p>
 
-      {/* Action Button */}
-      {showAction && (
-        <Link
-          href={actionHref || config.defaultActionHref}
-          className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#e63946] to-[#ff5a66] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#e63946]/25 transition-all hover:shadow-xl hover:shadow-[#e63946]/40 active:scale-[0.98] touch-manipulation btn-press"
-        >
-          {type === "rides" || type === "bookings" ? (
-            <PlusCircle className="h-4 w-4 group-hover:rotate-90 transition-transform" />
-          ) : type === "search" ? (
-            <Search className="h-4 w-4" />
-          ) : (
-            <Icon className="h-4 w-4" />
-          )}
-          {actionLabel || config.defaultActionLabel}
-        </Link>
-      )}
-
-      {/* Decorative dots */}
-      <div className="flex gap-2 mt-12">
-        <div className="w-2 h-2 rounded-full bg-[#e63946]/50 animate-pulse" />
-        <div className="w-2 h-2 rounded-full bg-[#e63946]/30 animate-pulse" style={{ animationDelay: '0.2s' }} />
-        <div className="w-2 h-2 rounded-full bg-[#e63946]/10 animate-pulse" style={{ animationDelay: '0.4s' }} />
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        {action && (
+          <Link href={action.href}>
+            <Button
+              variant={action.variant || "default"}
+              className={
+                action.variant === "outline"
+                  ? "border-white/20 text-white hover:bg-white/10"
+                  : "bg-[#e63946] hover:bg-[#c92a37] text-white"
+              }
+            >
+              {action.label}
+            </Button>
+          </Link>
+        )}
+        {secondaryAction && (
+          <Button
+            variant="ghost"
+            onClick={secondaryAction.onClick}
+            className="text-white/70 hover:text-white hover:bg-white/5"
+          >
+            {secondaryAction.label}
+          </Button>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-// Specialized empty states for common use cases
-export function EmptyRides() {
-  return <EmptyState type="rides" />;
+// Pre-built empty states for common scenarios
+export function EmptyStateSearch({
+  hasFilters,
+  onClearFilters,
+}: {
+  hasFilters: boolean;
+  onClearFilters: () => void;
+}) {
+  return (
+    <EmptyState
+      title="Nessun passaggio trovato"
+      description={
+        hasFilters
+          ? "Prova a modificare i filtri per vedere più risultati."
+          : "Nu există curse pe această rută încă. Fii primul care postează un passaggio!"
+      }
+      icon={
+        <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7m0 0L9.553 4.553A1 1 0 009 4.118v11.264c0 .415.255.788.647.927L15 16.5z" />
+        </svg>
+      }
+      action={{
+        label: "Oferă un passaggio",
+        href: "/offri",
+        variant: "default",
+      }}
+      secondaryAction={
+        hasFilters
+          ? {
+              label: "Cancella filtri",
+              onClick: onClearFilters,
+            }
+          : undefined
+      }
+    />
+  );
 }
 
-export function EmptyBookings() {
-  return <EmptyState type="bookings" />;
+export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requests" }) {
+  const configs = {
+    rides: {
+      title: "Nessuna corsa pubblicata",
+      description: "Inizia a condividere i tuoi viaggi e guadagna punti esperienza!",
+      action: { label: "Pubblica una corsa", href: "/offri", variant: "default" as const },
+    },
+    bookings: {
+      title: "Nessuna prenotazione",
+      description: "Cerca un passaggio per la tua prossima destinazione in Sardegna!",
+      action: { label: "Cerca passaggi", href: "/cerca", variant: "default" as const },
+    },
+    requests: {
+      title: "Nessuna richiesta",
+      description: "Le richieste di prenotazione appariranno qui.",
+      action: { label: "Vedi le corse disponibili", href: "/cerca", variant: "outline" as const },
+    },
+  };
+
+  const config = configs[type];
+
+  return (
+    <EmptyState
+      title={config.title}
+      description={config.description}
+      icon={
+        <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      }
+      action={config.action}
+    />
+  );
 }
 
-export function EmptyMessages() {
-  return <EmptyState type="messages" />;
-}
-
-export function EmptySearch() {
-  return <EmptyState type="search" />;
-}
-
-export function EmptyNotifications() {
-  return <EmptyState type="notifications" />;
+export function EmptyStateChat() {
+  return (
+    <EmptyState
+      title="Nessun messaggio"
+      description="La chat sarà disponibile quando qualcuno prenota il tuo passaggio o quando tu prenoti una corsa."
+      icon={
+        <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      }
+      action={{
+        label: "Cerca passaggi",
+        href: "/cerca",
+        variant: "default",
+      }}
+    />
+  );
 }

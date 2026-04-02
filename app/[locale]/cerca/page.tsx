@@ -3,11 +3,12 @@
 import { useState, useEffect, Suspense, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Loader2, RefreshCw, Route, Bell, SlidersHorizontal, X } from "lucide-react";
+import { Loader2, RefreshCw, Bell, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { createClient } from "@/lib/supabase/client";
 import { useViewMode } from "@/components/view-mode";
+import { EmptyStateSearch } from "@/components/EmptyState";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -481,21 +482,10 @@ function SearchMobile(props: SearchViewProps) {
           )}
 
           {!loading && rides.length === 0 && (
-            <div className="py-20 text-center">
-              <Route className="mx-auto h-12 w-12 text-on-surface-variant/50" />
-              <p className="mt-4 text-lg font-medium text-on-surface">Nessun passaggio trovato</p>
-              <p className="mt-1 text-sm text-on-surface-variant">
-                Prova a modificare i filtri o cerca un&apos;altra data
-              </p>
-              {activeFiltersCount > 0 && (
-                <button
-                  onClick={clearFilters}
-                  className="mt-6 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-on-primary transition-colors hover:opacity-90"
-                >
-                  Cancella filtri
-                </button>
-              )}
-            </div>
+            <EmptyStateSearch
+              hasFilters={activeFiltersCount > 0}
+              onClearFilters={clearFilters}
+            />
           )}
 
           {!loading && rides.map((ride) => (
@@ -818,20 +808,11 @@ function SearchDesktop(props: SearchViewProps) {
         )}
 
         {!loading && rides.length === 0 && (
-          <div className="col-span-full py-20 text-center bg-[#141414] border border-white/5 rounded-2xl">
-            <Route className="mx-auto h-12 w-12 text-[#e5e2e1]/30" />
-            <p className="mt-4 text-lg font-medium text-[#e5e2e1]">Nessun passaggio trovato</p>
-            <p className="mt-1 text-sm text-[#e5e2e1]/60">
-              Prova a modificare i filtri o cerca un&apos;altra data
-            </p>
-            {activeFiltersCount > 0 && (
-              <button
-                onClick={clearFilters}
-                className="mt-6 rounded-full bg-[#ffb3b1] px-6 py-3 text-sm font-semibold text-[#0f0f0f] transition-colors hover:bg-[#ff9e9c]"
-              >
-                Cancella filtri
-              </button>
-            )}
+          <div className="col-span-full">
+            <EmptyStateSearch
+              hasFilters={activeFiltersCount > 0}
+              onClearFilters={clearFilters}
+            />
           </div>
         )}
 

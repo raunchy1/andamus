@@ -16,7 +16,8 @@ import {
   Shield,
   Gift,
   BarChart3,
-  Users
+  Users,
+  Siren
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth";
+import { openSOSModal } from "./SafetyButton";
 
 const ADMIN_EMAILS = [
   'cristianermurache@gmail.com',
@@ -225,6 +227,19 @@ export function Navbar() {
                     <BarChart3 className="h-5 w-5" />
                   </Link>
 
+                  {/* SOS Button */}
+                  <button
+                    onClick={openSOSModal}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                      isHome 
+                        ? "text-red-400 hover:bg-red-500/10 hover:text-red-300" 
+                        : "text-red-500 hover:bg-red-500/10 hover:text-red-600"
+                    }`}
+                    title="SOS Emergenza"
+                  >
+                    <Siren className="h-5 w-5" />
+                  </button>
+
                   <Link 
                     href={`/${locale}/profilo`}
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 transition-all ${
@@ -374,6 +389,20 @@ export function Navbar() {
                         <BarChart3 className="h-5 w-5" />
                         <span>Statistiche</span>
                       </Link>
+                      <button
+                        onClick={() => {
+                          openSOSModal();
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left ${
+                          isHome 
+                            ? "text-red-400 hover:bg-red-500/10" 
+                            : "text-red-500 hover:bg-red-500/10"
+                        }`}
+                      >
+                        <Siren className="h-5 w-5" />
+                        <span>SOS Emergenza</span>
+                      </button>
                       {user?.email && ADMIN_EMAILS.includes(user.email || '') && (
                         <Link
                           href="/admin"
