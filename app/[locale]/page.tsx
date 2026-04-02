@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useViewMode } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
+import { LaunchBanner } from "@/components/LaunchBanner";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì",
@@ -569,5 +570,10 @@ export default function HomePage() {
     router,
   };
 
-  return viewMode === "mobile" ? <HomeMobile {...props} /> : <HomeDesktop {...props} />;
+  return (
+    <>
+      <LaunchBanner />
+      {viewMode === "mobile" ? <HomeMobile {...props} /> : <HomeDesktop {...props} />}
+    </>
+  );
 }

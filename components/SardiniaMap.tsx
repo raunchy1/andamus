@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useViewMode } from "./view-mode";
 
 interface SardiniaMapProps {
@@ -188,43 +189,54 @@ export function SardiniaMap({
   };
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={`relative ${isMobile ? "max-h-[320px]" : "max-h-[520px]"} w-full ${className}`}
     >
       <svg
         viewBox="0 0 500 600"
-        className="w-full h-auto"
+        className="w-full h-auto drop-shadow-2xl"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <filter id="routeGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
+            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
             <feMerge>
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
           <filter id="cityGlow" x="-100%" y="-100%" width="300%" height="300%">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          <linearGradient id="islandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1a1a1a" />
+            <stop offset="50%" stopColor="#181818" />
+            <stop offset="100%" stopColor="#141414" />
+          </linearGradient>
         </defs>
 
-        {/* Background sea */}
+        {/* Background sea with subtle gradient effect */}
         <rect width="500" height="600" fill="transparent" />
 
-        {/* Island outline */}
-        <path
+        {/* Island outline with gradient fill */}
+        <motion.path
           d={SARDINIA_PATH}
-          fill="#181818"
+          fill="url(#islandGradient)"
           stroke="#2a2a2a"
           strokeWidth={1.5}
           strokeLinejoin="round"
           strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
         />
 
         {/* Inner highlight stroke for depth */}
@@ -232,8 +244,8 @@ export function SardiniaMap({
           d={SARDINIA_PATH}
           fill="none"
           stroke="#ffffff"
-          strokeOpacity={0.04}
-          strokeWidth={8}
+          strokeOpacity={0.03}
+          strokeWidth={10}
         />
 
         {/* Routes */}
@@ -241,13 +253,13 @@ export function SardiniaMap({
           {ROUTES.map((route) => {
             const { isHighlighted, isHovered, isConnectedToSelected } = getRouteStatus(route);
             const active = isHighlighted || isHovered || isConnectedToSelected;
-            const strokeWidth = active ? (isMobile ? 3 : 4.5) : isMobile ? 1.5 : 2.5;
+            const strokeWidth = active ? (isMobile ? 3.5 : 5) : isMobile ? 2 : 3;
             const strokeColor = active ? "#ffb3b1" : "#e63946";
-            const opacity = active ? 1 : 0.55;
+            const opacity = active ? 1 : 0.6;
             const filter = active ? "url(#routeGlow)" : undefined;
 
             return (
-              <path
+              <motion.path
                 key={route.id}
                 d={route.d}
                 fill="none"
@@ -256,13 +268,17 @@ export function SardiniaMap({
                 strokeOpacity={opacity}
                 strokeLinecap="round"
                 filter={filter}
-                className="transition-all duration-300 cursor-pointer"
-                style={{
-                  strokeDasharray: route.length,
-                  strokeDashoffset: animationsReady ? 0 : route.length,
-                  transition: "stroke-dashoffset 2.2s ease-out, stroke-width 0.2s, stroke-opacity 0.2s",
-                  transitionDelay: animationsReady ? `${route.delay}s` : "0s",
+                className="cursor-pointer"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ 
+                  pathLength: animationsReady ? 1 : 0, 
+                  opacity: opacity,
                 }}
+                transition={{ 
+                  pathLength: { duration: 1.5, ease: "easeOut", delay: route.delay * 0.5 },
+                  opacity: { duration: 0.3 }
+                }}
+                whileHover={{ strokeWidth: strokeWidth + 1 }}
                 onMouseEnter={(e) => handleRouteEnter(e, route)}
                 onMouseMove={handleRouteMove}
                 onMouseLeave={handleRouteLeave}
@@ -274,42 +290,68 @@ export function SardiniaMap({
 
         {/* City markers */}
         <g>
-          {visibleCities.map((city) => {
+          {visibleCities.map((city, index) => {
             const isSelected = selectedCity === city.id;
             return (
-              <g key={city.id} className="cursor-pointer" onClick={() => handleCityClick(city.id)}>
-                {/* Glow ring */}
-                <circle
+              <motion.g 
+                key={city.id} 
+                className="cursor-pointer" 
+                onClick={() => handleCityClick(city.id)}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ 
+                  delay: 0.8 + index * 0.1, 
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20
+                }}
+              >
+                {/* Outer glow ring */}
+                <motion.circle
                   cx={city.x}
                   cy={city.y}
-                  r={isSelected ? (isMobile ? 10 : 14) : isMobile ? 6 : 9}
+                  r={isSelected ? (isMobile ? 12 : 16) : isMobile ? 8 : 11}
                   fill="#e63946"
-                  opacity={0.2}
+                  opacity={0.15}
                   filter="url(#cityGlow)"
-                  className="transition-all duration-300"
+                  animate={{ 
+                    r: isSelected ? (isMobile ? 12 : 16) : isMobile ? 8 : 11,
+                    opacity: isSelected ? 0.25 : 0.15
+                  }}
+                  transition={{ duration: 0.3 }}
                 />
                 {/* Core dot */}
-                <circle
+                <motion.circle
                   cx={city.x}
                   cy={city.y}
-                  r={isSelected ? (isMobile ? 5 : 7) : isMobile ? 3.5 : 5}
+                  r={isSelected ? (isMobile ? 6 : 8) : isMobile ? 4 : 6}
                   fill="#e63946"
-                  className="transition-all duration-200"
+                  stroke="#ffffff"
+                  strokeWidth={1.5}
+                  strokeOpacity={0.3}
+                  animate={{ 
+                    r: isSelected ? (isMobile ? 6 : 8) : isMobile ? 4 : 6,
+                  }}
+                  transition={{ duration: 0.2 }}
+                  whileHover={{ scale: 1.2 }}
                 />
                 {/* Label */}
                 <text
                   x={city.x + (city.labelOffset?.x ?? 8)}
                   y={city.y + (city.labelOffset?.y ?? 4)}
                   fill="#e5e2e1"
-                  fontSize={isMobile ? 9 : 11}
+                  fontSize={isMobile ? 10 : 12}
                   fontWeight={700}
-                  letterSpacing={0.08}
-                  style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)", textTransform: "uppercase" }}
+                  letterSpacing={0.1}
+                  style={{ 
+                    textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)", 
+                    textTransform: "uppercase" 
+                  }}
                   className="font-sans pointer-events-none select-none"
                 >
                   {city.name}
                 </text>
-              </g>
+              </motion.g>
             );
           })}
         </g>
@@ -317,23 +359,29 @@ export function SardiniaMap({
 
       {/* Tooltip */}
       {tooltip && (
-        <div
-          className="fixed z-50 px-3 py-2 rounded-lg bg-[#1c1b1b] border border-[#2a2a2a] text-[#e5e2e1] text-xs font-semibold shadow-xl pointer-events-none"
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed z-50 px-4 py-2.5 rounded-xl bg-[#1c1b1b] border border-[#2a2a2a] text-[#e5e2e1] text-xs font-semibold shadow-2xl pointer-events-none backdrop-blur-sm"
           style={{ left: tooltip.x, top: tooltip.y }}
         >
           {tooltip.text}
-        </div>
+        </motion.div>
       )}
 
       {/* Selected city hint (mobile only) */}
       {isMobile && selectedCity && (
-        <div className="absolute bottom-2 left-2 right-2 text-center">
-          <span className="inline-block px-3 py-1.5 rounded-full bg-[#1c1b1b]/90 text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/20">
-            Tapă alt oraș pentru a reseta
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-2 left-2 right-2 text-center"
+        >
+          <span className="inline-block px-4 py-2 rounded-full bg-[#1c1b1b]/95 text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/30 shadow-xl backdrop-blur-sm">
+            Tocca un'altra città per resettare
           </span>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
