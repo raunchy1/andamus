@@ -76,23 +76,23 @@ function RideListItemDesktop({
   id, time, from, to, price, driverName, driverAvatar, driverRating, date,
 }: RideListItemProps) {
   return (
-    <Link href={`/corsa/${id}`} className="group flex items-center gap-6 bg-[#1c1b1b] hover:bg-[#201f1f] transition-colors rounded-2xl p-6 border border-white/5">
+    <Link href={`/corsa/${id}`} className="group flex items-center gap-6 bg-card hover:bg-card/80 transition-colors rounded-2xl p-6 border border-white/5">
       <div className="flex flex-col items-center justify-center w-20 shrink-0">
         <span className="text-3xl font-extrabold tracking-tighter text-white">{time}</span>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{date || "Oggi"}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{date || "Oggi"}</span>
       </div>
       <div className="flex-1">
-        <div className="flex items-center gap-4 mb-2">
-          <span className="text-lg font-bold text-white">{from}</span>
-          <div className="flex-1 h-[2px] bg-[#2a2a2a] relative">
-            <div className="absolute inset-0 bg-[#ffb3b1] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-500" />
+        <div className="flex items-center gap-4 mb-2 min-w-0">
+          <span className="text-lg font-bold text-white truncate">{from}</span>
+          <div className="flex-1 shrink-0 h-[2px] bg-muted relative">
+            <div className="absolute inset-0 bg-primary scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-500" />
           </div>
-          <span className="text-lg font-bold text-white">{to}</span>
+          <span className="text-lg font-bold text-white truncate">{to}</span>
         </div>
         <div className="flex items-center gap-3">
-          {driverAvatar ? <Image src={driverAvatar} alt={driverName} width={28} height={28} className="rounded-full object-cover" /> : <div className="w-7 h-7 rounded-full bg-[#2a2a2a] flex items-center justify-center"><span className="material-symbols-outlined text-[14px] text-white/50">person</span></div>}
+          {driverAvatar ? <Image src={driverAvatar} alt={driverName} width={28} height={28} className="rounded-full object-cover" /> : <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center"><span className="material-symbols-outlined text-[14px] text-white/50">person</span></div>}
           <span className="text-sm font-semibold text-white/70">{driverName}</span>
-          <span className="text-sm text-[#ffb3b1]">★ {driverRating}</span>
+          <span className="text-sm text-primary">★ {driverRating}</span>
         </div>
       </div>
       <div className="text-right shrink-0">

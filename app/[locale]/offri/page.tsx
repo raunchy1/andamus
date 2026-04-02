@@ -64,7 +64,7 @@ function OfferMobile({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-32">
+    <div className="min-h-screen bg-background pb-32">
       {/* Top Navigation */}
       <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-12 pb-4 sticky top-0 z-50">
         <div className="flex items-center gap-3">
@@ -393,7 +393,7 @@ function OfferMobile({
 
             {/* Map Preview */}
             <div className="pt-6">
-              <div className="w-full h-32 rounded-2xl overflow-hidden grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative bg-surface-container-high">
+              <div className="w-full h-32 rounded-2xl overflow-hidden grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300 relative bg-surface-container-high">
                 <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -437,7 +437,7 @@ function OfferDesktop({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-background">
       {/* Top Navigation */}
       <header className="bg-[#0e0e0e] border-b border-white/5 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-8 h-16 flex items-center justify-between">
@@ -772,7 +772,7 @@ function OfferDesktop({
 
               {/* Map Preview */}
               <div className="pt-2">
-                <div className="w-full h-56 rounded-3xl overflow-hidden grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative bg-surface-container-high">
+                <div className="w-full h-56 rounded-3xl overflow-hidden grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300 relative bg-surface-container-high">
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                   <div className="absolute bottom-5 left-5 flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
@@ -1043,7 +1043,7 @@ export default function OfferPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
@@ -1051,7 +1051,7 @@ export default function OfferPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <div className="mx-auto max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high">
             <span className="material-symbols-outlined text-4xl text-primary">directions_car</span>
@@ -1090,7 +1090,7 @@ export default function OfferPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <div className="mx-auto max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-tertiary/20">
             <Check className="h-8 w-8 text-tertiary" />

@@ -4,11 +4,11 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
-  ArrowLeft, 
-  Car, 
-  Users, 
-  TreePine, 
-  Route, 
+  ArrowLeft,
+  Car,
+  Users,
+  TreePine,
+  Route,
   Award,
   Calendar,
   TrendingUp,
@@ -16,7 +16,8 @@ import {
   Trophy,
   MapPin,
   Clock,
-  Check
+  Check,
+  Loader2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
@@ -344,14 +345,14 @@ export default function StatisticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] pt-20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e63946]" />
+      <div className="min-h-screen bg-background pt-20 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#e63946] animate-spin" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#1a1a2e] pt-20 pb-12">
+    <main className="min-h-screen bg-background pt-20 pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

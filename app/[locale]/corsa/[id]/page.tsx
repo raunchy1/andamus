@@ -331,7 +331,7 @@ function RideDetailMobile({
       </main>
 
       {/* Fixed Action Button */}
-      <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-12 z-40">
+      <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-12 z-[45]">
         {isMyRide ? (
           <Link
             href="/profilo"
@@ -409,7 +409,7 @@ function RideDetailDesktop({
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-40 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => router.back()} className="p-2 rounded-xl text-on-surface hover:bg-white/5 transition-all">

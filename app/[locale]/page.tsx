@@ -59,9 +59,9 @@ function HomeMobile({
   handleSearch,
 }: HomeUIProps) {
   return (
-    <div className="min-h-screen bg-[#131313] text-[#e5e2e1] pb-32">
+    <div className="min-h-screen bg-background text-[#e5e2e1] pb-32">
       {/* TopAppBar */}
-      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-12 pb-4 z-50">
+      <header className="bg-background flex justify-between items-end w-full px-6 pt-12 pb-4 z-50">
         <div className="flex flex-col">
           <span className="font-semibold uppercase tracking-widest text-[11px] text-[#ffb3b1]">
             {userName ? `Bentornato, ${userName.split(" ")[0]}` : "Bentornato"}
@@ -256,7 +256,7 @@ function HomeDesktop({
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#e5e2e1]">
+    <div className="min-h-screen bg-background text-[#e5e2e1]">
       {/* Navbar */}
       <nav className="w-full border-b border-white/5 bg-[#0f0f0f]/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">

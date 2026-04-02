@@ -34,14 +34,14 @@ export function SafetyButton() {
       {/* Floating Safety Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600"
       >
         <Shield className="h-6 w-6" />
       </button>
 
       {/* Safety Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur">
           <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2a4a] p-6">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
@@ -127,7 +127,7 @@ export function SafetyButton() {
 
       {/* SOS Confirm Modal */}
       {showSOS && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-4">
           <div className="w-full max-w-sm rounded-3xl border border-red-500/30 bg-[#1e2a4a] p-6 text-center">
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20">
               <AlertTriangle className="h-10 w-10 text-red-400" />

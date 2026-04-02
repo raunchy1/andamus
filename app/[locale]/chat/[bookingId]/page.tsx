@@ -557,7 +557,7 @@ export default function ChatPage() {
             <p className="text-on-surface/60 text-xs mt-2">{message.content}</p>
           )}
         </div>
-        <span className="text-[10px] font-medium text-on-surface/40 px-1">{formatTime(message.created_at)}</span>
+        <span className="text-xs font-medium text-on-surface/40 px-1">{formatTime(message.created_at)}</span>
       </div>
     );
   }

@@ -55,7 +55,7 @@ export default function GroupsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-card px-4 py-8">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-6xl">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
             <ArrowLeft className="h-4 w-4" />
             Torna alla home
@@ -66,7 +66,7 @@ export default function GroupsPage() {
       </div>
 
       <div className="px-4 py-8">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-6xl">
           {loading ? (
             <div className="py-20 text-center">
               <Loader2 className="mx-auto h-10 w-10 animate-spin text-accent" />

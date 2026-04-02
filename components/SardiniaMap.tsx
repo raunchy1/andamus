@@ -329,7 +329,7 @@ export function SardiniaMap({
       {isMobile && selectedCity && (
         <div className="absolute bottom-2 left-2 right-2 text-center">
           <span className="inline-block px-3 py-1.5 rounded-full bg-[#1c1b1b]/90 text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/20">
-            Tapă alt oraș pentru a reseta
+            Tocca un'altra città per deselezionare
           </span>
         </div>
       )}

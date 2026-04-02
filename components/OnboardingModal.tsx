@@ -131,19 +131,19 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="relative w-full max-w-lg mx-4"
       >
-        {/* Skip Button */}
-        <button
-          onClick={handleSkip}
-          className="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm"
-        >
-          Salta
-          <X className="w-4 h-4" />
-        </button>
-
         {/* Card */}
         <div className="relative overflow-hidden rounded-3xl bg-[#1a1a2e] border border-white/10 shadow-2xl">
           {/* Background Gradient */}
           <div className={`absolute inset-0 bg-gradient-to-br ${currentStepData.color} opacity-10`} />
+
+          {/* Skip Button — inside modal, top-right */}
+          <button
+            onClick={handleSkip}
+            className="absolute top-4 right-4 z-10 text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm"
+          >
+            Salta
+            <X className="w-4 h-4" />
+          </button>
 
           {/* Content */}
           <div className="relative p-8">

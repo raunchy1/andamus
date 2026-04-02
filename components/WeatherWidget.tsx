@@ -48,7 +48,7 @@ function FullWeatherWidget({ weather, city, rainWarning }: { weather: WeatherDat
     <div className="bg-white/5 border border-white/10 rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-white font-semibold flex items-center gap-2">
-          <Cloud className="w-5 h-5 text-blue-400" />
+          <Cloud className="w-5 h-5 text-[#e63946]" />
           Meteo a {city}
         </h3>
         <span className="text-white/50 text-sm">

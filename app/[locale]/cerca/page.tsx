@@ -285,7 +285,7 @@ function SearchMobile(props: SearchViewProps) {
   } = props;
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e] text-[#e5e2e1] pb-32">
+    <div className="min-h-screen bg-background text-[#e5e2e1] pb-32">
       {/* TopAppBar */}
       <header className="bg-[#0e0e0e] fixed top-0 left-0 w-full z-50 flex justify-between items-end w-full px-6 pt-12 pb-4">
         <div className="flex items-center gap-3">
@@ -1193,7 +1193,7 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-[#0e0e0e]">
+    <div className="min-h-screen bg-background">
       <Suspense fallback={
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
