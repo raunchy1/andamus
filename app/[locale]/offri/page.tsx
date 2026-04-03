@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Check, AlertCircle } from "lucide-react";
+import { Loader2, Check, AlertCircle, ArrowLeft, User, CircleDot, MapPin, ArrowDown, X, Plus, ChevronRight, Car } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
-import { getDistanceBetweenCities } from "@/lib/sardinia-cities";
+import { Calculator, Sparkles } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useDeviceType } from "@/components/view-mode";
 import { ShareApp } from "@/components/ShareApp";
@@ -46,6 +46,8 @@ interface OfferViewProps {
   submitError: string;
   isSubmitting: boolean;
   suggestedPrice: number | null;
+  distanceKm: number | null;
+  calculatingPrice: boolean;
   today: string;
   handleChange: (field: string, value: string | boolean | number[] | string[]) => void;
   handleSubmit: (e: React.FormEvent) => void;
@@ -58,6 +60,8 @@ function OfferMobile({
   submitError,
   isSubmitting,
   suggestedPrice,
+  distanceKm,
+  calculatingPrice,
   today,
   handleChange,
   handleSubmit,
@@ -69,8 +73,8 @@ function OfferMobile({
       {/* Top Navigation */}
       <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-12 pb-4 sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity">
-            arrow_back
+          <button onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
+            <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="font-extrabold tracking-tighter text-3xl text-[#e5e2e1]">Andamus</h1>
         </div>
@@ -78,7 +82,7 @@ function OfferMobile({
           {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
             <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="" className="w-full h-full object-cover" />
           ) : (
-            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+            <User className="w-5 h-5 text-on-surface-variant" />
           )}
         </div>
       </header>
@@ -108,7 +112,7 @@ function OfferMobile({
               <div className="relative">
                 <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">Partenza</label>
                 <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                  <span className="material-symbols-outlined text-primary">trip_origin</span>
+                  <CircleDot className="w-5 h-5 text-primary" />
                   <select
                     value={formData.origin}
                     onChange={(e) => handleChange("origin", e.target.value)}
@@ -124,13 +128,13 @@ function OfferMobile({
               </div>
               <div className="flex justify-center -my-2 relative z-10">
                 <div className="w-8 h-8 bg-background flex items-center justify-center rounded-full border border-surface-container-highest">
-                  <span className="material-symbols-outlined text-[18px] text-outline">south</span>
+                  <ArrowDown className="w-4 h-4 text-outline" />
                 </div>
               </div>
               <div className="relative">
                 <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">Arrivo</label>
                 <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                  <span className="material-symbols-outlined text-primary">location_on</span>
+                  <MapPin className="w-5 h-5 text-primary" />
                   <select
                     value={formData.destination}
                     onChange={(e) => handleChange("destination", e.target.value)}
@@ -216,7 +220,7 @@ function OfferMobile({
             </div>
 
             {!formData.isFree && (
-              <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
+              <div className={`bg-surface-container-highest p-4 rounded-xl space-y-2 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
                 <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Prezzo (€)</label>
                 <input
                   type="number"
@@ -226,11 +230,33 @@ function OfferMobile({
                   onChange={(e) => handleChange("price", e.target.value)}
                   className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
                 />
-                {suggestedPrice !== null && !formData.price && (
-                  <p className="text-[11px] text-outline">
-                    Suggerimento: circa <span className="font-medium text-on-surface">{suggestedPrice}€</span> in base alla distanza
-                  </p>
+                
+                {/* Intelligent Price Calculator UI */}
+                {calculatingPrice ? (
+                  <div className="flex items-center gap-2 text-[11px] text-outline">
+                    <Calculator className="w-3 h-3 animate-pulse" />
+                    Calcolo distanza e prezzo...
+                  </div>
+                ) : distanceKm !== null && suggestedPrice !== null && (
+                  <div className="mt-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Sparkles className="w-3 h-3 text-primary" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Prezzo Intelligente</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-sm text-on-surface">Distanza:</span>
+                      <span className="text-sm font-bold text-on-surface">{distanceKm} km</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-sm text-on-surface">Prezzo suggerito:</span>
+                      <span className="text-lg font-extrabold text-primary">{suggestedPrice}€</span>
+                    </div>
+                    <p className="text-[10px] text-outline mt-1">
+                      Basato su €0.09/km · Carpooling non-profit
+                    </p>
+                  </div>
                 )}
+                
                 {errors.price && <p className="text-sm text-error">{errors.price}</p>}
               </div>
             )}
@@ -286,7 +312,7 @@ function OfferMobile({
                       }}
                       className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80"
                     >
-                      <span className="material-symbols-outlined">close</span>
+                      <X className="w-5 h-5" />
                     </button>
                   </div>
                 ))}
@@ -296,7 +322,7 @@ function OfferMobile({
                     onClick={() => handleChange("stops", [...formData.stops, ""])}
                     className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                   >
-                    <span className="material-symbols-outlined text-sm">add</span>
+                    <Plus className="w-4 h-4" />
                     Aggiungi fermata
                   </button>
                 )}
@@ -415,7 +441,7 @@ function OfferMobile({
                 ? formData.isRecurring ? "Creazione in corso..." : "Pubblicazione in corso..."
                 : formData.isRecurring ? "CREA CORSA RICORRENTE" : "PUBBLICA PASSAGGIO"
               }
-              <span className="material-symbols-outlined">chevron_right</span>
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </form>
@@ -431,6 +457,8 @@ function OfferDesktop({
   submitError,
   isSubmitting,
   suggestedPrice,
+  distanceKm,
+  calculatingPrice,
   today,
   handleChange,
   handleSubmit,
@@ -443,8 +471,8 @@ function OfferDesktop({
       <header className="bg-[#0e0e0e] border-b border-white/5 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={() => router.back()} className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity">
-              arrow_back
+            <button onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
+              <ArrowLeft className="w-6 h-6" />
             </button>
             <h1 className="font-extrabold tracking-tighter text-2xl text-[#e5e2e1]">Andamus</h1>
           </div>
@@ -452,7 +480,7 @@ function OfferDesktop({
             {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
               <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="" className="w-full h-full object-cover" />
             ) : (
-              <span className="material-symbols-outlined text-on-surface-variant">person</span>
+              <User className="w-5 h-5 text-on-surface-variant" />
             )}
           </div>
         </div>
@@ -485,7 +513,7 @@ function OfferDesktop({
                   <div className="relative">
                     <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">Partenza</label>
                     <div className={`flex items-center gap-4 bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                      <span className="material-symbols-outlined text-primary text-2xl">trip_origin</span>
+                      <CircleDot className="w-6 h-6 text-primary" />
                       <select
                         value={formData.origin}
                         onChange={(e) => handleChange("origin", e.target.value)}
@@ -501,13 +529,13 @@ function OfferDesktop({
                   </div>
                   <div className="flex justify-center -my-2 relative z-10">
                     <div className="w-10 h-10 bg-background flex items-center justify-center rounded-full border border-surface-container-highest">
-                      <span className="material-symbols-outlined text-[20px] text-outline">south</span>
+                      <ArrowDown className="w-5 h-5 text-outline" />
                     </div>
                   </div>
                   <div className="relative">
                     <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">Arrivo</label>
                     <div className={`flex items-center gap-4 bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                      <span className="material-symbols-outlined text-primary text-2xl">location_on</span>
+                      <MapPin className="w-6 h-6 text-primary" />
                       <select
                         value={formData.destination}
                         onChange={(e) => handleChange("destination", e.target.value)}
@@ -591,7 +619,7 @@ function OfferDesktop({
                 </div>
 
                 {!formData.isFree && (
-                  <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-1 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
+                  <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-2 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
                     <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Prezzo (€)</label>
                     <input
                       type="number"
@@ -601,11 +629,35 @@ function OfferDesktop({
                       onChange={(e) => handleChange("price", e.target.value)}
                       className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold text-lg"
                     />
-                    {suggestedPrice !== null && !formData.price && (
-                      <p className="text-xs text-outline">
-                        Suggerimento: circa <span className="font-medium text-on-surface">{suggestedPrice}€</span> in base alla distanza
-                      </p>
+                    
+                    {/* Intelligent Price Calculator UI */}
+                    {calculatingPrice ? (
+                      <div className="flex items-center gap-2 text-xs text-outline">
+                        <Calculator className="w-4 h-4 animate-pulse" />
+                        Calcolo distanza e prezzo...
+                      </div>
+                    ) : distanceKm !== null && suggestedPrice !== null && (
+                      <div className="mt-3 p-4 rounded-xl bg-primary/10 border border-primary/20 backdrop-blur-sm">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Prezzo Intelligente</span>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-sm text-on-surface">Distanza:</span>
+                            <span className="text-lg font-bold text-on-surface">{distanceKm} km</span>
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-sm text-on-surface">Prezzo:</span>
+                            <span className="text-2xl font-extrabold text-primary">{suggestedPrice}€</span>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-outline mt-2">
+                          Basato su €0.09/km · Carpooling non-profit
+                        </p>
+                      </div>
                     )}
+                    
                     {errors.price && <p className="text-sm text-error">{errors.price}</p>}
                   </div>
                 )}
@@ -661,7 +713,7 @@ function OfferDesktop({
                           }}
                           className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80"
                         >
-                          <span className="material-symbols-outlined">close</span>
+                          <X className="w-5 h-5" />
                         </button>
                       </div>
                     ))}
@@ -671,7 +723,7 @@ function OfferDesktop({
                         onClick={() => handleChange("stops", [...formData.stops, ""])}
                         className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                       >
-                        <span className="material-symbols-outlined text-sm">add</span>
+                        <Plus className="w-4 h-4" />
                         Aggiungi fermata
                       </button>
                     )}
@@ -793,7 +845,7 @@ function OfferDesktop({
                     ? formData.isRecurring ? "Creazione in corso..." : "Pubblicazione in corso..."
                     : formData.isRecurring ? "CREA CORSA RICORRENTE" : "PUBBLICA PASSAGGIO"
                   }
-                  <span className="material-symbols-outlined">chevron_right</span>
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -837,22 +889,69 @@ export default function OfferPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
+  const [distanceKm, setDistanceKm] = useState<number | null>(null);
+  const [calculatingPrice, setCalculatingPrice] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
   const supabase = createClient();
 
+  // Intelligent Price Calculator using Google Maps Distance Matrix API
   useEffect(() => {
-    if (formData.origin && formData.destination && formData.origin !== formData.destination) {
-      const distance = getDistanceBetweenCities(formData.origin, formData.destination);
-      if (distance) {
-        const suggestion = Math.round(distance * 0.12 * 2) / 2;
-        setSuggestedPrice(Math.max(2, suggestion));
-      } else {
+    const calculateDistanceAndPrice = async () => {
+      if (!formData.origin || !formData.destination || formData.origin === formData.destination) {
         setSuggestedPrice(null);
+        setDistanceKm(null);
+        return;
       }
-    } else {
-      setSuggestedPrice(null);
-    }
+
+      setCalculatingPrice(true);
+      
+      try {
+        // Use Google Maps Distance Matrix API
+        const originEncoded = encodeURIComponent(`${formData.origin}, Sardegna, Italia`);
+        const destinationEncoded = encodeURIComponent(`${formData.destination}, Sardegna, Italia`);
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originEncoded}&destinations=${destinationEncoded}&mode=driving&units=metric&key=${apiKey}`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Distance calculation failed');
+        }
+        
+        const data = await response.json();
+        
+        if (data.rows && data.rows[0] && data.rows[0].elements && data.rows[0].elements[0].distance) {
+          const distanceInMeters = data.rows[0].elements[0].distance.value;
+          const distanceInKm = Math.round(distanceInMeters / 1000);
+          setDistanceKm(distanceInKm);
+          
+          // Pricing algorithm: €0.09 per km, minimum €2
+          const calculatedPrice = Math.round(distanceInKm * 0.09);
+          const finalPrice = Math.max(2, calculatedPrice);
+          
+          setSuggestedPrice(finalPrice);
+          
+          // Auto-fill price if not already set
+          if (!formData.price && !formData.isFree) {
+            handleChange("price", finalPrice.toString());
+          }
+        } else {
+          // Fallback to local estimation if API fails
+          setDistanceKm(null);
+          setSuggestedPrice(null);
+        }
+      } catch (error) {
+        console.error("Price calculation error:", error);
+        setDistanceKm(null);
+        setSuggestedPrice(null);
+      } finally {
+        setCalculatingPrice(false);
+      }
+    };
+
+    calculateDistanceAndPrice();
   }, [formData.origin, formData.destination]);
 
   useEffect(() => {
@@ -915,15 +1014,26 @@ export default function OfferPage() {
     e.preventDefault();
     setSubmitError("");
     
-    if (!validateForm()) return;
+    // Validate form with toast feedback
+    if (!validateForm()) {
+      const errorMessages = Object.values(errors);
+      if (errorMessages.length > 0) {
+        toast.error(errorMessages[0]);
+      } else {
+        toast.error("Compila tutti i campi obbligatori.");
+      }
+      return;
+    }
 
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (!currentUser) {
+      toast.error("Devi essere autenticato per pubblicare un passaggio.");
       setSubmitError("Devi essere autenticato per pubblicare un passaggio.");
       return;
     }
 
     setIsSubmitting(true);
+    const toastId = toast.loading(formData.isRecurring ? "Creazione corsa ricorrente..." : "Pubblicazione in corso...");
 
     try {
       let rideId: string | null = null;
@@ -952,11 +1062,21 @@ export default function OfferPage() {
           });
 
         if (templateError) {
-          setSubmitError("Errore durante la pubblicazione. Riprova più tardi.");
+          console.error("Template error:", templateError);
+          toast.dismiss(toastId);
+          toast.error(`Errore: ${templateError.message}`);
+          setSubmitError(`Errore durante la pubblicazione: ${templateError.message}`);
+          setIsSubmitting(false);
           return;
         }
 
-        await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
+        const { error: rpcError } = await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
+        
+        if (rpcError) {
+          console.error("RPC error:", rpcError);
+          toast.dismiss(toastId);
+          toast.error(`Errore generazione corse: ${rpcError.message}`);
+        }
       } else {
         const { data: inserted, error } = await supabase
           .from("rides")
@@ -981,20 +1101,29 @@ export default function OfferPage() {
           .select();
 
         if (error) {
-          setSubmitError("Errore durante la pubblicazione. Riprova più tardi.");
+          console.error("Insert error:", error);
+          toast.dismiss(toastId);
+          toast.error(`Errore: ${error.message}`);
+          setSubmitError(`Errore durante la pubblicazione: ${error.message}`);
+          setIsSubmitting(false);
           return;
         }
 
         rideId = inserted?.[0]?.id || null;
         if (rideId) {
           if (formData.stops.length > 0) {
-            await supabase.from("ride_stops").insert(
+            const { error: stopsError } = await supabase.from("ride_stops").insert(
               formData.stops.map((city, index) => ({
                 ride_id: rideId,
                 city,
                 order_index: index,
               }))
             );
+            
+            if (stopsError) {
+              console.error("Stops error:", stopsError);
+              toast.error(`Errore fermate: ${stopsError.message}`);
+            }
           }
 
           fetch("/api/alerts/check", {
@@ -1021,16 +1150,27 @@ export default function OfferPage() {
         );
         
         if (result.pointsAdded > 0) {
+          toast.dismiss(toastId);
           toast.success(`+${result.pointsAdded} punti! 🎉`);
           if (result.leveledUp) {
             toast.success(`Congratulazioni! Sei salito a livello ${result.newLevel}!`);
           }
+        } else {
+          toast.dismiss(toastId);
+          toast.success(formData.isRecurring ? "Corsa ricorrente creata con successo!" : "Passaggio pubblicato con successo!");
         }
+      } else {
+        toast.dismiss(toastId);
+        toast.success(formData.isRecurring ? "Corsa ricorrente creata con successo!" : "Passaggio pubblicato con successo!");
       }
       
       setIsSubmitted(true);
-    } catch {
-      setSubmitError("Errore imprevisto. Riprova più tardi.");
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.dismiss(toastId);
+      const errorMessage = err instanceof Error ? err.message : "Errore imprevisto. Riprova più tardi.";
+      toast.error(`Errore: ${errorMessage}`);
+      setSubmitError(`Errore imprevisto: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -1057,7 +1197,7 @@ export default function OfferPage() {
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4 sm:px-6">
         <div className="mx-auto max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high">
-            <span className="material-symbols-outlined text-4xl text-primary">directions_car</span>
+            <Car className="w-10 h-10 text-primary" />
           </div>
           <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-on-surface">
             Offri un passaggio
@@ -1082,7 +1222,7 @@ export default function OfferPage() {
               href="/"
               className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
             >
-              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              <ArrowLeft className="w-4 h-4" />
               Torna alla home
             </Link>
           </div>
@@ -1130,7 +1270,7 @@ export default function OfferPage() {
               href="/cerca"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-6 py-3 text-sm font-extrabold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
-              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              <ArrowLeft className="w-4 h-4" />
               Cerca altri passaggi
             </Link>
           </div>
@@ -1146,6 +1286,8 @@ export default function OfferPage() {
     submitError,
     isSubmitting,
     suggestedPrice,
+    distanceKm,
+    calculatingPrice,
     today,
     handleChange,
     handleSubmit,

@@ -1,5 +1,7 @@
 "use client";
 
+import { Car } from "lucide-react";
+
 interface PathIndicatorProps {
   from: string;
   to: string;
@@ -50,7 +52,7 @@ export function PathIndicator({ from, to, variant = "horizontal", stops = [] }: 
       </div>
       
       <div className="relative z-10 flex flex-col items-center bg-surface px-4">
-        <span className="material-symbols-outlined text-primary text-xl">directions_car</span>
+        <Car className="w-5 h-5 text-primary" />
       </div>
       
       <div className="relative z-10 flex flex-col items-end bg-surface pl-4">

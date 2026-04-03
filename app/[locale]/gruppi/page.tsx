@@ -42,10 +42,10 @@ export default function GroupsPage() {
         .select(`*, group_memberships(count)`)
         .order("created_at", { ascending: false });
       setGroups(
-        (data || []).map((g: any) => ({
+        (data || []).map((g) => ({
           ...g,
-          member_count: g.group_memberships?.[0]?.count || 0,
-        }))
+          member_count: (g as unknown as { group_memberships?: { count: number }[] }).group_memberships?.[0]?.count || 0,
+        })) as Group[]
       );
       setLoading(false);
     };

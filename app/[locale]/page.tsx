@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
+import { Search, CircleDot, MapPin, Calendar, PiggyBank, Leaf, ShieldCheck } from "lucide-react";
+import { DatePicker } from "@/components/ui/date-picker";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì",
@@ -117,7 +119,7 @@ function HomeMobile({
               className="absolute bottom-4 sm:bottom-6 left-3 sm:left-4 right-3 sm:right-4 bg-surface-container-high/90 backdrop-blur-md p-1.5 rounded-lg flex items-center shadow-xl border border-white/5"
             >
               <div className="flex-1 flex items-center px-2 sm:px-3 gap-2 min-w-0">
-                <span className="material-symbols-outlined text-primary text-sm flex-shrink-0">search</span>
+                <Search className="w-4 h-4 text-primary flex-shrink-0" />
                 <select
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
@@ -258,35 +260,6 @@ function HomeDesktop({
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#e5e2e1]">
-      {/* Navbar */}
-      <nav className="w-full border-b border-white/5 bg-[#0f0f0f]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-            <span className="material-symbols-outlined text-[#e63946] text-3xl">directions_car</span>
-            <span className="text-xl lg:text-2xl font-extrabold tracking-tighter uppercase text-[#e5e2e1] whitespace-nowrap">Andamus</span>
-          </Link>
-          
-          {/* Navigation */}
-          <div className="flex items-center gap-4 lg:gap-8">
-            <Link href="/cerca" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors whitespace-nowrap hidden sm:block">Esplora</Link>
-            <Link href="/offri" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors whitespace-nowrap hidden sm:block">Offri</Link>
-            <Link href="/profilo" className="flex items-center gap-2 lg:gap-3 pl-4 lg:pl-6 border-l border-white/10 min-w-0">
-              <span className="text-sm font-medium truncate max-w-[100px] hidden sm:block">{userName ? userName.split(" ")[0] : "Profilo"}</span>
-              <div className="w-10 h-10 rounded-full bg-white/5 overflow-hidden border border-white/10 flex-shrink-0">
-                {userAvatar ? (
-                  <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#e5e2e1]/60">person</span>
-                  </div>
-                )}
-              </div>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#ffb3b110_0%,_transparent_50%)]" />
@@ -332,7 +305,7 @@ function HomeDesktop({
             <div className="flex flex-col md:flex-row items-stretch gap-3">
               {/* Partenza */}
               <div className="flex-1 flex items-center gap-4 px-5 py-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 min-w-0">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-xl flex-shrink-0">trip_origin</span>
+                <CircleDot className="w-5 h-5 text-[#ffb3b1] flex-shrink-0" />
                 <div className="flex flex-col w-full min-w-0">
                   <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Partenza</label>
                   <select
@@ -350,7 +323,7 @@ function HomeDesktop({
 
               {/* Destinazione */}
               <div className="flex-1 flex items-center gap-4 px-5 py-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 min-w-0">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-xl flex-shrink-0">location_on</span>
+                <MapPin className="w-5 h-5 text-[#ffb3b1] flex-shrink-0" />
                 <div className="flex flex-col w-full min-w-0">
                   <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Destinazione</label>
                   <select
@@ -367,26 +340,21 @@ function HomeDesktop({
               </div>
 
               {/* Data */}
-              <div className="flex items-center gap-4 px-5 py-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-white/5 md:max-w-[180px] min-w-0">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-xl flex-shrink-0">calendar_today</span>
-                <div className="flex flex-col w-full min-w-0">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Data</label>
-                  <input
-                    type="date"
-                    value={date}
-                    min={today}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full p-0 text-base"
-                  />
-                </div>
-              </div>
+              <DatePicker
+                date={date}
+                onSelect={(newDate) => setDate(newDate || today)}
+                onClear={() => setDate(today)}
+                min={today}
+                label="Data"
+                className="md:max-w-[200px]"
+              />
 
               {/* Cerca Button */}
               <button
                 type="submit"
                 className="bg-[#e63946] hover:bg-[#d32f3c] text-white px-8 lg:px-10 py-5 rounded-xl font-bold text-base uppercase tracking-wider transition-colors flex items-center justify-center gap-2 flex-shrink-0 min-w-[120px]"
               >
-                <span className="material-symbols-outlined">search</span>
+                <Search className="w-5 h-5" />
                 Cerca
               </button>
             </div>
@@ -477,7 +445,7 @@ function HomeDesktop({
             {/* Card 1 */}
             <div className="flex flex-col gap-5 p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[280px]">
               <div className="w-14 h-14 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-3xl">savings</span>
+                <PiggyBank className="w-8 h-8 text-[#ffb3b1]" />
               </div>
               <div className="flex flex-col gap-3">
                 <h4 className="text-xl font-bold">Risparmia sui viaggi</h4>
@@ -487,7 +455,7 @@ function HomeDesktop({
             {/* Card 2 */}
             <div className="flex flex-col gap-5 p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[280px]">
               <div className="w-14 h-14 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-3xl">eco</span>
+                <Leaf className="w-8 h-8 text-[#ffb3b1]" />
               </div>
               <div className="flex flex-col gap-3">
                 <h4 className="text-xl font-bold">Viaggia sostenibile</h4>
@@ -497,7 +465,7 @@ function HomeDesktop({
             {/* Card 3 */}
             <div className="flex flex-col gap-5 p-6 lg:p-8 rounded-2xl bg-white/[0.02] border border-white/5 min-h-[280px]">
               <div className="w-14 h-14 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-3xl">verified_user</span>
+                <ShieldCheck className="w-8 h-8 text-[#ffb3b1]" />
               </div>
               <div className="flex flex-col gap-3">
                 <h4 className="text-xl font-bold">Community affidabile</h4>

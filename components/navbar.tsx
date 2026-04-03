@@ -53,6 +53,7 @@ export function Navbar() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
   const supabase = createClient();
@@ -90,6 +91,10 @@ export function Navbar() {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [user]);
 
   const handleLogin = async () => {
     try {
@@ -262,13 +267,14 @@ export function Navbar() {
                     }`}
                   >
                     <span className="text-sm font-medium truncate max-w-[80px] lg:max-w-[120px] hidden sm:block">{getUserName()}</span>
-                    {getUserAvatar() ? (
+                    {getUserAvatar() && !avatarError ? (
                       <Image 
                         src={getUserAvatar()!} 
                         alt={getUserName()}
                         width={32}
                         height={32}
                         className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+                        onError={() => setAvatarError(true)}
                       />
                     ) : (
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] flex-shrink-0">
@@ -438,13 +444,14 @@ export function Navbar() {
                           isHome ? "text-white" : "text-[#1a1a2e]"
                         }`}
                       >
-                        {getUserAvatar() ? (
+                        {getUserAvatar() && !avatarError ? (
                           <Image 
                             src={getUserAvatar()!} 
                             alt={getUserName()}
                             width={32}
                             height={32}
                             className="h-8 w-8 rounded-full object-cover"
+                            onError={() => setAvatarError(true)}
                           />
                         ) : (
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">

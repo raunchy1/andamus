@@ -3,12 +3,13 @@
 import { useState, useEffect, Suspense, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Loader2, RefreshCw, Bell, SlidersHorizontal, X } from "lucide-react";
+import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyStateSearch } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -102,33 +103,55 @@ interface SearchViewProps {
   supabase: ReturnType<typeof createClient>;
 }
 
-// Skeleton for loading state
-function SkeletonRow() {
+// Premium Skeleton for loading state - matches exact ride card layout
+function RideCardSkeleton() {
   return (
-    <div className="bg-surface p-6 rounded-xl animate-pulse">
-      <div className="flex justify-between items-start mb-6">
-        <div className="space-y-2">
-          <div className="h-3 w-24 bg-surface-container-highest rounded" />
-          <div className="h-10 w-20 bg-surface-container-highest rounded" />
+    <div className="bg-surface p-4 sm:p-6 rounded-xl animate-pulse">
+      {/* Top Row: Date/Time + Price */}
+      <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
+        <div className="space-y-1 min-w-0">
+          <Skeleton className="h-3 w-20 sm:w-24 rounded" />
+          <Skeleton className="h-8 sm:h-10 w-16 sm:w-20 rounded" />
         </div>
-        <div className="space-y-2 text-right">
-          <div className="h-8 w-16 bg-surface-container-highest rounded" />
-          <div className="h-3 w-20 bg-surface-container-highest rounded" />
+        <div className="text-right flex-shrink-0 space-y-1">
+          <Skeleton className="h-6 sm:h-8 w-16 sm:w-20 rounded ml-auto" />
+          <Skeleton className="h-2.5 w-12 sm:w-16 rounded ml-auto" />
         </div>
       </div>
-      <div className="py-8">
-        <div className="h-[2px] w-full bg-surface-container-highest rounded" />
-      </div>
-      <div className="flex items-center gap-3 mt-6">
-        <div className="w-12 h-12 rounded-full bg-surface-container-highest" />
-        <div className="space-y-2">
-          <div className="h-4 w-24 bg-surface-container-highest rounded" />
-          <div className="h-3 w-32 bg-surface-container-highest rounded" />
+
+      {/* Path Indicator */}
+      <div className="relative py-6 sm:py-8 flex items-center justify-between">
+        <Skeleton className="absolute left-0 right-0 h-[2px] rounded" />
+        <div className="relative z-10 flex flex-col items-start bg-surface pr-2 sm:pr-4 max-w-[40%]">
+          <Skeleton className="h-2.5 sm:h-3 w-16 sm:w-20 rounded mb-1" />
+          <Skeleton className="w-3 h-3 rounded-full" />
         </div>
+        <div className="relative z-10 flex flex-col items-center bg-surface px-2 sm:px-4 flex-shrink-0">
+          <Skeleton className="w-5 h-5 sm:w-6 sm:h-6 rounded" />
+        </div>
+        <div className="relative z-10 flex flex-col items-end bg-surface pl-2 sm:pl-4 max-w-[40%]">
+          <Skeleton className="h-2.5 sm:h-3 w-16 sm:w-20 rounded mb-1" />
+          <Skeleton className="w-3 h-3 rounded-full" />
+        </div>
+      </div>
+
+      {/* Driver Info */}
+      <div className="flex items-center justify-between mt-4 sm:mt-6">
+        <div className="flex items-center gap-3 min-w-0">
+          <Skeleton className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0" />
+          <div className="min-w-0 space-y-1.5">
+            <Skeleton className="h-4 w-24 sm:w-32 rounded" />
+            <Skeleton className="h-3 w-12 sm:w-16 rounded" />
+          </div>
+        </div>
+        <Skeleton className="w-5 h-5 rounded flex-shrink-0" />
       </div>
     </div>
   );
 }
+
+// Backward compatibility alias
+const SkeletonRow = RideCardSkeleton;
 
 function AlertModal({
   showAlertModal,
@@ -291,7 +314,7 @@ function SearchMobile(props: SearchViewProps) {
       <header className="bg-[#0e0e0e] fixed top-0 left-0 w-full z-50 flex justify-between items-end px-4 sm:px-6 pt-12 pb-4">
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden flex-shrink-0">
-            <span className="material-symbols-outlined text-on-surface">person</span>
+            <User className="w-5 h-5 text-on-surface" />
           </Link>
           <h1 className="font-extrabold tracking-tighter text-2xl sm:text-3xl text-[#e5e2e1] uppercase truncate">Andamus</h1>
         </div>
@@ -299,7 +322,7 @@ function SearchMobile(props: SearchViewProps) {
           onClick={() => setShowFilters(!showFilters)}
           className="text-[#ffb3b1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out relative"
         >
-          <span className="material-symbols-outlined text-3xl">tune</span>
+          <SlidersHorizontal className="w-8 h-8" />
           {activeFiltersCount > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-on-primary rounded-full text-[9px] font-bold flex items-center justify-center">
               {activeFiltersCount}
@@ -327,7 +350,7 @@ function SearchMobile(props: SearchViewProps) {
         {/* Sticky Minimal Search Bar */}
         <div className="sticky top-24 z-40 mb-6 sm:mb-8">
           <div className="bg-surface-container-high rounded-xl p-3 sm:p-4 flex items-center gap-2 sm:gap-4 shadow-2xl">
-            <span className="material-symbols-outlined text-primary flex-shrink-0">search</span>
+            <Search className="w-5 h-5 text-primary flex-shrink-0" />
             <div className="flex flex-col flex-1 min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Partenza</span>
               <select
@@ -518,7 +541,7 @@ function SearchMobile(props: SearchViewProps) {
                   <div className="w-3 h-3 rounded-full bg-primary ring-4 ring-background" />
                 </div>
                 <div className="relative z-10 flex flex-col items-center bg-surface px-2 sm:px-4 group-hover:bg-surface-container-low transition-colors flex-shrink-0">
-                  <span className="material-symbols-outlined text-primary text-lg sm:text-xl">directions_car</span>
+                  <Car className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div className="relative z-10 flex flex-col items-end bg-surface pl-2 sm:pl-4 group-hover:bg-surface-container-low transition-colors max-w-[40%]">
                   <span className="text-[10px] sm:text-[11px] font-bold uppercase text-on-surface mb-1 opacity-50 truncate max-w-full">{ride.to_city}</span>
@@ -538,28 +561,21 @@ function SearchMobile(props: SearchViewProps) {
                       />
                     ) : (
                       <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
-                        <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                        <User className="w-5 h-5 text-on-surface-variant" />
                       </div>
                     )}
                   </div>
                   <div className="min-w-0">
                     <p className="font-bold text-on-surface truncate">{ride.profiles.name}</p>
                     <div className="flex items-center gap-1">
-                      <span
-                        className="material-symbols-outlined text-[12px] text-primary"
-                        style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-                      >
-                        star
-                      </span>
+                      <Star className="w-3 h-3 text-primary fill-current" />
                       <span className="text-[11px] font-bold text-on-surface-variant">
                         {ride.profiles.rating}
                       </span>
                     </div>
                   </div>
                 </div>
-                <span className="material-symbols-outlined text-on-surface-variant group-hover:translate-x-2 transition-transform flex-shrink-0">
-                  arrow_forward_ios
-                </span>
+                <ChevronRight className="w-5 h-5 text-on-surface-variant group-hover:translate-x-2 transition-transform flex-shrink-0" />
               </div>
             </Link>
           ))}
@@ -846,7 +862,7 @@ function SearchDesktop(props: SearchViewProps) {
                 <div className="w-3 h-3 rounded-full bg-[#ffb3b1] ring-4 ring-[#141414] group-hover:ring-[#181818] transition-all" />
               </div>
               <div className="relative z-10 flex flex-col items-center bg-[#141414] px-4 group-hover:bg-[#181818] transition-colors">
-                <span className="material-symbols-outlined text-[#ffb3b1] text-xl">directions_car</span>
+                <Car className="w-5 h-5 text-[#ffb3b1]" />
               </div>
               <div className="relative z-10 flex flex-col items-end bg-[#141414] pl-4 group-hover:bg-[#181818] transition-colors">
                 <span className="text-[11px] font-bold uppercase text-[#e5e2e1] mb-1 opacity-50">{ride.to_city}</span>
@@ -866,19 +882,14 @@ function SearchDesktop(props: SearchViewProps) {
                     />
                   ) : (
                     <div className="w-full h-full bg-[#1a1a1a] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#e5e2e1]/60">person</span>
+                      <User className="w-5 h-5 text-[#e5e2e1]/60" />
                     </div>
                   )}
                 </div>
                 <div>
                   <p className="font-bold text-[#e5e2e1]">{ride.profiles.name}</p>
                   <div className="flex items-center gap-1">
-                    <span
-                      className="material-symbols-outlined text-[12px] text-[#ffb3b1]"
-                      style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-                    >
-                      star
-                    </span>
+                    <Star className="w-3 h-3 text-[#ffb3b1] fill-current" />
                     <span className="text-[11px] font-bold text-[#e5e2e1]/60">
                       {ride.profiles.rating}
                     </span>
@@ -886,7 +897,7 @@ function SearchDesktop(props: SearchViewProps) {
                 </div>
               </div>
               {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
-                <span className="material-symbols-outlined text-[#ffb3b1] text-lg">verified</span>
+                <BadgeCheck className="w-5 h-5 text-[#ffb3b1]" />
               )}
             </div>
           </Link>
@@ -994,7 +1005,8 @@ function SearchContent() {
           .order("time", { ascending: true });
 
         if (stopsData && stopsData.length > 0) {
-          const stopRides = (stopsData as any[]).map(({ ride_stops, ...ride }) => ride as Ride);
+          type RideWithStops = Ride & { ride_stops: unknown[] };
+          const stopRides = (stopsData as RideWithStops[]).map(({ ride_stops: _rs, ...ride }) => ride);
           const existingIds = new Set(allRides.map((r) => r.id));
           allRides = [...allRides, ...stopRides.filter((r) => !existingIds.has(r.id))];
         }

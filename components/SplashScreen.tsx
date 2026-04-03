@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Car } from "lucide-react";
 
 interface SplashScreenProps {
   onComplete?: () => void;
@@ -43,12 +44,7 @@ export function SplashScreen({ onComplete, minimumDuration = 2000 }: SplashScree
       <div className="flex flex-col items-center gap-6">
         {/* Icon */}
         <div className="relative flex items-center justify-center">
-          <span
-            className="material-symbols-outlined text-primary text-6xl"
-            style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-          >
-            directions_car
-          </span>
+          <Car className="w-16 h-16 text-primary" />
           <div className="absolute inset-0 bg-primary opacity-10 blur-3xl rounded-full" />
         </div>
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, AlertCircle, X, Mic, Play, Pause } from "lucide-react";
+import { Loader2, AlertCircle, X, Mic, Play, Pause, ArrowLeft, MapPin, SlidersHorizontal, User, Plus, Send } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewMessage } from "@/lib/notifications";
@@ -461,7 +461,7 @@ export default function ChatPage() {
           href="/profilo"
           className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary"
         >
-          <span className="material-symbols-outlined text-sm">arrow_back</span>
+          <ArrowLeft className="w-4 h-4" />
           Torna al profilo
         </Link>
       </div>
@@ -500,7 +500,7 @@ export default function ChatPage() {
             <div className="mb-2">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary">location_on</span>
+                  <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-xs uppercase tracking-tight text-primary">Posizione Condivisa</span>
@@ -522,7 +522,7 @@ export default function ChatPage() {
                   />
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-sm text-primary">
-                  <span className="material-symbols-outlined text-sm">location_on</span>
+                  <MapPin className="w-4 h-4" />
                   <span>Apri in Google Maps</span>
                 </div>
               </a>
@@ -573,12 +573,12 @@ export default function ChatPage() {
             </h1>
           </div>
           <div className="flex items-center gap-4 pb-1">
-            <button className="material-symbols-outlined text-on-surface hover:opacity-80 transition-opacity">tune</button>
+            <button className="text-on-surface hover:opacity-80 transition-opacity"><SlidersHorizontal className="w-5 h-5" /></button>
             <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
               {otherParticipant?.avatar_url ? (
                 <img src={otherParticipant.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                <User className="w-5 h-5 text-on-surface-variant" />
               )}
             </div>
           </div>
@@ -650,7 +650,7 @@ export default function ChatPage() {
               disabled={isRecording}
               className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
             >
-              <span className="material-symbols-outlined">add</span>
+              <Plus className="w-5 h-5" />
             </button>
 
             <input
@@ -670,7 +670,7 @@ export default function ChatPage() {
                 disabled={isRecording}
                 className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
               >
-                <span className="material-symbols-outlined">location_on</span>
+                <MapPin className="w-5 h-5" />
               </button>
               <button
                 type="button"
@@ -682,7 +682,7 @@ export default function ChatPage() {
                 disabled={!!newMessage.trim()}
                 className={`text-on-surface/60 hover:text-primary transition-colors disabled:opacity-0 ${isRecording ? 'text-error' : ''}`}
               >
-                <span className="material-symbols-outlined">mic</span>
+                <Mic className="w-5 h-5" />
               </button>
               <button
                 onClick={() => handleSendMessage()}
@@ -692,7 +692,7 @@ export default function ChatPage() {
                 {sending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>send</span>
+                  <Send className="w-4 h-4" />
                 )}
               </button>
             </div>
@@ -714,12 +714,12 @@ export default function ChatPage() {
               </h1>
             </div>
             <div className="flex items-center gap-6">
-              <button className="material-symbols-outlined text-on-surface hover:opacity-80 transition-opacity text-2xl">tune</button>
+              <button className="text-on-surface hover:opacity-80 transition-opacity"><SlidersHorizontal className="w-6 h-6" /></button>
               <div className="w-14 h-14 rounded-2xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
                 {otherParticipant?.avatar_url ? (
                   <img src={otherParticipant.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="material-symbols-outlined text-on-surface-variant text-2xl">person</span>
+                  <User className="w-6 h-6 text-on-surface-variant" />
                 )}
               </div>
             </div>
@@ -785,7 +785,7 @@ export default function ChatPage() {
                       <div className="mb-2">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-primary">location_on</span>
+                            <MapPin className="w-5 h-5 text-primary" />
                           </div>
                           <div className="flex flex-col">
                             <span className="font-bold text-xs uppercase tracking-tight text-primary">Posizione Condivisa</span>
@@ -807,7 +807,7 @@ export default function ChatPage() {
                             />
                           </div>
                           <div className="flex items-center gap-2 mt-2 text-sm text-primary">
-                            <span className="material-symbols-outlined text-sm">location_on</span>
+                            <MapPin className="w-4 h-4" />
                             <span>Apri in Google Maps</span>
                           </div>
                         </a>
@@ -874,7 +874,7 @@ export default function ChatPage() {
                 disabled={isRecording}
                 className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
               >
-                <span className="material-symbols-outlined">add</span>
+                <Plus className="w-5 h-5" />
               </button>
 
               <input
@@ -894,7 +894,7 @@ export default function ChatPage() {
                   disabled={isRecording}
                   className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
                 >
-                  <span className="material-symbols-outlined">location_on</span>
+                  <MapPin className="w-5 h-5" />
                 </button>
                 <button
                   type="button"
@@ -906,7 +906,7 @@ export default function ChatPage() {
                   disabled={!!newMessage.trim()}
                   className={`text-on-surface/60 hover:text-primary transition-colors disabled:opacity-0 ${isRecording ? 'text-error' : ''}`}
                 >
-                  <span className="material-symbols-outlined">mic</span>
+                  <Mic className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => handleSendMessage()}
@@ -916,7 +916,7 @@ export default function ChatPage() {
                   {sending ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>send</span>
+                    <Send className="w-4 h-4" />
                   )}
                 </button>
               </div>

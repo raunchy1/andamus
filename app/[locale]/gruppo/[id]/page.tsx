@@ -18,6 +18,7 @@ interface Group {
 
 interface Member {
   id: string;
+  user_id?: string;
   profiles: {
     name: string;
     avatar_url: string | null;
@@ -48,9 +49,21 @@ export default function GroupDetailPage() {
       ]);
 
       setGroup(g);
-      setMembers((m || []) as any);
+      // Transform Supabase response - profiles comes as array from the join
+      interface RawMember {
+        id: string;
+        user_id?: string;
+        profiles: { name: string; avatar_url: string | null; }[];
+      }
+      const rawMembers = (m || []) as unknown as RawMember[];
+      const transformedMembers = rawMembers.map(mem => ({
+        id: mem.id,
+        user_id: mem.user_id,
+        profiles: mem.profiles?.[0] || { name: "", avatar_url: null },
+      }));
+      setMembers(transformedMembers);
       setUser(u);
-      setIsMember(!!(m || []).find((mem) => mem.profiles && u && (mem as any).user_id === u.id));
+      setIsMember(!!transformedMembers.find((mem) => mem.profiles && u && mem.user_id === u.id));
       setLoading(false);
     };
     fetchData();

@@ -228,7 +228,7 @@ export default function PrivacyPage() {
                   <strong>Rettifica:</strong> richiedere la correzione di dati inesatti
                 </li>
                 <li>
-                  <strong>Cancellazione ("diritto all&apos;oblio"):</strong> richiedere la cancellazione 
+                  <strong>Cancellazione (&quot;diritto all&apos;oblio&quot;):</strong> richiedere la cancellazione 
                   dei tuoi dati (con alcune eccezioni di legge)
                 </li>
                 <li>

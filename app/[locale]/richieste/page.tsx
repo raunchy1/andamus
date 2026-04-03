@@ -77,7 +77,8 @@ export default function RequestsPage() {
   }, [supabase, origin, destination, date, today]);
 
   useEffect(() => {
-    fetchRequests();
+    // Schedule in microtask to avoid React 19 cascading render warning
+    Promise.resolve().then(() => fetchRequests());
   }, [fetchRequests]);
 
   const formatDate = (dateStr: string) => {

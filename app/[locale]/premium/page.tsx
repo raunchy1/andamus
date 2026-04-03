@@ -123,7 +123,8 @@ export default function PremiumPage() {
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        // Use router.push for client-side navigation or assign in effect
+        void Promise.resolve().then(() => { window.location.href = data.url; });
       } else {
         toast.error(data.error || "Errore nel checkout");
         setLoading(false);

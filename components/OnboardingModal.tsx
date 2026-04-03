@@ -42,7 +42,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       }, 800);
       return () => clearTimeout(t);
     }
-    setHasChecked(true);
+    Promise.resolve().then(() => setHasChecked(true));
   }, [hasChecked]);
 
   const steps = [

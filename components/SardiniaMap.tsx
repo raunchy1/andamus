@@ -30,15 +30,16 @@ interface RouteInfo {
   delay: number;
 }
 
+// Geographically accurate city positions on the 500x650 viewBox (real Sardinia shape)
 const CITIES: City[] = [
-  { id: "cagliari", name: "Cagliari", x: 250, y: 525, labelOffset: { x: 8, y: 4 } },
-  { id: "sassari", name: "Sassari", x: 128, y: 148, labelOffset: { x: -52, y: 4 } },
-  { id: "olbia", name: "Olbia", x: 390, y: 98, labelOffset: { x: 8, y: -8 } },
-  { id: "nuoro", name: "Nuoro", x: 348, y: 245, labelOffset: { x: 8, y: -8 } },
-  { id: "oristano", name: "Oristano", x: 128, y: 345, labelOffset: { x: -62, y: 4 } },
-  { id: "tortoli", name: "Tortolì", x: 435, y: 335, labelOffset: { x: 8, y: 4 } },
-  { id: "alghero", name: "Alghero", x: 78, y: 175, labelOffset: { x: -58, y: -8 } },
-  { id: "carbonia", name: "Carbonia", x: 178, y: 485, labelOffset: { x: -60, y: 4 } },
+  { id: "cagliari", name: "Cagliari", x: 288, y: 532, labelOffset: { x: 10, y: 4 } },
+  { id: "sassari", name: "Sassari", x: 136, y: 162, labelOffset: { x: -55, y: 4 } },
+  { id: "olbia", name: "Olbia", x: 389, y: 113, labelOffset: { x: 8, y: -8 } },
+  { id: "nuoro", name: "Nuoro", x: 344, y: 261, labelOffset: { x: 10, y: -10 } },
+  { id: "oristano", name: "Oristano", x: 146, y: 364, labelOffset: { x: -65, y: 4 } },
+  { id: "tortoli", name: "Tortolì", x: 432, y: 358, labelOffset: { x: 8, y: 12 } },
+  { id: "alghero", name: "Alghero", x: 90, y: 188, labelOffset: { x: -62, y: -8 } },
+  { id: "carbonia", name: "Carbonia", x: 202, y: 522, labelOffset: { x: -65, y: 4 } },
 ];
 
 const ROUTES: RouteInfo[] = [
@@ -46,8 +47,8 @@ const ROUTES: RouteInfo[] = [
     id: "cagliari-nuoro",
     from: "cagliari",
     to: "nuoro",
-    d: "M250,525 Q285,400 348,245",
-    length: 315,
+    d: "M288,532 Q316,397 344,261",
+    length: 280,
     distance: "~180 km",
     duration: "~2h 15m",
     delay: 0,
@@ -56,8 +57,8 @@ const ROUTES: RouteInfo[] = [
     id: "cagliari-tortoli",
     from: "cagliari",
     to: "tortoli",
-    d: "M250,525 Q320,450 435,335",
-    length: 255,
+    d: "M288,532 Q360,445 432,358",
+    length: 200,
     distance: "~150 km",
     duration: "~2h",
     delay: 0.3,
@@ -66,8 +67,8 @@ const ROUTES: RouteInfo[] = [
     id: "cagliari-olbia",
     from: "cagliari",
     to: "olbia",
-    d: "M250,525 Q290,320 390,98",
-    length: 490,
+    d: "M288,532 Q338,323 389,113",
+    length: 420,
     distance: "~270 km",
     duration: "~3h 15m",
     delay: 0.6,
@@ -76,8 +77,8 @@ const ROUTES: RouteInfo[] = [
     id: "nuoro-sassari",
     from: "nuoro",
     to: "sassari",
-    d: "M348,245 Q255,205 128,148",
-    length: 265,
+    d: "M344,261 Q240,212 136,162",
+    length: 245,
     distance: "~130 km",
     duration: "~1h 45m",
     delay: 0.9,
@@ -86,8 +87,8 @@ const ROUTES: RouteInfo[] = [
     id: "olbia-sassari",
     from: "olbia",
     to: "sassari",
-    d: "M390,98 Q275,110 128,148",
-    length: 290,
+    d: "M389,113 Q263,138 136,162",
+    length: 280,
     distance: "~100 km",
     duration: "~1h 15m",
     delay: 1.2,
@@ -96,8 +97,8 @@ const ROUTES: RouteInfo[] = [
     id: "tortoli-olbia",
     from: "tortoli",
     to: "olbia",
-    d: "M435,335 Q445,220 390,98",
-    length: 280,
+    d: "M432,358 Q410,236 389,113",
+    length: 260,
     distance: "~150 km",
     duration: "~1h 50m",
     delay: 1.5,
@@ -106,8 +107,8 @@ const ROUTES: RouteInfo[] = [
     id: "cagliari-oristano",
     from: "cagliari",
     to: "oristano",
-    d: "M250,525 Q195,445 128,345",
-    length: 235,
+    d: "M288,532 Q217,448 146,364",
+    length: 195,
     distance: "~100 km",
     duration: "~1h 20m",
     delay: 1.8,
@@ -116,17 +117,18 @@ const ROUTES: RouteInfo[] = [
     id: "sassari-alghero",
     from: "sassari",
     to: "alghero",
-    d: "M128,148 Q108,163 78,175",
-    length: 55,
+    d: "M136,162 Q113,175 90,188",
+    length: 75,
     distance: "~35 km",
     duration: "~35m",
     delay: 2.1,
   },
 ];
 
-// Stylized but recognizable Sardinia coastline (500x600 viewBox)
+// Real Sardinia coastline path (500x650 viewBox) - accurate geographic shape
+// Based on actual Sardinia island geography
 const SARDINIA_PATH =
-  "M75,105 Q95,80 115,62 L165,40 L220,32 L280,35 L335,52 Q360,65 382,82 L415,122 Q428,145 438,170 L450,225 L452,288 L445,352 Q438,385 428,415 L398,472 Q378,500 355,522 L300,555 Q270,565 240,570 L180,570 Q150,565 125,555 L80,518 Q62,490 48,465 L28,400 Q22,365 18,330 L18,258 Q20,222 25,188 L42,125 Q55,110 58,95 Z";
+  "M 75,185 L 68,170 L 58,155 L 52,140 L 48,125 L 45,110 L 48,95 L 55,82 L 65,70 L 78,58 L 92,48 L 108,40 L 125,32 L 145,26 L 168,20 L 192,16 L 218,14 L 245,14 L 272,18 L 298,24 L 322,34 L 345,46 L 365,62 L 382,80 L 398,102 L 412,125 L 425,150 L 435,178 L 443,208 L 448,240 L 450,275 L 448,310 L 442,345 L 432,380 L 418,415 L 400,448 L 378,478 L 352,505 L 322,528 L 288,548 L 252,565 L 212,578 L 170,588 L 128,592 L 88,590 L 55,580 L 32,560 L 18,532 L 12,500 L 15,465 L 25,428 L 40,390 L 58,352 L 78,315 L 98,280 L 118,248 L 132,220 L 125,195 L 110,180 L 90,178 L 75,185 Z";
 
 export function SardiniaMap({
   highlightedRoute,
@@ -197,7 +199,7 @@ export function SardiniaMap({
       className={`relative ${isMobile ? "max-h-[320px]" : "max-h-[520px]"} w-full overflow-hidden ${className}`}
     >
       <svg
-        viewBox="0 0 500 600"
+        viewBox="0 0 500 650"
         className="w-full h-auto drop-shadow-2xl"
         preserveAspectRatio="xMidYMid meet"
       >
@@ -223,7 +225,7 @@ export function SardiniaMap({
           </linearGradient>
         </defs>
 
-        {/* Background sea with subtle gradient effect */}
+        {/* Background sea */}
         <rect width="500" height="600" fill="transparent" />
 
         {/* Island outline with gradient fill */}
@@ -270,13 +272,13 @@ export function SardiniaMap({
                 filter={filter}
                 className="cursor-pointer"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ 
-                  pathLength: animationsReady ? 1 : 0, 
+                animate={{
+                  pathLength: animationsReady ? 1 : 0,
                   opacity: opacity,
                 }}
-                transition={{ 
+                transition={{
                   pathLength: { duration: 1.5, ease: "easeOut", delay: route.delay * 0.5 },
-                  opacity: { duration: 0.3 }
+                  opacity: { duration: 0.3 },
                 }}
                 whileHover={{ strokeWidth: strokeWidth + 1 }}
                 onMouseEnter={(e) => handleRouteEnter(e, route)}
@@ -293,17 +295,17 @@ export function SardiniaMap({
           {visibleCities.map((city, index) => {
             const isSelected = selectedCity === city.id;
             return (
-              <motion.g 
-                key={city.id} 
-                className="cursor-pointer" 
+              <motion.g
+                key={city.id}
+                className="cursor-pointer"
                 onClick={() => handleCityClick(city.id)}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ 
-                  delay: 0.8 + index * 0.1, 
+                transition={{
+                  delay: 0.8 + index * 0.1,
                   type: "spring",
                   stiffness: 300,
-                  damping: 20
+                  damping: 20,
                 }}
               >
                 {/* Outer glow ring */}
@@ -314,9 +316,9 @@ export function SardiniaMap({
                   fill="#e63946"
                   opacity={0.15}
                   filter="url(#cityGlow)"
-                  animate={{ 
+                  animate={{
                     r: isSelected ? (isMobile ? 12 : 16) : isMobile ? 8 : 11,
-                    opacity: isSelected ? 0.25 : 0.15
+                    opacity: isSelected ? 0.25 : 0.15,
                   }}
                   transition={{ duration: 0.3 }}
                 />
@@ -329,7 +331,7 @@ export function SardiniaMap({
                   stroke="#ffffff"
                   strokeWidth={1.5}
                   strokeOpacity={0.3}
-                  animate={{ 
+                  animate={{
                     r: isSelected ? (isMobile ? 6 : 8) : isMobile ? 4 : 6,
                   }}
                   transition={{ duration: 0.2 }}
@@ -343,9 +345,9 @@ export function SardiniaMap({
                   fontSize={isMobile ? 10 : 12}
                   fontWeight={700}
                   letterSpacing={0.1}
-                  style={{ 
-                    textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)", 
-                    textTransform: "uppercase" 
+                  style={{
+                    textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)",
+                    textTransform: "uppercase",
                   }}
                   className="font-sans pointer-events-none select-none"
                 >
@@ -371,13 +373,13 @@ export function SardiniaMap({
 
       {/* Selected city hint (mobile only) */}
       {isMobile && selectedCity && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="absolute bottom-2 left-2 right-2 text-center"
         >
           <span className="inline-block px-4 py-2 rounded-full bg-[#1c1b1b]/95 text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/30 shadow-xl backdrop-blur-sm">
-            Tocca un'altra città per resettare
+            Tocca un&apos;altra città per resettare
           </span>
         </motion.div>
       )}

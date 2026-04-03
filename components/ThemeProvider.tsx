@@ -22,14 +22,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const saved = typeof window !== "undefined" ? (localStorage.getItem("theme") as Theme | null) : null;
-    const initial = saved || "dark";
-    setThemeState(initial);
-    applyTheme(initial);
-  }, []);
-
+  // Apply theme function - defined early to avoid TDZ issues
   const applyTheme = (next: Theme) => {
     const root = document.documentElement;
     if (next === "dark") {
@@ -50,6 +43,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       localStorage.setItem("theme", next);
     }
   };
+
+  useEffect(() => {
+    // Schedule in microtask to avoid React 19 cascading render warning
+    Promise.resolve().then(() => {
+      setMounted(true);
+      const saved = typeof window !== "undefined" ? (localStorage.getItem("theme") as Theme | null) : null;
+      const initial = saved || "dark";
+      setThemeState(initial);
+      applyTheme(initial);
+    });
+  }, []);
 
   // Prevent hydration mismatch by forcing dark on server/pre-mount
   if (!mounted) {

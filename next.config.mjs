@@ -1,9 +1,10 @@
-import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import withSerwistInit from "@serwist/next";
 
 const withNextIntl = createNextIntlPlugin();
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // Image optimization
   images: {
     formats: ["image/avif", "image/webp"],
@@ -39,7 +40,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["lucide-react", "recharts"],
   },
 
-  // Headers for security
+  // Headers for security and PWA
   async headers() {
     return [
       {
@@ -132,4 +133,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+// Initialize Serwist PWA
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  cacheOnNavigation: true,
+  reloadOnOnline: true,
+});
+
+// Compose plugins
+export default withSerwist(withNextIntl(nextConfig));

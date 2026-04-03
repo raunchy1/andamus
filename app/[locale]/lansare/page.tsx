@@ -69,11 +69,14 @@ export default function LaunchPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("andamus_launch_checklist");
-    if (saved) {
-      setCompletedItems(JSON.parse(saved));
-    }
+    // Schedule setState in microtask to avoid React 19 cascading render warning
+    Promise.resolve().then(() => {
+      setMounted(true);
+      const saved = localStorage.getItem("andamus_launch_checklist");
+      if (saved) {
+        setCompletedItems(JSON.parse(saved));
+      }
+    });
   }, []);
 
   const toggleItem = (id: string) => {

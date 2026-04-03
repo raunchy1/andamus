@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
+import { Compass, Route, Car, User } from "lucide-react";
 
 const navItems = [
-  { href: "/", icon: "explore", label: "Explore" },
-  { href: "/cerca", icon: "route", label: "Routes" },
-  { href: "/offri", icon: "directions_car", label: "Trips" },
-  { href: "/profilo", icon: "person", label: "Profile" },
+  { href: "/", icon: Compass, label: "Explore" },
+  { href: "/cerca", icon: Route, label: "Routes" },
+  { href: "/offri", icon: Car, label: "Trips" },
+  { href: "/profilo", icon: User, label: "Profile" },
 ];
 
 export function BottomNav() {
@@ -25,6 +26,7 @@ export function BottomNav() {
           item.href === "/"
             ? currentPath === "/"
             : currentPath.startsWith(item.href);
+        const Icon = item.icon;
 
         return (
           <Link
@@ -36,12 +38,11 @@ export function BottomNav() {
                 : "text-[#353534] hover:text-[#e5e2e1]"
             } transition-colors active:scale-90 duration-300`}
           >
-            <span
-              className="material-symbols-outlined text-2xl group-active:scale-90 transition-all duration-300"
-              style={isActive ? { fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" } : undefined}
-            >
-              {item.icon}
-            </span>
+            <Icon
+              className={`w-6 h-6 group-active:scale-90 transition-all duration-300 ${
+                isActive ? "fill-current" : ""
+              }`}
+            />
             <span className="font-bold uppercase tracking-[0.05em] text-[10px] mt-1">
               {item.label}
             </span>

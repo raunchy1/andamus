@@ -12,8 +12,9 @@ import { LangSetter } from "@/components/LangSetter";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,
-  themeColor: "#131313",
+  maximumScale: 1,
+  themeColor: "#e63946",
+  userScalable: false,
 };
 
 export async function generateMetadata({ 

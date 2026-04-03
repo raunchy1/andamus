@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -98,10 +98,10 @@ function RideDetailMobile({
       {/* Top Navigation */}
       <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 pt-12">
         <button onClick={() => router.back()} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
-          <span className="material-symbols-outlined text-2xl">arrow_back</span>
+          <ArrowLeft className="w-6 h-6" />
         </button>
         <button onClick={handleShare} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
-          <span className="material-symbols-outlined text-2xl">share</span>
+          <Share2 className="w-6 h-6" />
         </button>
       </header>
 
@@ -114,7 +114,7 @@ function RideDetailMobile({
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
           {/* Weather Widget */}
           <div className="absolute bottom-6 left-6 flex items-center space-x-3 bg-surface-container-highest/60 backdrop-blur-md px-4 py-2 rounded-xl">
-            <span className="material-symbols-outlined text-primary">sunny</span>
+            <Sun className="w-5 h-5 text-primary" />
             <div className="flex flex-col">
               <span className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/60">{ride.from_city}</span>
               <span className="font-headline font-bold text-lg text-on-surface leading-none">24°C</span>
@@ -147,17 +147,17 @@ function RideDetailMobile({
                   <Image src={ride.profiles.avatar_url} alt="" width={56} height={56} className="w-14 h-14 rounded-full object-cover grayscale" />
                 ) : (
                   <div className="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center">
-                    <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                    <User className="w-5 h-5 text-on-surface-variant" />
                   </div>
                 )}
                 <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1 border-4 border-surface-container-low">
-                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span>
+                  <BadgeCheck className="w-3.5 h-3.5" />
                 </div>
               </div>
               <div>
                 <h3 className="font-headline font-bold text-lg text-on-surface leading-tight">{ride.profiles.name}</h3>
                 <div className="flex items-center space-x-2">
-                  <span className="material-symbols-outlined text-[16px] text-primary" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>star</span>
+                  <Star className="w-4 h-4 text-primary fill-current" />
                   <span className="text-sm font-semibold text-on-surface">{ride.profiles.rating}</span>
                   <span className="text-on-surface/40 text-xs">• {ride.profiles.rides_count || 0} viaggi</span>
                 </div>
@@ -165,7 +165,7 @@ function RideDetailMobile({
             </div>
             {existingBooking && !isMyRide && (
               <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
-                <span className="material-symbols-outlined">chat_bubble</span>
+                <MessageCircle className="w-5 h-5" />
               </Link>
             )}
           </div>
@@ -173,14 +173,14 @@ function RideDetailMobile({
           {/* Bento Style Journey Info */}
           <div className="grid grid-cols-2 gap-4 mb-8">
             <div className="bg-surface-container-low p-5 rounded-xl flex flex-col justify-between min-h-[140px]">
-              <span className="material-symbols-outlined text-primary mb-4">meeting_room</span>
+              <DoorOpen className="w-8 h-8 text-primary mb-4" />
               <div>
                 <p className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/40 mb-1">Ritiro</p>
                 <p className="font-body font-semibold text-on-surface text-sm">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
               </div>
             </div>
             <div className="bg-surface-container-low p-5 rounded-xl flex flex-col justify-between min-h-[140px]">
-              <span className="material-symbols-outlined text-primary mb-4">directions_car</span>
+              <Car className="w-8 h-8 text-primary mb-4" />
               <div>
                 <p className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/40 mb-1">Auto</p>
                 <p className="font-body font-semibold text-on-surface text-sm">Auto del guidatore</p>
@@ -222,39 +222,37 @@ function RideDetailMobile({
           <div className="flex flex-wrap gap-3 mb-10">
             {!ride.smoking_allowed && (
               <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-[18px]">smoke_free</span>
+                <Cigarette className="w-4.5 h-4.5" />
                 <span className="font-label font-bold text-[10px] uppercase">No fumo</span>
               </div>
             )}
             {ride.pets_allowed && (
               <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-[18px]">pets</span>
+                <Dog className="w-4.5 h-4.5" />
                 <span className="font-label font-bold text-[10px] uppercase">Animali ok</span>
               </div>
             )}
             {ride.large_luggage && (
               <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-[18px]">luggage</span>
+                <Briefcase className="w-4.5 h-4.5" />
                 <span className="font-label font-bold text-[10px] uppercase">Bagaglio grande</span>
               </div>
             )}
             {ride.women_only && (
               <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-[18px]">female</span>
+                <UserCircle className="w-4.5 h-4.5" />
                 <span className="font-label font-bold text-[10px] uppercase">Solo donne</span>
               </div>
             )}
             {ride.students_only && (
               <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-[18px]">school</span>
+                <GraduationCap className="w-4.5 h-4.5" />
                 <span className="font-label font-bold text-[10px] uppercase">Solo studenti</span>
               </div>
             )}
             {ride.music_preference && (
               <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-[18px]">
-                  {ride.music_preference === "quiet" ? "volume_off" : ride.music_preference === "music" ? "music_note" : "chat"}
-                </span>
+                <Music className="w-4 h-4" />
                 <span className="font-label font-bold text-[10px] uppercase">
                   {ride.music_preference === "quiet" ? "Silenzio" : ride.music_preference === "music" ? "Musica" : "Chiacchiere"}
                 </span>
@@ -274,7 +272,7 @@ function RideDetailMobile({
                         <Image src={review.reviewer.avatar_url} alt="" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
-                          <span className="material-symbols-outlined text-sm text-on-surface-variant">person</span>
+                          <User className="w-4 h-4 text-on-surface-variant" />
                         </div>
                       )}
                       <div className="flex-1">
@@ -286,7 +284,7 @@ function RideDetailMobile({
                           {[...Array(5)].map((_, i) => (
                             <span
                               key={i}
-                              className={`material-symbols-outlined text-[14px] ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
+                              className={`w-3.5 h-3.5 ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
                               style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
                             >
                               star
@@ -413,13 +411,13 @@ function RideDetailDesktop({
         <div className="max-w-6xl mx-auto px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => router.back()} className="p-2 rounded-xl text-on-surface hover:bg-white/5 transition-all">
-              <span className="material-symbols-outlined text-2xl">arrow_back</span>
+              <ArrowLeft className="w-6 h-6" />
             </button>
             <span className="font-semibold text-on-surface">Dettaglio corsa</span>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={handleShare} className="p-2 rounded-xl text-on-surface hover:bg-white/5 transition-all">
-              <span className="material-symbols-outlined text-2xl">share</span>
+              <Share2 className="w-6 h-6" />
             </button>
           </div>
         </div>
@@ -436,7 +434,7 @@ function RideDetailDesktop({
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 flex items-center space-x-3 bg-surface-container-highest/60 backdrop-blur-md px-4 py-2 rounded-xl">
-                <span className="material-symbols-outlined text-primary">sunny</span>
+                <Sun className="w-5 h-5 text-primary" />
                 <div className="flex flex-col">
                   <span className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/60">{ride.from_city}</span>
                   <span className="font-headline font-bold text-lg text-on-surface leading-none">24°C</span>
@@ -455,14 +453,14 @@ function RideDetailDesktop({
             {/* Bento Info */}
             <div className="grid grid-cols-2 gap-5">
               <div className="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between min-h-[160px]">
-                <span className="material-symbols-outlined text-primary mb-4 text-3xl">meeting_room</span>
+                <DoorOpen className="w-10 h-10 text-primary mb-4" />
                 <div>
                   <p className="font-label font-bold text-[11px] uppercase tracking-widest text-on-surface/40 mb-1">Ritiro</p>
                   <p className="font-body font-semibold text-on-surface">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
                 </div>
               </div>
               <div className="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between min-h-[160px]">
-                <span className="material-symbols-outlined text-primary mb-4 text-3xl">directions_car</span>
+                <Car className="w-10 h-10 text-primary mb-4" />
                 <div>
                   <p className="font-label font-bold text-[11px] uppercase tracking-widest text-on-surface/40 mb-1">Auto</p>
                   <p className="font-body font-semibold text-on-surface">Auto del guidatore</p>
@@ -504,39 +502,37 @@ function RideDetailDesktop({
             <div className="flex flex-wrap gap-3">
               {!ride.smoking_allowed && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-[20px]">smoke_free</span>
+                  <Cigarette className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">No fumo</span>
                 </div>
               )}
               {ride.pets_allowed && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-[20px]">pets</span>
+                  <Dog className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">Animali ok</span>
                 </div>
               )}
               {ride.large_luggage && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-[20px]">luggage</span>
+                  <Briefcase className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">Bagaglio grande</span>
                 </div>
               )}
               {ride.women_only && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-[20px]">female</span>
+                  <UserCircle className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">Solo donne</span>
                 </div>
               )}
               {ride.students_only && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-[20px]">school</span>
+                  <GraduationCap className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">Solo studenti</span>
                 </div>
               )}
               {ride.music_preference && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
-                  <span className="material-symbols-outlined text-[20px]">
-                    {ride.music_preference === "quiet" ? "volume_off" : ride.music_preference === "music" ? "music_note" : "chat"}
-                  </span>
+                  <Music className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">
                     {ride.music_preference === "quiet" ? "Silenzio" : ride.music_preference === "music" ? "Musica" : "Chiacchiere"}
                   </span>
@@ -556,7 +552,7 @@ function RideDetailDesktop({
                           <Image src={review.reviewer.avatar_url} alt="" width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
                         ) : (
                           <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                            <User className="w-5 h-5 text-on-surface-variant" />
                           </div>
                         )}
                         <div className="flex-1">
@@ -568,7 +564,7 @@ function RideDetailDesktop({
                             {[...Array(5)].map((_, i) => (
                               <span
                                 key={i}
-                                className={`material-symbols-outlined text-[16px] ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
+                                className={`w-4 h-4 ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
                                 style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
                               >
                                 star
@@ -633,17 +629,17 @@ function RideDetailDesktop({
                         <Image src={ride.profiles.avatar_url} alt="" width={64} height={64} className="w-16 h-16 rounded-full object-cover grayscale" />
                       ) : (
                         <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center">
-                          <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                          <User className="w-5 h-5 text-on-surface-variant" />
                         </div>
                       )}
                       <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1 border-4 border-surface-container-low">
-                        <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span>
+                        <BadgeCheck className="w-3.5 h-3.5" />
                       </div>
                     </div>
                     <div>
                       <h3 className="font-headline font-bold text-xl text-on-surface leading-tight">{ride.profiles.name}</h3>
                       <div className="flex items-center space-x-2 mt-1">
-                        <span className="material-symbols-outlined text-[18px] text-primary" style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>star</span>
+                        <Star className="w-4.5 h-4.5 text-primary fill-current" />
                         <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
                         <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} viaggi</span>
                       </div>
@@ -651,7 +647,7 @@ function RideDetailDesktop({
                   </div>
                   {existingBooking && !isMyRide && (
                     <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
-                      <span className="material-symbols-outlined">chat_bubble</span>
+                      <MessageCircle className="w-5 h-5" />
                     </Link>
                   )}
                 </div>
@@ -690,11 +686,11 @@ function RideDetailDesktop({
               {/* Trust badges mini */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-surface-container-low rounded-2xl p-5 text-center">
-                  <span className="material-symbols-outlined text-primary text-2xl mb-2">verified_user</span>
+                  <ShieldCheck className="w-8 h-8 text-primary mb-2" />
                   <p className="text-xs font-semibold uppercase tracking-wider text-on-surface/70">Autista verificato</p>
                 </div>
                 <div className="bg-surface-container-low rounded-2xl p-5 text-center">
-                  <span className="material-symbols-outlined text-primary text-2xl mb-2">lock</span>
+                  <Lock className="w-8 h-8 text-primary mb-2" />
                   <p className="text-xs font-semibold uppercase tracking-wider text-on-surface/70">Pagamento sicuro</p>
                 </div>
               </div>
@@ -920,7 +916,7 @@ export default function RideDetailPage() {
         <AlertCircle className="h-16 w-16 text-error mb-4" />
         <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Passaggio non trovato</h1>
         <Link href="/cerca" className="mt-6 flex items-center gap-2 text-primary">
-          <span className="material-symbols-outlined text-sm">arrow_back</span> Torna alla ricerca
+          <ArrowLeft className="w-4 h-4" /> Torna alla ricerca
         </Link>
       </div>
     );

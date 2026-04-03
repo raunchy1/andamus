@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, ChevronRight, MessageCircle, Star } from "lucide-react";
+import { Loader2, Check, X, Trash2, ChevronRight, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -13,6 +13,7 @@ import { RatingModal } from "@/components/RatingModal";
 import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notifications";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
+import { PhoneVerification } from "@/components/PhoneVerification";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
@@ -25,6 +26,8 @@ interface Profile {
   points: number;
   level: string;
   rating: number;
+  phone_verified?: boolean;
+  phone?: string | null;
 }
 
 interface Ride {
@@ -463,7 +466,7 @@ export default function ProfilePage() {
                 <img src={getUserAvatar()!} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                  <User className="w-5 h-5 text-on-surface-variant" />
                 </div>
               )}
             </Link>
@@ -477,7 +480,7 @@ export default function ProfilePage() {
               onClick={() => setShowLogoutConfirm(true)}
               className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out p-2"
             >
-              <span className="material-symbols-outlined text-3xl">logout</span>
+              <LogOut className="w-8 h-8" />
             </button>
           </div>
         </header>
@@ -518,28 +521,28 @@ export default function ProfilePage() {
           <section className="overflow-x-auto no-scrollbar px-4 sm:px-6 mb-12">
             <div className="flex gap-4 min-w-max">
               <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <span className="material-symbols-outlined text-primary">directions_car</span>
+                <Car className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
                 </div>
               </div>
               <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <span className="material-symbols-outlined text-primary">route</span>
+                <Route className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
                 </div>
               </div>
               <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <span className="material-symbols-outlined text-primary">star</span>
+                <Star className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
                 </div>
               </div>
               <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <span className="material-symbols-outlined text-primary">eco</span>
+                <Leaf className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
@@ -549,9 +552,43 @@ export default function ProfilePage() {
           </section>
 
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
+            <div className="bg-surface-container p-4 rounded-xl space-y-4">
+              <h3 className="text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                <Shield className="w-5 h-5 text-primary" />
+                Verifica e Sicurezza
+              </h3>
+              
+              {/* Phone Verification */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-on-surface">Numero di telefono</p>
+                  <p className="text-xs text-on-surface-variant">
+                    {user?.phone ? user.phone : "Non verificato"}
+                  </p>
+                </div>
+                <PhoneVerification 
+                  userId={user?.id || ""}
+                  currentPhone={user?.phone}
+                  isVerified={profile?.phone_verified}
+                  onVerified={() => {
+                    // Refresh profile data
+                    supabase.from("profiles")
+                      .select("*")
+                      .eq("id", user?.id)
+                      .single()
+                      .then(({ data }) => {
+                        if (data) setProfile(data);
+                      });
+                  }}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
             <div className="bg-surface-container p-4 rounded-xl">
               <h3 className="mb-3 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
-                <span className="material-symbols-outlined text-primary">notifications</span>
+                <Bell className="w-5 h-5 text-primary" />
                 Notifiche push
               </h3>
               <PushNotificationToggle />
@@ -604,7 +641,7 @@ export default function ProfilePage() {
                           {request.passenger.avatar_url ? (
                             <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                            <User className="w-5 h-5 text-on-surface-variant" />
                           )}
                         </div>
                         <div>
@@ -698,7 +735,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                          <User className="w-3.5 h-3.5 text-on-surface-variant" />
                         </div>
                         <span className="text-[11px] font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
                       </div>
@@ -732,7 +769,7 @@ export default function ProfilePage() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                              <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                              <User className="w-3.5 h-3.5 text-on-surface-variant" />
                             </div>
                             <span className="text-[11px] font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
                           </div>
@@ -782,7 +819,7 @@ export default function ProfilePage() {
                   <EmptyState
                     title="Nessuna corsa ricorrente"
                     description="Crea una corsa ricorrente per i tuoi viaggi abituali e risparmia tempo."
-                    icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">repeat</span>}
+                    icon={<Repeat className="w-12 h-12 text-[#e63946]" />}
                     action={{ label: "Crea ricorrente", href: "/offri", variant: "outline" }}
                   />
                 ) : (
@@ -825,7 +862,7 @@ export default function ProfilePage() {
                   <EmptyState
                     title="Nessun alert salvato"
                     description="Crea un alert per ricevere notifiche quando ci sono nuovi passaggi sulla tua tratta preferita."
-                    icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">notifications</span>}
+                    icon={<Bell className="w-12 h-12 text-[#e63946]" />}
                     action={{ label: "Cerca e crea alert", href: "/cerca", variant: "outline" }}
                   />
                 ) : (
@@ -958,28 +995,28 @@ export default function ProfilePage() {
 
           <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <span className="material-symbols-outlined text-primary text-3xl">directions_car</span>
+              <Car className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <span className="material-symbols-outlined text-primary text-3xl">route</span>
+              <Route className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <span className="material-symbols-outlined text-primary text-3xl">star</span>
+              <Star className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <span className="material-symbols-outlined text-primary text-3xl">eco</span>
+              <Leaf className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
@@ -1003,7 +1040,7 @@ export default function ProfilePage() {
                               {request.passenger.avatar_url ? (
                                 <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
                               ) : (
-                                <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                                <User className="w-5 h-5 text-on-surface-variant" />
                               )}
                             </div>
                             <div>
@@ -1098,7 +1135,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="flex items-center gap-3">
                               <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                                <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                                <User className="w-3.5 h-3.5 text-on-surface-variant" />
                               </div>
                               <span className="text-sm font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
                             </div>
@@ -1134,7 +1171,7 @@ export default function ProfilePage() {
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                   <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                                    <User className="w-3.5 h-3.5 text-on-surface-variant" />
                                   </div>
                                   <span className="text-sm font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
                                 </div>
@@ -1185,7 +1222,7 @@ export default function ProfilePage() {
                       <EmptyState
                         title="Nessuna corsa ricorrente"
                         description="Crea una corsa ricorrente per i tuoi viaggi abituali e risparmia tempo."
-                        icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">repeat</span>}
+                        icon={<Repeat className="w-12 h-12 text-[#e63946]" />}
                         action={{ label: "Crea ricorrente", href: "/offri", variant: "outline" }}
                       />
                     ) : (
@@ -1230,7 +1267,7 @@ export default function ProfilePage() {
                       <EmptyState
                         title="Nessun alert salvato"
                         description="Crea un alert per ricevere notifiche quando ci sono nuovi passaggi sulla tua tratta preferita."
-                        icon={<span className="material-symbols-outlined text-5xl text-[#e63946]">notifications</span>}
+                        icon={<Bell className="w-12 h-12 text-[#e63946]" />}
                         action={{ label: "Cerca e crea alert", href: "/cerca", variant: "outline" }}
                       />
                     ) : (
@@ -1264,7 +1301,41 @@ export default function ProfilePage() {
             <div className="lg:col-span-1 space-y-8">
               <div className="bg-surface-container p-6 rounded-2xl">
                 <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
-                  <span className="material-symbols-outlined text-primary">notifications</span>
+                  <Shield className="w-5 h-5 text-primary" />
+                  Verifica e Sicurezza
+                </h3>
+                
+                {/* Phone Verification - Desktop */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-on-surface">Numero di telefono</p>
+                      <p className="text-xs text-on-surface-variant">
+                        {user?.phone ? user.phone : "Non verificato"}
+                      </p>
+                    </div>
+                  </div>
+                  <PhoneVerification 
+                    userId={user?.id || ""}
+                    currentPhone={user?.phone}
+                    isVerified={profile?.phone_verified}
+                    onVerified={() => {
+                      // Refresh profile data
+                      supabase.from("profiles")
+                        .select("*")
+                        .eq("id", user?.id)
+                        .single()
+                        .then(({ data }) => {
+                          if (data) setProfile(data);
+                        });
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-surface-container p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                  <Bell className="w-5 h-5 text-primary" />
                   Notifiche push
                 </h3>
                 <PushNotificationToggle />

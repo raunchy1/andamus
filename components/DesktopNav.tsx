@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
+import { Car } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -20,9 +21,7 @@ export function DesktopNav() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
         <Link href={`/${locale}`} className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-[#ffb3b1] text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-            directions_car
-          </span>
+          <Car className="w-8 h-8 text-[#ffb3b1]" />
           <span className="text-2xl font-extrabold tracking-tighter text-white uppercase">Andamus</span>
         </Link>
 
