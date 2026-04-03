@@ -150,14 +150,17 @@
   }
 }
 
-/* Material Symbols Outlined base styles */
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-.material-symbols-filled {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
+/* ============================================
+   Z-INDEX SCALE (Enforced Hierarchy)
+   ============================================ */
+.z-background { z-index: 0; }
+.z-content { z-index: 10; }
+.z-sticky { z-index: 30; }
+.z-nav { z-index: 50; }
+.z-modal-backdrop { z-index: 60; }
+.z-modal { z-index: 70; }
+.z-toast { z-index: 80; }
+.z-tooltip { z-index: 90; }
 
 /* Mobile optimizations */
 @layer utilities {
@@ -198,29 +201,37 @@
   }
 }
 
-/* Add bottom padding to main content on mobile to account for bottom nav */
-@media (max-width: 768px) {
-  main, .main-content {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
-  }
-}
+/* ============================================
+   LAYOUT SHELL - SPACING SYSTEM
+   ============================================ */
 
-/* Page container with proper spacing for mobile */
-.page-container {
-  padding-top: 64px; /* Account for navbar */
-  padding-bottom: 80px; /* Account for bottom nav */
+/* Mobile Layout Shell - Accounts for fixed navbars */
+.mobile-layout-shell {
+  padding-top: 64px; /* Fixed navbar height */
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); /* BottomNav + safe area */
   min-height: 100vh;
 }
 
-@media (min-width: 769px) {
-  .page-container {
-    padding-bottom: 0; /* No bottom nav on desktop */
-  }
+/* Desktop Layout Shell */
+.desktop-layout-shell {
+  padding-top: 80px; /* Desktop navbar height */
+  min-height: 100vh;
 }
 
-/* Safe area bottom padding */
+/* Safe area utilities */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Legacy - keep for compatibility but discourage use */
+.page-container {
+  padding-top: 64px;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  min-height: 100vh;
 }
 
 /* Hide scrollbar but allow scrolling */
