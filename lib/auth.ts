@@ -4,12 +4,16 @@ import { createClient } from "@/lib/supabase/client";
 
 export async function signInWithGoogle() {
   const supabase = createClient();
+  
+  // Use dynamic redirect URL based on environment
+  const redirectTo = typeof window !== "undefined"
+    ? `${window.location.origin}/auth/callback`
+    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/auth/callback";
+  
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: typeof window !== "undefined" 
-        ? window.location.origin + "/auth/callback"
-        : "/auth/callback",
+      redirectTo,
     },
   });
   
