@@ -520,32 +520,32 @@ export default function ProfilePage() {
 
           <section className="overflow-x-auto no-scrollbar px-4 sm:px-6 mb-12">
             <div className="flex gap-4 min-w-max">
-              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <Car className="w-5 h-5 text-primary" />
+              <div className="bg-surface-container p-5 w-32 aspect-square flex flex-col justify-between rounded-xl">
+                <Car className="w-6 h-6 text-primary" />
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
+                  <p className="text-xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
                 </div>
               </div>
-              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <Route className="w-5 h-5 text-primary" />
+              <div className="bg-surface-container p-5 w-32 aspect-square flex flex-col justify-between rounded-xl">
+                <Route className="w-6 h-6 text-primary" />
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
+                  <p className="text-xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
                 </div>
               </div>
-              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <Star className="w-5 h-5 text-primary" />
+              <div className="bg-surface-container p-5 w-32 aspect-square flex flex-col justify-between rounded-xl">
+                <Star className="w-6 h-6 text-primary" />
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
+                  <p className="text-xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
                 </div>
               </div>
-              <div className="bg-surface-container p-6 w-36 aspect-square flex flex-col justify-between rounded-xl">
-                <Leaf className="w-5 h-5 text-primary" />
+              <div className="bg-surface-container p-5 w-32 aspect-square flex flex-col justify-between rounded-xl">
+                <Leaf className="w-6 h-6 text-primary" />
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
+                  <p className="text-xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
                 </div>
               </div>
             </div>

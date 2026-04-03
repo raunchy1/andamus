@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
-import { Search, CircleDot, MapPin, Calendar, PiggyBank, Leaf, ShieldCheck } from "lucide-react";
+import { Search, CircleDot, MapPin, Calendar, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 
 const sardinianCities = [
@@ -74,16 +74,16 @@ function HomeMobile({
         <div className="flex items-center gap-3">
           <Link
             href="/cerca"
-            className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out"
+            className="text-[#e5e2e1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out"
           >
-            tune
+            <SlidersHorizontal className="w-6 h-6" />
           </Link>
           <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
             {userAvatar ? (
               <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                <User className="w-5 h-5 text-on-surface-variant" />
               </div>
             )}
           </Link>
@@ -183,19 +183,14 @@ function HomeMobile({
                         <img src={ride.profiles.avatar_url} alt={ride.profiles.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                          <User className="w-3.5 h-3.5 text-on-surface-variant" />
                         </div>
                       )}
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-xs font-bold text-on-surface truncate">{ride.profiles.name}</span>
                       <div className="flex items-center gap-1">
-                        <span
-                          className="material-symbols-outlined text-[10px] text-primary"
-                          style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-                        >
-                          star
-                        </span>
+                        <Star className="w-2.5 h-2.5 text-primary fill-primary" />
                         <span className="text-[10px] text-on-surface/60">{ride.profiles.rating} · Auto</span>
                       </div>
                     </div>
@@ -219,14 +214,14 @@ function HomeMobile({
             href="/offri"
             className="aspect-square bg-primary-container/20 rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95 min-h-[140px]"
           >
-            <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">add_circle</span>
+            <PlusCircle className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
             <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-on-surface">Offri un passaggio</span>
           </Link>
           <Link
             href="/profilo"
             className="aspect-square bg-surface-container-highest rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95 min-h-[140px]"
           >
-            <span className="material-symbols-outlined text-on-surface/60 text-2xl sm:text-3xl">history</span>
+            <History className="w-7 h-7 sm:w-8 sm:h-8 text-on-surface/60" />
             <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-on-surface">I tuoi viaggi</span>
           </Link>
         </section>
@@ -410,19 +405,14 @@ function HomeDesktop({
                       <img src={ride.profiles.avatar_url} alt={ride.profiles.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="material-symbols-outlined text-[#e5e2e1]/60">person</span>
+                        <User className="w-6 h-6 text-[#e5e2e1]/60" />
                       </div>
                     )}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">{ride.profiles.name}</span>
                     <div className="flex items-center gap-1.5">
-                      <span
-                        className="material-symbols-outlined text-[12px] text-[#ffb3b1]"
-                        style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-                      >
-                        star
-                      </span>
+                      <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
                       <span className="text-xs text-[#e5e2e1]/60">{ride.profiles.rating} · Auto</span>
                     </div>
                   </div>

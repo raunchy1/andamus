@@ -19,7 +19,7 @@ export function BottomNav() {
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-[#131313] md:hidden safe-area-pb">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16 px-4 bg-[#0f0f0f] border-t border-[#2a2a2a] md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {navItems.map((item) => {
         const fullHref = `/${locale}${item.href}`;
         const isActive =

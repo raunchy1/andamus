@@ -205,6 +205,24 @@
   }
 }
 
+/* Page container with proper spacing for mobile */
+.page-container {
+  padding-top: 64px; /* Account for navbar */
+  padding-bottom: 80px; /* Account for bottom nav */
+  min-height: 100vh;
+}
+
+@media (min-width: 769px) {
+  .page-container {
+    padding-bottom: 0; /* No bottom nav on desktop */
+  }
+}
+
+/* Safe area bottom padding */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* Hide scrollbar but allow scrolling */
 .no-scrollbar {
   -ms-overflow-style: none;
