@@ -71,7 +71,7 @@ function OfferMobile({
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-32">
       {/* Top Navigation */}
-      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-12 pb-4 sticky top-0 z-50">
+      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
             <ArrowLeft className="w-6 h-6" />

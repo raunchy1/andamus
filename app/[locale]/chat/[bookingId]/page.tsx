@@ -565,7 +565,7 @@ export default function ChatPage() {
   function ChatMobile() {
     return (
       <div className="flex h-[100dvh] flex-col bg-[#0a0a0a]">
-        <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-14 pb-4 shrink-0">
+        <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4 shrink-0">
           <div className="flex flex-col">
             <span className="font-semibold uppercase tracking-widest text-[11px] text-primary">ANDAMUS LIVE</span>
             <h1 className="font-extrabold tracking-tighter text-2xl uppercase text-on-surface">

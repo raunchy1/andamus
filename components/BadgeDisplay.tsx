@@ -31,7 +31,7 @@ export function BadgeUnlockNotification({
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.9 }}
-      className="fixed bottom-6 right-6 z-50"
+      className="fixed bottom-[96px] right-6 z-[60]"
     >
       <div className="bg-gradient-to-r from-[#e63946] to-[#c92a37] text-white rounded-2xl shadow-2xl p-6 max-w-sm border border-white/20">
         <button

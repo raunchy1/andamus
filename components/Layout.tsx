@@ -23,10 +23,10 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-[#050505] overflow-x-hidden">
       {/* Mobile container - full width on actual mobile devices */}
       <div className="relative w-full min-h-screen bg-[#0a0a0a] overflow-x-hidden">
-        {/* Content wrapper with proper z-index and padding for fixed navbars */}
-        <div className="relative z-content mobile-layout-shell">
+        {/* Content wrapper with EXPLICIT padding for fixed navbars */}
+        <main className="flex-1 w-full pt-[72px] pb-[100px] min-h-screen overflow-x-hidden">
           {children}
-        </div>
+        </main>
         <BottomNav />
       </div>
     </div>
@@ -37,7 +37,7 @@ function DesktopLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#e5e2e1] overflow-x-hidden">
       <DesktopNav />
-      <main className="desktop-layout-shell max-w-6xl mx-auto px-6 lg:px-8">
+      <main className="pt-[80px] pb-16 max-w-6xl mx-auto px-6 lg:px-8 min-h-screen">
         {children}
       </main>
     </div>

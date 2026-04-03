@@ -463,17 +463,25 @@ export default function ProfilePage() {
 
   function ProfileMobile() {
     return (
-      <div className="min-h-screen bg-surface-container-lowest pb-32">
-        <header className="bg-[#0e0e0e] text-primary docked full-width top-0 flex justify-between items-end w-full px-4 sm:px-6 pt-12 pb-4">
+      <div className="min-h-screen bg-surface-container-lowest">
+        <header className="bg-[#0e0e0e] text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
           <div className="flex items-center gap-3">
-            <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20">
+            <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20 flex items-center justify-center">
               {getUserAvatar() ? (
-                <img src={getUserAvatar()!} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-on-surface-variant" />
-                </div>
-              )}
+                <img 
+                  src={getUserAvatar()!} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => { 
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }} 
+                />
+              ) : null}
+              <div className={`w-full h-full items-center justify-center ${getUserAvatar() ? 'hidden' : 'flex'}`}>
+                <User className="w-5 h-5 text-on-surface-variant" />
+              </div>
             </Link>
             <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase">Andamus</h1>
           </div>

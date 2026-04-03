@@ -58,7 +58,7 @@ export function SafetyButton() {
       {/* Floating Safety Button - positioned above BottomNav (64px + safe area) */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600"
+        className="fixed bottom-[96px] right-6 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600"
         aria-label="SOS Sicurezza"
       >
         <Shield className="h-6 w-6" />

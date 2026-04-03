@@ -311,7 +311,7 @@ function SearchMobile(props: SearchViewProps) {
   return (
     <div className="min-h-screen bg-[#0e0e0e] text-[#e5e2e1] overflow-x-hidden">
       {/* TopAppBar */}
-      <header className="bg-[#0e0e0e] fixed top-0 left-0 w-full z-50 flex justify-between items-end px-4 sm:px-6 pt-12 pb-4">
+      <header className="bg-[#0e0e0e] flex justify-between items-end px-4 sm:px-6 pt-4 pb-4">
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden flex-shrink-0">
             <User className="w-5 h-5 text-on-surface" />
@@ -331,7 +331,7 @@ function SearchMobile(props: SearchViewProps) {
         </button>
       </header>
 
-      <main className="pt-32 pb-32 px-4 sm:px-6 max-w-2xl mx-auto overflow-x-hidden" ref={resultsRef}
+      <main className="px-4 sm:px-6 max-w-2xl mx-auto overflow-x-hidden" ref={resultsRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
