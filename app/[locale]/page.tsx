@@ -62,9 +62,9 @@ function HomeMobile({
   handleSearch,
 }: HomeUIProps) {
   return (
-    <div className="min-h-screen bg-[#131313] text-[#e5e2e1] pb-32">
-      {/* TopAppBar */}
-      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-6 pt-12 pb-4 z-50">
+    <div className="min-h-screen bg-[#131313] text-[#e5e2e1] overflow-x-hidden">
+      {/* TopAppBar - NO pt-12, Layout shell handles navbar spacing */}
+      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4 z-sticky">
         <div className="flex flex-col">
           <span className="font-semibold uppercase tracking-widest text-[11px] text-[#ffb3b1]">
             {userName ? `Bentornato, ${userName.split(" ")[0]}` : "Bentornato"}
@@ -208,22 +208,24 @@ function HomeMobile({
           )}
         </section>
 
-        {/* Quick Actions Grid */}
-        <section className="px-4 sm:px-6 grid grid-cols-2 gap-3 sm:gap-4">
-          <Link
-            href="/offri"
-            className="aspect-square bg-primary-container/20 rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95 min-h-[140px]"
-          >
-            <PlusCircle className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-on-surface">Offri un passaggio</span>
-          </Link>
-          <Link
-            href="/profilo"
-            className="aspect-square bg-surface-container-highest rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95 min-h-[140px]"
-          >
-            <History className="w-7 h-7 sm:w-8 sm:h-8 text-on-surface/60" />
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-on-surface">I tuoi viaggi</span>
-          </Link>
+        {/* Quick Actions Grid - Fixed Layout */}
+        <section className="px-4 sm:px-6 pb-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+            <Link
+              href="/offri"
+              className="bg-primary-container/20 rounded-xl p-4 sm:p-5 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95 min-h-[120px]"
+            >
+              <PlusCircle className="w-7 h-7 flex-shrink-0 text-primary" />
+              <span className="text-xs font-bold uppercase tracking-wider text-on-surface leading-tight mt-2">Offri un passaggio</span>
+            </Link>
+            <Link
+              href="/profilo"
+              className="bg-surface-container-highest rounded-xl p-4 sm:p-5 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95 min-h-[120px]"
+            >
+              <History className="w-7 h-7 flex-shrink-0 text-on-surface/60" />
+              <span className="text-xs font-bold uppercase tracking-wider text-on-surface leading-tight mt-2">I tuoi viaggi</span>
+            </Link>
+          </div>
         </section>
       </main>
     </div>
