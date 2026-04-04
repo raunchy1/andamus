@@ -198,6 +198,9 @@ export function SardiniaMap({
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
+          <clipPath id="sardiniaClip">
+            <path d={SARDINIA_PATH} />
+          </clipPath>
           <filter id="routeGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
             <feMerge>
@@ -217,23 +220,34 @@ export function SardiniaMap({
         {/* Background sea */}
         <rect width="500" height="600" fill="transparent" />
 
-        {/* Island outline */}
-        <path
-          d={SARDINIA_PATH}
-          fill="#181818"
-          stroke="#2a2a2a"
-          strokeWidth={1.5}
-          strokeLinejoin="round"
-          strokeLinecap="round"
+        {/* Photo background clipped to island shape */}
+        <image
+          href="/sardinia-bg.jpg"
+          x="0"
+          y="0"
+          width="500"
+          height="600"
+          preserveAspectRatio="xMidYMid slice"
+          clipPath="url(#sardiniaClip)"
         />
 
-        {/* Inner highlight stroke for depth */}
+        {/* Dark overlay for readability of routes/labels */}
+        <path
+          d={SARDINIA_PATH}
+          fill="#000000"
+          fillOpacity={0.35}
+          clipPath="url(#sardiniaClip)"
+        />
+
+        {/* Island outline border */}
         <path
           d={SARDINIA_PATH}
           fill="none"
           stroke="#ffffff"
-          strokeOpacity={0.04}
-          strokeWidth={8}
+          strokeOpacity={0.15}
+          strokeWidth={1.5}
+          strokeLinejoin="round"
+          strokeLinecap="round"
         />
 
         {/* Routes */}
