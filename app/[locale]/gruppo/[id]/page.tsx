@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Users, MapPin, Loader2, AlertCircle, PlusCircle, Search, Check } from "lucide-react";
@@ -27,7 +29,7 @@ interface Member {
 export default function GroupDetailPage() {
   const params = useParams();
   const groupId = params.id as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -41,11 +43,14 @@ export default function GroupDetailPage() {
       if (!groupId) return;
       setLoading(true);
 
-      const [{ data: g }, { data: m }, { data: { user: u } }] = await Promise.all([
+      const [groupResult, membersResult, authResult] = await Promise.all([
         supabase.from("carpool_groups").select("*").eq("id", groupId).single(),
         supabase.from("group_memberships").select("id, profiles(name, avatar_url)").eq("group_id", groupId),
         supabase.auth.getUser(),
       ]);
+      const g = groupResult.data;
+      const m = membersResult.data;
+      const u = authResult.data?.user;
 
       setGroup(g);
       setMembers((m || []) as any);

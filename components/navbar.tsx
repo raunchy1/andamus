@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { 
@@ -51,7 +51,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   
   const navLinks = [
     { href: `/${locale}/`, label: t('home'), icon: Home },

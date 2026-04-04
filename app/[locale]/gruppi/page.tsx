@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, Users, Loader2, Search, MapPin, GraduationCap, Plane, Bus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -33,7 +33,7 @@ const typeLabels: Record<string, string> = {
 export default function GroupsPage() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const fetchGroups = async () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -391,7 +391,7 @@ function HomeDesktop({
         <div className="flex items-end justify-between mb-10">
           <div>
             <h3 className="text-3xl font-extrabold tracking-tight">Corse disponibili oggi</h3>
-            <p className="text-[#e5e2e1]/50 mt-2">Partenze confermate per il {new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long" })}</p>
+            <p className="text-[#e5e2e1]/50 mt-2">Partenze confermate per il {todayDate}</p>
           </div>
           <Link href="/cerca" className="text-sm font-bold text-[#ffb3b1] hover:text-[#ffb3b1]/80 transition-colors">
             Vedi tutte →
@@ -519,9 +519,11 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
-  const supabase = createClient();
+  const [todayDate, setTodayDate] = useState("");
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
+    setTodayDate(new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long" }));
     const fetchData = async () => {
       const today = new Date().toISOString().split("T")[0];
 

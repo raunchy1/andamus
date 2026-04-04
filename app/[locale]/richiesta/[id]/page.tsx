@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -39,7 +41,7 @@ export default function RequestDetailPage() {
   const params = useParams();
   const router = useRouter();
   const requestId = params.id as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [request, setRequest] = useState<RideRequest | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -50,7 +52,7 @@ export default function RequestDetailPage() {
       if (!requestId) return;
       setLoading(true);
 
-      const [{ data: { user: currentUser } }, { data: reqData }] = await Promise.all([
+      const [authResult, requestResult] = await Promise.all([
         supabase.auth.getUser(),
         supabase
           .from("ride_requests")
@@ -58,6 +60,8 @@ export default function RequestDetailPage() {
           .eq("id", requestId)
           .single(),
       ]);
+      const currentUser = authResult.data?.user;
+      const reqData = requestResult.data;
 
       setUser(currentUser);
       setRequest(reqData);

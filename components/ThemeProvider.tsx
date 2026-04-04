@@ -27,7 +27,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const saved = typeof window !== "undefined" ? (localStorage.getItem("theme") as Theme | null) : null;
     const initial = saved || "dark";
     setThemeState(initial);
-    applyTheme(initial);
+    if (initial !== "dark") {
+      applyTheme(initial);
+    }
   }, []);
 
   const applyTheme = (next: Theme) => {

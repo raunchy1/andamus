@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, useCallback, useRef } from "react";
+import { useState, useEffect, Suspense, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Loader2, RefreshCw, Route, Bell, SlidersHorizontal, X } from "lucide-react";
@@ -957,7 +957,7 @@ function SearchContent() {
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toISOString().split("T")[0];
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const fetchRides = useCallback(async () => {
     setLoading(true);

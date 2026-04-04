@@ -76,7 +76,7 @@ interface HistoryItem {
 
 export default function StatisticsPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);

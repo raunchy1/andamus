@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
@@ -747,7 +749,7 @@ export default function RideDetailPage() {
   const [existingBooking, setExistingBooking] = useState<Booking | null>(null);
   const [stops, setStops] = useState<{ city: string; order_index: number }[]>([]);
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const fetchRide = async () => {

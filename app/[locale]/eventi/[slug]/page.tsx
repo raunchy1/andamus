@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,7 +24,7 @@ interface EventItem {
 export default function EventDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
 

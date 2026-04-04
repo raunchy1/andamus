@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { X, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewReview } from "@/lib/notifications";
@@ -34,7 +34,7 @@ export function RatingModal({
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const checkExistingReview = useCallback(async () => {
     const { data } = await supabase

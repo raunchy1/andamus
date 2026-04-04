@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -15,7 +15,7 @@ export default function JoinPage() {
 
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);

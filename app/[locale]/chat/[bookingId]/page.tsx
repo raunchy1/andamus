@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, AlertCircle, X, Mic, Play, Pause } from "lucide-react";
@@ -81,7 +83,7 @@ export default function ChatPage() {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const { viewMode } = useViewMode();
 

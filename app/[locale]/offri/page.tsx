@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Check, AlertCircle } from "lucide-react";
@@ -837,7 +837,7 @@ export default function OfferPage() {
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     if (formData.origin && formData.destination && formData.origin !== formData.destination) {
