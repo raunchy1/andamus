@@ -43,6 +43,7 @@ interface HomeUIProps {
   loading: boolean;
   userName: string;
   userAvatar: string | null;
+  todayDate: string;
   handleSearch: (e: React.FormEvent) => void;
   router: ReturnType<typeof useRouter>;
 }
@@ -241,6 +242,7 @@ function HomeDesktop({
   loading,
   userName,
   userAvatar,
+  todayDate,
   router,
 }: HomeUIProps) {
   const today = new Date().toISOString().split("T")[0];
@@ -567,6 +569,7 @@ export default function HomePage() {
     loading,
     userName,
     userAvatar,
+    todayDate,
     handleSearch,
     router,
   };
