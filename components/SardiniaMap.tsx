@@ -201,6 +201,34 @@ export function SardiniaMap({
           <clipPath id="sardiniaClip">
             <path d={SARDINIA_PATH} />
           </clipPath>
+          {/* Sky → sea gradient (top) */}
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#a8d8ea" />
+            <stop offset="40%" stopColor="#7ec8e3" />
+            <stop offset="100%" stopColor="#4fa3c7" />
+          </linearGradient>
+          {/* Mountain / landscape gradient (middle) */}
+          <linearGradient id="mountainGrad" x1="0.3" y1="0" x2="0.7" y2="1">
+            <stop offset="0%" stopColor="#c8a96e" />
+            <stop offset="30%" stopColor="#8fad6a" />
+            <stop offset="60%" stopColor="#6b8f4e" />
+            <stop offset="100%" stopColor="#3d6b3a" />
+          </linearGradient>
+          {/* Sea gradient (bottom) */}
+          <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#2e86ab" />
+            <stop offset="100%" stopColor="#1a5f7a" />
+          </linearGradient>
+          {/* Warm sunlight radial highlight */}
+          <radialGradient id="sunGrad" cx="65%" cy="30%" r="45%">
+            <stop offset="0%" stopColor="#f5deb3" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#f5deb3" stopOpacity="0" />
+          </radialGradient>
+          {/* Road highlight */}
+          <linearGradient id="roadGrad" x1="0.5" y1="0" x2="0.55" y2="1">
+            <stop offset="0%" stopColor="#b8a898" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#8a7a6a" stopOpacity="0" />
+          </linearGradient>
           <filter id="routeGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
             <feMerge>
@@ -220,22 +248,51 @@ export function SardiniaMap({
         {/* Background sea */}
         <rect width="500" height="600" fill="transparent" />
 
-        {/* Photo background clipped to island shape */}
-        <image
-          href="/sardinia-bg.jpg"
-          x="0"
-          y="0"
-          width="500"
-          height="600"
-          preserveAspectRatio="xMidYMid slice"
+        {/* === Landscape fill clipped to Sardinia shape === */}
+        {/* Sky / sea top layer */}
+        <rect
+          x="0" y="0" width="500" height="220"
+          fill="url(#skyGrad)"
           clipPath="url(#sardiniaClip)"
         />
-
-        {/* Dark overlay for readability of routes/labels */}
+        {/* Mountain / vegetation middle */}
+        <rect
+          x="0" y="160" width="500" height="280"
+          fill="url(#mountainGrad)"
+          clipPath="url(#sardiniaClip)"
+        />
+        {/* Sea bottom */}
+        <rect
+          x="0" y="390" width="500" height="210"
+          fill="url(#seaGrad)"
+          clipPath="url(#sardiniaClip)"
+        />
+        {/* Warm sunlight overlay */}
+        <rect
+          x="0" y="0" width="500" height="600"
+          fill="url(#sunGrad)"
+          clipPath="url(#sardiniaClip)"
+        />
+        {/* Winding road hint */}
+        <path
+          d="M320,180 Q370,250 390,340 Q400,390 380,450"
+          fill="none"
+          stroke="url(#roadGrad)"
+          strokeWidth="14"
+          strokeLinecap="round"
+          clipPath="url(#sardiniaClip)"
+        />
+        {/* Rocky cliff texture top-right */}
+        <ellipse cx="400" cy="100" rx="60" ry="40" fill="#8c7a6a" fillOpacity="0.35" clipPath="url(#sardiniaClip)" />
+        <ellipse cx="440" cy="130" rx="40" ry="25" fill="#7a6858" fillOpacity="0.3" clipPath="url(#sardiniaClip)" />
+        {/* Sea rock stack bottom (Carloforte style) */}
+        <ellipse cx="320" cy="490" rx="18" ry="28" fill="#5a7a5a" fillOpacity="0.55" clipPath="url(#sardiniaClip)" />
+        <ellipse cx="348" cy="500" rx="10" ry="18" fill="#4a6a4a" fillOpacity="0.5" clipPath="url(#sardiniaClip)" />
+        {/* Dark overlay for route/label readability */}
         <path
           d={SARDINIA_PATH}
           fill="#000000"
-          fillOpacity={0.35}
+          fillOpacity={0.28}
           clipPath="url(#sardiniaClip)"
         />
 
@@ -244,7 +301,7 @@ export function SardiniaMap({
           d={SARDINIA_PATH}
           fill="none"
           stroke="#ffffff"
-          strokeOpacity={0.15}
+          strokeOpacity={0.2}
           strokeWidth={1.5}
           strokeLinejoin="round"
           strokeLinecap="round"
