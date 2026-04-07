@@ -15,8 +15,9 @@ ALTER TABLE rides ADD COLUMN IF NOT EXISTS smoking_allowed BOOLEAN DEFAULT false
 ALTER TABLE rides ADD COLUMN IF NOT EXISTS pets_allowed BOOLEAN DEFAULT false;
 ALTER TABLE rides ADD COLUMN IF NOT EXISTS students_only BOOLEAN DEFAULT false;
 
--- Add index for better query performance on new columns
-CREATE INDEX IF NOT EXISTS idx_rides_preferences ON rides(smoking_allowed, pets_allowed, large_luggage, women_only, students_only);
+-- Add indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_rides_status_date ON rides(status, date);
+CREATE INDEX IF NOT EXISTS idx_rides_from_to ON rides(from_city, to_city);
 
 -- Update RLS policy to include new columns if needed (they inherit from existing policies)
 COMMENT ON COLUMN rides.large_luggage IS 'Whether large luggage is allowed';
