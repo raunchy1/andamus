@@ -93,96 +93,110 @@ function RideDetailMobile({
   const isMyRide = user?.id === ride.driver_id;
 
   return (
-    <div className="min-h-screen bg-surface pb-32">
+    <div className="min-h-screen bg-surface pb-40">
       {/* Top Navigation */}
-      <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 pt-12">
-        <button onClick={() => router.back()} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
+      <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-5 pt-14">
+        <button onClick={() => router.back()} className="bg-surface-container-highest/90 backdrop-blur-xl p-3 rounded-2xl text-on-surface hover:bg-surface-container-highest transition-all active:scale-95 shadow-lg">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <button onClick={handleShare} className="bg-surface-container-highest/80 backdrop-blur-xl p-2 rounded-xl text-on-surface hover:opacity-80 transition-all active:scale-90">
+        <button onClick={handleShare} className="bg-surface-container-highest/90 backdrop-blur-xl p-3 rounded-2xl text-on-surface hover:bg-surface-container-highest transition-all active:scale-95 shadow-lg">
           <Share2 className="w-6 h-6" />
         </button>
       </header>
 
-      <main className="h-full overflow-y-auto overflow-x-hidden hide-scrollbar pb-32">
+      <main className="overflow-y-auto overflow-x-hidden hide-scrollbar">
         {/* Full Bleed Map Header */}
-        <section className="relative h-[380px] w-full">
+        <section className="relative h-[420px] w-full">
           <div className="absolute inset-0 bg-surface-container-low">
-            <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center grayscale" />
+            <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/20 to-transparent" />
           {/* Weather Widget */}
-          <div className="absolute bottom-6 left-6 flex items-center space-x-3 bg-surface-container-highest/60 backdrop-blur-md px-4 py-2 rounded-xl">
-            <Sun className="w-5 h-5 text-primary" />
+          <div className="absolute bottom-8 left-5 flex items-center gap-4 bg-surface-container-highest/80 backdrop-blur-lg px-5 py-3 rounded-2xl shadow-lg">
+            <Sun className="w-8 h-8 text-primary" />
             <div className="flex flex-col">
-              <span className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/60">{ride.from_city}</span>
-              <span className="font-headline font-bold text-lg text-on-surface leading-none">24°C</span>
+              <span className="font-label font-bold text-xs uppercase tracking-wider text-on-surface/60">{ride.from_city}</span>
+              <span className="font-headline font-bold text-xl text-on-surface">24°C</span>
             </div>
           </div>
         </section>
 
         {/* Route Details */}
-        <div className="px-4 sm:px-6 -mt-8 relative z-10">
-          <div className="flex justify-between items-start mb-10">
-            <div>
-              <h1 className="font-headline font-extrabold text-4xl tracking-tighter text-on-surface mb-1">
-                {ride.from_city} <span className="text-primary tracking-normal">→</span> {ride.to_city}
-              </h1>
-              <p className="font-label font-semibold text-[11px] uppercase tracking-[0.15em] text-primary">Partenza • {formatDate(ride.date)} · {ride.time.slice(0,5)}</p>
+        <div className="px-5 -mt-6 relative z-10">
+          {/* Main Title Card */}
+          <div className="bg-surface-container-low rounded-3xl p-6 mb-8 shadow-sm">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex-1 pr-4">
+                <h1 className="font-headline font-extrabold text-3xl sm:text-4xl tracking-tight text-on-surface leading-tight">
+                  {ride.from_city} <span className="text-primary">→</span> {ride.to_city}
+                </h1>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-headline font-extrabold text-3xl sm:text-4xl tracking-tight text-on-surface">
+                  {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                </span>
+                <p className="font-label font-semibold text-xs uppercase tracking-wider text-on-surface/50 mt-1">a persona</p>
+              </div>
             </div>
-            <div className="text-right">
-              <span className="font-headline font-extrabold text-3xl tracking-tighter text-on-surface">
-                {ride.price === 0 ? "Gratis" : `€${ride.price}`}
-              </span>
-              <p className="font-label font-semibold text-[10px] uppercase tracking-widest text-on-surface/40">per posto</p>
+            <div className="flex items-center gap-3 text-on-surface/70">
+              <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <p className="font-label font-semibold text-sm uppercase tracking-wide text-primary">
+                Partenza • {formatDate(ride.date)} · {ride.time.slice(0,5)}
+              </p>
             </div>
           </div>
 
           {/* Driver Profile Card */}
-          <div className="bg-surface-container-low p-5 rounded-xl flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                {ride.profiles.avatar_url ? (
-                  <Image src={ride.profiles.avatar_url} alt="" width={56} height={56} className="w-14 h-14 rounded-full object-cover grayscale" />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center">
-                    <User className="w-5 h-5 text-on-surface-variant" />
+          <div className="bg-surface-container-low rounded-3xl p-6 mb-8 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div className="relative">
+                  {ride.profiles.avatar_url ? (
+                    <Image src={ride.profiles.avatar_url} alt="" width={72} height={72} className="w-18 h-18 rounded-full object-cover border-2 border-surface-container-high" />
+                  ) : (
+                    <div className="w-18 h-18 rounded-full bg-surface-container-high flex items-center justify-center border-2 border-surface">
+                      <User className="w-8 h-8 text-on-surface-variant" />
+                    </div>
+                  )}
+                  <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1.5 border-4 border-surface-container-low">
+                    <BadgeCheck className="w-4 h-4" />
                   </div>
-                )}
-                <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1 border-4 border-surface-container-low">
-                  <BadgeCheck className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <h3 className="font-headline font-bold text-xl text-on-surface">{ride.profiles.name}</h3>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Star className="w-5 h-5 text-primary fill-current" />
+                    <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
+                    <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} viaggi</span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h3 className="font-headline font-bold text-lg text-on-surface leading-tight">{ride.profiles.name}</h3>
-                <div className="flex items-center space-x-2">
-                  <Star className="w-4 h-4 text-primary fill-current" />
-                  <span className="text-sm font-semibold text-on-surface">{ride.profiles.rating}</span>
-                  <span className="text-on-surface/40 text-xs">• {ride.profiles.rides_count || 0} viaggi</span>
-                </div>
-              </div>
+              {existingBooking && !isMyRide && (
+                <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-high text-on-surface p-4 rounded-2xl hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                  <MessageCircle className="w-6 h-6" />
+                </Link>
+              )}
             </div>
-            {existingBooking && !isMyRide && (
-              <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
-                <MessageCircle className="w-5 h-5" />
-              </Link>
-            )}
           </div>
 
-          {/* Bento Style Journey Info */}
+          {/* Journey Info Cards */}
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-surface-container-low p-5 rounded-xl flex flex-col justify-between min-h-[140px]">
-              <DoorOpen className="w-8 h-8 text-primary mb-4" />
+            <div className="bg-surface-container-low rounded-3xl p-6 flex flex-col justify-between min-h-[180px] shadow-sm">
+              <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center">
+                <DoorOpen className="w-7 h-7 text-primary" />
+              </div>
               <div>
-                <p className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/40 mb-1">Ritiro</p>
-                <p className="font-body font-semibold text-on-surface text-sm">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
+                <p className="font-label font-bold text-xs uppercase tracking-wider text-on-surface/50 mb-2">Punto di ritiro</p>
+                <p className="font-semibold text-on-surface text-base leading-snug">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
               </div>
             </div>
-            <div className="bg-surface-container-low p-5 rounded-xl flex flex-col justify-between min-h-[140px]">
-              <Car className="w-8 h-8 text-primary mb-4" />
+            <div className="bg-surface-container-low rounded-3xl p-6 flex flex-col justify-between min-h-[180px] shadow-sm">
+              <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center">
+                <Car className="w-7 h-7 text-primary" />
+              </div>
               <div>
-                <p className="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface/40 mb-1">Auto</p>
-                <p className="font-body font-semibold text-on-surface text-sm">Auto del guidatore</p>
+                <p className="font-label font-bold text-xs uppercase tracking-wider text-on-surface/50 mb-2">Veicolo</p>
+                <p className="font-semibold text-on-surface text-base leading-snug">Auto del guidatore</p>
               </div>
             </div>
           </div>
@@ -190,28 +204,28 @@ function RideDetailMobile({
           {/* The Path Indicator */}
           {stops.length > 0 && (
             <div className="mb-10 px-2">
-              <h4 className="font-label font-bold text-[11px] uppercase tracking-[0.2em] text-on-surface/40 mb-6">Fermate Intermedie</h4>
-              <div className="space-y-8 relative">
-                <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-surface-container-highest" />
-                <div className="flex items-center space-x-6 relative">
-                  <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-primary z-10 flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+              <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/50 mb-6 ml-1">Fermate intermedie</h4>
+              <div className="space-y-6 relative">
+                <div className="absolute left-[11px] top-3 bottom-3 w-0.5 bg-surface-container-highest" />
+                <div className="flex items-center gap-5 relative">
+                  <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-primary z-10 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
                   </div>
-                  <span className="font-headline font-semibold text-on-surface">{ride.from_city}</span>
+                  <span className="font-semibold text-lg text-on-surface">{ride.from_city}</span>
                 </div>
                 {stops.map((stop, idx) => (
-                  <div key={idx} className="flex items-center space-x-6 relative">
-                    <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-surface-container-highest z-10 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-surface-container-highest" />
+                  <div key={idx} className="flex items-center gap-5 relative">
+                    <div className="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-surface-container-highest z-10 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-surface-container-highest" />
                     </div>
-                    <span className="font-headline font-semibold text-on-surface/60">{stop.city}</span>
+                    <span className="font-semibold text-base text-on-surface/70">{stop.city}</span>
                   </div>
                 ))}
-                <div className="flex items-center space-x-6 relative">
-                  <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-primary z-10 flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <div className="flex items-center gap-5 relative">
+                  <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-primary z-10 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
                   </div>
-                  <span className="font-headline font-semibold text-on-surface">{ride.to_city}</span>
+                  <span className="font-semibold text-lg text-on-surface">{ride.to_city}</span>
                 </div>
               </div>
             </div>
@@ -220,39 +234,39 @@ function RideDetailMobile({
           {/* Rules/Amenities */}
           <div className="flex flex-wrap gap-3 mb-10">
             {!ride.smoking_allowed && (
-              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <Cigarette className="w-4.5 h-4.5" />
-                <span className="font-label font-bold text-[10px] uppercase">No fumo</span>
+              <div className="flex items-center gap-3 bg-surface-container-high px-5 py-3 rounded-2xl">
+                <Cigarette className="w-5 h-5 text-on-surface/70" />
+                <span className="font-semibold text-sm text-on-surface">No fumo</span>
               </div>
             )}
             {ride.pets_allowed && (
-              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <Dog className="w-4.5 h-4.5" />
-                <span className="font-label font-bold text-[10px] uppercase">Animali ok</span>
+              <div className="flex items-center gap-3 bg-surface-container-high px-5 py-3 rounded-2xl">
+                <Dog className="w-5 h-5 text-on-surface/70" />
+                <span className="font-semibold text-sm text-on-surface">Animali OK</span>
               </div>
             )}
             {ride.large_luggage && (
-              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <Briefcase className="w-4.5 h-4.5" />
-                <span className="font-label font-bold text-[10px] uppercase">Bagaglio grande</span>
+              <div className="flex items-center gap-3 bg-surface-container-high px-5 py-3 rounded-2xl">
+                <Briefcase className="w-5 h-5 text-on-surface/70" />
+                <span className="font-semibold text-sm text-on-surface">Bagaglio grande</span>
               </div>
             )}
             {ride.women_only && (
-              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <UserCircle className="w-4.5 h-4.5" />
-                <span className="font-label font-bold text-[10px] uppercase">Solo donne</span>
+              <div className="flex items-center gap-3 bg-surface-container-high px-5 py-3 rounded-2xl">
+                <UserCircle className="w-5 h-5 text-on-surface/70" />
+                <span className="font-semibold text-sm text-on-surface">Solo donne</span>
               </div>
             )}
             {ride.students_only && (
-              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <GraduationCap className="w-4.5 h-4.5" />
-                <span className="font-label font-bold text-[10px] uppercase">Solo studenti</span>
+              <div className="flex items-center gap-3 bg-surface-container-high px-5 py-3 rounded-2xl">
+                <GraduationCap className="w-5 h-5 text-on-surface/70" />
+                <span className="font-semibold text-sm text-on-surface">Solo studenti</span>
               </div>
             )}
             {ride.music_preference && (
-              <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-2 rounded-lg">
-                <Music className="w-4 h-4" />
-                <span className="font-label font-bold text-[10px] uppercase">
+              <div className="flex items-center gap-3 bg-surface-container-high px-5 py-3 rounded-2xl">
+                <Music className="w-5 h-5 text-on-surface/70" />
+                <span className="font-semibold text-sm text-on-surface">
                   {ride.music_preference === "quiet" ? "Silenzio" : ride.music_preference === "music" ? "Musica" : "Chiacchiere"}
                 </span>
               </div>
@@ -261,37 +275,34 @@ function RideDetailMobile({
 
           {/* Reviews */}
           {reviews.length > 0 && (
-            <div className="mb-10">
-              <h4 className="font-label font-bold text-[11px] uppercase tracking-[0.2em] text-on-surface/40 mb-4">Recensioni</h4>
+            <div className="mb-12">
+              <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/50 mb-5">Recensioni</h4>
               <div className="space-y-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="bg-surface-container-low p-4 rounded-xl">
-                    <div className="flex items-start gap-3">
+                  <div key={review.id} className="bg-surface-container-low p-5 rounded-3xl shadow-sm">
+                    <div className="flex items-start gap-4">
                       {review.reviewer.avatar_url ? (
-                        <Image src={review.reviewer.avatar_url} alt="" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+                        <Image src={review.reviewer.avatar_url} alt="" width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
-                          <User className="w-4 h-4 text-on-surface-variant" />
+                        <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+                          <User className="w-5 h-5 text-on-surface-variant" />
                         </div>
                       )}
                       <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-bold text-on-surface">{review.reviewer.name}</p>
-                          <span className="text-xs text-on-surface-variant">{formatReviewDate(review.created_at)}</span>
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="font-bold text-base text-on-surface">{review.reviewer.name}</p>
+                          <span className="text-sm text-on-surface/50">{formatReviewDate(review.created_at)}</span>
                         </div>
-                        <div className="flex items-center gap-1 mt-1">
+                        <div className="flex items-center gap-1 mb-2">
                           {[...Array(5)].map((_, i) => (
-                            <span
+                            <Star
                               key={i}
-                              className={`w-3.5 h-3.5 ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
-                              style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-                            >
-                              star
-                            </span>
+                              className={`w-4 h-4 ${i < review.rating ? "text-primary fill-current" : "text-surface-container-highest"}`}
+                            />
                           ))}
                         </div>
                         {review.comment && (
-                          <p className="mt-2 text-sm text-on-surface-variant">&ldquo;{review.comment}&rdquo;</p>
+                          <p className="text-sm text-on-surface/70 leading-relaxed">&ldquo;{review.comment}&rdquo;</p>
                         )}
                       </div>
                     </div>
@@ -303,20 +314,20 @@ function RideDetailMobile({
 
           {/* Similar Rides */}
           {similarRides.length > 0 && (
-            <div className="mb-10">
-              <h4 className="font-label font-bold text-[11px] uppercase tracking-[0.2em] text-on-surface/40 mb-4">Corse simili</h4>
-              <div className="space-y-3">
+            <div className="mb-12">
+              <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/50 mb-5">Corse simili</h4>
+              <div className="space-y-4">
                 {similarRides.map((similar) => (
                   <Link
                     key={similar.id}
                     href={`/corsa/${similar.id}`}
-                    className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl transition-colors hover:bg-surface-container-high"
+                    className="flex items-center justify-between bg-surface-container-low p-5 rounded-3xl transition-all hover:bg-surface-container-high active:scale-[0.98] shadow-sm"
                   >
                     <div>
-                      <p className="font-bold text-on-surface">{similar.from_city} → {similar.to_city}</p>
-                      <p className="text-sm text-on-surface-variant">{similar.time.slice(0,5)} · {similar.profiles.name}</p>
+                      <p className="font-bold text-base text-on-surface mb-1">{similar.from_city} → {similar.to_city}</p>
+                      <p className="text-sm text-on-surface/60">{similar.time.slice(0,5)} · {similar.profiles.name}</p>
                     </div>
-                    <span className="font-extrabold text-on-surface">
+                    <span className="font-extrabold text-lg text-on-surface">
                       {similar.price === 0 ? "Gratis" : `€${similar.price}`}
                     </span>
                   </Link>
@@ -325,54 +336,59 @@ function RideDetailMobile({
             </div>
           )}
         </div>
+        
+        {/* Bottom spacing for fixed button */}
+        <div className="h-32" />
       </main>
 
       {/* Fixed Action Button */}
-      <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-12 z-40">
-        {isMyRide ? (
-          <Link
-            href="/profilo"
-            className="w-full bg-surface-container-highest text-on-surface py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
-          >
-            <span>Gestisci dal profilo</span>
-            <ChevronRight className="w-5 h-5" />
-          </Link>
-        ) : existingBooking ? (
-          <Link
-            href={`/chat/${existingBooking.id}`}
-            className="w-full bg-[#e63946] text-white py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
-          >
-            <span>Apri chat</span>
-            <ChevronRight className="w-5 h-5" />
-          </Link>
-        ) : (
-          <button
-            onClick={handleRequestRide}
-            disabled={requesting}
-            className="w-full bg-[#e63946] text-white py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-70"
-          >
-            <span>{requesting ? "Prenotazione..." : "Richiedi passaggio"}</span>
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        )}
+      <div className="fixed bottom-0 left-0 w-full p-5 bg-gradient-to-t from-surface via-surface to-transparent pt-16 z-40">
+        <div className="max-w-md mx-auto">
+          {isMyRide ? (
+            <Link
+              href="/profilo"
+              className="w-full bg-surface-container-highest text-on-surface py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
+            >
+              <span>Gestisci dal profilo</span>
+              <ChevronRight className="w-6 h-6" />
+            </Link>
+          ) : existingBooking ? (
+            <Link
+              href={`/chat/${existingBooking.id}`}
+              className="w-full bg-[#e63946] text-white py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
+            >
+              <span>Apri chat</span>
+              <ChevronRight className="w-6 h-6" />
+            </Link>
+          ) : (
+            <button
+              onClick={handleRequestRide}
+              disabled={requesting}
+              className="w-full bg-[#e63946] text-white py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200 disabled:opacity-70"
+            >
+              <span>{requesting ? "Prenotazione..." : "Richiedi passaggio"}</span>
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Login Modal */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-6">
-            <h3 className="mb-2 text-xl font-extrabold tracking-tight text-on-surface">Accedi per prenotare</h3>
-            <p className="mb-6 text-on-surface-variant">Devi essere autenticato per richiedere un passaggio.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-3xl border border-outline-variant bg-surface-container-low p-8 shadow-2xl">
+            <h3 className="mb-3 text-2xl font-extrabold tracking-tight text-on-surface">Accedi per prenotare</h3>
+            <p className="mb-8 text-on-surface/70 text-base">Devi essere autenticato per richiedere un passaggio.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLoginModal(false)}
-                className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-highest"
+                className="flex-1 rounded-2xl bg-surface-container-high py-4 text-base font-semibold text-on-surface hover:bg-surface-container-highest transition-all active:scale-95"
               >
                 Annulla
               </button>
               <button
                 onClick={signInWithGoogle}
-                className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary hover:opacity-90"
+                className="flex-1 rounded-2xl bg-primary py-4 text-base font-semibold text-on-primary hover:opacity-90 transition-all active:scale-95"
               >
                 Accedi
               </button>
