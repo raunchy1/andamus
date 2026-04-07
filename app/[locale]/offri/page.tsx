@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Check, AlertCircle, ArrowLeft, User, CircleDot, MapPin, ArrowDown, X, Plus, ChevronRight, Car } from "lucide-react";
@@ -892,6 +892,16 @@ export default function OfferPage() {
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
   const [distanceKm, setDistanceKm] = useState<number | null>(null);
   const [calculatingPrice, setCalculatingPrice] = useState(false);
+  
+  // Refs to track form values without triggering effect re-runs
+  const priceRef = useRef(formData.price);
+  const isFreeRef = useRef(formData.isFree);
+  
+  // Update refs when values change
+  useEffect(() => {
+    priceRef.current = formData.price;
+    isFreeRef.current = formData.isFree;
+  }, [formData.price, formData.isFree]);
 
   const today = new Date().toISOString().split("T")[0];
   const supabase = createClient();
@@ -942,8 +952,8 @@ export default function OfferPage() {
           
           setSuggestedPrice(finalPrice);
           
-          // Auto-fill price if not already set
-          if (!formData.price && !formData.isFree) {
+          // Auto-fill price if not already set (use refs to avoid dependency issues)
+          if (!priceRef.current && !isFreeRef.current) {
             setFormData(prev => ({ ...prev, price: finalPrice.toString() }));
           }
         } else {
