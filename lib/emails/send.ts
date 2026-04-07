@@ -29,25 +29,29 @@ async function getUnsubscribeToken(userId: string): Promise<string | undefined> 
 // Check if user has email notifications enabled
 async function shouldSendEmail(
   userId: string,
-  emailType: "notifications" | "messages" | "reminders"
+  emailType: "booking_requests" | "booking_confirmed" | "new_messages" | "ride_reminders" | "marketing"
 ): Promise<boolean> {
   try {
     const supabase = await createClient();
     const { data: profile } = await supabase
       .from("profiles")
-      .select("email_notifications, email_messages, email_reminders")
+      .select("email_booking_requests, email_booking_confirmed, email_new_messages, email_ride_reminders, email_marketing")
       .eq("id", userId)
       .single();
 
     if (!profile) return true; // Default to sending if no profile
 
     switch (emailType) {
-      case "notifications":
-        return profile.email_notifications !== false;
-      case "messages":
-        return profile.email_messages !== false;
-      case "reminders":
-        return profile.email_reminders !== false;
+      case "booking_requests":
+        return profile.email_booking_requests !== false;
+      case "booking_confirmed":
+        return profile.email_booking_confirmed !== false;
+      case "new_messages":
+        return profile.email_new_messages !== false;
+      case "ride_reminders":
+        return profile.email_ride_reminders !== false;
+      case "marketing":
+        return profile.email_marketing === true;
       default:
         return true;
     }
@@ -83,8 +87,8 @@ export async function sendBookingRequestEmail(data: {
   rideId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    // Check if driver has notifications enabled
-    const shouldSend = await shouldSendEmail(data.driverId, "notifications");
+    // Check if driver has booking request notifications enabled
+    const shouldSend = await shouldSendEmail(data.driverId, "booking_requests");
     if (!shouldSend) {
       return { success: true };
     }
@@ -140,8 +144,8 @@ export async function sendBookingConfirmedEmail(data: {
   rideId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    // Check if passenger has notifications enabled
-    const shouldSend = await shouldSendEmail(data.passengerId, "notifications");
+    // Check if passenger has booking confirmed notifications enabled
+    const shouldSend = await shouldSendEmail(data.passengerId, "booking_confirmed");
     if (!shouldSend) {
       return { success: true };
     }
@@ -194,8 +198,8 @@ export async function sendBookingRejectedEmail(data: {
   rideId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    // Check if passenger has notifications enabled
-    const shouldSend = await shouldSendEmail(data.passengerId, "notifications");
+    // Check if passenger has booking confirmed notifications enabled
+    const shouldSend = await shouldSendEmail(data.passengerId, "booking_confirmed");
     if (!shouldSend) {
       return { success: true };
     }
@@ -243,8 +247,8 @@ export async function sendNewMessageEmail(data: {
   toCity: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    // Check if recipient has message notifications enabled
-    const shouldSend = await shouldSendEmail(data.recipientId, "messages");
+    // Check if recipient has new message notifications enabled
+    const shouldSend = await shouldSendEmail(data.recipientId, "new_messages");
     if (!shouldSend) {
       return { success: true };
     }
@@ -288,8 +292,8 @@ export async function sendWelcomeEmail(data: {
   referralCode: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    // Check if user has notifications enabled
-    const shouldSend = await shouldSendEmail(data.userId, "notifications");
+    // Check if user has marketing notifications enabled (welcome email is considered marketing)
+    const shouldSend = await shouldSendEmail(data.userId, "marketing");
     if (!shouldSend) {
       return { success: true };
     }
@@ -336,8 +340,8 @@ export async function sendRideReminderEmail(data: {
   rideId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    // Check if recipient has reminder notifications enabled
-    const shouldSend = await shouldSendEmail(data.recipientId, "reminders");
+    // Check if recipient has ride reminder notifications enabled
+    const shouldSend = await shouldSendEmail(data.recipientId, "ride_reminders");
     if (!shouldSend) {
       return { success: true };
     }

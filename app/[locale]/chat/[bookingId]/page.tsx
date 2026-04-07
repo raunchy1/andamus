@@ -10,6 +10,7 @@ import { notifyNewMessage } from "@/lib/notifications";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import { useDeviceType } from "@/components/view-mode";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface Message {
   id: string;
@@ -609,8 +610,18 @@ export default function ChatPage() {
               </span>
             </div>
           </div>
-          <div className="bg-surface-container-high px-3 py-2 rounded-lg">
-            <span className="text-[10px] font-extrabold text-primary">LIVE TRACKING</span>
+          <div className="flex items-center gap-2">
+            {booking?.status !== "cancelled" && (
+              <Link
+                href={`/cancella/${bookingId}`}
+                className="px-3 py-2 rounded-lg bg-error/10 text-error text-xs font-bold hover:bg-error/20 transition-colors"
+              >
+                Annulla
+              </Link>
+            )}
+            <div className="bg-surface-container-high px-3 py-2 rounded-lg">
+              <span className="text-[10px] font-extrabold text-primary">LIVE TRACKING</span>
+            </div>
           </div>
         </div>
 
@@ -750,8 +761,18 @@ export default function ChatPage() {
                 </span>
               </div>
             </div>
-            <div className="bg-surface-container-high px-4 py-2 rounded-lg">
-              <span className="text-xs font-extrabold text-primary">LIVE TRACKING</span>
+            <div className="flex items-center gap-2">
+              {booking?.status !== "cancelled" && (
+                <Link
+                  href={`/cancella/${bookingId}`}
+                  className="px-4 py-2 rounded-lg bg-error/10 text-error text-sm font-bold hover:bg-error/20 transition-colors"
+                >
+                  Annulla prenotazione
+                </Link>
+              )}
+              <div className="bg-surface-container-high px-4 py-2 rounded-lg">
+                <span className="text-xs font-extrabold text-primary">LIVE TRACKING</span>
+              </div>
             </div>
           </div>
 
@@ -947,7 +968,7 @@ export default function ChatPage() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       {deviceType === "desktop" ? <ChatDesktop /> : <ChatMobile />}
 
       {imagePreview && (
@@ -1006,6 +1027,6 @@ export default function ChatPage() {
           />
         </div>
       )}
-    </>
+    </ErrorBoundary>
   );
 }

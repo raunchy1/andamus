@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyStateSearch } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -1187,13 +1188,15 @@ function SearchContent() {
 export default function SearchPage() {
   return (
     <div className="min-h-screen bg-[#0e0e0e]">
-      <Suspense fallback={
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        </div>
-      }>
-        <SearchContent />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
+        }>
+          <SearchContent />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }

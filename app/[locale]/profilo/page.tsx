@@ -14,6 +14,8 @@ import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notification
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { PhoneVerification } from "@/components/PhoneVerification";
+import { EmailPreferences } from "@/components/EmailPreferences";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
@@ -608,6 +610,12 @@ export default function ProfilePage() {
             </div>
           </section>
 
+          {user && (
+            <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
+              <EmailPreferences userId={user.id} />
+            </section>
+          )}
+
           {profile && levelInfo && (
             <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
               <div className="bg-surface-container p-4 rounded-xl">
@@ -807,12 +815,12 @@ export default function ProfilePage() {
                                       <MessageCircle className="h-3 w-3" />
                                       Chat
                                     </Link>
-                                    <button
-                                      onClick={() => setCancelBookingId(booking.id)}
+                                    <Link
+                                      href={`/cancella/${booking.id}`}
                                       className="flex items-center gap-1 rounded-full bg-error/20 px-3 py-1.5 text-sm font-bold text-error"
                                     >
                                       Annulla
-                                    </button>
+                                    </Link>
                                   </>
                                 )}
                               </>
@@ -1209,12 +1217,12 @@ export default function ProfilePage() {
                                             <MessageCircle className="h-4 w-4" />
                                             Chat
                                           </Link>
-                                          <button
-                                            onClick={() => setCancelBookingId(booking.id)}
+                                          <Link
+                                            href={`/cancella/${booking.id}`}
                                             className="flex items-center gap-1 rounded-full bg-error/20 px-4 py-2 text-sm font-bold text-error"
                                           >
                                             Annulla
-                                          </button>
+                                          </Link>
                                         </>
                                       )}
                                     </>
@@ -1354,6 +1362,12 @@ export default function ProfilePage() {
                 <PushNotificationToggle />
               </div>
 
+              {user && (
+                <div className="bg-surface-container p-6 rounded-2xl">
+                  <EmailPreferences userId={user.id} />
+                </div>
+              )}
+
               {profile && levelInfo && (
                 <div className="bg-surface-container p-6 rounded-2xl">
                   <div className="flex items-center justify-between mb-4">
@@ -1463,5 +1477,9 @@ export default function ProfilePage() {
     );
   }
 
-  return deviceType === "desktop" ? <ProfileDesktop /> : <ProfileMobile />;
+  return (
+    <ErrorBoundary>
+      {deviceType === "desktop" ? <ProfileDesktop /> : <ProfileMobile />}
+    </ErrorBoundary>
+  );
 }

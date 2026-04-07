@@ -11,6 +11,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notifications";
 import { useDeviceType } from "@/components/view-mode";
 import toast from "react-hot-toast";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface Review {
   id: string;
@@ -939,5 +940,9 @@ export default function RideDetailPage() {
     formatReviewDate,
   };
 
-  return deviceType === "desktop" ? <RideDetailDesktop {...commonProps} /> : <RideDetailMobile {...commonProps} />;
+  return (
+    <ErrorBoundary>
+      {deviceType === "desktop" ? <RideDetailDesktop {...commonProps} /> : <RideDetailMobile {...commonProps} />}
+    </ErrorBoundary>
+  );
 }
