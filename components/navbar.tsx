@@ -29,11 +29,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth";
 import { openSOSModal } from "./SafetyButton";
 import { ShareApp } from "./ShareApp";
-
-const ADMIN_EMAILS = [
-  'cristianermurache@gmail.com',
-  'cristiermurache@gmail.com'
-];
+import { isAdmin } from "@/lib/admin";
 
 interface UserData {
   id: string;
@@ -181,7 +177,7 @@ export function Navbar() {
               {user ? (
                 <div className="flex items-center gap-3">
                   {/* Admin Link */}
-                  {user?.email && ADMIN_EMAILS.includes(user.email) && (
+                  {isAdmin(user?.email) && (
                     <Link
                       href="/admin"
                       className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
@@ -417,7 +413,7 @@ export function Navbar() {
                         <Siren className="h-5 w-5" />
                         <span>SOS Emergenza</span>
                       </button>
-                      {user?.email && ADMIN_EMAILS.includes(user.email || '') && (
+                      {isAdmin(user?.email) && (
                         <Link
                           href="/admin"
                           onClick={() => setMobileMenuOpen(false)}

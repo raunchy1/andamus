@@ -513,14 +513,23 @@ export default function ChatPage() {
                 rel="noopener noreferrer"
                 className="block"
               >
-                <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
-                  <Image
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
-                    alt="Mappa posizione"
-                    fill
-                    className="object-cover grayscale opacity-60"
-                  />
-                </div>
+                {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+                  <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
+                    <Image
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                      alt="Mappa posizione"
+                      fill
+                      className="object-cover grayscale opacity-60"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
+                    <div className="text-center text-on-surface-variant">
+                      <MapPin className="w-8 h-8 mx-auto mb-2" />
+                      <span className="text-xs">Posizione condivisa</span>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 mt-2 text-sm text-primary">
                   <MapPin className="w-4 h-4" />
                   <span>Apri in Google Maps</span>
@@ -798,14 +807,24 @@ export default function ChatPage() {
                           rel="noopener noreferrer"
                           className="block"
                         >
-                          <div className="w-full h-40 rounded-lg overflow-hidden bg-surface-container-high relative">
-                            <Image
-                              src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
-                              alt="Mappa posizione"
-                              fill
-                              className="object-cover grayscale opacity-60"
-                            />
-                          </div>
+                          {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+                            <div className="w-full h-40 rounded-lg overflow-hidden bg-surface-container-high relative">
+                              <Image
+                                src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                                alt="Mappa posizione"
+                                fill
+                                className="object-cover grayscale opacity-60"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-full h-40 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
+                              <div className="text-center text-on-surface-variant">
+                                <MapPin className="w-10 h-10 mx-auto mb-2" />
+                                <span className="text-sm">Posizione condivisa</span>
+                                <span className="text-xs block mt-1 opacity-70">Lat: {message.location_lat?.toFixed(4)}, Lng: {message.location_lng?.toFixed(4)}</span>
+                              </div>
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 mt-2 text-sm text-primary">
                             <MapPin className="w-4 h-4" />
                             <span>Apri in Google Maps</span>

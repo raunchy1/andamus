@@ -103,34 +103,33 @@ export default function VerificationPage() {
       return;
     }
 
-    // Simulate OTP send
-    toast.success("Codice OTP inviato! (Demo: usa 123456)");
-    setShowOtpInput(true);
+    // TODO: Implement real OTP via Twilio or Supabase Auth
+    // For now, phone verification is disabled
+    toast("Verifica telefono temporaneamente non disponibile. Sarà attiva prossimamente!", {
+      icon: "ℹ️",
+    });
+    
+    // Save phone number without verification
+    if (user) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ phone_number: phoneNumber })
+        .eq("id", user.id);
+      
+      if (error) {
+        toast.error("Errore nel salvare il numero");
+      } else {
+        toast.success("Numero salvato (verifica non richiesta)");
+      }
+    }
   };
 
   const handleOtpVerify = async () => {
-    if (otpCode !== "123456") {
-      toast.error("Codice OTP non valido");
-      return;
-    }
-
-    if (!user) {
-      toast.error("Utente non autenticato");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ phone_verified: true, phone_number: phoneNumber })
-      .eq("id", user.id);
-
-    if (error) {
-      toast.error("Errore nella verifica");
-    } else {
-      toast.success("Numero di telefono verificato!");
-      setStatus((s) => ({ ...s, phone: "verified" }));
-      setShowOtpInput(false);
-    }
+    // TODO: Implement real OTP verification via Twilio or Supabase Auth
+    toast("Verifica telefono temporaneamente non disponibile", {
+      icon: "ℹ️",
+    });
+    setShowOtpInput(false);
   };
 
   const handleFileUpload = async (type: "id" | "driver", file: File) => {
@@ -285,18 +284,19 @@ export default function VerificationPage() {
                   </>
                 ) : (
                   <>
-                    <input
-                      type="text"
-                      placeholder="Codice OTP (123456)"
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-[#0f1729] px-4 py-3 text-white outline-none focus:border-[#e63946]"
-                    />
+                    <div className="rounded-xl bg-yellow-500/10 p-4 text-center">
+                      <p className="text-sm text-yellow-400">
+                        La verifica via OTP è temporaneamente non disponibile.
+                      </p>
+                      <p className="text-xs text-white/50 mt-2">
+                        Il tuo numero è stato salvato. Sarai notificato quando la verifica sarà attiva.
+                      </p>
+                    </div>
                     <button
-                      onClick={handleOtpVerify}
-                      className="w-full rounded-xl bg-green-500 py-3 text-sm font-semibold text-white transition-all hover:bg-green-600"
+                      onClick={() => setShowOtpInput(false)}
+                      className="w-full rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20"
                     >
-                      Verifica codice
+                      Chiudi
                     </button>
                   </>
                 )}

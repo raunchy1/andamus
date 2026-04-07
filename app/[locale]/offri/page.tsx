@@ -906,11 +906,19 @@ export default function OfferPage() {
 
       setCalculatingPrice(true);
       
+      // Skip API call if no Google Maps API key is configured
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      if (!apiKey) {
+        setCalculatingPrice(false);
+        setDistanceKm(null);
+        setSuggestedPrice(null);
+        return;
+      }
+      
       try {
         // Use Google Maps Distance Matrix API
         const originEncoded = encodeURIComponent(`${formData.origin}, Sardegna, Italia`);
         const destinationEncoded = encodeURIComponent(`${formData.destination}, Sardegna, Italia`);
-        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
         
         const response = await fetch(
           `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originEncoded}&destinations=${destinationEncoded}&mode=driving&units=metric&key=${apiKey}`

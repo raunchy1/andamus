@@ -30,11 +30,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { completeGamificationAction } from "@/lib/gamification";
-
-const ADMIN_EMAILS = [
-  'cristianermurache@gmail.com',
-  'cristiermurache@gmail.com'
-];
+import { isAdmin } from "@/lib/admin";
 
 interface User {
   id: string;
@@ -94,7 +90,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   
   // Stats
   const [stats, setStats] = useState<Stats>({
@@ -121,18 +117,18 @@ export default function AdminDashboard() {
   useEffect(() => {
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !user.email || !ADMIN_EMAILS.includes(user.email)) {
+      if (!user || !user.email || !isAdmin(user.email)) {
         router.push("/");
         return;
       }
-      setIsAdmin(true);
+      setIsAdminUser(true);
     };
     checkAdmin();
   }, [router, supabase]);
 
   // Fetch all data
   const fetchData = useCallback(async () => {
-    if (!isAdmin) return;
+    if (!isAdminUser) return;
     
     setLoading(true);
     try {
