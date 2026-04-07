@@ -17,7 +17,6 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://andamus.app";
 // Generate unsubscribe token
 async function getUnsubscribeToken(userId: string): Promise<string | undefined> {
   try {
-    const supabase = await createClient();
     // Create a simple token based on userId and timestamp
     const token = Buffer.from(`${userId}:${Date.now()}`).toString("base64");
     return token;
@@ -61,7 +60,7 @@ async function shouldSendEmail(
 }
 
 // Get user email from auth
-async function getUserEmail(userId: string): Promise<string | null> {
+async function _getUserEmail(userId: string): Promise<string | null> {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.admin.getUserById(userId);
@@ -121,8 +120,8 @@ export async function sendBookingRequestEmail(data: {
     }
 
     return { success: true };
-  } catch (error) {
-    // console.error("Error in sendBookingRequestEmail:", error);
+  } catch (_error) {
+    // console.error("Error in sendBookingRequestEmail:", _error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -179,8 +178,8 @@ export async function sendBookingConfirmedEmail(data: {
     }
 
     return { success: true };
-  } catch (error) {
-    // console.error("Error in sendBookingConfirmedEmail:", error);
+  } catch (_error) {
+    // console.error("Error in sendBookingConfirmedEmail:", _error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -228,8 +227,8 @@ export async function sendBookingRejectedEmail(data: {
     }
 
     return { success: true };
-  } catch (error) {
-    // console.error("Error in sendBookingRejectedEmail:", error);
+  } catch (_error) {
+    // console.error("Error in sendBookingRejectedEmail:", _error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -278,8 +277,8 @@ export async function sendNewMessageEmail(data: {
     }
 
     return { success: true };
-  } catch (error) {
-    // console.error("Error in sendNewMessageEmail:", error);
+  } catch (_error) {
+    // console.error("Error in sendNewMessageEmail:", _error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -319,8 +318,8 @@ export async function sendWelcomeEmail(data: {
     }
 
     return { success: true };
-  } catch (error) {
-    // console.error("Error in sendWelcomeEmail:", error);
+  } catch (_error) {
+    // console.error("Error in sendWelcomeEmail:", _error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -373,8 +372,8 @@ export async function sendRideReminderEmail(data: {
     }
 
     return { success: true };
-  } catch (error) {
-    // console.error("Error in sendRideReminderEmail:", error);
+  } catch (_error) {
+    // console.error("Error in sendRideReminderEmail:", _error);
     return { success: false, error: "Internal error" };
   }
 }

@@ -36,7 +36,7 @@ export default function VerificationPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [otpCode, setOtpCode] = useState("");
+  const [_otpCode, _setOtpCode] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const [status, setStatus] = useState<VerificationStatus>({
@@ -124,7 +124,7 @@ export default function VerificationPage() {
     }
   };
 
-  const handleOtpVerify = async () => {
+  const _handleOtpVerify = async () => {
     // TODO: Implement real OTP verification via Twilio or Supabase Auth
     toast("Verifica telefono temporaneamente non disponibile", {
       icon: "ℹ️",

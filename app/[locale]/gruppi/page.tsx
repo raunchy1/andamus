@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Users, Loader2, Search, MapPin, GraduationCap, Plane, Bus } from "lucide-react";
+import { ArrowLeft, Users, Loader2, MapPin, GraduationCap, Plane, Bus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface Group {

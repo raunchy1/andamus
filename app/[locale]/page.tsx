@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
-import { Search, CircleDot, MapPin, Calendar, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star } from "lucide-react";
+import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star } from "lucide-react";
 import Image from "next/image";
 import { DatePicker } from "@/components/ui/date-picker";
 
@@ -54,7 +54,7 @@ interface HomeUIProps {
 function HomeMobile({
   origin,
   setOrigin,
-  destination,
+  destination: _destination,
   setDestination,
   todayRides,
   loading,

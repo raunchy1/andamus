@@ -7,9 +7,7 @@ import {
   Clock, 
   CheckCircle2, 
   XCircle, 
-  Car,
-  MessageCircle,
-  AlertCircle
+  Car
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyBookingRequest } from "@/lib/notifications";

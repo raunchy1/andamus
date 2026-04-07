@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Check, Loader2 } from "lucide-react";
 
 export default function PremiumSuccessPage() {
-  const searchParams = useSearchParams();
+  const _searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(true);
 
   useEffect(() => {

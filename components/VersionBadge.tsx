@@ -7,7 +7,7 @@ const DEV_HOSTNAMES = ["localhost", "127.0.0.1", "dev.", "staging.", "preview."]
 
 export function VersionBadge() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, _setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Check if in development

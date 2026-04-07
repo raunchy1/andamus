@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, MapPin, ArrowLeft, Loader2, Search } from "lucide-react";
+import { Calendar, MapPin, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface EventItem {

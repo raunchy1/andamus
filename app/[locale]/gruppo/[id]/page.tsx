@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Users, MapPin, Loader2, AlertCircle, PlusCircle, Search, Check } from "lucide-react";
+import { ArrowLeft, MapPin, Loader2, AlertCircle, PlusCircle, Search, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";

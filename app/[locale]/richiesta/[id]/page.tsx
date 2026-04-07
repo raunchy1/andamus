@@ -8,12 +8,9 @@ import {
   MapPin,
   Calendar,
   Clock,
-  Users,
-  Euro,
   FileText,
   Loader2,
   AlertCircle,
-  MessageCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -37,7 +34,7 @@ interface RideRequest {
 
 export default function RequestDetailPage() {
   const params = useParams();
-  const router = useRouter();
+  const _router = useRouter();
   const requestId = params.id as string;
   const supabase = createClient();
 

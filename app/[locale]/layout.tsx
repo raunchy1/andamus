@@ -7,7 +7,6 @@ import { Toaster } from "react-hot-toast";
 import { SafetyButton } from "@/components/SafetyButton";
 import { VersionBadge } from "@/components/VersionBadge";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { LangSetter } from "@/components/LangSetter";
 
 export const viewport: Viewport = {
   width: "device-width",

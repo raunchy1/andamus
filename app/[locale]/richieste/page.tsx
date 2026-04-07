@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Search,
-  MapPin,
   Calendar,
   User,
   Loader2,
@@ -15,7 +13,6 @@ import {
   Users,
   Euro,
   SlidersHorizontal,
-  X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -44,7 +41,7 @@ interface RideRequest {
 }
 
 export default function RequestsPage() {
-  const router = useRouter();
+  const _router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
 

@@ -48,7 +48,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [scrolled, setScrolled] = useState(false);
+  const [_scrolled, setScrolled] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const [avatarKey, setAvatarKey] = useState(0);
   const pathname = usePathname();
