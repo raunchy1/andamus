@@ -116,17 +116,7 @@ interface RideTemplate {
   created_at: string;
 }
 
-interface RideRequestItem {
-  id: string;
-  from_city: string;
-  to_city: string;
-  date: string;
-  time: string | null;
-  seats_needed: number;
-  max_price: number | null;
-  status: string;
-  created_at: string;
-}
+// RideRequestItem type removed - not currently used
 
 export default function ProfilePage() {
   const router = useRouter();

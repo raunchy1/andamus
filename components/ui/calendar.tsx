@@ -42,10 +42,6 @@ function isSameDay(date1: Date, date2: Date): boolean {
   );
 }
 
-function _formatDate(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
-
 export function Calendar({
   selected,
   onSelect,

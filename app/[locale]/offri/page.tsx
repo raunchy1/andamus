@@ -860,7 +860,6 @@ function OfferDesktop({
 export default function OfferPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const router = useRouter();
   const deviceType = useDeviceType();
   
   const [formData, setFormData] = useState({

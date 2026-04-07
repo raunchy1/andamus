@@ -501,26 +501,34 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const today = new Date().toISOString().split("T")[0];
+      try {
+        const today = new Date().toISOString().split("T")[0];
 
-      const { data: ridesData } = await supabase
-        .from("rides")
-        .select("id, from_city, to_city, date, time, price, profiles!inner(name, avatar_url, rating)")
-        .eq("date", today)
-        .eq("status", "active")
-        .order("time", { ascending: true })
-        .limit(5);
+        const { data: ridesData, error: ridesError } = await supabase
+          .from("rides")
+          .select("id, from_city, to_city, date, time, price, profiles!inner(name, avatar_url, rating)")
+          .eq("date", today)
+          .eq("status", "active")
+          .order("time", { ascending: true })
+          .limit(5);
 
-      setTodayRides(((ridesData as unknown as Record<string, unknown>[]) || []).map(r => ({ ...r, profiles: normalizeProfile(r.profiles) })) as Ride[]);
+        if (ridesError) {
+          console.error("Error fetching rides:", ridesError);
+        }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const name = user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "";
-        setUserName(name);
-        setUserAvatar(user.user_metadata?.avatar_url || user.user_metadata?.picture || null);
+        setTodayRides(((ridesData as unknown as Record<string, unknown>[]) || []).map(r => ({ ...r, profiles: normalizeProfile(r.profiles) })) as Ride[]);
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const name = user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "";
+          setUserName(name);
+          setUserAvatar(user.user_metadata?.avatar_url || user.user_metadata?.picture || null);
+        }
+      } catch (_error) {
+        // Error fetching data
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchData();

@@ -59,17 +59,6 @@ async function shouldSendEmail(
   }
 }
 
-// Get user email from auth
-async function _getUserEmail(userId: string): Promise<string | null> {
-  try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.admin.getUserById(userId);
-    return user?.email || null;
-  } catch {
-    return null;
-  }
-}
-
 // A) Send booking request email to driver
 export async function sendBookingRequestEmail(data: {
   driverId: string;
