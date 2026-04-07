@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { X, Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useEffect, useCallback } from "react";
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2, Car } from "lucide-react";
 import { signInWithGoogle, signUpWithEmail, signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
@@ -19,6 +18,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
 
   // Form states
@@ -30,13 +30,45 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
 
-  if (!isOpen) return null;
+  // Handle animation and body scroll lock
+  useEffect(() => {
+    if (isOpen) {
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
+      // Trigger animation
+      requestAnimationFrame(() => {
+        setIsVisible(true);
+      });
+    } else {
+      setIsVisible(false);
+      document.body.style.overflow = "";
+    }
 
-  const handleClose = () => {
-    setError(null);
-    setSuccessMessage(null);
-    onClose();
-  };
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isOpen]);
+
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      setError(null);
+      setSuccessMessage(null);
+      onClose();
+    }, 200);
+  }, [onClose]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -74,7 +106,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Errore durante l'accesso";
       
-      // Translate common Supabase errors
       if (errorMessage.includes("Invalid login credentials")) {
         setError("Email o password non corretti");
       } else if (errorMessage.includes("Email not confirmed")) {
@@ -92,7 +123,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     setError(null);
     setSuccessMessage(null);
 
-    // Validation
     if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
       setError("Compila tutti i campi");
       return;
@@ -122,7 +152,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Errore durante la registrazione";
       
-      // Translate common Supabase errors
       if (errorMessage.includes("User already registered")) {
         setError("Email già registrata. Prova ad accedere.");
       } else if (errorMessage.includes("valid email")) {
@@ -140,30 +169,50 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     setError(null);
     try {
       await signInWithGoogle();
-      // Redirect happens automatically via OAuth
     } catch {
       setError("Errore durante l'accesso con Google");
       setIsLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div 
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-opacity duration-200 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
       onClick={handleBackdropClick}
     >
-      <div className="relative w-full max-w-md bg-[#0f0f0f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors z-10"
-          disabled={isLoading}
-        >
-          <X className="w-5 h-5" />
-        </button>
+      {/* Full screen dark backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      
+      {/* Modal Container */}
+      <div 
+        className={`relative w-full max-w-[420px] bg-[#111111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden transition-all duration-200 ${
+          isVisible ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
+        }`}
+      >
+        {/* Header with Logo and Close */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#0f0f0f]">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e63946]">
+              <Car className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-bold text-white tracking-tight">Andamus</span>
+          </div>
+          <button
+            onClick={handleClose}
+            className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-all"
+            disabled={isLoading}
+            aria-label="Chiudi"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-        {/* Header with Tabs */}
-        <div className="flex border-b border-white/10">
+        {/* Tabs */}
+        <div className="flex border-b border-white/10 bg-[#0f0f0f]">
           <button
             onClick={() => {
               setActiveTab("login");
@@ -172,8 +221,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             }}
             className={`flex-1 py-4 text-sm font-bold uppercase tracking-wider transition-all ${
               activeTab === "login"
-                ? "text-[#e63946] border-b-2 border-[#e63946] bg-white/5"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                ? "text-[#e63946] border-b-2 border-[#e63946] bg-white/[0.03]"
+                : "text-white/50 hover:text-white hover:bg-white/[0.02]"
             }`}
           >
             Accedi
@@ -186,8 +235,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             }}
             className={`flex-1 py-4 text-sm font-bold uppercase tracking-wider transition-all ${
               activeTab === "register"
-                ? "text-[#e63946] border-b-2 border-[#e63946] bg-white/5"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                ? "text-[#e63946] border-b-2 border-[#e63946] bg-white/[0.03]"
+                : "text-white/50 hover:text-white hover:bg-white/[0.02]"
             }`}
           >
             Registrati
@@ -195,18 +244,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 bg-[#111111]">
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-red-400 text-sm text-center">{error}</p>
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+              <p className="text-red-400 text-sm text-center font-medium">{error}</p>
             </div>
           )}
 
           {/* Success Message */}
           {successMessage && (
-            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-              <p className="text-green-400 text-sm text-center">{successMessage}</p>
+            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+              <p className="text-green-400 text-sm text-center font-medium">{successMessage}</p>
             </div>
           )}
 
@@ -214,40 +263,40 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             /* Login Form */
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
                   Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="La tua email"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/50 transition-all"
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="La tua password"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/50 transition-all"
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                     disabled={isLoading}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -255,10 +304,10 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-1">
                 <button
                   type="button"
-                  className="text-xs text-[#e63946] hover:text-[#ff4d5a] transition-colors"
+                  className="text-xs text-[#e63946] hover:text-[#ff4d5a] transition-colors font-medium"
                   disabled={isLoading}
                 >
                   Password dimenticata?
@@ -268,7 +317,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#e63946] hover:bg-[#c92a37] text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-[#e63946] hover:bg-[#d32f3c] text-white py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
               >
                 {isLoading ? (
                   <>
@@ -284,57 +333,57 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             /* Register Form */
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
                   Nome completo
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
                     type="text"
                     value={registerName}
                     onChange={(e) => setRegisterName(e.target.value)}
                     placeholder="Mario Rossi"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/50 transition-all"
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
                   Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
                     type="email"
                     value={registerEmail}
                     onChange={(e) => setRegisterEmail(e.target.value)}
                     placeholder="mario@esempio.it"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/50 transition-all"
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Password (min. 6 caratteri)
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
+                  Password <span className="text-white/25 font-normal">(min. 6 caratteri)</span>
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={registerPassword}
                     onChange={(e) => setRegisterPassword(e.target.value)}
                     placeholder="Crea una password"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/50 transition-all"
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                     disabled={isLoading}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -343,23 +392,23 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
                   Conferma password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     value={registerConfirmPassword}
                     onChange={(e) => setRegisterConfirmPassword(e.target.value)}
                     placeholder="Ripeti la password"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/50 transition-all"
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
                     disabled={isLoading}
                   >
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -370,7 +419,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#e63946] hover:bg-[#c92a37] text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-[#e63946] hover:bg-[#d32f3c] text-white py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
               >
                 {isLoading ? (
                   <>
@@ -390,7 +439,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               <div className="w-full border-t border-white/10"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="px-4 bg-[#0f0f0f] text-xs text-white/40 uppercase tracking-wider">
+              <span className="px-4 bg-[#111111] text-xs text-white/30 uppercase tracking-wider">
                 Oppure
               </span>
             </div>
@@ -400,7 +449,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-white py-4 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
