@@ -586,7 +586,7 @@ export default function ChatPage() {
             <button className="text-on-surface hover:opacity-80 transition-opacity"><SlidersHorizontal className="w-5 h-5" /></button>
             <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
               {otherParticipant?.avatar_url ? (
-                <img src={otherParticipant.avatar_url} alt="" className="w-full h-full object-cover" />
+                <Image src={otherParticipant.avatar_url} alt="" width={40} height={40} className="w-full h-full object-cover" />
               ) : (
                 <User className="w-5 h-5 text-on-surface-variant" />
               )}
@@ -737,7 +737,7 @@ export default function ChatPage() {
               <button className="text-on-surface hover:opacity-80 transition-opacity"><SlidersHorizontal className="w-6 h-6" /></button>
               <div className="w-14 h-14 rounded-2xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
                 {otherParticipant?.avatar_url ? (
-                  <img src={otherParticipant.avatar_url} alt="" className="w-full h-full object-cover" />
+                  <Image src={otherParticipant.avatar_url} alt="" width={56} height={56} className="w-full h-full object-cover" />
                 ) : (
                   <User className="w-6 h-6 text-on-surface-variant" />
                 )}

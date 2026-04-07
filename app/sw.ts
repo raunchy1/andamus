@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck - Service Worker types not available in standard lib
+
 import { 
   Serwist, 
   CacheFirst, 
@@ -5,10 +8,6 @@ import {
   StaleWhileRevalidate,
   ExpirationPlugin
 } from "serwist";
-
-// @ts-nocheck - Service Worker file with special global scope
-
-declare const self: any;
 
 // Default cache configuration for Next.js
 const defaultCache = [
@@ -141,14 +140,14 @@ const serwist = new Serwist({
 });
 
 // Listen for messages from the client
-self.addEventListener("message", (event: MessageEvent) => {
+self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });
 
 // Handle push notifications (for future implementation)
-self.addEventListener("push", (event: any) => {
+self.addEventListener("push", (event) => {
   if (event.data) {
     const data = event.data.json();
     event.waitUntil(
@@ -173,12 +172,12 @@ self.addEventListener("push", (event: any) => {
 });
 
 // Handle notification clicks
-self.addEventListener("notificationclick", (event: any) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   
   if (event.action === "open" || event.action === "default") {
     event.waitUntil(
-      (self as any).clients.openWindow(event.notification.data?.url || "/it")
+      self.clients.openWindow(event.notification.data?.url || "/it")
     );
   }
 });

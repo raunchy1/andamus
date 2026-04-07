@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, AlertCircle, CheckCircle2, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
+import { Loader2, AlertCircle, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -66,7 +66,6 @@ interface RideDetailViewProps {
   stops: { city: string; order_index: number }[];
   existingBooking: Booking | null;
   requesting: boolean;
-  copied: boolean;
   showLoginModal: boolean;
   setShowLoginModal: (v: boolean) => void;
   handleShare: () => void;
@@ -83,7 +82,6 @@ function RideDetailMobile({
   stops,
   existingBooking,
   requesting,
-  copied,
   showLoginModal,
   setShowLoginModal,
   handleShare,
@@ -394,7 +392,6 @@ function RideDetailDesktop({
   stops,
   existingBooking,
   requesting,
-  copied,
   showLoginModal,
   setShowLoginModal,
   handleShare,
@@ -738,7 +735,7 @@ export default function RideDetailPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(false);
-  const [copied, setCopied] = useState(false);
+
   const [similarRides, setSimilarRides] = useState<Ride[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [existingBooking, setExistingBooking] = useState<Booking | null>(null);
@@ -842,9 +839,7 @@ export default function RideDetailPage() {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      setCopied(true);
       toast.success("Link copiato negli appunti!");
-      setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Errore nella copia");
     }
@@ -931,7 +926,6 @@ export default function RideDetailPage() {
     stops,
     existingBooking,
     requesting,
-    copied,
     showLoginModal,
     setShowLoginModal,
     handleShare,

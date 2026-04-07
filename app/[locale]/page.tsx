@@ -8,6 +8,7 @@ import { useDeviceType } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
 import { Search, CircleDot, MapPin, Calendar, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star } from "lucide-react";
+import Image from "next/image";
 import { DatePicker } from "@/components/ui/date-picker";
 
 const sardinianCities = [
@@ -80,7 +81,7 @@ function HomeMobile({
           </Link>
           <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
             {userAvatar ? (
-              <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
+              <Image src={userAvatar} alt="Profile" width={40} height={40} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <User className="w-5 h-5 text-on-surface-variant" />
@@ -180,7 +181,7 @@ function HomeMobile({
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-surface-container overflow-hidden flex-shrink-0">
                       {ride.profiles.avatar_url ? (
-                        <img src={ride.profiles.avatar_url} alt={ride.profiles.name} className="w-full h-full object-cover" />
+                        <Image src={ride.profiles.avatar_url} alt={ride.profiles.name} width={32} height={32} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <User className="w-3.5 h-3.5 text-on-surface-variant" />
@@ -404,7 +405,7 @@ function HomeDesktop({
                 <div className="flex items-center gap-4 pt-6 border-t border-white/5">
                   <div className="w-12 h-12 rounded-full bg-white/5 overflow-hidden border border-white/10">
                     {ride.profiles.avatar_url ? (
-                      <img src={ride.profiles.avatar_url} alt={ride.profiles.name} className="w-full h-full object-cover" />
+                      <Image src={ride.profiles.avatar_url} alt={ride.profiles.name} width={48} height={48} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <User className="w-6 h-6 text-[#e5e2e1]/60" />
@@ -510,7 +511,7 @@ export default function HomePage() {
         .order("time", { ascending: true })
         .limit(5);
 
-      setTodayRides(((ridesData as unknown as any[]) || []).map(r => ({ ...r, profiles: normalizeProfile(r.profiles) })) as Ride[]);
+      setTodayRides(((ridesData as unknown as Record<string, unknown>[]) || []).map(r => ({ ...r, profiles: normalizeProfile(r.profiles) })) as Ride[]);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {

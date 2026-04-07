@@ -10,6 +10,7 @@ import { completeGamificationAction } from "@/lib/gamification";
 import { Calculator, Sparkles } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useDeviceType } from "@/components/view-mode";
+import Image from "next/image";
 import { ShareApp } from "@/components/ShareApp";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -80,7 +81,7 @@ function OfferMobile({
         </div>
         <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
           {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-            <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="" className="w-full h-full object-cover" />
+            <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
           ) : (
             <User className="w-5 h-5 text-on-surface-variant" />
           )}
@@ -478,7 +479,7 @@ function OfferDesktop({
           </div>
           <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
             {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-              <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="" className="w-full h-full object-cover" />
+              <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
             ) : (
               <User className="w-5 h-5 text-on-surface-variant" />
             )}
@@ -943,7 +944,7 @@ export default function OfferPage() {
           
           // Auto-fill price if not already set
           if (!formData.price && !formData.isFree) {
-            handleChange("price", finalPrice.toString());
+            setFormData(prev => ({ ...prev, price: finalPrice.toString() }));
           }
         } else {
           // Fallback to local estimation if API fails

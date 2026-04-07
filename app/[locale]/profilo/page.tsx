@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, ChevronRight, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield } from "lucide-react";
+import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -137,7 +137,7 @@ export default function ProfilePage() {
   const [bookingRequests, setBookingRequests] = useState<BookingRequest[]>([]);
   const [rideAlerts, setRideAlerts] = useState<RideAlert[]>([]);
   const [rideTemplates, setRideTemplates] = useState<RideTemplate[]>([]);
-  const [myRequests, setMyRequests] = useState<RideRequestItem[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("rides");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -229,13 +229,6 @@ export default function ProfilePage() {
         setRideTemplates([]);
       }
 
-      const { data: myRequestsData } = await supabase
-        .from("ride_requests")
-        .select("id, from_city, to_city, date, time, seats_needed, max_price, status, created_at")
-        .eq("user_id", currentUser.id)
-        .order("created_at", { ascending: false });
-      
-      setMyRequests(myRequestsData || []);
       setLoading(false);
     };
 
@@ -384,16 +377,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDeleteRequest = async (requestId: string) => {
-    const { error } = await supabase.from("ride_requests").delete().eq("id", requestId);
-    if (error) {
-      toast.error("Errore nell'eliminazione della richiesta");
-    } else {
-      setMyRequests((prev) => prev.filter((r) => r.id !== requestId));
-      toast.success("Richiesta eliminata");
-    }
-  };
-
   const getUserName = () => {
     if (!user) return "";
     return profile?.name || user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Utente";
@@ -470,10 +453,12 @@ export default function ProfilePage() {
           <div className="flex items-center gap-3">
             <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20 flex items-center justify-center">
               {getUserAvatar() ? (
-                <img 
+                <Image 
                   src={getUserAvatar()!} 
                   alt="Profile" 
-                  className="w-full h-full object-cover" 
+                  width={40} 
+                  height={40} 
+                  className="w-full h-full object-cover rounded-full" 
                   onError={(e) => { 
                     (e.target as HTMLImageElement).style.display = 'none';
                     const fallback = e.currentTarget.nextElementSibling as HTMLElement;
@@ -660,7 +645,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
                           {request.passenger.avatar_url ? (
-                            <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
+                            <Image src={request.passenger.avatar_url} alt={request.passenger.name} width={40} height={40} className="w-full h-full object-cover rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                           ) : (
                             <User className="w-5 h-5 text-on-surface-variant" />
                           )}
@@ -1059,7 +1044,7 @@ export default function ProfilePage() {
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
                               {request.passenger.avatar_url ? (
-                                <img src={request.passenger.avatar_url} alt="" className="w-full h-full object-cover" />
+                                <Image src={request.passenger.avatar_url} alt="" width={48} height={48} className="w-full h-full object-cover" />
                               ) : (
                                 <User className="w-5 h-5 text-on-surface-variant" />
                               )}

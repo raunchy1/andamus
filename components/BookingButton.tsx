@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyBookingRequest } from "@/lib/notifications";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
@@ -29,7 +30,7 @@ interface BookingButtonProps {
   driverId: string;
   availableSeats: number;
   currentUserId: string | null;
-  user: any; // Supabase user object
+  user: SupabaseUser | null;
   ride: {
     from_city: string;
     to_city: string;
@@ -77,8 +78,8 @@ export function BookingButton({
           setBookingStatus(data.status);
           setBookingId(data.id);
         }
-      } catch (error) {
-        console.error("Error checking booking:", error);
+      } catch {
+        // Error handled silently
       } finally {
         setIsChecking(false);
       }
@@ -155,10 +156,9 @@ export function BookingButton({
       setTimeout(() => {
         router.push(`/chat/${booking.id}`);
       }, 1500);
-    } catch (error: any) {
-      console.error("Booking error:", error);
+    } catch (err) {
       toast.dismiss(toastId);
-      toast.error(error.message || "Errore nella prenotazione");
+      toast.error(err instanceof Error ? err.message : "Errore nella prenotazione");
     } finally {
       setIsLoading(false);
     }

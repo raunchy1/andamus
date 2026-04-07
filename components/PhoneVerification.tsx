@@ -73,9 +73,11 @@ export function PhoneVerification({
 
       setIsOtpSent(true);
       toast.success("Codice OTP inviato al tuo telefono!");
-    } catch (error: any) {
-      console.error("Error sending OTP:", error);
-      toast.error(error.message || "Errore nell'invio dell'OTP");
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error sending OTP:", err);
+      }
+      toast.error(err instanceof Error ? err.message : "Errore nell'invio dell'OTP");
     } finally {
       setIsLoading(false);
     }
@@ -122,9 +124,11 @@ export function PhoneVerification({
       setShowModal(false);
       setIsOtpSent(false);
       setOtp("");
-    } catch (error: any) {
-      console.error("Error verifying OTP:", error);
-      toast.error(error.message || "Codice OTP non valido");
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error verifying OTP:", err);
+      }
+      toast.error(err instanceof Error ? err.message : "Codice OTP non valido");
     } finally {
       setIsLoading(false);
     }
@@ -210,7 +214,7 @@ export function PhoneVerification({
                       <Phone className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
                     </div>
                     <p className="text-xs text-on-surface-variant">
-                      Inserisci il numero con prefisso internazionale (+39 per l'Italia)
+                      Inserisci il numero con prefisso internazionale (+39 per l&apos;Italia)
                     </p>
                   </div>
 
@@ -243,7 +247,7 @@ export function PhoneVerification({
                       type="text"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                      placeholder="123456"
+                      placeholder="000000"
                       maxLength={6}
                       className="w-full h-12 px-4 text-center text-2xl tracking-widest rounded-xl bg-surface-container-highest border-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant"
                     />

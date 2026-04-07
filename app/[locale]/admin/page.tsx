@@ -236,7 +236,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, supabase]);
+  }, [isAdminUser, supabase]);
 
   useEffect(() => {
     fetchData();

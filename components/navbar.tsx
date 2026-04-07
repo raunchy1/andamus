@@ -50,6 +50,7 @@ export function Navbar() {
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+  const [avatarKey, setAvatarKey] = useState(0);
   const pathname = usePathname();
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
   const supabase = createClient();
@@ -82,15 +83,15 @@ export function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        setAvatarError(false);
+        setAvatarKey(prev => prev + 1);
       }
     );
 
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  useEffect(() => {
-    setAvatarError(false);
-  }, [user]);
+  // Reset avatar error when user changes by incrementing key
 
   const handleLogin = async () => {
     try {
@@ -259,6 +260,7 @@ export function Navbar() {
                     <span className="text-sm font-medium truncate max-w-[80px] lg:max-w-[120px] hidden sm:block">{getUserName()}</span>
                     {getUserAvatar() && !avatarError ? (
                       <Image 
+                        key={avatarKey}
                         src={getUserAvatar()!} 
                         alt={getUserName()}
                         width={32}
@@ -436,6 +438,7 @@ export function Navbar() {
                       >
                         {getUserAvatar() && !avatarError ? (
                           <Image 
+                            key={avatarKey}
                             src={getUserAvatar()!} 
                             alt={getUserName()}
                             width={32}

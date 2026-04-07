@@ -116,13 +116,13 @@ export async function sendBookingRequestEmail(data: {
     });
 
     if (error) {
-      console.error("Error sending booking request email:", error);
+      // console.error("Error sending booking request email:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error in sendBookingRequestEmail:", error);
+    // console.error("Error in sendBookingRequestEmail:", error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -174,13 +174,13 @@ export async function sendBookingConfirmedEmail(data: {
     });
 
     if (error) {
-      console.error("Error sending booking confirmed email:", error);
+      // console.error("Error sending booking confirmed email:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error in sendBookingConfirmedEmail:", error);
+    // console.error("Error in sendBookingConfirmedEmail:", error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -223,13 +223,13 @@ export async function sendBookingRejectedEmail(data: {
     });
 
     if (error) {
-      console.error("Error sending booking rejected email:", error);
+      // console.error("Error sending booking rejected email:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error in sendBookingRejectedEmail:", error);
+    // console.error("Error in sendBookingRejectedEmail:", error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -273,13 +273,13 @@ export async function sendNewMessageEmail(data: {
     });
 
     if (error) {
-      console.error("Error sending new message email:", error);
+      // console.error("Error sending new message email:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error in sendNewMessageEmail:", error);
+    // console.error("Error in sendNewMessageEmail:", error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -314,13 +314,13 @@ export async function sendWelcomeEmail(data: {
     });
 
     if (error) {
-      console.error("Error sending welcome email:", error);
+      // console.error("Error sending welcome email:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error in sendWelcomeEmail:", error);
+    // console.error("Error in sendWelcomeEmail:", error);
     return { success: false, error: "Internal error" };
   }
 }
@@ -368,13 +368,13 @@ export async function sendRideReminderEmail(data: {
     });
 
     if (error) {
-      console.error("Error sending ride reminder email:", error);
+      // console.error("Error sending ride reminder email:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error in sendRideReminderEmail:", error);
+    // console.error("Error in sendRideReminderEmail:", error);
     return { success: false, error: "Internal error" };
   }
 }
