@@ -348,36 +348,46 @@ function SearchMobile(props: SearchViewProps) {
           </div>
         </div>
 
-        {/* Sticky Minimal Search Bar */}
+        {/* Sticky Minimal Search Bar - Full Width Responsive */}
         <div className="sticky top-24 z-40 mb-6 sm:mb-8">
-          <div className="bg-surface-container-high rounded-xl p-3 sm:p-4 flex items-center gap-2 sm:gap-4 shadow-2xl">
-            <Search className="w-5 h-5 text-primary flex-shrink-0" />
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Partenza</span>
-              <select
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-base sm:text-lg w-full appearance-none cursor-pointer truncate"
-              >
-                <option value="" className="bg-surface-container-high">Da dove parti?</option>
-                {sardinianCities.map((city) => (
-                  <option key={city} value={city} className="bg-surface-container-high">{city}</option>
-                ))}
-              </select>
-            </div>
-            <div className="h-8 w-[1px] bg-outline-variant opacity-30 flex-shrink-0" />
-            <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Destinazione</span>
-              <select
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-base sm:text-lg w-full appearance-none cursor-pointer truncate"
-              >
-                <option value="" className="bg-surface-container-high">Dove vai?</option>
-                {sardinianCities.map((city) => (
-                  <option key={city} value={city} className="bg-surface-container-high">{city}</option>
-                ))}
-              </select>
+          <div className="bg-surface-container-high rounded-xl p-2.5 sm:p-4 shadow-2xl w-full max-w-full">
+            {/* Mobile: Stacked layout, Desktop: Side by side */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              {/* Search Icon - hidden on mobile, shown on sm+ */}
+              <Search className="hidden sm:block w-5 h-5 text-primary flex-shrink-0" />
+              
+              {/* From/To Grid */}
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 flex-1 min-w-0">
+                {/* Partenza */}
+                <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">Da</span>
+                  <select
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                    className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-sm sm:text-base w-full appearance-none cursor-pointer truncate"
+                  >
+                    <option value="" className="bg-surface-container-high">Partenza</option>
+                    {sardinianCities.map((city) => (
+                      <option key={city} value={city} className="bg-surface-container-high">{city}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Destinazione */}
+                <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">A</span>
+                  <select
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-sm sm:text-base w-full appearance-none cursor-pointer truncate"
+                  >
+                    <option value="" className="bg-surface-container-high">Destinazione</option>
+                    {sardinianCities.map((city) => (
+                      <option key={city} value={city} className="bg-surface-container-high">{city}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
