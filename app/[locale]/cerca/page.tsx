@@ -837,7 +837,7 @@ function SearchDesktop(props: SearchViewProps) {
           <Link
             key={ride.id}
             href={`/corsa/${ride.id}`}
-            className="group bg-[#141414] border border-white/5 rounded-2xl p-6 transition-all duration-300 hover:border-[#ffb3b1]/30 hover:-translate-y-1 cursor-pointer block"
+            className="group bg-[#141414] border border-white/5 rounded-2xl p-6 transition-all duration-200 hover:border-[#ffb3b1]/30 hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer block touch-manipulation"
           >
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-1">

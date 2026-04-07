@@ -107,8 +107,8 @@ export default function CancelBookingPage() {
           ride: ride,
           passenger: passenger,
         } as BookingDetails);
-      } catch (error) {
-        console.error("Error fetching booking:", error);
+      } catch (_error) {
+        // Error fetching booking
         toast.error("Errore nel caricare la prenotazione");
       } finally {
         setLoading(false);
@@ -138,7 +138,7 @@ export default function CancelBookingPage() {
         .eq("id", bookingId);
 
       if (updateError) {
-        console.error("Update error:", updateError);
+        // Update error - logged silently
       }
 
       // Send cancellation notification to other party
@@ -151,14 +151,14 @@ export default function CancelBookingPage() {
             reason: selectedReason,
           }),
         });
-      } catch (emailError) {
-        console.error("Email error:", emailError);
+      } catch (_emailError) {
+        // Email error - logged silently
       }
 
       toast.success("Prenotazione cancellata con successo");
       router.push("/profilo");
-    } catch (error) {
-      console.error("Error cancelling booking:", error);
+    } catch (_error) {
+      // Error cancelling booking - logged silently
       toast.error("Errore nella cancellazione");
     } finally {
       setCancelling(false);

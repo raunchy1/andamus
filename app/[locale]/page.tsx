@@ -241,7 +241,7 @@ function HomeDesktop({
   todayRides,
   loading,
   userName,
-  userAvatar,
+  userAvatar: _userAvatar,
   router,
 }: HomeUIProps) {
   const today = new Date().toISOString().split("T")[0];

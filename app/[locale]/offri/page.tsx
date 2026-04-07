@@ -840,7 +840,7 @@ function OfferDesktop({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-2xl shadow-lg transform active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-2xl shadow-lg transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 min-h-[56px]"
                 >
                   {isSubmitting
                     ? formData.isRecurring ? "Creazione in corso..." : "Pubblicazione in corso..."
@@ -961,8 +961,8 @@ export default function OfferPage() {
           setDistanceKm(null);
           setSuggestedPrice(null);
         }
-      } catch (error) {
-        console.error("Price calculation error:", error);
+      } catch (_error) {
+        // Price calculation error
         setDistanceKm(null);
         setSuggestedPrice(null);
       } finally {
@@ -1081,7 +1081,7 @@ export default function OfferPage() {
           });
 
         if (templateError) {
-          console.error("Template error:", templateError);
+          // Template error logged silently
           toast.dismiss(toastId);
           toast.error(`Errore: ${templateError.message}`);
           setSubmitError(`Errore durante la pubblicazione: ${templateError.message}`);
@@ -1092,7 +1092,7 @@ export default function OfferPage() {
         const { error: rpcError } = await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
         
         if (rpcError) {
-          console.error("RPC error:", rpcError);
+          // RPC error logged silently
           toast.dismiss(toastId);
           toast.error(`Errore generazione corse: ${rpcError.message}`);
         }
@@ -1120,7 +1120,7 @@ export default function OfferPage() {
           .select();
 
         if (error) {
-          console.error("Insert error:", error);
+          // Insert error logged silently
           toast.dismiss(toastId);
           toast.error(`Errore: ${error.message}`);
           setSubmitError(`Errore durante la pubblicazione: ${error.message}`);
@@ -1140,7 +1140,7 @@ export default function OfferPage() {
             );
             
             if (stopsError) {
-              console.error("Stops error:", stopsError);
+              // Stops error logged silently
               toast.error(`Errore fermate: ${stopsError.message}`);
             }
           }
@@ -1185,7 +1185,7 @@ export default function OfferPage() {
       
       setIsSubmitted(true);
     } catch (err) {
-      console.error("Submit error:", err);
+      // Submit error logged silently
       toast.dismiss(toastId);
       const errorMessage = err instanceof Error ? err.message : "Errore imprevisto. Riprova più tardi.";
       toast.error(`Errore: ${errorMessage}`);

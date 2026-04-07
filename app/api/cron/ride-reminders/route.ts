@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       .returns<RideWithProfile[]>();
 
     if (ridesError) {
-      console.error("Error fetching rides:", ridesError);
+      // Error fetching rides - logged silently
       return NextResponse.json(
         { error: "Failed to fetch rides" },
         { status: 500 }
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
           .returns<BookingWithProfile[]>();
 
         if (bookingsError) {
-          console.error(`Error fetching bookings for ride ${ride.id}:`, bookingsError);
+          // Error fetching bookings - logged silently
           errors.push(`Ride ${ride.id}: bookings error`);
           continue;
         }
@@ -175,8 +175,8 @@ export async function GET(request: NextRequest) {
           .update({ reminder_sent: true })
           .eq("id", ride.id);
 
-      } catch (rideError) {
-        console.error(`Error processing ride ${ride.id}:`, rideError);
+      } catch (_rideError) {
+        // Error processing ride
         errors.push(`Ride ${ride.id}: processing error`);
       }
     }
@@ -188,8 +188,8 @@ export async function GET(request: NextRequest) {
       errors: errors.length > 0 ? errors : undefined,
     });
 
-  } catch (error) {
-    console.error("Error in ride-reminders cron:", error);
+  } catch (_error) {
+    // Error in ride-reminders cron
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
