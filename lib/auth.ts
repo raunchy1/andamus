@@ -22,6 +22,26 @@ export async function signInWithGoogle() {
   }
 }
 
+export async function signInWithFacebook() {
+  const supabase = createClient();
+  
+  // Use dynamic redirect URL based on environment
+  const redirectTo = typeof window !== "undefined"
+    ? `${window.location.origin}/auth/callback`
+    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/auth/callback";
+  
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "facebook",
+    options: {
+      redirectTo,
+    },
+  });
+  
+  if (error) {
+    throw error;
+  }
+}
+
 export async function signUpWithEmail(email: string, password: string, fullName: string) {
   const supabase = createClient();
   
