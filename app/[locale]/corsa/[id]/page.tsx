@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, AlertCircle, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
+import { CarInfoCard } from "@/components/CarInfoCard";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -50,6 +51,11 @@ interface Ride {
   music_preference?: "quiet" | "music" | "talk" | null;
   women_only?: boolean | null;
   students_only?: boolean | null;
+  // Car info
+  car_model?: string | null;
+  car_color?: string | null;
+  car_plate?: string | null;
+  car_year?: number | null;
   profiles: {
     name: string;
     avatar_url: string | null;
@@ -190,15 +196,28 @@ function RideDetailMobile({
                 <p className="font-semibold text-on-surface text-base leading-snug">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
               </div>
             </div>
-            <div className="bg-surface-container-low rounded-3xl p-6 flex flex-col justify-between h-[200px] shadow-sm">
-              <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center">
-                <Car className="w-8 h-8 text-primary" />
+            
+            {/* Car Info Card - Full width if has details */}
+            {ride.car_model ? (
+              <div className="col-span-2">
+                <CarInfoCard 
+                  model={ride.car_model}
+                  color={ride.car_color}
+                  plate={ride.car_plate}
+                  year={ride.car_year}
+                />
               </div>
-              <div>
-                <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40 mb-2">Veicolo</p>
-                <p className="font-semibold text-on-surface text-base leading-snug">Auto del guidatore</p>
+            ) : (
+              <div className="bg-surface-container-low rounded-3xl p-6 flex flex-col justify-between h-[200px] shadow-sm">
+                <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center">
+                  <Car className="w-8 h-8 text-primary" />
+                </div>
+                <div>
+                  <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40 mb-2">Veicolo</p>
+                  <p className="font-semibold text-on-surface text-base leading-snug">Auto del guidatore</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* The Path Indicator */}

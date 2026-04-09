@@ -15,6 +15,7 @@ import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-citi
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { PhoneVerification } from "@/components/PhoneVerification";
 import { EmailPreferences } from "@/components/EmailPreferences";
+import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useDeviceType } from "@/components/view-mode";
@@ -30,6 +31,11 @@ interface Profile {
   rating: number;
   phone_verified?: boolean;
   phone?: string | null;
+  // Car info
+  car_model?: string | null;
+  car_color?: string | null;
+  car_plate?: string | null;
+  car_year?: number | null;
 }
 
 interface Ride {
@@ -301,7 +307,27 @@ export default function ProfilePage() {
     }
   };
 
-
+  const handleSaveCarInfo = async (carData: { car_model?: string | null; car_color?: string | null; car_plate?: string | null; car_year?: number | null }) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        car_model: carData.car_model,
+        car_color: carData.car_color,
+        car_plate: carData.car_plate,
+        car_year: carData.car_year,
+      })
+      .eq("id", user.id);
+    
+    if (error) {
+      toast.error("Errore nel salvare le informazioni del veicolo");
+    } else {
+      toast.success("Veicolo salvato con successo!");
+      // Update local profile state
+      setProfile(prev => prev ? { ...prev, ...carData } : null);
+    }
+  };
 
   const openRatingModal = (rideId: string, userToRate: { id: string; name: string; avatar_url: string | null }) => {
     setRatingRideId(rideId);
@@ -572,6 +598,25 @@ export default function ProfilePage() {
                   }}
                 />
               </div>
+            </div>
+          </section>
+
+          {/* Car Info Section */}
+          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
+            <div className="bg-surface-container p-4 rounded-xl">
+              <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                <Car className="w-5 h-5 text-primary" />
+                Il tuo veicolo
+              </h3>
+              <CarInfoForm
+                initialData={{
+                  car_model: profile?.car_model,
+                  car_color: profile?.car_color,
+                  car_plate: profile?.car_plate,
+                  car_year: profile?.car_year,
+                }}
+                onSave={handleSaveCarInfo}
+              />
             </div>
           </section>
 
@@ -1327,6 +1372,23 @@ export default function ProfilePage() {
                     }}
                   />
                 </div>
+              </div>
+
+              {/* Car Info - Desktop */}
+              <div className="bg-surface-container p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                  <Car className="w-5 h-5 text-primary" />
+                  Il tuo veicolo
+                </h3>
+                <CarInfoForm
+                  initialData={{
+                    car_model: profile?.car_model,
+                    car_color: profile?.car_color,
+                    car_plate: profile?.car_plate,
+                    car_year: profile?.car_year,
+                  }}
+                  onSave={handleSaveCarInfo}
+                />
               </div>
 
               <div className="bg-surface-container p-6 rounded-2xl">

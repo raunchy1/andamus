@@ -285,6 +285,62 @@ function OfferMobile({
               </div>
             </div>
 
+            {/* Car Info Section */}
+            <div className="space-y-4">
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Veicolo</label>
+              
+              {savedCarInfo?.car_model && (
+                <div className="flex items-center gap-3 mb-3">
+                  <input
+                    type="checkbox"
+                    id="useSavedCar"
+                    checked={formData.useSavedCar}
+                    onChange={(e) => handleChange("useSavedCar", e.target.checked)}
+                    className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary"
+                  />
+                  <label htmlFor="useSavedCar" className="text-sm text-on-surface">
+                    Usa il mio veicolo salvato: <span className="font-semibold">{savedCarInfo.car_model}</span>
+                    {savedCarInfo.car_color && ` (${savedCarInfo.car_color})`}
+                  </label>
+                </div>
+              )}
+              
+              {!formData.useSavedCar || !savedCarInfo?.car_model ? (
+                <div className="space-y-3 bg-surface-container-highest p-4 rounded-xl">
+                  <input
+                    type="text"
+                    placeholder="Modello auto (es. Fiat Panda)"
+                    value={formData.carModel}
+                    onChange={(e) => handleChange("carModel", e.target.value)}
+                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold"
+                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Colore"
+                      value={formData.carColor}
+                      onChange={(e) => handleChange("carColor", e.target.value)}
+                      className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Anno"
+                      value={formData.carYear}
+                      onChange={(e) => handleChange("carYear", e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Targa"
+                      value={formData.carPlate}
+                      onChange={(e) => handleChange("carPlate", e.target.value.toUpperCase().slice(0, 7))}
+                      className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary font-mono"
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
             {/* Intermediate Stops */}
             <div className="space-y-4">
               <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Fermate intermedie</label>
@@ -881,7 +937,21 @@ export default function OfferPage() {
     isRecurring: false,
     recurrenceDays: [] as number[],
     stops: [] as string[],
+    // Car info
+    useSavedCar: true,
+    carModel: "",
+    carColor: "",
+    carPlate: "",
+    carYear: "",
   });
+  
+  // User's saved car info
+  const [savedCarInfo, setSavedCarInfo] = useState<{
+    car_model?: string | null;
+    car_color?: string | null;
+    car_plate?: string | null;
+    car_year?: number | null;
+  } | null>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -976,6 +1046,28 @@ export default function OfferPage() {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
+      // Load saved car info if user is logged in
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("car_model, car_color, car_plate, car_year")
+          .eq("id", user.id)
+          .single();
+        
+        if (profile) {
+          setSavedCarInfo(profile);
+          // Pre-fill form with saved car
+          setFormData(prev => ({
+            ...prev,
+            carModel: profile.car_model || "",
+            carColor: profile.car_color || "",
+            carPlate: profile.car_plate || "",
+            carYear: profile.car_year?.toString() || "",
+          }));
+        }
+      }
+      
       setAuthLoading(false);
     };
     
@@ -1115,6 +1207,11 @@ export default function OfferPage() {
             music_preference: formData.musicPreference || null,
             women_only: formData.womenOnly || null,
             students_only: formData.studentsOnly || null,
+            // Car info
+            car_model: formData.carModel || savedCarInfo?.car_model || null,
+            car_color: formData.carColor || savedCarInfo?.car_color || null,
+            car_plate: formData.carPlate || savedCarInfo?.car_plate || null,
+            car_year: formData.carYear ? parseInt(formData.carYear) : savedCarInfo?.car_year || null,
           })
           .select();
 
