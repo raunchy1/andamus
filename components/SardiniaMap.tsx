@@ -27,9 +27,18 @@ const routes = [
   { from: "Nuoro",    to: "Sassari" },
 ];
 
-export default function SardiniaMap({ className, onCityClick }: { className?: string; onCityClick?: (city: string) => void }) {
+interface SardiniaMapProps {
+  className?: string;
+  mode?: "mobile" | "desktop";
+  onRouteClick?: (e: React.MouseEvent, from: string, to: string) => void;
+  onCityClick?: (city: string) => void;
+}
+
+export function SardiniaMap({ className, mode = "desktop", onRouteClick, onCityClick }: SardiniaMapProps) {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  const isMobile = mode === "mobile";
 
   const cityMap = useMemo(() => {
     const map: Record<string, { svgX: number; svgY: number }> = {};
@@ -39,7 +48,7 @@ export default function SardiniaMap({ className, onCityClick }: { className?: st
 
   return (
     <div className={`bg-[#0a0a0a] rounded-2xl overflow-hidden border border-white/5 ${className || ""}`}>
-      <svg viewBox="25 375 160 210" className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="25 375 160 210" className={isMobile ? "w-full h-full" : "w-full h-auto"} preserveAspectRatio="xMidYMid meet">
         {/* Grid lines */}
         <g stroke="rgba(255,255,255,0.08)" strokeWidth="0.15">
           <line x1="25" y1="405" x2="185" y2="405" />
@@ -99,7 +108,8 @@ export default function SardiniaMap({ className, onCityClick }: { className?: st
                 strokeOpacity="0.4"
                 strokeDasharray="6 3"
                 strokeLinecap="round"
-                className="route-line"
+                className="route-line cursor-pointer"
+                onClick={(e) => onRouteClick?.(e, route.from, route.to)}
               />
             );
           })}

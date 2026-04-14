@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs ls:*)",
+      "Bash(grep:*)",
+      "Bash(ls -la /home/cristian/Desktop/Andamusu/andamus/components/*.tsx)",
+      "Bash(find /home/cristian/Desktop/Andamusu/andamus -maxdepth 2 -type f \\\\\\( -name \"*.json\" -o -name \"*.config.*\" \\\\\\) ! -path \"*/node_modules/*\" -exec basename {} \\\\;)"
+    ]
+  }
+}
