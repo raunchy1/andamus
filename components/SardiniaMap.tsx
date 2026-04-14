@@ -1,229 +1,273 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useDeviceType } from "./view-mode";
 
-interface SardiniaMapProps {
-  highlightedRoute?: string;
-  onRouteClick?: (routeId: string, from: string, to: string) => void;
-  mode?: "mobile" | "desktop";
-  className?: string;
-}
-
-interface City {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  labelOffset?: { x: number; y: number };
-}
-
-interface RouteInfo {
-  id: string;
-  from: string;
-  to: string;
-  d: string;
-  length: number;
-  distance: string;
-  duration: string;
-  delay: number;
-}
-
-const CITIES: City[] = [
-  { id: "cagliari", name: "Cagliari", x: 291, y: 555, labelOffset: { x: 10, y: 4 } },
-  { id: "sassari", name: "Sassari", x: 138, y: 103, labelOffset: { x: -60, y: 4 } },
-  { id: "olbia", name: "Olbia", x: 403, y: 132, labelOffset: { x: 10, y: -8 } },
-  { id: "nuoro", name: "Nuoro", x: 385, y: 267, labelOffset: { x: 10, y: -10 } },
-  { id: "oristano", name: "Oristano", x: 124, y: 375, labelOffset: { x: -65, y: 4 } },
-  { id: "tortoli", name: "Tortoli", x: 450, y: 367, labelOffset: { x: 10, y: 12 } },
-  { id: "alghero", name: "Alghero", x: 53, y: 200, labelOffset: { x: -62, y: -8 } },
-  { id: "carbonia", name: "Carbonia", x: 124, y: 571, labelOffset: { x: -65, y: 4 } },
-];
-
-const ROUTES: RouteInfo[] = [
-  { id: "cagliari-nuoro", from: "cagliari", to: "nuoro", d: "M291,555 C310,450 350,350 385,267", length: 290, distance: "~180 km", duration: "~2h 15m", delay: 0 },
-  { id: "cagliari-tortoli", from: "cagliari", to: "tortoli", d: "M291,555 C340,500 400,430 450,367", length: 210, distance: "~150 km", duration: "~2h", delay: 0.3 },
-  { id: "cagliari-olbia", from: "cagliari", to: "olbia", d: "M291,555 C320,400 370,260 403,132", length: 425, distance: "~270 km", duration: "~3h 15m", delay: 0.6 },
-  { id: "nuoro-sassari", from: "nuoro", to: "sassari", d: "M385,267 C300,220 210,160 138,103", length: 260, distance: "~130 km", duration: "~1h 45m", delay: 0.9 },
-  { id: "olbia-sassari", from: "olbia", to: "sassari", d: "M403,132 C310,140 220,120 138,103", length: 275, distance: "~100 km", duration: "~1h 15m", delay: 1.2 },
-  { id: "tortoli-olbia", from: "tortoli", to: "olbia", d: "M450,367 C440,280 420,200 403,132", length: 250, distance: "~150 km", duration: "~1h 50m", delay: 1.5 },
-  { id: "cagliari-oristano", from: "cagliari", to: "oristano", d: "M291,555 C240,500 180,440 124,375", length: 200, distance: "~100 km", duration: "~1h 20m", delay: 1.8 },
-  { id: "sassari-alghero", from: "sassari", to: "alghero", d: "M138,103 C110,130 80,165 53,200", length: 130, distance: "~35 km", duration: "~35m", delay: 2.1 },
-  { id: "cagliari-carbonia", from: "cagliari", to: "carbonia", d: "M291,555 C230,560 175,565 124,571", length: 170, distance: "~70 km", duration: "~1h", delay: 2.4 },
-  { id: "oristano-sassari", from: "oristano", to: "sassari", d: "M124,375 C120,290 125,190 138,103", length: 275, distance: "~110 km", duration: "~1h 30m", delay: 2.7 },
-];
-
-const SARDINIA_COAST =
-  "M 218,21" +
-  " C 230,15 250,12 271,13" +
-  " C 290,15 305,18 329,24" +
-  " C 345,28 360,30 374,32" +
-  " C 385,30 395,35 403,42" +
-  " C 412,50 420,60 430,72" +
-  " C 438,85 445,98 447,110" +
-  " C 445,120 435,130 426,128" +
-  " C 418,126 408,125 403,130" +
-  " C 408,140 418,155 430,175" +
-  " C 440,192 448,210 453,235" +
-  " C 456,255 455,275 450,300" +
-  " C 448,320 447,335 448,355" +
-  " C 449,370 450,380 450,395" +
-  " C 450,410 448,430 445,450" +
-  " C 442,470 438,490 432,510" +
-  " C 426,530 420,545 418,560" +
-  " C 416,575 413,600 410,625" +
-  " C 408,635 406,640 403,642" +
-  " C 395,640 385,636 370,630" +
-  " C 355,624 340,618 325,612" +
-  " C 310,608 300,600 295,590" +
-  " C 290,580 285,570 280,560" +
-  " C 270,565 255,575 241,590" +
-  " C 230,600 218,612 203,625" +
-  " C 195,630 188,632 180,630" +
-  " C 165,625 148,618 135,610" +
-  " C 120,600 108,590 100,578" +
-  " C 90,565 82,550 78,535" +
-  " C 74,520 72,505 73,490" +
-  " C 75,475 78,460 82,445" +
-  " C 86,430 92,415 100,400" +
-  " C 108,385 118,372 130,362" +
-  " C 138,355 135,345 125,338" +
-  " C 115,328 105,318 98,305" +
-  " C 90,290 85,275 82,260" +
-  " C 78,245 74,230 72,215" +
-  " C 68,200 60,185 53,172" +
-  " C 48,160 44,148 42,138" +
-  " C 42,125 45,110 52,98" +
-  " C 60,85 72,72 88,60" +
-  " C 105,48 128,38 155,30" +
-  " C 175,24 198,22 218,21 Z";
-
-const SAN_PIETRO = "M 42,570 C 45,565 52,563 57,565 C 62,567 63,573 60,578 C 57,583 50,584 45,581 C 41,578 40,574 42,570 Z";
-const SANT_ANTIOCO = "M 82,590 C 85,584 92,580 100,582 C 108,584 112,590 110,596 C 108,602 100,606 93,604 C 86,602 82,596 82,590 Z";
-
-export function SardiniaMap({
-  highlightedRoute,
-  onRouteClick,
-  mode: propMode,
-  className = "",
-}: SardiniaMapProps) {
-  const deviceType = useDeviceType();
-  const mode = propMode || deviceType || "desktop";
-  const isMobile = mode === "mobile";
-  const [hoveredRoute, setHoveredRoute] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
-  const [animationsReady, setAnimationsReady] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => setAnimationsReady(true), 100);
-    return () => clearTimeout(t);
-  }, []);
-
-  const visibleCities = useMemo(() => {
-    if (isMobile) {
-      return CITIES.filter((c) => ["cagliari", "sassari", "olbia", "nuoro"].includes(c.id));
-    }
-    return CITIES;
-  }, [isMobile]);
-
-  const getRouteStatus = (route: RouteInfo) => {
-    const isHighlighted = highlightedRoute === route.id;
-    const isHovered = hoveredRoute === route.id;
-    const isConnectedToSelected = selectedCity && (route.from === selectedCity || route.to === selectedCity);
-    return { isHighlighted, isHovered, isConnectedToSelected };
-  };
-
-  const handleRouteEnter = (e: React.MouseEvent, route: RouteInfo) => {
-    setHoveredRoute(route.id);
-    setTooltip({ x: e.clientX + 12, y: e.clientY - 24, text: `${capitalize(route.from)} \u2192 ${capitalize(route.to)} \u00b7 ${route.distance} \u00b7 ${route.duration}` });
-  };
-
-  const handleRouteMove = (e: React.MouseEvent) => {
-    if (!tooltip) return;
-    setTooltip((t) => (t ? { ...t, x: e.clientX + 12, y: e.clientY - 24 } : null));
-  };
-
-  const handleRouteLeave = () => { setHoveredRoute(null); setTooltip(null); };
-
-  const handleCityClick = (cityId: string) => {
-    setSelectedCity((prev) => (prev === cityId ? null : cityId));
-  };
-
+export function SardiniaMap() {
   return (
-    <motion.div
-      ref={containerRef}
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative ${isMobile ? "max-h-[320px]" : "max-h-[520px]"} w-full overflow-hidden ${className}`}
-      role="img"
-      aria-label="Mappa interattiva della Sardegna con le rotte Andamus"
-    >
-      <svg viewBox="0 0 500 650" className="w-full h-auto drop-shadow-2xl" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <filter id="routeGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-            <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="cityGlow" x="-100%" y="-100%" width="300%" height="300%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <linearGradient id="islandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1a1a1a" />
-            <stop offset="50%" stopColor="#181818" />
-            <stop offset="100%" stopColor="#141414" />
-          </linearGradient>
-        </defs>
+    <svg viewBox="0 0 380 540" className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <linearGradient id="islandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1a1a1a" />
+          <stop offset="50%" stopColor="#181818" />
+          <stop offset="100%" stopColor="#141414" />
+        </linearGradient>
+      </defs>
 
-        <motion.path d={SARDINIA_COAST} fill="url(#islandGradient)" stroke="#2a2a2a" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 1.2, ease: "easeOut" }} />
-        <path d={SARDINIA_COAST} fill="none" stroke="#ffffff" strokeOpacity={0.03} strokeWidth={10} />
-        <path d={SAN_PIETRO} fill="url(#islandGradient)" stroke="#2a2a2a" strokeWidth={1} />
-        <path d={SANT_ANTIOCO} fill="url(#islandGradient)" stroke="#2a2a2a" strokeWidth={1} />
+      {/* Background */}
+      <rect width="380" height="540" fill="#0a0a0a" rx="12" />
 
-        <g>
-          {ROUTES.map((route) => {
-            const { isHighlighted, isHovered, isConnectedToSelected } = getRouteStatus(route);
-            const active = isHighlighted || isHovered || isConnectedToSelected;
-            const sw = active ? (isMobile ? 3.5 : 5) : isMobile ? 2 : 3;
-            const sc = active ? "#ffb3b1" : "#e63946";
-            const op = active ? 1 : 0.6;
-            return (
-              <motion.path key={route.id} d={route.d} fill="none" stroke={sc} strokeWidth={sw} strokeOpacity={op} strokeLinecap="round" filter={active ? "url(#routeGlow)" : undefined} className="cursor-pointer" initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: animationsReady ? 1 : 0, opacity: op }} transition={{ pathLength: { duration: 1.5, ease: "easeOut", delay: route.delay * 0.5 }, opacity: { duration: 0.3 } }} whileHover={{ strokeWidth: sw + 1 }} onMouseEnter={(e) => handleRouteEnter(e, route)} onMouseMove={handleRouteMove} onMouseLeave={handleRouteLeave} onClick={() => onRouteClick?.(route.id, route.from, route.to)} />
-            );
-          })}
+      {/* Grid lines */}
+      <g stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" strokeDasharray="4 4">
+        <line x1="95.6" y1="20" x2="95.6" y2="520" />
+        <line x1="190.0" y1="20" x2="190.0" y2="520" />
+        <line x1="284.4" y1="20" x2="284.4" y2="520" />
+        <line x1="20" y1="484.4" x2="360" y2="484.4" />
+        <line x1="20" y1="286.8" x2="360" y2="286.8" />
+        <line x1="20" y1="89.2" x2="360" y2="89.2" />
+      </g>
+
+      {/* Grid labels */}
+      <g fill="rgba(255,255,255,0.15)" fontSize="8" fontFamily="monospace">
+        <text x="95.6" y="16" textAnchor="middle">8.5&deg;E</text>
+        <text x="190.0" y="16" textAnchor="middle">9.0&deg;E</text>
+        <text x="284.4" y="16" textAnchor="middle">9.5&deg;E</text>
+        <text x="14" y="487.4" textAnchor="middle">39.0&deg;N</text>
+        <text x="14" y="289.8" textAnchor="middle">40.0&deg;N</text>
+        <text x="14" y="92.2" textAnchor="middle">41.0&deg;N</text>
+      </g>
+
+      {/* Shadow */}
+      <path d="M42.6,175.0 L50.1,177.1 L50.5,175.0 L58.3,172.8 L64.2,176.9 L62.5,179.0 L64.5,181.1 L68.2,189.2 L74.8,192.8 L79.4,204.9 L79.6,210.1 L76.2,220.3 L78.8,222.6 L83.4,223.2 L95.3,233.4 L91.4,247.5 L92.5,250.4 L90.2,254.9 L91.0,260.1 L95.7,266.5 L96.5,274.1 L89.8,279.8 L83.7,281.4 L77.0,281.1 L82.3,286.2 L81.4,290.5 L78.3,293.9 L80.0,300.7 L79.4,308.8 L85.5,311.9 L87.0,314.5 L92.5,308.8 L99.8,308.0 L107.0,312.6 L108.9,321.7 L107.1,330.3 L102.5,340.0 L98.3,345.5 L90.7,335.4 L88.0,337.6 L88.6,346.1 L90.1,346.9 L88.1,353.4 L89.8,357.0 L89.5,364.3 L93.1,368.5 L89.3,379.6 L80.4,391.3 L77.8,392.9 L76.5,397.1 L81.7,400.3 L81.7,404.8 L74.6,413.4 L76.9,415.2 L79.0,420.7 L82.7,421.0 L86.7,429.7 L84.5,434.2 L73.4,442.3 L74.4,446.0 L79.0,448.1 L86.7,456.6 L86.0,461.8 L91.2,463.5 L96.4,470.7 L92.2,476.1 L90.3,470.9 L85.6,468.5 L84.5,465.9 L77.1,467.8 L72.2,465.7 L70.3,472.5 L72.5,479.1 L76.6,486.2 L80.3,494.9 L82.3,496.3 L88.1,493.4 L89.4,489.5 L89.6,482.6 L92.2,476.4 L98.3,474.9 L103.7,475.7 L106.8,478.2 L110.9,478.5 L112.7,484.1 L110.8,487.5 L115.3,494.5 L119.8,495.7 L121.9,499.8 L118.7,508.6 L126.8,508.2 L139.1,502.3 L140.2,500.0 L155.0,508.2 L159.0,508.3 L161.4,511.7 L165.5,511.4 L175.3,505.6 L178.8,501.7 L195.2,490.0 L201.5,475.9 L196.1,470.2 L194.7,463.5 L196.6,458.0 L204.6,449.2 L211.1,445.1 L216.3,446.7 L220.6,451.1 L224.1,447.1 L229.3,443.7 L236.4,442.4 L239.7,444.7 L249.2,445.3 L251.4,446.9 L254.0,447.3 L258.3,451.6 L263.1,453.1 L275.1,462.7 L284.5,460.6 L287.9,461.5 L291.0,465.1 L294.8,461.1 L299.5,459.4 L300.7,453.8 L299.6,450.1 L300.7,440.2 L304.7,432.4 L311.7,426.9 L307.3,424.6 L305.9,419.1 L307.8,410.7 L314.9,396.3 L314.4,389.9 L312.5,389.3 L313.7,380.8 L316.0,378.9 L317.0,367.7 L315.2,358.7 L320.7,347.0 L319.3,333.9 L322.5,321.0 L324.6,318.8 L321.9,315.2 L322.0,308.5 L326.3,304.7 L322.7,300.0 L322.7,292.9 L325.2,289.7 L326.3,283.1 L329.0,280.1 L331.6,272.8 L323.3,268.5 L317.2,261.7 L311.2,248.7 L310.9,239.9 L312.3,235.2 L318.7,226.6 L328.5,217.4 L335.4,214.5 L339.0,209.4 L339.5,205.3 L342.7,202.2 L349.0,188.6 L349.2,185.0 L343.9,182.6 L341.9,176.6 L335.0,171.1 L333.2,162.2 L335.0,156.6 L333.3,153.2 L328.1,149.5 L328.1,141.0 L322.7,138.3 L319.8,134.7 L320.7,130.4 L324.0,122.5 L316.2,119.6 L313.1,115.0 L309.4,114.0 L314.9,108.5 L309.6,108.5 L307.2,110.0 L301.6,109.7 L290.3,107.4 L291.4,105.7 L292.5,105.5 L297.0,106.5 L297.2,106.4 L305.2,98.4 L303.1,96.9 L307.9,92.0 L316.3,95.3 L316.9,91.3 L312.2,91.8 L305.7,88.0 L302.0,91.6 L298.7,88.0 L292.5,87.5 L291.9,81.6 L295.1,74.4 L300.8,72.3 L300.1,69.3 L290.2,61.3 L289.4,64.4 L281.8,64.2 L278.6,62.1 L273.8,60.7 L267.6,59.0 L261.0,57.6 L253.4,56.0 L245.9,54.6 L238.3,52.6 L232.7,50.7 L227.0,49.7 L221.3,45.7 L217.6,42.8 L212.8,40.8 L208.1,40.2 L202.4,42.4 L196.8,43.8 L189.2,45.1 L181.7,45.7 L174.1,44.7 L168.4,42.8 L162.8,41.8 L159.0,42.2 L153.3,43.6 L147.7,45.9 L142.0,48.7 L134.4,50.7 L126.9,51.7 L121.2,53.6 L113.7,56.6 L108.0,59.6 L104.2,62.5 L100.4,66.5 L94.8,70.4 L91.0,74.4 L87.2,78.3 L83.4,81.3 L79.7,84.3 L74.0,88.2 L68.3,92.2 L62.7,98.1 L57.0,104.0 L51.3,110.9 L47.6,115.9 L45.7,121.8 L43.8,127.7 L41.9,133.7 L40.0,139.6 L38.1,145.5 L37.2,151.5 L36.2,157.4 L36.2,163.3 L37.2,167.3 L39.1,171.2 L42.6,175.0 Z" fill="rgba(0,0,0,0.3)" />
+
+      {/* Main island */}
+      <path d="M39.6,172.0 L47.1,174.1 L47.5,172.0 L55.3,169.8 L61.2,173.9 L59.5,176.0 L61.5,178.1 L65.2,186.2 L71.8,189.8 L76.4,201.9 L76.6,207.1 L73.2,217.3 L75.8,219.6 L80.4,220.2 L92.3,230.4 L88.4,244.5 L89.5,247.4 L87.2,251.9 L88.0,257.1 L92.7,263.5 L93.5,271.1 L86.8,276.8 L80.7,278.4 L74.0,278.1 L79.3,283.2 L78.4,287.5 L75.3,290.9 L77.0,297.7 L76.4,305.8 L82.5,308.9 L84.0,311.5 L89.5,305.8 L96.8,305.0 L104.0,309.6 L105.9,318.7 L104.1,327.3 L99.5,337.0 L95.3,342.5 L87.7,332.4 L85.0,334.6 L85.6,343.1 L87.1,343.9 L85.1,350.4 L86.8,354.0 L86.5,361.3 L90.1,365.5 L86.3,376.6 L77.4,388.3 L74.8,389.9 L73.5,394.1 L78.7,397.3 L78.7,401.8 L71.6,410.4 L73.9,412.2 L76.0,417.7 L79.7,418.0 L83.7,426.7 L81.5,431.2 L70.4,439.3 L71.4,443.0 L76.0,445.1 L83.7,453.6 L83.0,458.8 L88.2,460.5 L93.4,467.7 L89.2,473.1 L87.3,467.9 L82.6,465.5 L81.5,462.9 L74.1,464.8 L69.2,462.7 L67.3,469.5 L69.5,476.1 L73.6,483.2 L77.3,491.9 L79.3,493.3 L85.1,490.4 L86.4,486.5 L86.6,479.6 L89.2,473.4 L95.3,471.9 L100.7,472.7 L103.8,475.2 L107.9,475.5 L109.7,481.1 L107.8,484.5 L112.3,491.5 L116.8,492.7 L118.9,496.8 L115.7,505.6 L123.8,505.2 L136.1,499.3 L137.2,497.0 L152.0,505.2 L156.0,505.3 L158.4,508.7 L162.5,508.4 L172.3,502.6 L175.8,498.7 L192.2,487.0 L198.5,472.9 L193.1,467.2 L191.7,460.5 L193.6,455.0 L201.6,446.2 L208.1,442.1 L213.3,443.7 L217.6,448.1 L221.1,444.1 L226.3,440.7 L233.4,439.4 L236.7,441.7 L246.2,442.3 L248.4,443.9 L251.0,444.3 L255.3,448.6 L260.1,450.1 L272.1,459.7 L281.5,457.6 L284.9,458.5 L288.0,462.1 L291.8,458.1 L296.5,456.4 L297.7,450.8 L296.6,447.1 L297.7,437.2 L301.7,429.4 L308.7,423.9 L304.3,421.6 L302.9,416.1 L304.8,407.7 L311.9,393.3 L311.4,386.9 L309.5,386.3 L310.7,377.8 L313.0,375.9 L314.0,364.7 L312.2,355.7 L317.7,344.0 L316.3,330.9 L319.5,318.0 L321.6,315.8 L318.9,312.2 L319.0,305.5 L323.3,301.7 L319.7,297.0 L319.7,289.9 L322.2,286.7 L323.3,280.1 L326.0,277.1 L328.6,269.8 L320.3,265.5 L314.2,258.7 L308.2,245.7 L307.9,236.9 L309.3,232.2 L315.7,223.6 L325.5,214.4 L332.4,211.5 L336.0,206.4 L336.5,202.3 L339.7,199.2 L346.0,185.6 L346.2,182.0 L340.9,179.6 L338.9,173.6 L332.0,168.1 L330.2,159.2 L332.0,153.6 L330.3,150.2 L325.1,146.5 L325.1,138.0 L319.7,135.3 L316.8,131.7 L317.7,127.4 L321.0,119.5 L313.2,116.6 L310.1,112.0 L306.4,111.0 L311.9,105.5 L306.6,105.5 L304.2,107.0 L298.6,106.7 L287.3,104.4 L288.4,102.7 L289.5,102.5 L294.0,103.5 L294.2,103.4 L302.2,95.4 L300.1,93.9 L304.9,89.0 L313.3,92.3 L313.9,88.3 L309.2,88.8 L302.7,85.0 L299.0,88.6 L295.7,85.0 L289.5,84.5 L288.9,78.6 L292.1,71.4 L297.8,69.3 L297.1,66.3 L287.2,58.3 L286.4,61.4 L278.8,61.2 L275.6,59.1 L270.8,57.7 L264.6,56.0 L258.0,54.6 L250.4,53.0 L242.9,51.6 L235.3,49.6 L229.7,47.7 L224.0,46.7 L218.3,42.7 L214.6,39.8 L209.8,37.8 L205.1,37.2 L199.4,39.4 L193.8,40.8 L186.2,42.1 L178.7,42.7 L171.1,41.7 L165.4,39.8 L159.8,38.8 L156.0,39.2 L150.3,40.6 L144.7,42.9 L139.0,45.7 L131.4,47.7 L123.9,48.7 L118.2,50.6 L110.7,53.6 L105.0,56.6 L101.2,59.5 L97.4,63.5 L91.8,67.4 L88.0,71.4 L84.2,75.3 L80.4,78.3 L76.7,81.3 L71.0,85.2 L65.3,89.2 L59.7,95.1 L54.0,101.0 L48.3,107.9 L44.6,112.9 L42.7,118.8 L40.8,124.7 L38.9,130.7 L37.0,136.6 L35.1,142.5 L34.2,148.5 L33.2,154.4 L33.2,160.3 L34.2,164.3 L36.1,168.2 L39.6,172.0 Z" fill="url(#islandGrad)" stroke="#2a2a2a" strokeWidth="1.5" strokeLinejoin="round" />
+
+      {/* Islands */}
+      <path d="M74.8,456.8 L78.6,458.7 L80.4,462.7 L81.4,466.6 L80.4,470.6 L77.6,473.6 L72.9,475.5 L68.2,474.5 L65.3,471.6 L64.4,467.6 L65.3,463.7 L68.2,460.7 L71.0,457.7 L74.8,456.8 Z" fill="url(#islandGrad)" stroke="#2a2a2a" strokeWidth="1" />
+      <path d="M52.1,452.8 L55.9,454.8 L57.8,457.7 L56.8,461.7 L54.0,463.7 L50.2,463.7 L47.4,461.7 L46.4,457.7 L48.3,454.8 L52.1,452.8 Z" fill="url(#islandGrad)" stroke="#2a2a2a" strokeWidth="1" />
+      <path d="M48.3,81.3 L52.1,79.3 L55.9,75.3 L58.7,71.4 L59.7,69.4 L58.7,67.4 L54.9,68.4 L52.1,70.4 L49.3,73.4 L46.4,77.3 L48.3,81.3 Z" fill="url(#islandGrad)" stroke="#2a2a2a" strokeWidth="1" />
+      <path d="M259.9,39.8 L264.6,40.8 L269.3,39.8 L272.2,37.8 L271.2,34.8 L267.4,33.8 L262.7,34.8 L259.9,36.8 L258.9,38.8 L259.9,39.8 Z" fill="url(#islandGrad)" stroke="#2a2a2a" strokeWidth="1" />
+
+      {/* SARDEGNA label */}
+      <text x="190" y="280" fill="rgba(255,255,255,0.04)" fontSize="48" fontWeight="900" textAnchor="middle" letterSpacing="12">SARDEGNA</text>
+
+      {/* Routes */}
+      <g>
+        <motion.path
+          d="M213.0,440.2 L112.9,305.6"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.0, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.0 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 1.5 }
+          }}
+        />
+        <motion.path
+          d="M213.0,440.2 L99.7,452.0"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.15, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.15 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 1.65 }
+          }}
+        />
+        <motion.path
+          d="M106.1,143.3 L60.4,176.5"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.3, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.3 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 1.8 }
+          }}
+        />
+        <motion.path
+          d="M106.1,143.3 L283.6,104.3"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.44999999999999996, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.44999999999999996 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 1.95 }
+          }}
+        />
+        <motion.path
+          d="M283.6,104.3 L252.3,223.6"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.6, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.6 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 2.1 }
+          }}
+        />
+        <motion.path
+          d="M252.3,223.6 L314.3,301.6"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.75, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.75 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 2.25 }
+          }}
+        />
+        <motion.path
+          d="M112.9,305.6 L106.1,143.3"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 0.8999999999999999, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 0.8999999999999999 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 2.4 }
+          }}
+        />
+        <motion.path
+          d="M213.0,440.2 L252.3,223.6"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 1.05, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 1.05 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 2.55 }
+          }}
+        />
+        <motion.path
+          d="M252.3,223.6 L112.9,305.6"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 1.2, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 1.2 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 2.7 }
+          }}
+        />
+        <motion.path
+          d="M60.4,176.5 L283.6,104.3"
+          fill="none"
+          stroke="#e63946"
+          strokeWidth="1"
+          strokeOpacity={0.6}
+          strokeDasharray="6 4"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1, strokeDashoffset: [0, -20] }}
+          transition={{
+            pathLength: { duration: 1.5, delay: 1.3499999999999999, ease: "easeOut" },
+            opacity: { duration: 0.5, delay: 1.3499999999999999 },
+            strokeDashoffset: { duration: 3, repeat: Infinity, ease: "linear", delay: 2.8499999999999996 }
+          }}
+        />
+      </g>
+
+      {/* Cities */}
+      <g>
+        <g className="cursor-pointer">
+          <circle cx="213.0" cy="440.2" r="4" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="221.0" y="444.2" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Cagliari</text>
+          <motion.circle
+            cx="213.0" cy="440.2" r="4"
+            fill="none" stroke="#e63946" strokeWidth="1" strokeOpacity={0.4}
+            animate={{ r: [4, 16], strokeOpacity: [0.4, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+          />
         </g>
-
-        <g>
-          {visibleCities.map((city, index) => {
-            const sel = selectedCity === city.id;
-            return (
-              <motion.g key={city.id} className="cursor-pointer" onClick={() => handleCityClick(city.id)} initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.8 + index * 0.1, type: "spring", stiffness: 300, damping: 20 }}>
-                <motion.circle cx={city.x} cy={city.y} r={sel ? (isMobile ? 12 : 16) : isMobile ? 8 : 11} fill="#e63946" opacity={sel ? 0.25 : 0.15} filter="url(#cityGlow)" />
-                <motion.circle cx={city.x} cy={city.y} r={sel ? (isMobile ? 6 : 8) : isMobile ? 4 : 6} fill="#e63946" stroke="#ffffff" strokeWidth={1.5} strokeOpacity={0.3} whileHover={{ scale: 1.2 }} />
-                <text x={city.x + (city.labelOffset?.x ?? 8)} y={city.y + (city.labelOffset?.y ?? 4)} fill="#e5e2e1" fontSize={isMobile ? 10 : 12} fontWeight={700} letterSpacing={0.1} style={{ textShadow: "0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5)", textTransform: "uppercase" }} className="font-sans pointer-events-none select-none">{city.name}</text>
-              </motion.g>
-            );
-          })}
+        <g className="cursor-pointer">
+          <circle cx="106.1" cy="143.3" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="114.1" y="147.3" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Sassari</text>
         </g>
-      </svg>
-
-      {tooltip && (
-        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="fixed z-50 px-4 py-2.5 rounded-xl bg-[#1c1b1b] border border-[#2a2a2a] text-[#e5e2e1] text-xs font-semibold shadow-2xl pointer-events-none backdrop-blur-sm" style={{ left: tooltip.x, top: tooltip.y }}>{tooltip.text}</motion.div>
-      )}
-
-      {isMobile && selectedCity && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="absolute bottom-2 left-2 right-2 text-center">
-          <span className="inline-block px-4 py-2 rounded-full bg-[#1c1b1b]/95 text-[10px] font-bold uppercase tracking-widest text-primary border border-primary/30 shadow-xl backdrop-blur-sm">Tocca un'altra citt\u00e0 per resettare</span>
-        </motion.div>
-      )}
-    </motion.div>
+        <g className="cursor-pointer">
+          <circle cx="283.6" cy="104.3" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="291.6" y="108.3" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Olbia</text>
+        </g>
+        <g className="cursor-pointer">
+          <circle cx="252.3" cy="223.6" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="260.3" y="227.6" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Nuoro</text>
+        </g>
+        <g className="cursor-pointer">
+          <circle cx="112.9" cy="305.6" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="120.9" y="309.6" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Oristano</text>
+        </g>
+        <g className="cursor-pointer">
+          <circle cx="314.3" cy="301.6" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="322.3" y="305.6" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Tortoli</text>
+        </g>
+        <g className="cursor-pointer">
+          <circle cx="60.4" cy="176.5" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="68.4" y="180.5" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Alghero</text>
+        </g>
+        <g className="cursor-pointer">
+          <circle cx="99.7" cy="452.0" r="3" fill="#e63946" stroke="#0a0a0a" strokeWidth="1.5" />
+          <text x="107.7" y="456.0" fill="#ffffff" fontSize="10" fontWeight="600"
+            style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Carbonia</text>
+        </g>
+      </g>
+    </svg>
   );
-}
-
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }
