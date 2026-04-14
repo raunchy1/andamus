@@ -42,6 +42,11 @@ interface OfferViewProps {
     isRecurring: boolean;
     recurrenceDays: number[];
     stops: string[];
+    useSavedCar: boolean;
+    carModel: string;
+    carColor: string;
+    carPlate: string;
+    carYear: string;
   };
   errors: Record<string, string>;
   submitError: string;
@@ -52,6 +57,12 @@ interface OfferViewProps {
   today: string;
   handleChange: (field: string, value: string | boolean | number[] | string[]) => void;
   handleSubmit: (e: React.FormEvent) => void;
+  savedCarInfo: {
+    car_model?: string | null;
+    car_color?: string | null;
+    car_plate?: string | null;
+    car_year?: number | null;
+  } | null;
 }
 
 function OfferMobile({
@@ -66,6 +77,7 @@ function OfferMobile({
   today,
   handleChange,
   handleSubmit,
+  savedCarInfo,
 }: OfferViewProps) {
   const router = useRouter();
 
@@ -519,6 +531,7 @@ function OfferDesktop({
   today,
   handleChange,
   handleSubmit,
+  savedCarInfo,
 }: OfferViewProps) {
   const router = useRouter();
 
@@ -1406,6 +1419,7 @@ export default function OfferPage() {
     today,
     handleChange,
     handleSubmit,
+    savedCarInfo,
   };
 
   return deviceType === "desktop" ? <OfferDesktop {...commonProps} /> : <OfferMobile {...commonProps} />;
