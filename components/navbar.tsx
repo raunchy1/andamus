@@ -138,7 +138,7 @@ export function Navbar() {
       <nav className="mx-auto flex h-16 md:h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <Link 
-          href="/" 
+          href={`/${locale}`} 
           className={`flex items-center gap-2 md:gap-3 transition-all hover:scale-105 flex-shrink-0 ${
             isHome ? "text-white" : "text-[#1a1a2e]"
           }`}

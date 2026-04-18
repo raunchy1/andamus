@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { useLocale } from "next-intl";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,6 +20,7 @@ const languages = [
 export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
   const locale = useLocale();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -35,6 +36,13 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
 
   // Get the path without locale prefix
   const pathnameWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+
+  // Preserve query parameters when switching language
+  const queryString = searchParams.toString();
+  const getHref = (newLocale: string) => {
+    const base = `/${newLocale}${pathnameWithoutLocale}`;
+    return queryString ? `${base}?${queryString}` : base;
+  };
 
   const currentLanguage = languages.find((l) => l.code === locale) || languages[0];
 
@@ -91,7 +99,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
                 {languages.map((language) => (
                   <Link
                     key={language.code}
-                    href={`/${language.code}${pathnameWithoutLocale}`}
+                    href={getHref(language.code)}
                     onClick={() => handleLanguageChange(language.code)}
                     className={`flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors ${
                       isHome
