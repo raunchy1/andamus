@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { searchRides } from "@/lib/rides-actions";
@@ -185,20 +186,21 @@ function AlertModal({
   maxPrice: number | null;
   supabase: ReturnType<typeof createClient>;
 }) {
+  const t = useTranslations('search');
   if (!showAlertModal) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
       <div className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-6">
-        <h3 className="mb-1 text-xl font-extrabold tracking-tight text-on-surface">Salva alerta</h3>
-        <p className="mb-4 text-sm text-on-surface-variant">Ricevi una notifica quando viene pubblicato un passaggio che corrisponde ai tuoi criteri.</p>
+        <h3 className="mb-1 text-xl font-extrabold tracking-tight text-on-surface">{t('saveAlert')}</h3>
+        <p className="mb-4 text-sm text-on-surface-variant">{t('alertDescription')}</p>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
             setAlertSaving(true);
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-              toast.error("Devi accedere per salvare un alerta");
+              toast.error(t('loginToSaveAlert'));
               setAlertSaving(false);
               return;
             }
@@ -217,7 +219,7 @@ function AlertModal({
             if (error) {
               toast.error("Errore nel salvare l'alerta");
             } else {
-              toast.success("Alerta salvata!");
+              toast.success(t('alertSaved'));
               setShowAlertModal(false);
             }
           }}
@@ -276,7 +278,7 @@ function AlertModal({
               disabled={alertSaving}
               className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary transition-colors hover:opacity-90 disabled:opacity-50"
             >
-              {alertSaving ? "Salvataggio..." : "Salva alerta"}
+              {alertSaving ? t('saving') : t('saveAlert')}
             </button>
           </div>
         </form>
@@ -286,6 +288,7 @@ function AlertModal({
 }
 
 function SearchMobile(props: SearchViewProps) {
+  const t = useTranslations('search');
   const {
     activeFilter, setActiveFilter,
     origin, setOrigin,
@@ -428,7 +431,7 @@ function SearchMobile(props: SearchViewProps) {
         {showFilters && (
           <div className="mb-6 sm:mb-8 bg-surface-container-low rounded-xl p-3 sm:p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">Filtri avanzati</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">{t('advancedFilters')}</h3>
               <button onClick={() => setShowFilters(false)} className="text-on-surface-variant hover:text-on-surface">
                 <X className="w-5 h-5" />
               </button>
@@ -530,7 +533,7 @@ function SearchMobile(props: SearchViewProps) {
                 onClick={clearFilters}
                 className="w-full py-2 rounded-lg border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-high transition-colors"
               >
-                Cancella filtri
+                {t('clearFilters')}
               </button>
             )}
           </div>
@@ -539,7 +542,7 @@ function SearchMobile(props: SearchViewProps) {
         {/* Results count */}
         <div className="mb-4 sm:mb-6 flex items-center justify-between">
           <p className="text-sm text-on-surface-variant">
-            {loading ? "Caricamento..." : `${rides.length} corse trovate`}
+            {loading ? t('loading') : t('resultsCount', { count: rides.length })}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -658,6 +661,7 @@ function SearchMobile(props: SearchViewProps) {
 }
 
 function SearchDesktop(props: SearchViewProps) {
+  const t = useTranslations('search');
   const {
     activeFilter, setActiveFilter,
     origin, setOrigin,
@@ -772,7 +776,7 @@ function SearchDesktop(props: SearchViewProps) {
             }`}
           >
             <SlidersHorizontal className="w-3 h-3" />
-            Filtri avanzati
+            {t('advancedFilters')}
             {activeFiltersCount > 0 && !showFilters && (
               <span className="ml-1 w-4 h-4 bg-[#0f0f0f] text-[#ffb3b1] rounded-full text-[9px] font-bold flex items-center justify-center">
                 {activeFiltersCount}
@@ -784,7 +788,7 @@ function SearchDesktop(props: SearchViewProps) {
               onClick={clearFilters}
               className="px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest text-[#e5e2e1] hover:text-[#ffb3b1] transition-colors"
             >
-              Cancella filtri
+              {t('clearFilters')}
             </button>
           )}
         </div>
@@ -899,7 +903,7 @@ function SearchDesktop(props: SearchViewProps) {
       {/* Results count */}
       <div className="mb-6 flex items-center justify-between">
         <p className="text-sm text-[#e5e2e1]/60">
-          {loading ? "Caricamento..." : `${rides.length} corse trovate`}
+          {loading ? t('loading') : t('resultsCount', { count: rides.length })}
         </p>
         <div className="flex items-center gap-2">
           <button
@@ -1024,6 +1028,7 @@ function SearchDesktop(props: SearchViewProps) {
 }
 
 function SearchContent() {
+  const t = useTranslations('search');
   const searchParams = useSearchParams();
   const deviceType = useDeviceType();
 
@@ -1081,7 +1086,7 @@ function SearchContent() {
       });
       setRides(results as Ride[]);
     } catch (err: any) {
-      toast.error(err?.message || "Errore nella ricerca. Riprova.");
+      toast.error(err?.message || t('searchError'));
     } finally {
       setLoading(false);
     }
