@@ -26,23 +26,22 @@
     "select": "Sprache wählen"
   },
   "home": {
-    "hero": {
-      "badge": "Sardische Fahrgemeinschaft",
-      "title": "Der einfachste Weg,",
-      "titleHighlight": "sich fortzubewegen",
-      "description": "Verbinde dich mit Mitreisenden. Spare Geld, reduziere Emissionen und entdecke neue Geschichten.",
-      "free": "Kostenlos.",
-      "from": "Von",
-      "to": "Nach",
-      "date": "Datum",
-      "searchButton": "SUCHEN",
-      "today": "Heute",
-      "tomorrow": "Morgen",
-      "thisWeek": "Diese Woche",
-      "subtitle": "auf Sardinien",
-      "fromPlaceholder": "Wohin möchtest du?",
-      "cityPlaceholder": "Stadt wählen"
-    },
+    "heroBadge": "Sardische Fahrgemeinschaft",
+    "heroTitle": "Der einfachste Weg,",
+    "heroTitleHighlight": "sich fortzubewegen",
+    "heroDescription": "Verbinde dich mit Mitreisenden. Spare Geld, reduziere Emissionen und entdecke neue Geschichten.",
+    "heroFree": "Kostenlos.",
+    "heroFrom": "Von",
+    "heroTo": "Nach",
+    "heroDate": "Datum",
+    "heroSearchButton": "SUCHEN",
+    "heroToday": "Heute",
+    "heroTomorrow": "Morgen",
+    "heroThisWeek": "Diese Woche",
+    "heroSubtitle": "auf Sardinien",
+    "heroFromPlaceholder": "Wohin möchtest du?",
+    "heroCityPlaceholder": "Stadt wählen",
+    "welcomeBack": "Willkommen zurück",
     "todayRides": "Heutige Fahrten",
     "noRidesToday": "Keine Fahrten heute verfügbar.",
     "howItWorks": {
@@ -88,22 +87,14 @@
     "offerRide": "Fahrt anbieten",
     "yourTrips": "Deine Reisen",
     "departuresConfirmed": "Bestätigte Abfahrten für den",
-    "feature1": {
-      "title": "Spare bei Reisen",
-      "description": "Teile Kosten mit anderen Passagieren und reduziere deine Reisekosten um bis zu 70%."
-    },
-    "feature2": {
-      "title": "Nachhaltig reisen",
-      "description": "Jede geteilte Fahrt reduziert CO₂-Emissionen und Verkehr auf Sardiniens Straßen."
-    },
-    "feature3": {
-      "title": "Vertrauenswürdige Community",
-      "description": "Verifizierte Profile und echte Bewertungen für sorgenfreies Reisen."
-    },
-    "cta": {
-      "title": "Hast du einen freien Platz im Auto?",
-      "description": "Biete eine Fahrt an und hilf jemandem, sein Ziel zu erreichen."
-    }
+    "feature1Title": "Spare bei Reisen",
+    "feature1Description": "Teile Kosten mit anderen Passagieren und reduziere deine Reisekosten um bis zu 70%.",
+    "feature2Title": "Nachhaltig reisen",
+    "feature2Description": "Jede geteilte Fahrt reduziert CO₂-Emissionen und Verkehr auf Sardiniens Straßen.",
+    "feature3Title": "Vertrauenswürdige Community",
+    "feature3Description": "Verifizierte Profile und echte Bewertungen für sorgenfreies Reisen.",
+    "ctaTitle": "Hast du einen freien Platz im Auto?",
+    "ctaDescription": "Biete eine Fahrt an und hilf jemandem, sein Ziel zu erreichen."
   },
   "search": {
     "title": "Mitfahrgelegenheit finden",

@@ -26,23 +26,22 @@
     "select": "Seleziona lingua"
   },
   "home": {
-    "hero": {
-      "badge": "Carpooling sardo",
-      "title": "Il modo più semplice di",
-      "titleHighlight": "spostarsi",
-      "description": "Connetti con chi viaggia nella tua stessa direzione. Risparmia, riduci le emissioni e scopri nuove storie.",
-      "free": "Gratis.",
-      "from": "Da",
-      "to": "A",
-      "date": "Data",
-      "searchButton": "CERCA",
-      "today": "Oggi",
-      "tomorrow": "Domani",
-      "thisWeek": "Questa settimana",
-      "subtitle": "in Sardegna",
-      "fromPlaceholder": "Dove vuoi andare?",
-      "cityPlaceholder": "Seleziona città"
-    },
+    "heroBadge": "Carpooling sardo",
+    "heroTitle": "Il modo più semplice di",
+    "heroTitleHighlight": "spostarsi",
+    "heroDescription": "Connetti con chi viaggia nella tua stessa direzione. Risparmia, riduci le emissioni e scopri nuove storie.",
+    "heroFree": "Gratis.",
+    "heroFrom": "Da",
+    "heroTo": "A",
+    "heroDate": "Data",
+    "heroSearchButton": "CERCA",
+    "heroToday": "Oggi",
+    "heroTomorrow": "Domani",
+    "heroThisWeek": "Questa settimana",
+    "heroSubtitle": "in Sardegna",
+    "heroFromPlaceholder": "Dove vuoi andare?",
+    "heroCityPlaceholder": "Seleziona città",
+    "welcomeBack": "Bentornato",
     "todayRides": "Corse disponibili oggi",
     "noRidesToday": "Nessuna corsa disponibile oggi.",
     "howItWorks": {
@@ -88,22 +87,14 @@
     "offerRide": "Offri un passaggio",
     "yourTrips": "I tuoi viaggi",
     "departuresConfirmed": "Partenze confermate per il",
-    "feature1": {
-      "title": "Risparmia sui viaggi",
-      "description": "Condividi le spese con altri passeggeri e riduci i costi del tuo spostamento fino al 70%."
-    },
-    "feature2": {
-      "title": "Viaggia sostenibile",
-      "description": "Ogni passaggio condiviso riduce le emissioni di CO₂ e il traffico sulle strade sarde."
-    },
-    "feature3": {
-      "title": "Community affidabile",
-      "description": "Profili verificati e recensioni reali per viaggiare sempre con tranquillità."
-    },
-    "cta": {
-      "title": "Hai un posto libero in macchina?",
-      "description": "Offri un passaggio e aiuta qualcuno a raggiungere la sua destinazione."
-    }
+    "feature1Title": "Risparmia sui viaggi",
+    "feature1Description": "Condividi le spese con altri passeggeri e riduci i costi del tuo spostamento fino al 70%.",
+    "feature2Title": "Viaggia sostenibile",
+    "feature2Description": "Ogni passaggio condiviso riduce le emissioni di CO₂ e il traffico sulle strade sarde.",
+    "feature3Title": "Community affidabile",
+    "feature3Description": "Profili verificati e recensioni reali per viaggiare sempre con tranquillità.",
+    "ctaTitle": "Hai un posto libero in macchina?",
+    "ctaDescription": "Offri un passaggio e aiuta qualcuno a raggiungere la sua destinazione."
   },
   "search": {
     "title": "Cerca un passaggio",
