@@ -10,12 +10,8 @@ import { LaunchBanner } from "@/components/LaunchBanner";
 import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star } from "lucide-react";
 import Image from "next/image";
 import { DatePicker } from "@/components/ui/date-picker";
-
-const sardinianCities = [
-  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì",
-  "Lanusei", "Iglesias", "Carbonia", "Alghero", "Tempio Pausania",
-  "La Maddalena", "Siniscola", "Dorgali", "Muravera"
-];
+import { CityCombobox } from "@/components/CityCombobox";
+import municipalities from "@/scripts/sardinia-municipalities.json";
 
 interface Ride {
   id: string;
@@ -120,16 +116,14 @@ function HomeMobile({
             >
               <div className="flex-1 flex items-center px-2 sm:px-3 gap-2 min-w-0">
                 <Search className="w-4 h-4 text-primary flex-shrink-0" />
-                <select
+                <CityCombobox
+                  cities={municipalities}
                   value={origin}
-                  onChange={(e) => setOrigin(e.target.value)}
-                  className="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full appearance-none cursor-pointer truncate"
-                >
-                  <option value="" className="bg-surface-container-high text-on-surface/50">Dove vuoi andare?</option>
-                  {sardinianCities.map((city) => (
-                    <option key={city} value={city} className="bg-surface-container-high">{city}</option>
-                  ))}
-                </select>
+                  onChange={setOrigin}
+                  placeholder="Dove vuoi andare?"
+                  label="partenza"
+                  buttonClassName="bg-transparent border-none shadow-none text-sm text-on-surface hover:bg-transparent hover:text-on-surface px-0 h-auto min-h-0"
+                />
               </div>
               <button
                 type="submit"
@@ -304,16 +298,14 @@ function HomeDesktop({
                 <CircleDot className="w-5 h-5 text-[#ffb3b1] flex-shrink-0" />
                 <div className="flex flex-col w-full min-w-0">
                   <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Partenza</label>
-                  <select
+                  <CityCombobox
+                    cities={municipalities}
                     value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full appearance-none cursor-pointer p-0 text-base truncate"
-                  >
-                    <option value="" className="bg-[#131313]">Seleziona città</option>
-                    {sardinianCities.map((city) => (
-                      <option key={city} value={city} className="bg-[#131313]">{city}</option>
-                    ))}
-                  </select>
+                    onChange={setOrigin}
+                    placeholder="Seleziona città"
+                    label="partenza"
+                    buttonClassName="bg-transparent border-none shadow-none text-[#e5e2e1] hover:bg-transparent hover:text-[#e5e2e1] px-0 h-auto min-h-0 text-base"
+                  />
                 </div>
               </div>
 
@@ -322,16 +314,14 @@ function HomeDesktop({
                 <MapPin className="w-5 h-5 text-[#ffb3b1] flex-shrink-0" />
                 <div className="flex flex-col w-full min-w-0">
                   <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">Destinazione</label>
-                  <select
+                  <CityCombobox
+                    cities={municipalities}
                     value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 text-[#e5e2e1] w-full appearance-none cursor-pointer p-0 text-base truncate"
-                  >
-                    <option value="" className="bg-[#131313]">Seleziona città</option>
-                    {sardinianCities.map((city) => (
-                      <option key={city} value={city} className="bg-[#131313]">{city}</option>
-                    ))}
-                  </select>
+                    onChange={setDestination}
+                    placeholder="Seleziona città"
+                    label="destinazione"
+                    buttonClassName="bg-transparent border-none shadow-none text-[#e5e2e1] hover:bg-transparent hover:text-[#e5e2e1] px-0 h-auto min-h-0 text-base"
+                  />
                 </div>
               </div>
 

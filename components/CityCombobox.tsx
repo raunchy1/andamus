@@ -30,6 +30,7 @@ interface CityComboboxProps {
   placeholder?: string;
   label?: string;
   disabled?: boolean;
+  buttonClassName?: string;
 }
 
 export function CityCombobox({
@@ -39,6 +40,7 @@ export function CityCombobox({
   placeholder = "Seleziona città",
   label,
   disabled = false,
+  buttonClassName,
 }: CityComboboxProps) {
   const [open, setOpen] = useState(false);
 
@@ -57,7 +59,8 @@ export function CityCombobox({
           disabled={disabled}
           className={cn(
             "w-full justify-between text-left font-normal min-h-[44px] touch-manipulation",
-            !value && "text-muted-foreground"
+            !value && "text-muted-foreground",
+            buttonClassName
           )}
         >
           <span className="flex items-center gap-2 truncate">
