@@ -10,6 +10,7 @@ import { LaunchBanner } from "@/components/LaunchBanner";
 import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star } from "lucide-react";
 import Image from "next/image";
 import { DatePicker } from "@/components/ui/date-picker";
+import { useTranslations, useLocale } from "next-intl";
 import { CityCombobox } from "@/components/CityCombobox";
 import municipalities from "@/scripts/sardinia-municipalities.json";
 
@@ -57,13 +58,14 @@ function HomeMobile({
   userAvatar,
   handleSearch,
 }: HomeUIProps) {
+	const t = useTranslations('home');
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1] overflow-x-hidden">
       {/* TopAppBar - NO pt-12, Layout shell handles navbar spacing */}
       <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4 z-sticky">
         <div className="flex flex-col">
           <span className="font-semibold uppercase tracking-widest text-[11px] text-[#ffb3b1]">
-            {userName ? `Bentornato, ${userName.split(" ")[0]}` : "Bentornato"}
+            {userName ? `${t('welcomeBack')}, ${userName.split(" ")[0]}` : t('welcomeBack')}
           </span>
           <h1 className="text-2xl font-extrabold tracking-tighter text-[#e5e2e1] uppercase">Andamus</h1>
         </div>
@@ -120,7 +122,7 @@ function HomeMobile({
                   cities={municipalities}
                   value={origin}
                   onChange={setOrigin}
-                  placeholder="Dove vuoi andare?"
+                  placeholder={t('hero.fromPlaceholder')}
                   label="partenza"
                   buttonClassName="bg-transparent border-none shadow-none text-sm text-on-surface hover:bg-transparent hover:text-on-surface px-0 h-auto min-h-0"
                 />
@@ -168,7 +170,7 @@ function HomeMobile({
                       <h4 className="text-base sm:text-lg font-bold mt-1 text-on-surface truncate">{ride.from_city} → {ride.to_city}</h4>
                     </div>
                     <div className="text-lg sm:text-xl font-extrabold tracking-tight text-on-surface flex-shrink-0">
-                      {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                      {ride.price === 0 ? t('free') : `€${ride.price}`}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -236,6 +238,7 @@ function HomeDesktop({
   userName,
   router,
 }: HomeUIProps) {
+  const t = useTranslations('home');
   const today = new Date().toISOString().split("T")[0];
   const [date, setDate] = useState(today);
 
@@ -302,7 +305,7 @@ function HomeDesktop({
                     cities={municipalities}
                     value={origin}
                     onChange={setOrigin}
-                    placeholder="Seleziona città"
+                    placeholder={t('hero.cityPlaceholder')}
                     label="partenza"
                     buttonClassName="bg-transparent border-none shadow-none text-[#e5e2e1] hover:bg-transparent hover:text-[#e5e2e1] px-0 h-auto min-h-0 text-base"
                   />
@@ -318,7 +321,7 @@ function HomeDesktop({
                     cities={municipalities}
                     value={destination}
                     onChange={setDestination}
-                    placeholder="Seleziona città"
+                    placeholder={t('hero.cityPlaceholder')}
                     label="destinazione"
                     buttonClassName="bg-transparent border-none shadow-none text-[#e5e2e1] hover:bg-transparent hover:text-[#e5e2e1] px-0 h-auto min-h-0 text-base"
                   />
@@ -331,7 +334,7 @@ function HomeDesktop({
                 onSelect={(newDate) => setDate(newDate || today)}
                 onClear={() => setDate(today)}
                 min={today}
-                label="Data"
+                label={t('hero.date')}
                 className="md:max-w-[200px]"
               />
 
@@ -386,7 +389,7 @@ function HomeDesktop({
                     <h4 className="text-xl font-bold mt-2">{ride.from_city} → {ride.to_city}</h4>
                   </div>
                   <div className="text-2xl font-extrabold tracking-tight">
-                    {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                    {ride.price === 0 ? t('free') : `€${ride.price}`}
                   </div>
                 </div>
 

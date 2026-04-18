@@ -28,20 +28,23 @@
   "home": {
     "hero": {
       "badge": "Carpooling sardo",
-      "title": "Viaggia insieme",
-      "titleHighlight": "in Sardegna",
-      "description": "Trova o offri un passaggio in tutta la Sardegna.",
+      "title": "Il modo più semplice di",
+      "titleHighlight": "spostarsi",
+      "description": "Connetti con chi viaggia nella tua stessa direzione. Risparmia, riduci le emissioni e scopri nuove storie.",
       "free": "Gratis.",
       "from": "Da",
       "to": "A",
       "date": "Data",
-      "searchButton": "Cerca passaggio",
+      "searchButton": "CERCA",
       "today": "Oggi",
       "tomorrow": "Domani",
-      "thisWeek": "Questa settimana"
+      "thisWeek": "Questa settimana",
+      "subtitle": "in Sardegna",
+      "fromPlaceholder": "Dove vuoi andare?",
+      "cityPlaceholder": "Seleziona città"
     },
-    "todayRides": "Corse di oggi",
-    "noRidesToday": "Nessuna corsa per oggi",
+    "todayRides": "Corse disponibili oggi",
+    "noRidesToday": "Nessuna corsa disponibile oggi.",
     "howItWorks": {
       "title": "Come funziona",
       "subtitle": "In tre semplici passaggi",
@@ -76,6 +79,30 @@
       "madeWith": "Fatto con",
       "inSardinia": "in Sardegna",
       "rights": "Tutti i diritti riservati."
+    },
+    "seeAll": "Vedi tutte",
+    "today": "Oggi",
+    "free": "Gratis",
+    "car": " · Auto",
+    "searchOtherDates": "Cerca altre date",
+    "offerRide": "Offri un passaggio",
+    "yourTrips": "I tuoi viaggi",
+    "departuresConfirmed": "Partenze confermate per il",
+    "feature1": {
+      "title": "Risparmia sui viaggi",
+      "description": "Condividi le spese con altri passeggeri e riduci i costi del tuo spostamento fino al 70%."
+    },
+    "feature2": {
+      "title": "Viaggia sostenibile",
+      "description": "Ogni passaggio condiviso riduce le emissioni di CO₂ e il traffico sulle strade sarde."
+    },
+    "feature3": {
+      "title": "Community affidabile",
+      "description": "Profili verificati e recensioni reali per viaggiare sempre con tranquillità."
+    },
+    "cta": {
+      "title": "Hai un posto libero in macchina?",
+      "description": "Offri un passaggio e aiuta qualcuno a raggiungere la sua destinazione."
     }
   },
   "search": {

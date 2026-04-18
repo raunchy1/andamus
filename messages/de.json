@@ -28,20 +28,23 @@
   "home": {
     "hero": {
       "badge": "Sardische Fahrgemeinschaft",
-      "title": "Gemeinsam reisen",
-      "titleHighlight": "in Sardinien",
-      "description": "Finden oder bieten Sie eine Mitfahrgelegenheit in ganz Sardinien.",
+      "title": "Der einfachste Weg,",
+      "titleHighlight": "sich fortzubewegen",
+      "description": "Verbinde dich mit Mitreisenden. Spare Geld, reduziere Emissionen und entdecke neue Geschichten.",
       "free": "Kostenlos.",
       "from": "Von",
       "to": "Nach",
       "date": "Datum",
-      "searchButton": "Mitfahrgelegenheit suchen",
+      "searchButton": "SUCHEN",
       "today": "Heute",
       "tomorrow": "Morgen",
-      "thisWeek": "Diese Woche"
+      "thisWeek": "Diese Woche",
+      "subtitle": "auf Sardinien",
+      "fromPlaceholder": "Wohin möchtest du?",
+      "cityPlaceholder": "Stadt wählen"
     },
     "todayRides": "Heutige Fahrten",
-    "noRidesToday": "Keine Fahrten heute",
+    "noRidesToday": "Keine Fahrten heute verfügbar.",
     "howItWorks": {
       "title": "So funktioniert's",
       "subtitle": "In drei einfachen Schritten",
@@ -76,6 +79,30 @@
       "madeWith": "Gemacht mit",
       "inSardinia": "in Sardinien",
       "rights": "Alle Rechte vorbehalten."
+    },
+    "seeAll": "Alle anzeigen",
+    "today": "Heute",
+    "free": "Kostenlos",
+    "car": " · Auto",
+    "searchOtherDates": "Andere Termine suchen",
+    "offerRide": "Fahrt anbieten",
+    "yourTrips": "Deine Reisen",
+    "departuresConfirmed": "Bestätigte Abfahrten für den",
+    "feature1": {
+      "title": "Spare bei Reisen",
+      "description": "Teile Kosten mit anderen Passagieren und reduziere deine Reisekosten um bis zu 70%."
+    },
+    "feature2": {
+      "title": "Nachhaltig reisen",
+      "description": "Jede geteilte Fahrt reduziert CO₂-Emissionen und Verkehr auf Sardiniens Straßen."
+    },
+    "feature3": {
+      "title": "Vertrauenswürdige Community",
+      "description": "Verifizierte Profile und echte Bewertungen für sorgenfreies Reisen."
+    },
+    "cta": {
+      "title": "Hast du einen freien Platz im Auto?",
+      "description": "Biete eine Fahrt an und hilf jemandem, sein Ziel zu erreichen."
     }
   },
   "search": {

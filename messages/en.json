@@ -28,20 +28,23 @@
   "home": {
     "hero": {
       "badge": "Sardinian carpooling",
-      "title": "Travel together",
-      "titleHighlight": "in Sardinia",
-      "description": "Find or offer a ride anywhere in Sardinia.",
+      "title": "The simplest way to",
+      "titleHighlight": "get around",
+      "description": "Connect with people traveling your direction. Save money, reduce emissions and discover new stories.",
       "free": "Free.",
       "from": "From",
       "to": "To",
       "date": "Date",
-      "searchButton": "Search ride",
+      "searchButton": "SEARCH",
       "today": "Today",
       "tomorrow": "Tomorrow",
-      "thisWeek": "This week"
+      "thisWeek": "This week",
+      "subtitle": "in Sardinia",
+      "fromPlaceholder": "Where do you want to go?",
+      "cityPlaceholder": "Select city"
     },
     "todayRides": "Today's rides",
-    "noRidesToday": "No rides today",
+    "noRidesToday": "No rides available today.",
     "howItWorks": {
       "title": "How it works",
       "subtitle": "In three simple steps",
@@ -76,6 +79,30 @@
       "madeWith": "Made with",
       "inSardinia": "in Sardinia",
       "rights": "All rights reserved."
+    },
+    "seeAll": "See all",
+    "today": "Today",
+    "free": "Free",
+    "car": " · Car",
+    "searchOtherDates": "Search other dates",
+    "offerRide": "Offer a ride",
+    "yourTrips": "Your trips",
+    "departuresConfirmed": "Confirmed departures for",
+    "feature1": {
+      "title": "Save on travel",
+      "description": "Share expenses with other passengers and reduce your travel costs by up to 70%."
+    },
+    "feature2": {
+      "title": "Travel sustainably",
+      "description": "Every shared ride reduces CO₂ emissions and traffic on Sardinian roads."
+    },
+    "feature3": {
+      "title": "Trusted community",
+      "description": "Verified profiles and real reviews for worry-free travel."
+    },
+    "cta": {
+      "title": "Have a free seat in your car?",
+      "description": "Offer a ride and help someone reach their destination."
     }
   },
   "search": {
