@@ -2,7 +2,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 import withSerwistInit from "@serwist/next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
