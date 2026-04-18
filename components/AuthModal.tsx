@@ -51,6 +51,15 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     };
   }, [isOpen]);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      setError(null);
+      setSuccessMessage(null);
+      onClose();
+    }, 200);
+  }, [onClose]);
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -61,16 +70,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
-  const handleClose = useCallback(() => {
-    setIsVisible(false);
-    setTimeout(() => {
-      setError(null);
-      setSuccessMessage(null);
-      onClose();
-    }, 200);
-  }, [onClose]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {

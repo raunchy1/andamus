@@ -4,6 +4,7 @@ import { getMessages } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
 import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 import { Toaster } from "react-hot-toast";
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import { SafetyButton } from "@/components/SafetyButton";
 import { VersionBadge } from "@/components/VersionBadge";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -149,6 +150,7 @@ export default async function LocaleLayout({
           </ClientLayoutWrapper>
           <SafetyButton />
           <VersionBadge />
+          <Sonner richColors position="top-center" />
           <Toaster
             position="top-center"
             toastOptions={{

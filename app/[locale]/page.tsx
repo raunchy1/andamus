@@ -54,7 +54,6 @@ interface HomeUIProps {
 function HomeMobile({
   origin,
   setOrigin,
-  destination: _destination,
   setDestination,
   todayRides,
   loading,
@@ -241,7 +240,6 @@ function HomeDesktop({
   todayRides,
   loading,
   userName,
-  userAvatar: _userAvatar,
   router,
 }: HomeUIProps) {
   const today = new Date().toISOString().split("T")[0];
@@ -512,10 +510,6 @@ export default function HomePage() {
           .order("time", { ascending: true })
           .limit(5);
 
-        if (ridesError) {
-          console.error("Error fetching rides:", ridesError);
-        }
-
         setTodayRides(((ridesData as unknown as Record<string, unknown>[]) || []).map(r => ({ ...r, profiles: normalizeProfile(r.profiles) })) as Ride[]);
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -524,7 +518,7 @@ export default function HomePage() {
           setUserName(name);
           setUserAvatar(user.user_metadata?.avatar_url || user.user_metadata?.picture || null);
         }
-      } catch (_error) {
+      } catch {
         // Error fetching data
       } finally {
         setLoading(false);

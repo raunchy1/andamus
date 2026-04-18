@@ -1,6 +1,6 @@
 const CACHE_NAME = 'andamus-v2';
 
-self.addEventListener('install', (_event) => {
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 

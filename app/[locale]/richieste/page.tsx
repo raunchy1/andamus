@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Calendar,
   User,
@@ -41,7 +41,6 @@ interface RideRequest {
 }
 
 export default function RequestsPage() {
-  const _router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
 

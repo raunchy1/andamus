@@ -58,8 +58,8 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
             email_marketing: data.email_marketing ?? false,
           });
         }
-      } catch (error) {
-        console.error("Error fetching preferences:", error);
+      } catch {
+        // Error fetching preferences
       } finally {
         setLoading(false);
       }
@@ -82,8 +82,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
 
       if (error) throw error;
       toast.success("Preferenze salvate!");
-    } catch (error) {
-      console.error("Error saving preferences:", error);
+    } catch {
       toast.error("Errore nel salvare le preferenze");
     } finally {
       setSaving(false);

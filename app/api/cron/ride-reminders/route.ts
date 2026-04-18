@@ -175,7 +175,7 @@ export async function GET(request: NextRequest) {
           .update({ reminder_sent: true })
           .eq("id", ride.id);
 
-      } catch (_rideError) {
+      } catch {
         // Error processing ride
         errors.push(`Ride ${ride.id}: processing error`);
       }
@@ -188,7 +188,7 @@ export async function GET(request: NextRequest) {
       errors: errors.length > 0 ? errors : undefined,
     });
 
-  } catch (_error) {
+  } catch {
     // Error in ride-reminders cron
     return NextResponse.json(
       { error: "Internal server error" },

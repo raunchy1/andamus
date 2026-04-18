@@ -74,9 +74,6 @@ export function PhoneVerification({
       setIsOtpSent(true);
       toast.success("Codice OTP inviato al tuo telefono!");
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error("Error sending OTP:", err);
-      }
       toast.error(err instanceof Error ? err.message : "Errore nell'invio dell'OTP");
     } finally {
       setIsLoading(false);
@@ -125,9 +122,6 @@ export function PhoneVerification({
       setIsOtpSent(false);
       setOtp("");
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error("Error verifying OTP:", err);
-      }
       toast.error(err instanceof Error ? err.message : "Codice OTP non valido");
     } finally {
       setIsLoading(false);

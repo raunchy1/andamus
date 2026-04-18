@@ -5,9 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
 import Image from "next/image";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
+import { searchRides } from "@/lib/rides-actions";
+import { Slider } from "@/components/ui/slider";
+import { CityCombobox } from "@/components/CityCombobox";
+import municipalities from "@/scripts/sardinia-municipalities.json";
 import { EmptyStateSearch } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -56,10 +60,14 @@ interface SearchViewProps {
   setOrigin: (v: string) => void;
   destination: string;
   setDestination: (v: string) => void;
-  date: string;
-  setDate: (v: string) => void;
-  maxPrice: number | null;
-  setMaxPrice: (v: number | null) => void;
+  dateFrom: string;
+  setDateFrom: (v: string) => void;
+  dateTo: string;
+  setDateTo: (v: string) => void;
+  timeWindow: string;
+  setTimeWindow: (v: string) => void;
+  maxPrice: number;
+  setMaxPrice: (v: number) => void;
   minSeats: number | null;
   setMinSeats: (v: number | null) => void;
   onlyVerified: boolean;
@@ -282,7 +290,9 @@ function SearchMobile(props: SearchViewProps) {
     activeFilter, setActiveFilter,
     origin, setOrigin,
     destination, setDestination,
-    date,
+    dateFrom, setDateFrom,
+    dateTo, setDateTo,
+    timeWindow, setTimeWindow,
     maxPrice, setMaxPrice,
     minSeats, setMinSeats,
     onlyVerified, setOnlyVerified,
@@ -361,31 +371,29 @@ function SearchMobile(props: SearchViewProps) {
                 {/* Partenza */}
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">Da</span>
-                  <select
-                    value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
-                    className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-sm sm:text-base w-full appearance-none cursor-pointer truncate"
-                  >
-                    <option value="" className="bg-surface-container-high">Partenza</option>
-                    {sardinianCities.map((city) => (
-                      <option key={city} value={city} className="bg-surface-container-high">{city}</option>
-                    ))}
-                  </select>
+                  <div className="w-full">
+                    <CityCombobox
+                      cities={municipalities}
+                      value={origin}
+                      onChange={setOrigin}
+                      placeholder="Partenza"
+                      label="partenza"
+                    />
+                  </div>
                 </div>
                 
                 {/* Destinazione */}
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">A</span>
-                  <select
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    className="bg-transparent border-none p-0 focus:ring-0 text-on-surface font-semibold text-sm sm:text-base w-full appearance-none cursor-pointer truncate"
-                  >
-                    <option value="" className="bg-surface-container-high">Destinazione</option>
-                    {sardinianCities.map((city) => (
-                      <option key={city} value={city} className="bg-surface-container-high">{city}</option>
-                    ))}
-                  </select>
+                  <div className="w-full">
+                    <CityCombobox
+                      cities={municipalities}
+                      value={destination}
+                      onChange={setDestination}
+                      placeholder="Destinazione"
+                      label="destinazione"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -426,18 +434,58 @@ function SearchMobile(props: SearchViewProps) {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4">
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Prezzo max</label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Qualsiasi"
-                  value={maxPrice || ""}
-                  onChange={(e) => setMaxPrice(e.target.value ? parseInt(e.target.value) : null)}
-                  className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">Intervallo date</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    min={today}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+                    placeholder="Da"
+                  />
+                  <input
+                    type="date"
+                    value={dateTo}
+                    min={dateFrom || today}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+                    placeholder="A"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">Fascia oraria</label>
+                <select
+                  value={timeWindow}
+                  onChange={(e) => setTimeWindow(e.target.value)}
+                  className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary appearance-none"
+                >
+                  <option value="">Qualsiasi</option>
+                  <option value="morning">Mattina (05-12)</option>
+                  <option value="afternoon">Pomeriggio (12-17)</option>
+                  <option value="evening">Sera (17-22)</option>
+                  <option value="night">Notte (22-05)</option>
+                </select>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-primary">Prezzo max</label>
+                  <span className="text-xs font-bold text-on-surface">{maxPrice === 50 ? "Qualsiasi" : `€${maxPrice}`}</span>
+                </div>
+                <Slider
+                  value={[maxPrice]}
+                  onValueChange={(v) => setMaxPrice(Array.isArray(v) ? v[0] : v)}
+                  max={50}
+                  step={1}
+                  className="py-2"
                 />
               </div>
+
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Posti minimi</label>
                 <select
@@ -600,9 +648,9 @@ function SearchMobile(props: SearchViewProps) {
         setAlertSaving={setAlertSaving}
         origin={origin}
         destination={destination}
-        date={date}
+        date={dateFrom}
         minSeats={minSeats}
-        maxPrice={maxPrice}
+        maxPrice={maxPrice === 50 ? null : maxPrice}
         supabase={supabase}
       />
     </div>
@@ -614,7 +662,9 @@ function SearchDesktop(props: SearchViewProps) {
     activeFilter, setActiveFilter,
     origin, setOrigin,
     destination, setDestination,
-    date, setDate,
+    dateFrom, setDateFrom,
+    dateTo, setDateTo,
+    timeWindow, setTimeWindow,
     maxPrice, setMaxPrice,
     minSeats, setMinSeats,
     onlyVerified, setOnlyVerified,
@@ -646,39 +696,42 @@ function SearchDesktop(props: SearchViewProps) {
         <form onSubmit={handleSearch} className="bg-[#141414] border border-white/5 rounded-2xl p-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end">
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Partenza</label>
-            <select
+            <CityCombobox
+              cities={municipalities}
               value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50 appearance-none cursor-pointer"
-            >
-              <option value="">Da dove parti?</option>
-              {sardinianCities.map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
+              onChange={setOrigin}
+              placeholder="Da dove parti?"
+              label="partenza"
+            />
           </div>
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Destinazione</label>
-            <select
+            <CityCombobox
+              cities={municipalities}
               value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50 appearance-none cursor-pointer"
-            >
-              <option value="">Dove vai?</option>
-              {sardinianCities.map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
+              onChange={setDestination}
+              placeholder="Dove vai?"
+              label="destinazione"
+            />
           </div>
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Data</label>
-            <input
-              type="date"
-              value={date}
-              min={today}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
-            />
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={dateFrom}
+                min={today}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+              />
+              <input
+                type="date"
+                value={dateTo}
+                min={dateFrom || today}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+              />
+            </div>
           </div>
           <button
             type="submit"
@@ -741,15 +794,38 @@ function SearchDesktop(props: SearchViewProps) {
           <div className="bg-[#141414] border border-white/5 rounded-2xl p-6 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Prezzo max</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Data da</label>
                 <input
-                  type="number"
-                  min="0"
-                  placeholder="Qualsiasi"
-                  value={maxPrice || ""}
-                  onChange={(e) => setMaxPrice(e.target.value ? parseInt(e.target.value) : null)}
+                  type="date"
+                  value={dateFrom}
+                  min={today}
+                  onChange={(e) => setDateFrom(e.target.value)}
                   className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
                 />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Data a</label>
+                <input
+                  type="date"
+                  value={dateTo}
+                  min={dateFrom || today}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Fascia oraria</label>
+                <select
+                  value={timeWindow}
+                  onChange={(e) => setTimeWindow(e.target.value)}
+                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50 appearance-none cursor-pointer"
+                >
+                  <option value="">Qualsiasi</option>
+                  <option value="morning">Mattina (05-12)</option>
+                  <option value="afternoon">Pomeriggio (12-17)</option>
+                  <option value="evening">Sera (17-22)</option>
+                  <option value="night">Notte (22-05)</option>
+                </select>
               </div>
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Posti minimi</label>
@@ -764,6 +840,22 @@ function SearchDesktop(props: SearchViewProps) {
                   <option value="3">3+ posti</option>
                   <option value="4">4+ posti</option>
                 </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1]">Prezzo max</label>
+                  <span className="text-xs font-bold text-[#e5e2e1]">{maxPrice === 50 ? "Qualsiasi" : `€${maxPrice}`}</span>
+                </div>
+                <Slider
+                  value={[maxPrice]}
+                  onValueChange={(v) => setMaxPrice(Array.isArray(v) ? v[0] : v)}
+                  max={50}
+                  step={1}
+                  className="py-2"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Musica</label>
@@ -922,9 +1014,9 @@ function SearchDesktop(props: SearchViewProps) {
         setAlertSaving={setAlertSaving}
         origin={origin}
         destination={destination}
-        date={date}
+        date={dateFrom}
         minSeats={minSeats}
-        maxPrice={maxPrice}
+        maxPrice={maxPrice === 50 ? null : maxPrice}
         supabase={supabase}
       />
     </div>
@@ -938,8 +1030,10 @@ function SearchContent() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [origin, setOrigin] = useState(searchParams.get("from") || "");
   const [destination, setDestination] = useState(searchParams.get("to") || "");
-  const [date, setDate] = useState(searchParams.get("date") || "");
-  const [maxPrice, setMaxPrice] = useState<number | null>(null);
+  const [dateFrom, setDateFrom] = useState(searchParams.get("date") || "");
+  const [dateTo, setDateTo] = useState("");
+  const [timeWindow, setTimeWindow] = useState("");
+  const [maxPrice, setMaxPrice] = useState<number>(50);
   const [minSeats, setMinSeats] = useState<number | null>(null);
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [prefSmoking, setPrefSmoking] = useState(false);
@@ -962,117 +1056,53 @@ function SearchContent() {
   const today = new Date().toISOString().split("T")[0];
   const supabase = createClient();
 
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
   const fetchRides = useCallback(async () => {
     setLoading(true);
-
     try {
-      let query = supabase
-        .from("rides")
-        .select(`
-          *,
-          profiles!inner(name, avatar_url, rating, phone_verified, id_verified)
-        `)
-        .eq("status", "active")
-        .gte("date", today);
-
-      if (origin) query = query.eq("from_city", origin);
-      if (destination) query = query.eq("to_city", destination);
-      if (date) query = query.eq("date", date);
-      if (maxPrice !== null) query = query.lte("price", maxPrice);
-      if (minSeats !== null) query = query.gte("seats", minSeats);
-      if (prefSmoking) query = query.eq("smoking_allowed", true);
-      if (prefPets) query = query.eq("pets_allowed", true);
-      if (prefLuggage) query = query.eq("large_luggage", true);
-      if (prefWomen) query = query.eq("women_only", true);
-      if (prefStudents) query = query.eq("students_only", true);
-      if (prefMusic) query = query.eq("music_preference", prefMusic);
-
-      if (activeFilter === "free") query = query.eq("price", 0);
-      if (activeFilter === "today") query = query.eq("date", today);
-
-      const { data: directData, error: supabaseError } = await query
-        .order("date", { ascending: true })
-        .order("time", { ascending: true });
-
-      if (supabaseError) {
-        return;
-      }
-
-      let allRides: Ride[] = directData || [];
-
-      if (origin && destination) {
-        const { data: stopsData } = await supabase
-          .from("rides")
-          .select(`
-            *,
-            profiles!inner(name, avatar_url, rating, phone_verified, id_verified),
-            ride_stops!inner(city)
-          `)
-          .eq("status", "active")
-          .gte("date", today)
-          .eq("from_city", origin)
-          .eq("ride_stops.city", destination)
-          .order("date", { ascending: true })
-          .order("time", { ascending: true });
-
-        if (stopsData && stopsData.length > 0) {
-          type RideWithStops = Ride & { ride_stops: unknown[] };
-          const stopRides = (stopsData as RideWithStops[]).map(({ ride_stops: _rs, ...ride }) => ride);
-          const existingIds = new Set(allRides.map((r) => r.id));
-          allRides = [...allRides, ...stopRides.filter((r) => !existingIds.has(r.id))];
-        }
-      }
-
-      if (date && allRides.length === 0) {
-        const d = new Date(date);
-        const prev = new Date(d);
-        prev.setDate(d.getDate() - 1);
-        const next = new Date(d);
-        next.setDate(d.getDate() + 1);
-        const prevStr = prev.toISOString().split("T")[0];
-        const nextStr = next.toISOString().split("T")[0];
-
-        let nearbyQuery = supabase
-          .from("rides")
-          .select(`
-            *,
-            profiles!inner(name, avatar_url, rating, phone_verified, id_verified)
-          `)
-          .eq("status", "active")
-          .gte("date", prevStr)
-          .lte("date", nextStr);
-
-        if (origin) nearbyQuery = nearbyQuery.eq("from_city", origin);
-        if (destination) nearbyQuery = nearbyQuery.eq("to_city", destination);
-        if (maxPrice !== null) nearbyQuery = nearbyQuery.lte("price", maxPrice);
-        if (minSeats !== null) nearbyQuery = nearbyQuery.gte("seats", minSeats);
-
-        const { data: nearbyData } = await nearbyQuery
-          .order("date", { ascending: true })
-          .order("time", { ascending: true });
-
-        if (nearbyData && nearbyData.length > 0) {
-          allRides = nearbyData as Ride[];
-        }
-      }
-
-      if (activeFilter === "verified" || onlyVerified) {
-        allRides = allRides.filter(
-          (ride: Ride) => ride.profiles.phone_verified || ride.profiles.id_verified
-        );
-      }
-
-      setRides(allRides);
-    } catch {
-      // ignore
+      const results = await searchRides({
+        origin: origin || undefined,
+        destination: destination || undefined,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+        timeWindow: (timeWindow as any) || undefined,
+        maxPrice: maxPrice > 0 ? maxPrice : undefined,
+        minSeats: minSeats ?? undefined,
+        smoking: prefSmoking || undefined,
+        pets: prefPets || undefined,
+        luggage: prefLuggage || undefined,
+        womenOnly: prefWomen || undefined,
+        studentsOnly: prefStudents || undefined,
+        musicPreference: prefMusic || undefined,
+        verifiedOnly: (activeFilter === "verified" || onlyVerified) || undefined,
+        freeOnly: activeFilter === "free" || undefined,
+        todayOnly: activeFilter === "today" || undefined,
+      });
+      setRides(results as Ride[]);
+    } catch (err: any) {
+      toast.error(err?.message || "Errore nella ricerca. Riprova.");
     } finally {
       setLoading(false);
     }
-  }, [activeFilter, date, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, supabase, today]);
+  }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen]);
 
+  // Debounced fetch
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetchRides();
+    }, 400);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [fetchRides]);
+
+  // Initial load
   useEffect(() => {
     fetchRides();
-  }, [fetchRides]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (resultsRef.current && resultsRef.current.scrollTop === 0) {
@@ -1113,8 +1143,10 @@ function SearchContent() {
   const clearFilters = () => {
     setOrigin("");
     setDestination("");
-    setDate("");
-    setMaxPrice(null);
+    setDateFrom("");
+    setDateTo("");
+    setTimeWindow("");
+    setMaxPrice(50);
     setMinSeats(null);
     setOnlyVerified(false);
     setPrefSmoking(false);
@@ -1145,8 +1177,10 @@ function SearchContent() {
   const activeFiltersCount =
     (origin ? 1 : 0) +
     (destination ? 1 : 0) +
-    (date ? 1 : 0) +
-    (maxPrice !== null ? 1 : 0) +
+    (dateFrom ? 1 : 0) +
+    (dateTo ? 1 : 0) +
+    (timeWindow ? 1 : 0) +
+    (maxPrice > 0 && maxPrice < 50 ? 1 : 0) +
     (minSeats !== null ? 1 : 0) +
     (onlyVerified ? 1 : 0) +
     (prefSmoking ? 1 : 0) +
@@ -1160,7 +1194,9 @@ function SearchContent() {
     activeFilter, setActiveFilter,
     origin, setOrigin,
     destination, setDestination,
-    date, setDate,
+    dateFrom, setDateFrom,
+    dateTo, setDateTo,
+    timeWindow, setTimeWindow,
     maxPrice, setMaxPrice,
     minSeats, setMinSeats,
     onlyVerified, setOnlyVerified,

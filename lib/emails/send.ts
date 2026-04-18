@@ -109,7 +109,7 @@ export async function sendBookingRequestEmail(data: {
     }
 
     return { success: true };
-  } catch (_error) {
+  } catch {
     // console.error("Error in sendBookingRequestEmail:", _error);
     return { success: false, error: "Internal error" };
   }
@@ -167,7 +167,7 @@ export async function sendBookingConfirmedEmail(data: {
     }
 
     return { success: true };
-  } catch (_error) {
+  } catch {
     // console.error("Error in sendBookingConfirmedEmail:", _error);
     return { success: false, error: "Internal error" };
   }
@@ -216,7 +216,7 @@ export async function sendBookingRejectedEmail(data: {
     }
 
     return { success: true };
-  } catch (_error) {
+  } catch {
     // console.error("Error in sendBookingRejectedEmail:", _error);
     return { success: false, error: "Internal error" };
   }
@@ -266,7 +266,7 @@ export async function sendNewMessageEmail(data: {
     }
 
     return { success: true };
-  } catch (_error) {
+  } catch {
     // console.error("Error in sendNewMessageEmail:", _error);
     return { success: false, error: "Internal error" };
   }
@@ -307,7 +307,7 @@ export async function sendWelcomeEmail(data: {
     }
 
     return { success: true };
-  } catch (_error) {
+  } catch {
     // console.error("Error in sendWelcomeEmail:", _error);
     return { success: false, error: "Internal error" };
   }
@@ -361,7 +361,7 @@ export async function sendRideReminderEmail(data: {
     }
 
     return { success: true };
-  } catch (_error) {
+  } catch {
     // console.error("Error in sendRideReminderEmail:", _error);
     return { success: false, error: "Internal error" };
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -34,7 +34,6 @@ interface RideRequest {
 
 export default function RequestDetailPage() {
   const params = useParams();
-  const _router = useRouter();
   const requestId = params.id as string;
   const supabase = createClient();
 

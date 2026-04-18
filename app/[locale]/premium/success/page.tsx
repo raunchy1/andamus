@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Check, Loader2 } from "lucide-react";
 
 export default function PremiumSuccessPage() {
-  const _searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(true);
 
   useEffect(() => {

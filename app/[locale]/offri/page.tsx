@@ -1043,7 +1043,7 @@ export default function OfferPage() {
           setDistanceKm(null);
           setSuggestedPrice(null);
         }
-      } catch (_error) {
+      } catch {
         // Price calculation error
         setDistanceKm(null);
         setSuggestedPrice(null);

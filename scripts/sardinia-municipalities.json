@@ -1,0 +1,1510 @@
+[
+  {
+    "id": "001",
+    "name": "Abbasanta"
+  },
+  {
+    "id": "002",
+    "name": "Aggius"
+  },
+  {
+    "id": "003",
+    "name": "Aglientu"
+  },
+  {
+    "id": "004",
+    "name": "Aidomaggiore"
+  },
+  {
+    "id": "005",
+    "name": "Albagiara"
+  },
+  {
+    "id": "006",
+    "name": "Ales"
+  },
+  {
+    "id": "007",
+    "name": "Alghero"
+  },
+  {
+    "id": "008",
+    "name": "Allai"
+  },
+  {
+    "id": "009",
+    "name": "Alà dei Sardi"
+  },
+  {
+    "id": "010",
+    "name": "Anela"
+  },
+  {
+    "id": "011",
+    "name": "Arborea"
+  },
+  {
+    "id": "012",
+    "name": "Arbus"
+  },
+  {
+    "id": "013",
+    "name": "Ardara"
+  },
+  {
+    "id": "014",
+    "name": "Ardauli"
+  },
+  {
+    "id": "015",
+    "name": "Aritzo"
+  },
+  {
+    "id": "016",
+    "name": "Armungia"
+  },
+  {
+    "id": "017",
+    "name": "Arzachena"
+  },
+  {
+    "id": "018",
+    "name": "Arzana"
+  },
+  {
+    "id": "019",
+    "name": "Assemini"
+  },
+  {
+    "id": "020",
+    "name": "Assolo"
+  },
+  {
+    "id": "021",
+    "name": "Asuni"
+  },
+  {
+    "id": "022",
+    "name": "Atzara"
+  },
+  {
+    "id": "023",
+    "name": "Austis"
+  },
+  {
+    "id": "024",
+    "name": "Badesi"
+  },
+  {
+    "id": "025",
+    "name": "Ballao"
+  },
+  {
+    "id": "026",
+    "name": "Banari"
+  },
+  {
+    "id": "027",
+    "name": "Baradili"
+  },
+  {
+    "id": "028",
+    "name": "Baratili San Pietro"
+  },
+  {
+    "id": "029",
+    "name": "Baressa"
+  },
+  {
+    "id": "030",
+    "name": "Bari Sardo"
+  },
+  {
+    "id": "031",
+    "name": "Barrali"
+  },
+  {
+    "id": "032",
+    "name": "Barumini"
+  },
+  {
+    "id": "033",
+    "name": "Bauladu"
+  },
+  {
+    "id": "034",
+    "name": "Baunei"
+  },
+  {
+    "id": "035",
+    "name": "Belvì"
+  },
+  {
+    "id": "036",
+    "name": "Benetutti"
+  },
+  {
+    "id": "037",
+    "name": "Berchidda"
+  },
+  {
+    "id": "038",
+    "name": "Bessude"
+  },
+  {
+    "id": "039",
+    "name": "Bidonì"
+  },
+  {
+    "id": "040",
+    "name": "Birori"
+  },
+  {
+    "id": "041",
+    "name": "Bitti"
+  },
+  {
+    "id": "042",
+    "name": "Bolotana"
+  },
+  {
+    "id": "043",
+    "name": "Bonarcado"
+  },
+  {
+    "id": "044",
+    "name": "Bonnanaro"
+  },
+  {
+    "id": "045",
+    "name": "Bono"
+  },
+  {
+    "id": "046",
+    "name": "Bonorva"
+  },
+  {
+    "id": "047",
+    "name": "Boroneddu"
+  },
+  {
+    "id": "048",
+    "name": "Borore"
+  },
+  {
+    "id": "049",
+    "name": "Bortigali"
+  },
+  {
+    "id": "050",
+    "name": "Bortigiadas"
+  },
+  {
+    "id": "051",
+    "name": "Borutta"
+  },
+  {
+    "id": "052",
+    "name": "Bosa"
+  },
+  {
+    "id": "053",
+    "name": "Bottidda"
+  },
+  {
+    "id": "054",
+    "name": "Buddusò"
+  },
+  {
+    "id": "055",
+    "name": "Budoni"
+  },
+  {
+    "id": "056",
+    "name": "Buggerru"
+  },
+  {
+    "id": "057",
+    "name": "Bultei"
+  },
+  {
+    "id": "058",
+    "name": "Bulzi"
+  },
+  {
+    "id": "059",
+    "name": "Burcei"
+  },
+  {
+    "id": "060",
+    "name": "Burgos"
+  },
+  {
+    "id": "061",
+    "name": "Busachi"
+  },
+  {
+    "id": "062",
+    "name": "Cabras"
+  },
+  {
+    "id": "063",
+    "name": "Cagliari"
+  },
+  {
+    "id": "064",
+    "name": "Calangianus"
+  },
+  {
+    "id": "065",
+    "name": "Calasetta"
+  },
+  {
+    "id": "066",
+    "name": "Capoterra"
+  },
+  {
+    "id": "067",
+    "name": "Carbonia"
+  },
+  {
+    "id": "068",
+    "name": "Cardedu"
+  },
+  {
+    "id": "069",
+    "name": "Cargeghe"
+  },
+  {
+    "id": "070",
+    "name": "Carloforte"
+  },
+  {
+    "id": "071",
+    "name": "Castelsardo"
+  },
+  {
+    "id": "072",
+    "name": "Castiadas"
+  },
+  {
+    "id": "073",
+    "name": "Cheremule"
+  },
+  {
+    "id": "074",
+    "name": "Chiaramonti"
+  },
+  {
+    "id": "075",
+    "name": "Codrongianos"
+  },
+  {
+    "id": "076",
+    "name": "Collinas"
+  },
+  {
+    "id": "077",
+    "name": "Cossoine"
+  },
+  {
+    "id": "078",
+    "name": "Cuglieri"
+  },
+  {
+    "id": "079",
+    "name": "Curcuris"
+  },
+  {
+    "id": "080",
+    "name": "Decimomannu"
+  },
+  {
+    "id": "081",
+    "name": "Decimoputzu"
+  },
+  {
+    "id": "082",
+    "name": "Desulo"
+  },
+  {
+    "id": "083",
+    "name": "Dolianova"
+  },
+  {
+    "id": "084",
+    "name": "Domus de Maria"
+  },
+  {
+    "id": "085",
+    "name": "Domusnovas"
+  },
+  {
+    "id": "086",
+    "name": "Donori"
+  },
+  {
+    "id": "087",
+    "name": "Dorgali"
+  },
+  {
+    "id": "088",
+    "name": "Dualchi"
+  },
+  {
+    "id": "089",
+    "name": "Elini"
+  },
+  {
+    "id": "090",
+    "name": "Elmas"
+  },
+  {
+    "id": "091",
+    "name": "Erula"
+  },
+  {
+    "id": "092",
+    "name": "Escalaplano"
+  },
+  {
+    "id": "093",
+    "name": "Escolca"
+  },
+  {
+    "id": "094",
+    "name": "Esporlatu"
+  },
+  {
+    "id": "095",
+    "name": "Esterzili"
+  },
+  {
+    "id": "096",
+    "name": "Florinas"
+  },
+  {
+    "id": "097",
+    "name": "Fluminimaggiore"
+  },
+  {
+    "id": "098",
+    "name": "Flussio"
+  },
+  {
+    "id": "099",
+    "name": "Fonni"
+  },
+  {
+    "id": "100",
+    "name": "Fordongianus"
+  },
+  {
+    "id": "101",
+    "name": "Furtei"
+  },
+  {
+    "id": "102",
+    "name": "Gadoni"
+  },
+  {
+    "id": "103",
+    "name": "Gairo"
+  },
+  {
+    "id": "104",
+    "name": "Galtellì"
+  },
+  {
+    "id": "105",
+    "name": "Gavoi"
+  },
+  {
+    "id": "106",
+    "name": "Genoni"
+  },
+  {
+    "id": "107",
+    "name": "Genuri"
+  },
+  {
+    "id": "108",
+    "name": "Gergei"
+  },
+  {
+    "id": "109",
+    "name": "Gesico"
+  },
+  {
+    "id": "110",
+    "name": "Gesturi"
+  },
+  {
+    "id": "111",
+    "name": "Ghilarza"
+  },
+  {
+    "id": "112",
+    "name": "Giave"
+  },
+  {
+    "id": "113",
+    "name": "Giba"
+  },
+  {
+    "id": "114",
+    "name": "Girasole"
+  },
+  {
+    "id": "115",
+    "name": "Golfo Aranci"
+  },
+  {
+    "id": "116",
+    "name": "Goni"
+  },
+  {
+    "id": "117",
+    "name": "Gonnesa"
+  },
+  {
+    "id": "118",
+    "name": "Gonnoscodina"
+  },
+  {
+    "id": "119",
+    "name": "Gonnosfanadiga"
+  },
+  {
+    "id": "120",
+    "name": "Gonnosnò"
+  },
+  {
+    "id": "121",
+    "name": "Gonnostramatza"
+  },
+  {
+    "id": "122",
+    "name": "Guamaggiore"
+  },
+  {
+    "id": "123",
+    "name": "Guasila"
+  },
+  {
+    "id": "124",
+    "name": "Guspini"
+  },
+  {
+    "id": "125",
+    "name": "Iglesias"
+  },
+  {
+    "id": "126",
+    "name": "Ilbono"
+  },
+  {
+    "id": "127",
+    "name": "Illorai"
+  },
+  {
+    "id": "128",
+    "name": "Irgoli"
+  },
+  {
+    "id": "129",
+    "name": "Isili"
+  },
+  {
+    "id": "130",
+    "name": "Ittireddu"
+  },
+  {
+    "id": "131",
+    "name": "Ittiri"
+  },
+  {
+    "id": "132",
+    "name": "Jerzu"
+  },
+  {
+    "id": "133",
+    "name": "La Maddalena"
+  },
+  {
+    "id": "134",
+    "name": "Laconi"
+  },
+  {
+    "id": "135",
+    "name": "Laerru"
+  },
+  {
+    "id": "136",
+    "name": "Lanusei"
+  },
+  {
+    "id": "137",
+    "name": "Las Plassas"
+  },
+  {
+    "id": "138",
+    "name": "Lei"
+  },
+  {
+    "id": "139",
+    "name": "Loceri"
+  },
+  {
+    "id": "140",
+    "name": "Loculi"
+  },
+  {
+    "id": "141",
+    "name": "Lodine"
+  },
+  {
+    "id": "142",
+    "name": "Lodè"
+  },
+  {
+    "id": "143",
+    "name": "Loiri Porto San Paolo"
+  },
+  {
+    "id": "144",
+    "name": "Lotzorai"
+  },
+  {
+    "id": "145",
+    "name": "Lula"
+  },
+  {
+    "id": "146",
+    "name": "Lunamatrona"
+  },
+  {
+    "id": "147",
+    "name": "Luogosanto"
+  },
+  {
+    "id": "148",
+    "name": "Luras"
+  },
+  {
+    "id": "149",
+    "name": "Macomer"
+  },
+  {
+    "id": "150",
+    "name": "Magomadas"
+  },
+  {
+    "id": "151",
+    "name": "Mamoiada"
+  },
+  {
+    "id": "152",
+    "name": "Mandas"
+  },
+  {
+    "id": "153",
+    "name": "Mara"
+  },
+  {
+    "id": "154",
+    "name": "Maracalagonis"
+  },
+  {
+    "id": "155",
+    "name": "Marrubiu"
+  },
+  {
+    "id": "156",
+    "name": "Martis"
+  },
+  {
+    "id": "157",
+    "name": "Masainas"
+  },
+  {
+    "id": "158",
+    "name": "Masullas"
+  },
+  {
+    "id": "159",
+    "name": "Meana Sardo"
+  },
+  {
+    "id": "160",
+    "name": "Milis"
+  },
+  {
+    "id": "161",
+    "name": "Modolo"
+  },
+  {
+    "id": "162",
+    "name": "Mogorella"
+  },
+  {
+    "id": "163",
+    "name": "Mogoro"
+  },
+  {
+    "id": "164",
+    "name": "Monastir"
+  },
+  {
+    "id": "165",
+    "name": "Monserrato"
+  },
+  {
+    "id": "166",
+    "name": "Monteleone Rocca Doria"
+  },
+  {
+    "id": "167",
+    "name": "Monti"
+  },
+  {
+    "id": "168",
+    "name": "Montresta"
+  },
+  {
+    "id": "169",
+    "name": "Mores"
+  },
+  {
+    "id": "170",
+    "name": "Morgongiori"
+  },
+  {
+    "id": "171",
+    "name": "Muravera"
+  },
+  {
+    "id": "172",
+    "name": "Muros"
+  },
+  {
+    "id": "173",
+    "name": "Musei"
+  },
+  {
+    "id": "174",
+    "name": "Narbolia"
+  },
+  {
+    "id": "175",
+    "name": "Narcao"
+  },
+  {
+    "id": "176",
+    "name": "Neoneli"
+  },
+  {
+    "id": "177",
+    "name": "Noragugume"
+  },
+  {
+    "id": "178",
+    "name": "Norbello"
+  },
+  {
+    "id": "179",
+    "name": "Nughedu San Nicolò"
+  },
+  {
+    "id": "180",
+    "name": "Nughedu Santa Vittoria"
+  },
+  {
+    "id": "181",
+    "name": "Nule"
+  },
+  {
+    "id": "182",
+    "name": "Nulvi"
+  },
+  {
+    "id": "183",
+    "name": "Nurachi"
+  },
+  {
+    "id": "184",
+    "name": "Nuragus"
+  },
+  {
+    "id": "185",
+    "name": "Nurallao"
+  },
+  {
+    "id": "186",
+    "name": "Nuraminis"
+  },
+  {
+    "id": "187",
+    "name": "Nureci"
+  },
+  {
+    "id": "188",
+    "name": "Nurri"
+  },
+  {
+    "id": "189",
+    "name": "Nuxis"
+  },
+  {
+    "id": "190",
+    "name": "Nùoro"
+  },
+  {
+    "id": "191",
+    "name": "Olbia"
+  },
+  {
+    "id": "192",
+    "name": "Oliena"
+  },
+  {
+    "id": "193",
+    "name": "Ollastra"
+  },
+  {
+    "id": "194",
+    "name": "Ollolai"
+  },
+  {
+    "id": "195",
+    "name": "Olmedo"
+  },
+  {
+    "id": "196",
+    "name": "Olzai"
+  },
+  {
+    "id": "197",
+    "name": "Onanì"
+  },
+  {
+    "id": "198",
+    "name": "Onifai"
+  },
+  {
+    "id": "199",
+    "name": "Oniferi"
+  },
+  {
+    "id": "200",
+    "name": "Orani"
+  },
+  {
+    "id": "201",
+    "name": "Orgosolo"
+  },
+  {
+    "id": "202",
+    "name": "Oristano"
+  },
+  {
+    "id": "203",
+    "name": "Orosei"
+  },
+  {
+    "id": "204",
+    "name": "Orotelli"
+  },
+  {
+    "id": "205",
+    "name": "Orroli"
+  },
+  {
+    "id": "206",
+    "name": "Ortacesus"
+  },
+  {
+    "id": "207",
+    "name": "Ortueri"
+  },
+  {
+    "id": "208",
+    "name": "Orune"
+  },
+  {
+    "id": "209",
+    "name": "Oschiri"
+  },
+  {
+    "id": "210",
+    "name": "Osidda"
+  },
+  {
+    "id": "211",
+    "name": "Osilo"
+  },
+  {
+    "id": "212",
+    "name": "Osini"
+  },
+  {
+    "id": "213",
+    "name": "Ossi"
+  },
+  {
+    "id": "214",
+    "name": "Ottana"
+  },
+  {
+    "id": "215",
+    "name": "Ovodda"
+  },
+  {
+    "id": "216",
+    "name": "Ozieri"
+  },
+  {
+    "id": "217",
+    "name": "Pabillonis"
+  },
+  {
+    "id": "218",
+    "name": "Padria"
+  },
+  {
+    "id": "219",
+    "name": "Padru"
+  },
+  {
+    "id": "220",
+    "name": "Palau"
+  },
+  {
+    "id": "221",
+    "name": "Palmas Arborea"
+  },
+  {
+    "id": "222",
+    "name": "Pattada"
+  },
+  {
+    "id": "223",
+    "name": "Pau"
+  },
+  {
+    "id": "224",
+    "name": "Pauli Arbarei"
+  },
+  {
+    "id": "225",
+    "name": "Paulilatino"
+  },
+  {
+    "id": "226",
+    "name": "Perdasdefogu"
+  },
+  {
+    "id": "227",
+    "name": "Perdaxius"
+  },
+  {
+    "id": "228",
+    "name": "Perfugas"
+  },
+  {
+    "id": "229",
+    "name": "Pimentel"
+  },
+  {
+    "id": "230",
+    "name": "Piscinas"
+  },
+  {
+    "id": "231",
+    "name": "Ploaghe"
+  },
+  {
+    "id": "232",
+    "name": "Pompu"
+  },
+  {
+    "id": "233",
+    "name": "Porto Torres"
+  },
+  {
+    "id": "234",
+    "name": "Portoscuso"
+  },
+  {
+    "id": "235",
+    "name": "Posada"
+  },
+  {
+    "id": "236",
+    "name": "Pozzomaggiore"
+  },
+  {
+    "id": "237",
+    "name": "Pula"
+  },
+  {
+    "id": "238",
+    "name": "Putifigari"
+  },
+  {
+    "id": "239",
+    "name": "Quartu Sant'Elena"
+  },
+  {
+    "id": "240",
+    "name": "Quartucciu"
+  },
+  {
+    "id": "241",
+    "name": "Riola Sardo"
+  },
+  {
+    "id": "242",
+    "name": "Romana"
+  },
+  {
+    "id": "243",
+    "name": "Ruinas"
+  },
+  {
+    "id": "244",
+    "name": "Sadali"
+  },
+  {
+    "id": "245",
+    "name": "Sagama"
+  },
+  {
+    "id": "246",
+    "name": "Samassi"
+  },
+  {
+    "id": "247",
+    "name": "Samatzai"
+  },
+  {
+    "id": "248",
+    "name": "Samugheo"
+  },
+  {
+    "id": "249",
+    "name": "San Basilio"
+  },
+  {
+    "id": "250",
+    "name": "San Gavino Monreale"
+  },
+  {
+    "id": "251",
+    "name": "San Giovanni Suergiu"
+  },
+  {
+    "id": "252",
+    "name": "San Nicolò Gerrei"
+  },
+  {
+    "id": "253",
+    "name": "San Nicolò d'Arcidano"
+  },
+  {
+    "id": "254",
+    "name": "San Sperate"
+  },
+  {
+    "id": "255",
+    "name": "San Teodoro"
+  },
+  {
+    "id": "256",
+    "name": "San Vero Milis"
+  },
+  {
+    "id": "257",
+    "name": "San Vito"
+  },
+  {
+    "id": "258",
+    "name": "Sanluri"
+  },
+  {
+    "id": "259",
+    "name": "Sant'Andrea Frius"
+  },
+  {
+    "id": "260",
+    "name": "Sant'Anna Arresi"
+  },
+  {
+    "id": "261",
+    "name": "Sant'Antioco"
+  },
+  {
+    "id": "262",
+    "name": "Sant'Antonio di Gallura"
+  },
+  {
+    "id": "263",
+    "name": "Santa Giusta"
+  },
+  {
+    "id": "264",
+    "name": "Santa Maria Coghinas"
+  },
+  {
+    "id": "265",
+    "name": "Santa Teresa Gallura"
+  },
+  {
+    "id": "266",
+    "name": "Santadi"
+  },
+  {
+    "id": "267",
+    "name": "Santu Lussurgiu"
+  },
+  {
+    "id": "268",
+    "name": "Sardara"
+  },
+  {
+    "id": "269",
+    "name": "Sarroch"
+  },
+  {
+    "id": "270",
+    "name": "Sarule"
+  },
+  {
+    "id": "271",
+    "name": "Sassari"
+  },
+  {
+    "id": "272",
+    "name": "Scano di Montiferro"
+  },
+  {
+    "id": "273",
+    "name": "Sedilo"
+  },
+  {
+    "id": "274",
+    "name": "Sedini"
+  },
+  {
+    "id": "275",
+    "name": "Segariu"
+  },
+  {
+    "id": "276",
+    "name": "Selargius"
+  },
+  {
+    "id": "277",
+    "name": "Selegas"
+  },
+  {
+    "id": "278",
+    "name": "Semestene"
+  },
+  {
+    "id": "279",
+    "name": "Seneghe"
+  },
+  {
+    "id": "280",
+    "name": "Senis"
+  },
+  {
+    "id": "281",
+    "name": "Sennariolo"
+  },
+  {
+    "id": "282",
+    "name": "Sennori"
+  },
+  {
+    "id": "283",
+    "name": "Senorbì"
+  },
+  {
+    "id": "284",
+    "name": "Serdiana"
+  },
+  {
+    "id": "285",
+    "name": "Serramanna"
+  },
+  {
+    "id": "286",
+    "name": "Serrenti"
+  },
+  {
+    "id": "287",
+    "name": "Serri"
+  },
+  {
+    "id": "288",
+    "name": "Sestu"
+  },
+  {
+    "id": "289",
+    "name": "Settimo San Pietro"
+  },
+  {
+    "id": "290",
+    "name": "Setzu"
+  },
+  {
+    "id": "291",
+    "name": "Seui"
+  },
+  {
+    "id": "292",
+    "name": "Seulo"
+  },
+  {
+    "id": "293",
+    "name": "Siamaggiore"
+  },
+  {
+    "id": "294",
+    "name": "Siamanna"
+  },
+  {
+    "id": "295",
+    "name": "Siapiccia"
+  },
+  {
+    "id": "296",
+    "name": "Siddi"
+  },
+  {
+    "id": "297",
+    "name": "Silanus"
+  },
+  {
+    "id": "298",
+    "name": "Siligo"
+  },
+  {
+    "id": "299",
+    "name": "Siliqua"
+  },
+  {
+    "id": "300",
+    "name": "Silius"
+  },
+  {
+    "id": "301",
+    "name": "Simala"
+  },
+  {
+    "id": "302",
+    "name": "Simaxis"
+  },
+  {
+    "id": "303",
+    "name": "Sindia"
+  },
+  {
+    "id": "304",
+    "name": "Sini"
+  },
+  {
+    "id": "305",
+    "name": "Siniscola"
+  },
+  {
+    "id": "306",
+    "name": "Sinnai"
+  },
+  {
+    "id": "307",
+    "name": "Siris"
+  },
+  {
+    "id": "308",
+    "name": "Siurgus Donigala"
+  },
+  {
+    "id": "309",
+    "name": "Soddì"
+  },
+  {
+    "id": "310",
+    "name": "Solarussa"
+  },
+  {
+    "id": "311",
+    "name": "Soleminis"
+  },
+  {
+    "id": "312",
+    "name": "Sorgono"
+  },
+  {
+    "id": "313",
+    "name": "Sorradile"
+  },
+  {
+    "id": "314",
+    "name": "Sorso"
+  },
+  {
+    "id": "315",
+    "name": "Stintino"
+  },
+  {
+    "id": "316",
+    "name": "Suelli"
+  },
+  {
+    "id": "317",
+    "name": "Suni"
+  },
+  {
+    "id": "318",
+    "name": "Tadasuni"
+  },
+  {
+    "id": "319",
+    "name": "Talana"
+  },
+  {
+    "id": "320",
+    "name": "Telti"
+  },
+  {
+    "id": "321",
+    "name": "Tempio Pausania"
+  },
+  {
+    "id": "322",
+    "name": "Tergu"
+  },
+  {
+    "id": "323",
+    "name": "Terralba"
+  },
+  {
+    "id": "324",
+    "name": "Tertenia"
+  },
+  {
+    "id": "325",
+    "name": "Teti"
+  },
+  {
+    "id": "326",
+    "name": "Teulada"
+  },
+  {
+    "id": "327",
+    "name": "Thiesi"
+  },
+  {
+    "id": "328",
+    "name": "Tiana"
+  },
+  {
+    "id": "329",
+    "name": "Tinnura"
+  },
+  {
+    "id": "330",
+    "name": "Tissi"
+  },
+  {
+    "id": "331",
+    "name": "Tonara"
+  },
+  {
+    "id": "332",
+    "name": "Torpè"
+  },
+  {
+    "id": "333",
+    "name": "Torralba"
+  },
+  {
+    "id": "334",
+    "name": "Tortolì"
+  },
+  {
+    "id": "335",
+    "name": "Tramatza"
+  },
+  {
+    "id": "336",
+    "name": "Tratalias"
+  },
+  {
+    "id": "337",
+    "name": "Tresnuraghes"
+  },
+  {
+    "id": "338",
+    "name": "Triei"
+  },
+  {
+    "id": "339",
+    "name": "Trinità d'Agultu e Vignola"
+  },
+  {
+    "id": "340",
+    "name": "Tuili"
+  },
+  {
+    "id": "341",
+    "name": "Tula"
+  },
+  {
+    "id": "342",
+    "name": "Turri"
+  },
+  {
+    "id": "343",
+    "name": "Ula Tirso"
+  },
+  {
+    "id": "344",
+    "name": "Ulassai"
+  },
+  {
+    "id": "345",
+    "name": "Uras"
+  },
+  {
+    "id": "346",
+    "name": "Uri"
+  },
+  {
+    "id": "347",
+    "name": "Urzulei"
+  },
+  {
+    "id": "348",
+    "name": "Usellus"
+  },
+  {
+    "id": "349",
+    "name": "Usini"
+  },
+  {
+    "id": "350",
+    "name": "Ussana"
+  },
+  {
+    "id": "351",
+    "name": "Ussaramanna"
+  },
+  {
+    "id": "352",
+    "name": "Ussassai"
+  },
+  {
+    "id": "353",
+    "name": "Uta"
+  },
+  {
+    "id": "354",
+    "name": "Valledoria"
+  },
+  {
+    "id": "355",
+    "name": "Vallermosa"
+  },
+  {
+    "id": "356",
+    "name": "Viddalba"
+  },
+  {
+    "id": "357",
+    "name": "Villa San Pietro"
+  },
+  {
+    "id": "358",
+    "name": "Villa Sant'Antonio"
+  },
+  {
+    "id": "359",
+    "name": "Villa Verde"
+  },
+  {
+    "id": "360",
+    "name": "Villacidro"
+  },
+  {
+    "id": "361",
+    "name": "Villagrande Strisaili"
+  },
+  {
+    "id": "362",
+    "name": "Villamar"
+  },
+  {
+    "id": "363",
+    "name": "Villamassargia"
+  },
+  {
+    "id": "364",
+    "name": "Villanova Monteleone"
+  },
+  {
+    "id": "365",
+    "name": "Villanova Truschedu"
+  },
+  {
+    "id": "366",
+    "name": "Villanova Tulo"
+  },
+  {
+    "id": "367",
+    "name": "Villanovaforru"
+  },
+  {
+    "id": "368",
+    "name": "Villanovafranca"
+  },
+  {
+    "id": "369",
+    "name": "Villaperuccio"
+  },
+  {
+    "id": "370",
+    "name": "Villaputzu"
+  },
+  {
+    "id": "371",
+    "name": "Villasalto"
+  },
+  {
+    "id": "372",
+    "name": "Villasimius"
+  },
+  {
+    "id": "373",
+    "name": "Villasor"
+  },
+  {
+    "id": "374",
+    "name": "Villaspeciosa"
+  },
+  {
+    "id": "375",
+    "name": "Villaurbana"
+  },
+  {
+    "id": "376",
+    "name": "Zeddiani"
+  },
+  {
+    "id": "377",
+    "name": "Zerfaliu"
+  }
+]

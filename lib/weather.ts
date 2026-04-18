@@ -91,8 +91,7 @@ export async function getWeather(
       minTemp: Math.round(data.daily.temperature_2m_min[0]),
       rainProbability: data.daily.precipitation_probability_max[0],
     };
-  } catch (error) {
-    console.error('Error fetching weather:', error);
+  } catch {
     return null;
   }
 }
@@ -106,7 +105,6 @@ export async function getWeatherForCity(
   const coords = SARDINIA_CITIES[city];
   
   if (!coords) {
-    console.warn(`Coordinates not found for city: ${city}`);
     return null;
   }
 
