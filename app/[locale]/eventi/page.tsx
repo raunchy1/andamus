@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, MapPin, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations, useLocale } from "next-intl";
 
 interface EventItem {
   id: string;
@@ -22,6 +23,9 @@ export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+  const t = useTranslations("events");
+  const tc = useTranslations("common");
+  const locale = useLocale();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -37,7 +41,7 @@ export default function EventsPage() {
   }, [supabase]);
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("it-IT", { day: "numeric", month: "long" });
+    return new Date(dateStr).toLocaleDateString(locale, { day: "numeric", month: "long" });
   };
 
   return (
@@ -46,10 +50,10 @@ export default function EventsPage() {
         <div className="mx-auto max-w-5xl">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
             <ArrowLeft className="h-4 w-4" />
-            Torna alla home
+            {tc("back")}
           </Link>
-          <h1 className="text-3xl font-bold text-foreground">Eventi in Sardegna</h1>
-          <p className="mt-2 text-muted-foreground">Trova un passaggio per le tradizioni e i festival più importanti dell&apos;isola.</p>
+          <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
+          <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
       </div>
 
@@ -62,7 +66,7 @@ export default function EventsPage() {
           ) : events.length === 0 ? (
             <div className="py-20 text-center">
               <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <p className="mt-4 text-lg font-medium text-foreground">Nessun evento in programma</p>
+              <p className="mt-4 text-lg font-medium text-foreground">{t("noEvents")}</p>
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

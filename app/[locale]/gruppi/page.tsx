@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Users, Loader2, MapPin, GraduationCap, Plane, Bus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Group {
   id: string;
@@ -22,18 +23,13 @@ const typeIcons: Record<string, React.ReactNode> = {
   other: <Users className="h-5 w-5" />,
 };
 
-const typeLabels: Record<string, string> = {
-  university: "Università",
-  airport: "Aeroporto",
-  commute: "Pendolari",
-  event: "Evento",
-  other: "Altro",
-};
-
 export default function GroupsPage() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+  const t = useTranslations("groups");
+  const tc = useTranslations("common");
+  const locale = useLocale();
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -52,16 +48,24 @@ export default function GroupsPage() {
     fetchGroups();
   }, [supabase]);
 
+  const typeLabels: Record<string, string> = {
+    university: t("typeUniversity"),
+    airport: t("typeAirport"),
+    commute: t("typeCommute"),
+    event: t("typeEvent"),
+    other: t("typeOther"),
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-card px-4 py-8">
         <div className="mx-auto max-w-5xl">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
             <ArrowLeft className="h-4 w-4" />
-            Torna alla home
+            {tc("back")}
           </Link>
-          <h1 className="text-3xl font-bold text-foreground">Gruppi di carpooling</h1>
-          <p className="mt-2 text-muted-foreground">Unisciti a un gruppo per trovare corse regolari verso università, aeroporti o per il lavoro.</p>
+          <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
+          <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
         </div>
       </div>
 
@@ -74,7 +78,7 @@ export default function GroupsPage() {
           ) : groups.length === 0 ? (
             <div className="py-20 text-center">
               <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <p className="mt-4 text-lg font-medium text-foreground">Nessun gruppo disponibile</p>
+              <p className="mt-4 text-lg font-medium text-foreground">{t("noGroups")}</p>
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,7 +107,7 @@ export default function GroupsPage() {
                     </span>
                     <span className="flex items-center gap-1">
                       <Users className="h-3.5 w-3.5" />
-                      {(group.member_count || 0)} membri
+                      {t("members", { count: group.member_count || 0 })}
                     </span>
                   </div>
                 </Link>

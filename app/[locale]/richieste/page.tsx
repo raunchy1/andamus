@@ -15,6 +15,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations, useLocale } from "next-intl";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -43,6 +44,9 @@ interface RideRequest {
 export default function RequestsPage() {
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const t = useTranslations("requests");
+  const tc = useTranslations("common");
+  const locale = useLocale();
 
   const [requests, setRequests] = useState<RideRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,22 +77,25 @@ export default function RequestsPage() {
   }, [supabase, origin, destination, date, today]);
 
   useEffect(() => {
-    // Schedule in microtask to avoid React 19 cascading render warning
     Promise.resolve().then(() => fetchRequests());
   }, [fetchRequests]);
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+    return d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
   };
 
   const flexibilityLabel = (val: string) => {
     switch (val) {
       case "1h": return "±1h";
       case "3h": return "±3h";
-      case "any": return "Orario flessibile";
-      default: return "Orario preciso";
+      case "any": return t("flexibleTime");
+      default: return t("exactTime");
     }
+  };
+
+  const seatLabel = (count: number) => {
+    return count === 1 ? t("oneSeat") : t("manySeats", { count });
   };
 
   return (
@@ -99,11 +106,11 @@ export default function RequestsPage() {
           <div className="mb-4 flex items-center gap-2">
             <Link href="/cerca" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-4 w-4" />
-              Torna alla ricerca
+              {t("backToSearch")}
             </Link>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Persone che cercano un passaggio</h1>
-          <p className="mt-1 text-muted-foreground">Trova passeggeri per la tua corsa</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("title")}</h1>
+          <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
         </div>
       </div>
 
@@ -112,33 +119,33 @@ export default function RequestsPage() {
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[140px]">
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Da</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("from")}</label>
               <select
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
                 className="h-12 w-full rounded-xl border border-border bg-background px-3 text-foreground outline-none focus:border-accent"
               >
-                <option value="">Qualsiasi</option>
+                <option value="">{t("any")}</option>
                 {sardinianCities.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
             <div className="flex-1 min-w-[140px]">
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">A</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("to")}</label>
               <select
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 className="h-12 w-full rounded-xl border border-border bg-background px-3 text-foreground outline-none focus:border-accent"
               >
-                <option value="">Qualsiasi</option>
+                <option value="">{t("any")}</option>
                 {sardinianCities.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
             <div className="min-w-[140px]">
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">Data</label>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("date")}</label>
               <input
                 type="date"
                 min={today}
@@ -158,7 +165,7 @@ export default function RequestsPage() {
               className="inline-flex h-12 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-medium text-white hover:bg-accent/90"
             >
               <PlusCircle className="h-4 w-4" />
-              Cerca passaggio
+              {t("findRide")}
             </Link>
           </div>
         </div>
@@ -174,8 +181,8 @@ export default function RequestsPage() {
           ) : requests.length === 0 ? (
             <div className="py-20 text-center">
               <User className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <p className="mt-4 text-lg font-medium text-foreground">Nessuna richiesta trovata</p>
-              <p className="mt-1 text-sm text-muted-foreground">Prova a cambiare i filtri di ricerca.</p>
+              <p className="mt-4 text-lg font-medium text-foreground">{t("noRequests")}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t("tryDifferentFilters")}</p>
             </div>
           ) : (
             <div className="divide-y divide-border rounded-2xl border border-border bg-card">
@@ -203,12 +210,12 @@ export default function RequestsPage() {
                     </h3>
                     <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                       <Users className="h-4 w-4" />
-                      <span>{req.seats_needed} post{req.seats_needed === 1 ? 'o' : 'i'}</span>
+                      <span>{seatLabel(req.seats_needed)}</span>
                       {req.max_price !== null && (
                         <>
                           <span>•</span>
                           <Euro className="h-4 w-4" />
-                          <span>Max {req.max_price}€</span>
+                          <span>{t("maxPrice", { price: req.max_price })}</span>
                         </>
                       )}
                     </div>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Mail, Lock, User, Eye, EyeOff, Loader2, Car } from "lucide-react";
 import { signInWithGoogle, signInWithFacebook, signUpWithEmail, signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalProps) {
+  const t = useTranslations('auth');
   const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [isLoading, setIsLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
@@ -81,7 +83,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
   const validatePassword = (password: string): string | null => {
     if (password.length < 6) {
-      return "La password deve essere di almeno 6 caratteri";
+      return t('passwordMinLength');
     }
     return null;
   };
@@ -92,7 +94,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     setSuccessMessage(null);
 
     if (!loginEmail || !loginPassword) {
-      setError("Inserisci email e password");
+      setError(t('enterEmailPassword'));
       return;
     }
 
@@ -100,19 +102,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
     try {
       await signInWithEmail(loginEmail, loginPassword);
-      setSuccessMessage("Accesso effettuato con successo!");
+      setSuccessMessage(t('loginSuccess'));
       setTimeout(() => {
         handleClose();
         router.push("/profilo");
         router.refresh();
       }, 500);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Errore durante l'accesso";
+      const errorMessage = err instanceof Error ? err.message : t('loginError');
       
       if (errorMessage.includes("Invalid login credentials")) {
-        setError("Email o password non corretti");
+        setError(t('invalidCredentials'));
       } else if (errorMessage.includes("Email not confirmed")) {
-        setError("Email non confermata. Controlla la tua casella di posta.");
+        setError(t('emailNotConfirmed'));
       } else {
         setError(errorMessage);
       }
@@ -127,12 +129,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     setSuccessMessage(null);
 
     if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
-      setError("Compila tutti i campi");
+      setError(t('fillAllFields'));
       return;
     }
 
     if (registerPassword !== registerConfirmPassword) {
-      setError("Le password non coincidono");
+      setError(t('passwordsDoNotMatch'));
       return;
     }
 
@@ -146,19 +148,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
     try {
       await signUpWithEmail(registerEmail, registerPassword, registerName);
-      setSuccessMessage("Account creato con successo! Reindirizzamento...");
+      setSuccessMessage(t('registerSuccess'));
       setTimeout(() => {
         handleClose();
         router.push("/profilo");
         router.refresh();
       }, 1000);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Errore durante la registrazione";
+      const errorMessage = err instanceof Error ? err.message : t('registerError');
       
       if (errorMessage.includes("User already registered")) {
-        setError("Email già registrata. Prova ad accedere.");
+        setError(t('emailAlreadyRegistered'));
       } else if (errorMessage.includes("valid email")) {
-        setError("Inserisci un'email valida");
+        setError(t('invalidEmail'));
       } else {
         setError(errorMessage);
       }
@@ -173,7 +175,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     try {
       await signInWithGoogle();
     } catch {
-      setError("Errore durante l'accesso con Google");
+      setError(t('googleLoginError'));
       setIsGoogleLoading(false);
     }
   };
@@ -184,7 +186,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     try {
       await signInWithFacebook();
     } catch {
-      setError("Errore durante l'accesso con Facebook");
+      setError(t('facebookLoginError'));
       setIsFacebookLoading(false);
     }
   };
@@ -219,7 +221,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             onClick={handleClose}
             className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-all"
             disabled={isLoading}
-            aria-label="Chiudi"
+            aria-label={t('close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -239,7 +241,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 : "text-white/50 hover:text-white hover:bg-white/[0.02]"
             }`}
           >
-            Accedi
+            {t('login')}
           </button>
           <button
             onClick={() => {
@@ -253,7 +255,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 : "text-white/50 hover:text-white hover:bg-white/[0.02]"
             }`}
           >
-            Registrati
+            {t('register')}
           </button>
         </div>
 
@@ -278,7 +280,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Email
+                  {t('email')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -286,7 +288,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                     type="email"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="La tua email"
+                    placeholder={t('emailPlaceholder')}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
@@ -295,7 +297,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Password
+                  {t('password')}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -303,7 +305,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                     type={showPassword ? "text" : "password"}
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="La tua password"
+                    placeholder={t('passwordPlaceholder')}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
@@ -324,7 +326,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                   className="text-xs text-[#e63946] hover:text-[#ff4d5a] transition-colors font-medium"
                   disabled={isLoading}
                 >
-                  Password dimenticata?
+                  {t('forgotPassword')}
                 </button>
               </div>
 
@@ -336,10 +338,10 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Accesso in corso...
+                    {t('loggingIn')}
                   </>
                 ) : (
-                  "Accedi"
+                  t('login')
                 )}
               </button>
             </form>
@@ -348,7 +350,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Nome completo
+                  {t('fullName')}
                 </label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -356,7 +358,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                     type="text"
                     value={registerName}
                     onChange={(e) => setRegisterName(e.target.value)}
-                    placeholder="Mario Rossi"
+                    placeholder={t('namePlaceholder')}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
@@ -365,7 +367,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Email
+                  {t('email')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -373,7 +375,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                     type="email"
                     value={registerEmail}
                     onChange={(e) => setRegisterEmail(e.target.value)}
-                    placeholder="mario@esempio.it"
+                    placeholder={t('registerEmailPlaceholder')}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
@@ -382,7 +384,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Password <span className="text-white/25 font-normal">(min. 6 caratteri)</span>
+                  {t('password')} <span className="text-white/25 font-normal">({t('passwordMinLengthHint')})</span>
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -390,7 +392,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                     type={showPassword ? "text" : "password"}
                     value={registerPassword}
                     onChange={(e) => setRegisterPassword(e.target.value)}
-                    placeholder="Crea una password"
+                    placeholder={t('createPasswordPlaceholder')}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
@@ -407,7 +409,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                  Conferma password
+                  {t('confirmPassword')}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -415,7 +417,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                     type={showConfirmPassword ? "text" : "password"}
                     value={registerConfirmPassword}
                     onChange={(e) => setRegisterConfirmPassword(e.target.value)}
-                    placeholder="Ripeti la password"
+                    placeholder={t('confirmPasswordPlaceholder')}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-white/25 focus:outline-none focus:border-[#e63946]/50 focus:ring-1 focus:ring-[#e63946]/30 transition-all"
                     disabled={isLoading}
                   />
@@ -438,10 +440,10 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Creazione account...
+                    {t('creatingAccount')}
                   </>
                 ) : (
-                  "Crea account"
+                  t('createAccount')
                 )}
               </button>
             </form>
@@ -454,7 +456,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             </div>
             <div className="relative flex justify-center">
               <span className="px-4 bg-[#111111] text-xs text-white/30 uppercase tracking-wider">
-                Oppure
+                {t('or')}
               </span>
             </div>
           </div>
@@ -475,7 +477,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
             )}
-            {isGoogleLoading ? "Connessione a Google..." : "Accedi con Google"}
+            {isGoogleLoading ? t('connectingGoogle') : t('loginWithGoogle')}
           </button>
 
           {/* Facebook Login Button */}
@@ -491,7 +493,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
             )}
-            {isFacebookLoading ? "Connessione a Facebook..." : "Accedi con Facebook"}
+            {isFacebookLoading ? t('connectingFacebook') : t('loginWithFacebook')}
           </button>
         </div>
       </div>

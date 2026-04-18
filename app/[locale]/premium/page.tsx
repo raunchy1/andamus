@@ -15,67 +15,85 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
-const plans = [
-  {
-    id: "free",
-    name: "Gratuito",
-    price: 0,
-    period: "per sempre",
-    description: "Perfetto per iniziare",
-    features: [
-      "Ricerca passaggi illimitata",
-      "Pubblicazione fino a 3 corse/mese",
-      "Chat di base",
-      "Supporto email",
-    ],
-    cta: "Continua Gratis",
-    popular: false,
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 4.99,
-    period: "/mese",
-    description: "Per chi viaggia spesso",
-    features: [
-      "Tutto del piano Gratuito",
-      "Corse illimitate",
-      "Badge Premium esclusivo",
-      "Priorità nelle ricerche",
-      "Statistiche avanzate",
-      "Supporto prioritario",
-      "Nessuna pubblicità",
-    ],
-    cta: "Passa a Premium",
-    popular: true,
-  },
-  {
-    id: "driver",
-    name: "Driver Pro",
-    price: 9.99,
-    period: "/mese",
-    description: "Per i conducenti abituali",
-    features: [
-      "Tutto del piano Premium",
-      "Corse illimitate",
-      "Badge Driver Pro esclusivo",
-      "Verifica prioritaria",
-      "Strumenti per conducenti",
-      "Report avanzati",
-      "API access",
-    ],
-    cta: "Diventa Driver Pro",
-    popular: false,
-  },
-];
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  period: string;
+  description: string;
+  features: string[];
+  cta: string;
+  popular: boolean;
+}
+
+function usePlans(t: ReturnType<typeof useTranslations>): Plan[] {
+  return [
+    {
+      id: "free",
+      name: t("freeName"),
+      price: 0,
+      period: t("freePeriod"),
+      description: t("freeDescription"),
+      features: [
+        t("freeFeature1"),
+        t("freeFeature2"),
+        t("freeFeature3"),
+        t("freeFeature4"),
+      ],
+      cta: t("freeCta"),
+      popular: false,
+    },
+    {
+      id: "premium",
+      name: t("premiumName"),
+      price: 4.99,
+      period: t("premiumPeriod"),
+      description: t("premiumDescription"),
+      features: [
+        t("premiumFeature1"),
+        t("premiumFeature2"),
+        t("premiumFeature3"),
+        t("premiumFeature4"),
+        t("premiumFeature5"),
+        t("premiumFeature6"),
+        t("premiumFeature7"),
+      ],
+      cta: t("premiumCta"),
+      popular: true,
+    },
+    {
+      id: "driver",
+      name: t("driverName"),
+      price: 9.99,
+      period: t("driverPeriod"),
+      description: t("driverDescription"),
+      features: [
+        t("driverFeature1"),
+        t("driverFeature2"),
+        t("driverFeature3"),
+        t("driverFeature4"),
+        t("driverFeature5"),
+        t("driverFeature6"),
+        t("driverFeature7"),
+      ],
+      cta: t("driverCta"),
+      popular: false,
+    },
+  ];
+}
 
 export default function PremiumPage() {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("premium");
+  const tc = useTranslations("common");
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState("free");
+
+  const plans = usePlans(t);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -86,7 +104,6 @@ export default function PremiumPage() {
       }
       setUser(currentUser);
       
-      // Check current plan from profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("subscription_plan")
@@ -105,12 +122,12 @@ export default function PremiumPage() {
 
   const handleSubscribe = async (planId: string) => {
     if (!user) {
-      toast.error("Devi essere loggato per abbonarti");
+      toast.error(t("loginRequired"));
       return;
     }
 
     if (planId === "free") {
-      toast.success("Stai già usando il piano gratuito!");
+      toast.success(t("alreadyFree"));
       return;
     }
 
@@ -123,14 +140,13 @@ export default function PremiumPage() {
       });
       const data = await res.json();
       if (data.url) {
-        // Use router.push for client-side navigation or assign in effect
         void Promise.resolve().then(() => { window.location.href = data.url; });
       } else {
-        toast.error(data.error || "Errore nel checkout");
+        toast.error(data.error || t("checkoutError"));
         setLoading(false);
       }
     } catch {
-      toast.error("Errore nel checkout");
+      toast.error(t("checkoutError"));
       setLoading(false);
     }
   };
@@ -143,11 +159,11 @@ export default function PremiumPage() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error(data.error || "Errore");
+        toast.error(data.error || t("manageError"));
         setLoading(false);
       }
     } catch {
-      toast.error("Errore nel gestire l'abbonamento");
+      toast.error(t("manageError"));
       setLoading(false);
     }
   };
@@ -170,7 +186,7 @@ export default function PremiumPage() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Torna indietro
+            {tc("back")}
           </Link>
           
           <div className="flex justify-center mb-6">
@@ -180,10 +196,10 @@ export default function PremiumPage() {
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Scegli il tuo piano
+            {t("choosePlan")}
           </h1>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Sblocca funzionalità esclusive e viaggia senza limiti con i nostri piani Premium
+            {t("subtitle")}
           </p>
 
           {currentPlan !== "free" && (
@@ -193,7 +209,7 @@ export default function PremiumPage() {
                 disabled={loading}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors disabled:opacity-50"
               >
-                Gestisci abbonamento
+                {t("manageSubscription")}
               </button>
             </div>
           )}
@@ -214,7 +230,7 @@ export default function PremiumPage() {
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                     <Star className="w-3 h-3" />
-                    Più popolare
+                    {t("mostPopular")}
                   </span>
                 </div>
               )}
@@ -228,7 +244,7 @@ export default function PremiumPage() {
 
               <div className="mb-6">
                 <span className="text-4xl font-bold">
-                  {plan.price === 0 ? "Gratis" : `€${plan.price}`}
+                  {plan.price === 0 ? t("freeName") : `€${plan.price}`}
                 </span>
                 <span className={plan.popular ? "text-white/80" : "text-white/50"}>
                   {plan.period}
@@ -257,7 +273,7 @@ export default function PremiumPage() {
                     : "bg-[#e63946] text-white hover:bg-[#c92a37]"
                 }`}
               >
-                {currentPlan === plan.id ? "Piano attuale" : plan.cta}
+                {currentPlan === plan.id ? t("currentPlan") : plan.cta}
               </button>
             </div>
           ))}
@@ -267,15 +283,15 @@ export default function PremiumPage() {
         <div className="mt-16 flex flex-wrap justify-center gap-8 text-white/40">
           <div className="flex items-center gap-2">
             <Shield className="w-5 h-5" />
-            <span className="text-sm">Pagamenti sicuri</span>
+            <span className="text-sm">{t("securePayments")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5" />
-            <span className="text-sm">Attivazione immediata</span>
+            <span className="text-sm">{t("instantActivation")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Check className="w-5 h-5" />
-            <span className="text-sm">Cancella quando vuoi</span>
+            <span className="text-sm">{t("cancelAnytime")}</span>
           </div>
         </div>
       </div>

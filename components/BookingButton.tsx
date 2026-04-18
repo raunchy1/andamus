@@ -14,6 +14,7 @@ import { notifyBookingRequest } from "@/lib/notifications";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface Booking {
   id: string;
@@ -47,6 +48,7 @@ export function BookingButton({
   variant = "mobile",
 }: BookingButtonProps) {
   const router = useRouter();
+  const t = useTranslations('booking');
   const [bookingStatus, setBookingStatus] = useState<Booking["status"] | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,19 +91,19 @@ export function BookingButton({
   const handleBooking = async () => {
     // Check authentication
     if (!currentUserId || !user) {
-      toast.error("Devi accedere per prenotare un passaggio");
+      toast.error(t('loginRequired'));
       return;
     }
 
     // Prevent booking own ride
     if (currentUserId === driverId) {
-      toast.error("Non puoi prenotare la tua stessa corsa");
+      toast.error(t('cannotBookOwnRide'));
       return;
     }
 
     // Check available seats
     if (availableSeats === 0) {
-      toast.error("Non ci sono posti disponibili");
+      toast.error(t('noSeatsAvailable'));
       return;
     }
 
@@ -112,7 +114,7 @@ export function BookingButton({
     }
 
     setIsLoading(true);
-    const toastId = toast.loading("Invio richiesta di prenotazione...");
+    const toastId = toast.loading(t('sendingRequest'));
 
     try {
       // Create booking
@@ -132,14 +134,14 @@ export function BookingButton({
       await supabase.from("messages").insert({
         booking_id: booking.id,
         sender_id: currentUserId,
-        content: `Ciao! Sono interessato al passaggio da ${ride.from_city} a ${ride.to_city}.`,
+        content: t('initialMessage', { from: ride.from_city, to: ride.to_city }),
         read: false,
       });
 
       // Notify driver
       await notifyBookingRequest(
         driverId,
-        user.user_metadata?.name || user.email?.split("@")[0] || "Passeggero",
+        user.user_metadata?.name || user.email?.split("@")[0] || t('passenger'),
         rideId,
         booking.id
       );
@@ -148,7 +150,7 @@ export function BookingButton({
       setBookingId(booking.id);
       
       toast.dismiss(toastId);
-      toast.success("Richiesta inviata al conducente!");
+      toast.success(t('requestSent'));
       
       // Redirect to chat after short delay
       setTimeout(() => {
@@ -156,7 +158,7 @@ export function BookingButton({
       }, 1500);
     } catch (err) {
       toast.dismiss(toastId);
-      toast.error(err instanceof Error ? err.message : "Errore nella prenotazione");
+      toast.error(err instanceof Error ? err.message : t('bookingError'));
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +172,7 @@ export function BookingButton({
         className="w-full h-14 bg-surface-container-highest text-on-surface-variant rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70"
       >
         <Loader2 className="w-5 h-5 animate-spin" />
-        <span>Verifica...</span>
+        <span>{t('checking')}</span>
       </button>
     );
   }
@@ -180,7 +182,7 @@ export function BookingButton({
     return (
       <div className="w-full h-14 bg-surface-container-highest/50 text-on-surface-variant rounded-2xl font-bold flex items-center justify-center gap-2 border-2 border-dashed border-outline-variant">
         <Car className="w-5 h-5" />
-        <span>La tua corsa</span>
+        <span>{t('yourRide')}</span>
       </div>
     );
   }
@@ -193,7 +195,7 @@ export function BookingButton({
         className="w-full h-14 bg-error/10 text-error rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70"
       >
         <XCircle className="w-5 h-5" />
-        <span>Posti esauriti</span>
+        <span>{t('seatsFull')}</span>
       </button>
     );
   }
@@ -207,7 +209,7 @@ export function BookingButton({
           className="w-full h-14 bg-warning/10 text-warning border-2 border-warning/30 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-warning/20 transition-colors"
         >
           <Clock className="w-5 h-5" />
-          <span>In attesa di conferma</span>
+          <span>{t('pendingConfirmation')}</span>
         </Link>
       );
 
@@ -218,7 +220,7 @@ export function BookingButton({
           className="w-full h-14 bg-tertiary/10 text-tertiary border-2 border-tertiary/30 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-tertiary/20 transition-colors"
         >
           <CheckCircle2 className="w-5 h-5" />
-          <span>Prenotazione confermata</span>
+          <span>{t('bookingConfirmed')}</span>
         </Link>
       );
 
@@ -229,7 +231,7 @@ export function BookingButton({
           className="w-full h-14 bg-error/10 text-error/60 rounded-2xl font-bold flex items-center justify-center gap-2"
         >
           <XCircle className="w-5 h-5" />
-          <span>Richiesta rifiutata</span>
+          <span>{t('requestRejected')}</span>
         </button>
       );
 
@@ -252,12 +254,12 @@ export function BookingButton({
           {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Prenotazione...</span>
+              <span>{t('booking')}</span>
             </>
           ) : (
             <>
               <Car className="w-5 h-5" />
-              <span>Richiedi un posto</span>
+              <span>{t('requestSeat')}</span>
             </>
           )}
         </button>

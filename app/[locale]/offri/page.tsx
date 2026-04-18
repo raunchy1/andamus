@@ -106,7 +106,7 @@ function OfferMobile({
         {/* Hero Heading */}
         <section>
           <span className="font-semibold uppercase tracking-widest text-[11px] text-primary mb-2 block">{t('newTrip')}</span>
-          <h2 className="text-4xl font-extrabold tracking-tighter leading-none text-on-surface">Crea un<br/>passaggio.</h2>
+          <h2 className="text-4xl font-extrabold tracking-tighter leading-none text-on-surface">{t('createRide')}</h2>
         </section>
 
         {/* Error Message */}
@@ -133,7 +133,7 @@ function OfferMobile({
                     onChange={(e) => handleChange("origin", e.target.value)}
                     className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer"
                   >
-                    <option value="" className="bg-surface-container-highest">Da dove parti?</option>
+                    <option value="" className="bg-surface-container-highest">{t('departurePlaceholder')}</option>
                     {sardinianCities.map((city) => (
                       <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
                     ))}
@@ -155,7 +155,7 @@ function OfferMobile({
                     onChange={(e) => handleChange("destination", e.target.value)}
                     className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer"
                   >
-                    <option value="" className="bg-surface-container-highest">Dove vai?</option>
+                    <option value="" className="bg-surface-container-highest">{t('arrivalPlaceholder')}</option>
                     {sardinianCities.map((city) => (
                       <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
                     ))}
@@ -198,7 +198,7 @@ function OfferMobile({
                 type="number"
                 min="1"
                 max="8"
-                placeholder="1-8 posti"
+                placeholder={t('seatsPlaceholder')}
                 value={formData.seats}
                 onChange={(e) => handleChange("seats", e.target.value)}
                 className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
@@ -208,7 +208,7 @@ function OfferMobile({
 
             {/* Payment Toggle Section */}
             <div className="space-y-4 pt-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Modalità di viaggio</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('travelMode')}</label>
               <div className="flex p-1 bg-surface-container-lowest rounded-xl border border-surface-container-highest">
                 <button
                   type="button"
@@ -230,7 +230,7 @@ function OfferMobile({
                 </button>
               </div>
               <p className="text-[11px] text-outline leading-relaxed italic px-1">
-                I viaggi gratuiti favoriscono la community e aumentano il tuo punteggio &quot;Nomad&quot; del 20%.
+                {t('freeRideBonus')}
               </p>
             </div>
 
@@ -240,7 +240,7 @@ function OfferMobile({
                 <input
                   type="number"
                   min="1"
-                  placeholder="Importo in euro"
+                  placeholder={t('pricePlaceholder')}
                   value={formData.price}
                   onChange={(e) => handleChange("price", e.target.value)}
                   className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
@@ -250,7 +250,7 @@ function OfferMobile({
                 {calculatingPrice ? (
                   <div className="flex items-center gap-2 text-[11px] text-outline">
                     <Calculator className="w-3 h-3 animate-pulse" />
-                    Calcolo distanza e prezzo...
+                    {t('calculatingPrice')}
                   </div>
                 ) : distanceKm !== null && suggestedPrice !== null && (
                   <div className="mt-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
@@ -259,7 +259,7 @@ function OfferMobile({
                       <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{t('smartPrice')}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-sm text-on-surface">Distanza:</span>
+                      <span className="text-sm text-on-surface">{t('distanceLabel')}</span>
                       <span className="text-sm font-bold text-on-surface">{distanceKm} km</span>
                     </div>
                     <div className="flex items-baseline gap-1">
@@ -267,7 +267,7 @@ function OfferMobile({
                       <span className="text-lg font-extrabold text-primary">{suggestedPrice}€</span>
                     </div>
                     <p className="text-[10px] text-outline mt-1">
-                      Basato su €0.09/km · Carpooling non-profit
+                      {t('priceCalculationNote')}
                     </p>
                   </div>
                 )}
@@ -282,7 +282,7 @@ function OfferMobile({
               <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
                 <input
                   type="text"
-                  placeholder="Punto di ritrovo (es. Piazza Matteotti)"
+                  placeholder={t('meetingPointPlaceholder')}
                   value={formData.meetingPoint}
                   onChange={(e) => handleChange("meetingPoint", e.target.value)}
                   className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight"
@@ -291,7 +291,7 @@ function OfferMobile({
               <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
                 <textarea
                   rows={3}
-                  placeholder="Note aggiuntive (es. Ho posto per un bagaglio grande)"
+                  placeholder={t('notesPlaceholder')}
                   value={formData.notes}
                   onChange={(e) => handleChange("notes", e.target.value)}
                   className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight resize-none"
@@ -301,7 +301,7 @@ function OfferMobile({
 
             {/* Car Info Section */}
             <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Veicolo</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('vehicle')}</label>
               
               {savedCarInfo?.car_model && (
                 <div className="flex items-center gap-3 mb-3">
@@ -313,7 +313,7 @@ function OfferMobile({
                     className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary"
                   />
                   <label htmlFor="useSavedCar" className="text-sm text-on-surface">
-                    Usa il mio veicolo salvato: <span className="font-semibold">{savedCarInfo.car_model}</span>
+                    {t('useSavedCar')}: <span className="font-semibold">{savedCarInfo.car_model}</span>
                     {savedCarInfo.car_color && ` (${savedCarInfo.car_color})`}
                   </label>
                 </div>
@@ -323,7 +323,7 @@ function OfferMobile({
                 <div className="space-y-3 bg-surface-container-highest p-4 rounded-xl">
                   <input
                     type="text"
-                    placeholder="Modello auto (es. Fiat Panda)"
+                    placeholder={t('carModelPlaceholder')}
                     value={formData.carModel}
                     onChange={(e) => handleChange("carModel", e.target.value)}
                     className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold"
@@ -331,21 +331,21 @@ function OfferMobile({
                   <div className="grid grid-cols-3 gap-2">
                     <input
                       type="text"
-                      placeholder="Colore"
+                      placeholder={t('carColorPlaceholder')}
                       value={formData.carColor}
                       onChange={(e) => handleChange("carColor", e.target.value)}
                       className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
                     />
                     <input
                       type="text"
-                      placeholder="Anno"
+                      placeholder={t('carYearPlaceholder')}
                       value={formData.carYear}
                       onChange={(e) => handleChange("carYear", e.target.value.replace(/\D/g, '').slice(0, 4))}
                       className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
                     />
                     <input
                       type="text"
-                      placeholder="Targa"
+                      placeholder={t('carPlatePlaceholder')}
                       value={formData.carPlate}
                       onChange={(e) => handleChange("carPlate", e.target.value.toUpperCase().slice(0, 7))}
                       className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary font-mono"
@@ -370,7 +370,7 @@ function OfferMobile({
                       }}
                       className="h-12 flex-1 rounded-xl border-none bg-surface-container-highest pl-4 pr-10 text-on-surface font-semibold outline-none focus:ring-1 focus:ring-primary appearance-none"
                     >
-                      <option value="">Seleziona città</option>
+                      <option value="">{t('cityPlaceholder')}</option>
                       {sardinianCities.map((city) => (
                         <option key={city} value={city}>{city}</option>
                       ))}
@@ -394,7 +394,7 @@ function OfferMobile({
                     className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    t('addStop')
+                    {t('addStop')}
                   </button>
                 )}
                 {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
@@ -407,33 +407,33 @@ function OfferMobile({
               <div className="grid grid-cols-2 gap-3">
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                   <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">Fumatori ammessi</span>
+                  <span className="text-sm font-semibold">{t('smokersAllowed')}</span>
                 </label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.petsAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                   <input type="checkbox" checked={formData.petsAllowed} onChange={(e) => handleChange("petsAllowed", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">Animali ammessi</span>
+                  <span className="text-sm font-semibold">{t('petsAllowed')}</span>
                 </label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.largeLuggage ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                   <input type="checkbox" checked={formData.largeLuggage} onChange={(e) => handleChange("largeLuggage", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">Bagaglio grande</span>
+                  <span className="text-sm font-semibold">{t('largeLuggage')}</span>
                 </label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.womenOnly ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                   <input type="checkbox" checked={formData.womenOnly} onChange={(e) => handleChange("womenOnly", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">Solo donne</span>
+                  <span className="text-sm font-semibold">{t('womenOnly')}</span>
                 </label>
               </div>
 
               <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block mb-2">Musica in macchina</label>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block mb-2">{t('music')}</label>
                 <select
                   value={formData.musicPreference}
                   onChange={(e) => handleChange("musicPreference", e.target.value)}
                   className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-surface-container-highest">Qualsiasi</option>
-                  <option value="quiet" className="bg-surface-container-highest">Silenzio</option>
-                  <option value="music" className="bg-surface-container-highest">Musica</option>
-                  <option value="talk" className="bg-surface-container-highest">Chiacchiere</option>
+                  <option value="" className="bg-surface-container-highest">{t('musicAny')}</option>
+                  <option value="quiet" className="bg-surface-container-highest">{t('musicQuiet')}</option>
+                  <option value="music" className="bg-surface-container-highest">{t('musicMusic')}</option>
+                  <option value="talk" className="bg-surface-container-highest">{t('musicTalk')}</option>
                 </select>
               </div>
               {errors.musicPreference && <p className="text-sm text-error">{errors.musicPreference}</p>}
@@ -441,10 +441,10 @@ function OfferMobile({
 
             {/* Recurring Option */}
             <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Ripetizione</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('repeat')}</label>
               <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.isRecurring ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                 <input type="checkbox" checked={formData.isRecurring} onChange={(e) => handleChange("isRecurring", e.target.checked)} className="hidden" />
-                <span className="text-sm font-semibold">Ripeti questa corsa settimanalmente</span>
+                <span className="text-sm font-semibold">{t('repeatWeekly')}</span>
               </label>
 
               {formData.isRecurring && (
@@ -483,7 +483,7 @@ function OfferMobile({
                   </div>
                   {errors.recurrenceDays && <p className="text-sm text-error">{errors.recurrenceDays}</p>}
                   <p className="text-xs text-outline">
-                    Verranno generate automaticamente le corse per i prossimi 30 giorni.
+                    {t('recurringNote')}
                   </p>
                 </div>
               )}
@@ -495,7 +495,7 @@ function OfferMobile({
                 <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface">Tracciamento Live Attivo</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface">{t('liveTracking')}</span>
                 </div>
               </div>
             </div>
@@ -509,8 +509,8 @@ function OfferMobile({
               className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-xl shadow-lg transform active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {isSubmitting
-                ? formData.isRecurring ? "t('creating')" : "t('publishing')"
-                : formData.isRecurring ? "t('createRecurringRide')" : "t('publishRide')"
+                ? formData.isRecurring ? t('creating') : t('publishing')
+                : formData.isRecurring ? t('createRecurringRide') : t('publishRide')
               }
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -592,7 +592,7 @@ function OfferDesktop({
                         onChange={(e) => handleChange("origin", e.target.value)}
                         className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer text-lg"
                       >
-                        <option value="" className="bg-surface-container-highest">Da dove parti?</option>
+                        <option value="" className="bg-surface-container-highest">{t('departurePlaceholder')}</option>
                         {sardinianCities.map((city) => (
                           <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
                         ))}
@@ -614,7 +614,7 @@ function OfferDesktop({
                         onChange={(e) => handleChange("destination", e.target.value)}
                         className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer text-lg"
                       >
-                        <option value="" className="bg-surface-container-highest">Dove vai?</option>
+                        <option value="" className="bg-surface-container-highest">{t('arrivalPlaceholder')}</option>
                         {sardinianCities.map((city) => (
                           <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
                         ))}
@@ -649,7 +649,7 @@ function OfferDesktop({
                     {errors.time && <p className="text-sm text-error">{errors.time}</p>}
                   </div>
                   <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-1 border-b-2 transition-all ${errors.seats ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Posti</label>
+                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('availableSeats')}</label>
                     <input
                       type="number"
                       min="1"
@@ -665,7 +665,7 @@ function OfferDesktop({
 
                 {/* Payment Toggle — Prominent */}
                 <div className="space-y-4 pt-2">
-                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Modalità di viaggio</label>
+                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('travelMode')}</label>
                   <div className="flex p-1.5 bg-surface-container-lowest rounded-2xl border border-surface-container-highest">
                     <button
                       type="button"
@@ -697,7 +697,7 @@ function OfferDesktop({
                     <input
                       type="number"
                       min="1"
-                      placeholder="Importo in euro"
+                      placeholder={t('pricePlaceholder')}
                       value={formData.price}
                       onChange={(e) => handleChange("price", e.target.value)}
                       className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold text-lg"
@@ -707,7 +707,7 @@ function OfferDesktop({
                     {calculatingPrice ? (
                       <div className="flex items-center gap-2 text-xs text-outline">
                         <Calculator className="w-4 h-4 animate-pulse" />
-                        Calcolo distanza e prezzo...
+                        {t('calculatingPrice')}
                       </div>
                     ) : distanceKm !== null && suggestedPrice !== null && (
                       <div className="mt-3 p-4 rounded-xl bg-primary/10 border border-primary/20 backdrop-blur-sm">
@@ -717,16 +717,16 @@ function OfferDesktop({
                         </div>
                         <div className="flex items-center gap-6">
                           <div className="flex items-baseline gap-1">
-                            <span className="text-sm text-on-surface">Distanza:</span>
+                            <span className="text-sm text-on-surface">{t('distanceLabel')}</span>
                             <span className="text-lg font-bold text-on-surface">{distanceKm} km</span>
                           </div>
                           <div className="flex items-baseline gap-1">
-                            <span className="text-sm text-on-surface">Prezzo:</span>
+                            <span className="text-sm text-on-surface">{t('priceLabel')}</span>
                             <span className="text-2xl font-extrabold text-primary">{suggestedPrice}€</span>
                           </div>
                         </div>
                         <p className="text-[11px] text-outline mt-2">
-                          Basato su €0.09/km · Carpooling non-profit
+                          {t('priceCalculationNote')}
                         </p>
                       </div>
                     )}
@@ -741,7 +741,7 @@ function OfferDesktop({
                   <div className="bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 ring-primary transition-all">
                     <input
                       type="text"
-                      placeholder="Punto di ritrovo (es. Piazza Matteotti)"
+                      placeholder={t('meetingPointPlaceholder')}
                       value={formData.meetingPoint}
                       onChange={(e) => handleChange("meetingPoint", e.target.value)}
                       className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight"
@@ -750,7 +750,7 @@ function OfferDesktop({
                   <div className="bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 ring-primary transition-all">
                     <textarea
                       rows={4}
-                      placeholder="Note aggiuntive (es. Ho posto per un bagaglio grande)"
+                      placeholder={t('notesPlaceholder')}
                       value={formData.notes}
                       onChange={(e) => handleChange("notes", e.target.value)}
                       className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight resize-none"
@@ -773,7 +773,7 @@ function OfferDesktop({
                           }}
                           className="h-12 flex-1 rounded-xl border-none bg-surface-container-highest pl-4 pr-10 text-on-surface font-semibold outline-none focus:ring-1 focus:ring-primary appearance-none"
                         >
-                          <option value="">Seleziona città</option>
+                          <option value="">{t('cityPlaceholder')}</option>
                           {sardinianCities.map((city) => (
                             <option key={city} value={city}>{city}</option>
                           ))}
@@ -797,7 +797,7 @@ function OfferDesktop({
                         className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                       >
                         <Plus className="w-4 h-4" />
-                        t('addStop')
+                        {t('addStop')}
                       </button>
                     )}
                     {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
@@ -814,33 +814,33 @@ function OfferDesktop({
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                     <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">Fumatori ammessi</span>
+                    <span className="text-sm font-semibold">{t('smokersAllowed')}</span>
                   </label>
                   <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.petsAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                     <input type="checkbox" checked={formData.petsAllowed} onChange={(e) => handleChange("petsAllowed", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">Animali ammessi</span>
+                    <span className="text-sm font-semibold">{t('petsAllowed')}</span>
                   </label>
                   <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.largeLuggage ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                     <input type="checkbox" checked={formData.largeLuggage} onChange={(e) => handleChange("largeLuggage", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">Bagaglio grande</span>
+                    <span className="text-sm font-semibold">{t('largeLuggage')}</span>
                   </label>
                   <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.womenOnly ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                     <input type="checkbox" checked={formData.womenOnly} onChange={(e) => handleChange("womenOnly", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">Solo donne</span>
+                    <span className="text-sm font-semibold">{t('womenOnly')}</span>
                   </label>
                 </div>
 
                 <div className="bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 ring-primary transition-all">
-                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block mb-2">Musica in macchina</label>
+                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block mb-2">{t('music')}</label>
                   <select
                     value={formData.musicPreference}
                     onChange={(e) => handleChange("musicPreference", e.target.value)}
                     className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold appearance-none cursor-pointer"
                   >
-                    <option value="" className="bg-surface-container-highest">Qualsiasi</option>
-                    <option value="quiet" className="bg-surface-container-highest">Silenzio</option>
-                    <option value="music" className="bg-surface-container-highest">Musica</option>
-                    <option value="talk" className="bg-surface-container-highest">Chiacchiere</option>
+                    <option value="" className="bg-surface-container-highest">{t('musicAny')}</option>
+                    <option value="quiet" className="bg-surface-container-highest">{t('musicQuiet')}</option>
+                    <option value="music" className="bg-surface-container-highest">{t('musicMusic')}</option>
+                    <option value="talk" className="bg-surface-container-highest">{t('musicTalk')}</option>
                   </select>
                 </div>
                 {errors.musicPreference && <p className="text-sm text-error">{errors.musicPreference}</p>}
@@ -848,10 +848,10 @@ function OfferDesktop({
 
               {/* Recurring Option */}
               <div className="space-y-4">
-                <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Ripetizione</label>
+                <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('repeat')}</label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.isRecurring ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                   <input type="checkbox" checked={formData.isRecurring} onChange={(e) => handleChange("isRecurring", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">Ripeti questa corsa settimanalmente</span>
+                  <span className="text-sm font-semibold">{t('repeatWeekly')}</span>
                 </label>
 
                 {formData.isRecurring && (
@@ -890,7 +890,7 @@ function OfferDesktop({
                     </div>
                     {errors.recurrenceDays && <p className="text-sm text-error">{errors.recurrenceDays}</p>}
                     <p className="text-xs text-outline">
-                      Verranno generate automaticamente le corse per i prossimi 30 giorni.
+                      {t('recurringNote')}
                     </p>
                   </div>
                 )}
@@ -902,7 +902,7 @@ function OfferDesktop({
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                   <div className="absolute bottom-5 left-5 flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-widest text-on-surface">Tracciamento Live Attivo</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-on-surface">{t('liveTracking')}</span>
                   </div>
                 </div>
               </div>
@@ -915,8 +915,8 @@ function OfferDesktop({
                   className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-2xl shadow-lg transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 min-h-[56px]"
                 >
                   {isSubmitting
-                    ? formData.isRecurring ? "t('creating')" : "t('publishing')"
-                    : formData.isRecurring ? "t('createRecurringRide')" : "t('publishRide')"
+                    ? formData.isRecurring ? t('creating') : t('publishing')
+                    : formData.isRecurring ? t('createRecurringRide') : t('publishRide')
                   }
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -1114,23 +1114,23 @@ export default function OfferPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.origin) newErrors.origin = "Seleziona la città di partenza";
-    if (!formData.destination) newErrors.destination = "Seleziona la destinazione";
+    if (!formData.origin) newErrors.origin = t('errorOriginRequired');
+    if (!formData.destination) newErrors.destination = t('errorDestinationRequired');
     if (formData.origin && formData.destination && formData.origin === formData.destination) {
-      newErrors.sameCity = "Partenza e destinazione non possono essere uguali";
+      newErrors.sameCity = t('errors.sameCity');
     }
-    if (!formData.date) newErrors.date = "Seleziona una data";
-    if (!formData.time) newErrors.time = "Seleziona un orario";
-    if (!formData.seats) newErrors.seats = "Inserisci il numero di posti";
-    if (!formData.isFree && !formData.price) newErrors.price = "Inserisci il contributo richiesto";
+    if (!formData.date) newErrors.date = t('errorDateRequired');
+    if (!formData.time) newErrors.time = t('errorTimeRequired');
+    if (!formData.seats) newErrors.seats = t('errorSeatsRequired');
+    if (!formData.isFree && !formData.price) newErrors.price = t('errorPriceRequired');
     if (formData.musicPreference && !['quiet','music','talk'].includes(formData.musicPreference)) {
-      newErrors.musicPreference = "Preferenza musica non valida";
+      newErrors.musicPreference = t('errorMusicPreference');
     }
     if (formData.isRecurring && formData.recurrenceDays.length === 0) {
-      newErrors.recurrenceDays = "Seleziona almeno un giorno per la ripetizione";
+      newErrors.recurrenceDays = t('errorRecurrenceDays');
     }
     if (formData.stops.some((s) => s === formData.origin || s === formData.destination)) {
-      newErrors.stops = "Le fermate non possono coincidere con partenza o destinazione";
+      newErrors.stops = t('errorStops');
     }
 
     setErrors(newErrors);
@@ -1147,20 +1147,20 @@ export default function OfferPage() {
       if (errorMessages.length > 0) {
         toast.error(errorMessages[0]);
       } else {
-        toast.error("Compila tutti i campi obbligatori.");
+        toast.error(t('fillRequiredFields'));
       }
       return;
     }
 
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (!currentUser) {
-      toast.error("Devi essere autenticato per pubblicare un passaggio.");
-      setSubmitError("Devi essere autenticato per pubblicare un passaggio.");
+      toast.error(t('authRequired'));
+      setSubmitError(t('authRequired'));
       return;
     }
 
     setIsSubmitting(true);
-    const toastId = toast.loading(formData.isRecurring ? "Creazione corsa ricorrente..." : "t('publishing')");
+    const toastId = toast.loading(formData.isRecurring ? t('creating') : t('publishing'));
 
     try {
       let rideId: string | null = null;
@@ -1191,8 +1191,8 @@ export default function OfferPage() {
         if (templateError) {
           // Template error logged silently
           toast.dismiss(toastId);
-          toast.error(`Errore: ${templateError.message}`);
-          setSubmitError(`Errore durante la pubblicazione: ${templateError.message}`);
+          toast.error(t('errorTemplate', { message: templateError.message }));
+          setSubmitError(t('errorPublishing', { message: templateError.message }));
           setIsSubmitting(false);
           return;
         }
@@ -1202,7 +1202,7 @@ export default function OfferPage() {
         if (rpcError) {
           // RPC error logged silently
           toast.dismiss(toastId);
-          toast.error(`Errore generazione corse: ${rpcError.message}`);
+          toast.error(t('errorGeneratingRides', { message: rpcError.message }));
         }
       } else {
         const { data: inserted, error } = await supabase
@@ -1235,8 +1235,8 @@ export default function OfferPage() {
         if (error) {
           // Insert error logged silently
           toast.dismiss(toastId);
-          toast.error(`Errore: ${error.message}`);
-          setSubmitError(`Errore durante la pubblicazione: ${error.message}`);
+          toast.error(t('errorTemplate', { message: error.message }));
+          setSubmitError(t('errorPublishing', { message: error.message }));
           setIsSubmitting(false);
           return;
         }
@@ -1254,7 +1254,7 @@ export default function OfferPage() {
             
             if (stopsError) {
               // Stops error logged silently
-              toast.error(`Errore fermate: ${stopsError.message}`);
+              toast.error(t('errorStopsMsg', { message: stopsError.message }));
             }
           }
 
@@ -1283,26 +1283,26 @@ export default function OfferPage() {
         
         if (result.pointsAdded > 0) {
           toast.dismiss(toastId);
-          toast.success(`+${result.pointsAdded} punti! 🎉`);
+          toast.success(t('pointsEarned', { points: result.pointsAdded }));
           if (result.leveledUp) {
-            toast.success(`Congratulazioni! Sei salito a livello ${result.newLevel}!`);
+            toast.success(t('levelUp', { level: result.newLevel ?? '' }));
           }
         } else {
           toast.dismiss(toastId);
-          toast.success(formData.isRecurring ? "Corsa ricorrente creata con successo!" : "Passaggio pubblicato con successo!");
+          toast.success(formData.isRecurring ? t('recurringSuccess') : t('rideSuccess'));
         }
       } else {
         toast.dismiss(toastId);
-        toast.success(formData.isRecurring ? "Corsa ricorrente creata con successo!" : "Passaggio pubblicato con successo!");
+        toast.success(formData.isRecurring ? t('recurringSuccess') : t('rideSuccess'));
       }
       
       setIsSubmitted(true);
     } catch (err) {
       // Submit error logged silently
       toast.dismiss(toastId);
-      const errorMessage = err instanceof Error ? err.message : "Errore imprevisto. Riprova più tardi.";
-      toast.error(`Errore: ${errorMessage}`);
-      setSubmitError(`Errore imprevisto: ${errorMessage}`);
+      const errorMessage = err instanceof Error ? err.message : t('unexpectedError');
+      toast.error(t('errorTemplate', { message: errorMessage }));
+      setSubmitError(t('errorUnexpected', { message: errorMessage }));
     } finally {
       setIsSubmitting(false);
     }
@@ -1347,7 +1347,7 @@ export default function OfferPage() {
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
             </svg>
-            t('loginWithGoogle')
+            {t('loginWithGoogle')}
           </button>
           <div className="mt-6">
             <Link
@@ -1355,7 +1355,7 @@ export default function OfferPage() {
               className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Torna alla home
+              {t('success.backHome')}
             </Link>
           </div>
         </div>
@@ -1376,17 +1376,17 @@ export default function OfferPage() {
           </h1>
           {isFirstRide && (
             <p className="mb-4 text-sm text-primary font-medium">
-              🎉 Prima ta cursă a fost publicată! Oamenii o vor vedea acum.
+              {t('firstRideMessage')}
             </p>
           )}
           <p className="mb-6 text-on-surface-variant">
-            Presto potrai gestirlo dal tuo profilo.
+            {t('manageSoon')}
           </p>
           
           {/* Share Section */}
           <div className="mb-6 p-4 rounded-2xl bg-surface-container border border-outline-variant/30">
             <p className="text-sm font-medium text-on-surface mb-3">
-              Condividi la tua corsa e trova passeggeri più velocemente!
+              {t('shareRidePrompt')}
             </p>
             <ShareApp variant="button" className="w-full justify-center" />
           </div>
@@ -1396,14 +1396,14 @@ export default function OfferPage() {
               href="/profilo"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary transition-colors hover:opacity-90"
             >
-              t('goToProfile')
+              {t('goToProfile')}
             </Link>
             <Link
               href="/cerca"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-6 py-3 text-sm font-extrabold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
               <ArrowLeft className="w-4 h-4" />
-              t('searchOtherRides')
+              {t('searchOtherRides')}
             </Link>
           </div>
         </div>
