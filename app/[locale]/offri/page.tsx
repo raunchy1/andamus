@@ -9,6 +9,7 @@ import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
 import { Calculator, Sparkles } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
 import { ShareApp } from "@/components/ShareApp";
@@ -79,6 +80,7 @@ function OfferMobile({
   handleSubmit,
   savedCarInfo,
 }: OfferViewProps) {
+  const t = useTranslations('offer');
   const router = useRouter();
 
   return (
@@ -103,7 +105,7 @@ function OfferMobile({
       <main className="px-4 sm:px-6 py-6 sm:py-8 space-y-8 sm:space-y-10 max-w-2xl mx-auto overflow-x-hidden">
         {/* Hero Heading */}
         <section>
-          <span className="font-semibold uppercase tracking-widest text-[11px] text-primary mb-2 block">Nuovo Viaggio</span>
+          <span className="font-semibold uppercase tracking-widest text-[11px] text-primary mb-2 block">{t('newTrip')}</span>
           <h2 className="text-4xl font-extrabold tracking-tighter leading-none text-on-surface">Crea un<br/>passaggio.</h2>
         </section>
 
@@ -123,7 +125,7 @@ function OfferMobile({
             {/* Location Inputs */}
             <div className="space-y-4">
               <div className="relative">
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">Partenza</label>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">{t('departure')}</label>
                 <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
                   <CircleDot className="w-5 h-5 text-primary" />
                   <select
@@ -145,7 +147,7 @@ function OfferMobile({
                 </div>
               </div>
               <div className="relative">
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">Arrivo</label>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">{t('arrival')}</label>
                 <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
                   <MapPin className="w-5 h-5 text-primary" />
                   <select
@@ -167,7 +169,7 @@ function OfferMobile({
             {/* Date & Time Grid */}
             <div className="grid grid-cols-2 gap-4">
               <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Data</label>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('date')}</label>
                 <input
                   type="date"
                   min={today}
@@ -178,7 +180,7 @@ function OfferMobile({
                 {errors.date && <p className="text-sm text-error">{errors.date}</p>}
               </div>
               <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.time ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Ora</label>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('time')}</label>
                 <input
                   type="time"
                   value={formData.time}
@@ -191,7 +193,7 @@ function OfferMobile({
 
             {/* Seats */}
             <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.seats ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Posti disponibili</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('availableSeats')}</label>
               <input
                 type="number"
                 min="1"
@@ -215,7 +217,7 @@ function OfferMobile({
                     formData.isFree ? 'bg-primary text-on-primary' : 'text-outline hover:text-on-surface'
                   }`}
                 >
-                  Gratuito
+                  {t('free')}
                 </button>
                 <button
                   type="button"
@@ -224,7 +226,7 @@ function OfferMobile({
                     !formData.isFree ? 'bg-primary text-on-primary' : 'text-outline hover:text-on-surface'
                   }`}
                 >
-                  A pagamento
+                  {t('paid')}
                 </button>
               </div>
               <p className="text-[11px] text-outline leading-relaxed italic px-1">
@@ -234,7 +236,7 @@ function OfferMobile({
 
             {!formData.isFree && (
               <div className={`bg-surface-container-highest p-4 rounded-xl space-y-2 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Prezzo (€)</label>
+                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('priceEuro')}</label>
                 <input
                   type="number"
                   min="1"
@@ -254,14 +256,14 @@ function OfferMobile({
                   <div className="mt-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
                     <div className="flex items-center gap-2 mb-1">
                       <Sparkles className="w-3 h-3 text-primary" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Prezzo Intelligente</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{t('smartPrice')}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
                       <span className="text-sm text-on-surface">Distanza:</span>
                       <span className="text-sm font-bold text-on-surface">{distanceKm} km</span>
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-sm text-on-surface">Prezzo suggerito:</span>
+                      <span className="text-sm text-on-surface">{t('suggestedPrice')}</span>
                       <span className="text-lg font-extrabold text-primary">{suggestedPrice}€</span>
                     </div>
                     <p className="text-[10px] text-outline mt-1">
@@ -276,7 +278,7 @@ function OfferMobile({
 
             {/* Meeting Point & Notes */}
             <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Dettagli opzionali</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('optionalDetails')}</label>
               <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
                 <input
                   type="text"
@@ -355,7 +357,7 @@ function OfferMobile({
 
             {/* Intermediate Stops */}
             <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Fermate intermedie</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('intermediateStops')}</label>
               <div className="space-y-3">
                 {formData.stops.map((stop, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -392,7 +394,7 @@ function OfferMobile({
                     className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    Aggiungi fermata
+                    t('addStop')
                   </button>
                 )}
                 {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
@@ -401,7 +403,7 @@ function OfferMobile({
 
             {/* Preferences */}
             <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">Preferenze di viaggio</label>
+              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('travelPreferences')}</label>
               <div className="grid grid-cols-2 gap-3">
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                   <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
@@ -507,8 +509,8 @@ function OfferMobile({
               className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-xl shadow-lg transform active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {isSubmitting
-                ? formData.isRecurring ? "Creazione in corso..." : "Pubblicazione in corso..."
-                : formData.isRecurring ? "CREA CORSA RICORRENTE" : "PUBBLICA PASSAGGIO"
+                ? formData.isRecurring ? "t('creating')" : "t('publishing')"
+                : formData.isRecurring ? "t('createRecurringRide')" : "t('publishRide')"
               }
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -533,6 +535,7 @@ function OfferDesktop({
   handleSubmit,
   savedCarInfo,
 }: OfferViewProps) {
+  const t = useTranslations('offer');
   const router = useRouter();
 
   return (
@@ -559,8 +562,8 @@ function OfferDesktop({
       <main className="max-w-5xl mx-auto px-6 lg:px-8 py-8 lg:py-10 overflow-x-hidden">
         {/* Hero Heading */}
         <section className="mb-10">
-          <span className="font-semibold uppercase tracking-widest text-xs text-primary mb-2 block">Nuovo Viaggio</span>
-          <h2 className="text-5xl font-extrabold tracking-tighter leading-tight text-on-surface">Crea un passaggio.</h2>
+          <span className="font-semibold uppercase tracking-widest text-xs text-primary mb-2 block">{t('newTrip')}</span>
+          <h2 className="text-5xl font-extrabold tracking-tighter leading-tight text-on-surface">{t('createRide')}</h2>
         </section>
 
         {/* Error Message */}
@@ -581,7 +584,7 @@ function OfferDesktop({
                 {/* Location Inputs */}
                 <div className="space-y-4">
                   <div className="relative">
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">Partenza</label>
+                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">{t('departure')}</label>
                     <div className={`flex items-center gap-4 bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
                       <CircleDot className="w-6 h-6 text-primary" />
                       <select
@@ -603,7 +606,7 @@ function OfferDesktop({
                     </div>
                   </div>
                   <div className="relative">
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">Arrivo</label>
+                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">{t('arrival')}</label>
                     <div className={`flex items-center gap-4 bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
                       <MapPin className="w-6 h-6 text-primary" />
                       <select
@@ -625,7 +628,7 @@ function OfferDesktop({
                 {/* Date, Time, Seats */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Data</label>
+                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('date')}</label>
                     <input
                       type="date"
                       min={today}
@@ -636,7 +639,7 @@ function OfferDesktop({
                     {errors.date && <p className="text-sm text-error">{errors.date}</p>}
                   </div>
                   <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-1 border-b-2 transition-all ${errors.time ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Ora</label>
+                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('time')}</label>
                     <input
                       type="time"
                       value={formData.time}
@@ -671,7 +674,7 @@ function OfferDesktop({
                         formData.isFree ? 'bg-primary text-on-primary shadow-lg' : 'text-outline hover:text-on-surface'
                       }`}
                     >
-                      Gratuito
+                      {t('free')}
                     </button>
                     <button
                       type="button"
@@ -680,7 +683,7 @@ function OfferDesktop({
                         !formData.isFree ? 'bg-primary text-on-primary shadow-lg' : 'text-outline hover:text-on-surface'
                       }`}
                     >
-                      A pagamento
+                      {t('paid')}
                     </button>
                   </div>
                   <p className="text-xs text-outline leading-relaxed italic">
@@ -690,7 +693,7 @@ function OfferDesktop({
 
                 {!formData.isFree && (
                   <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-2 border-b-2 transition-all ${errors.price ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Prezzo (€)</label>
+                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('priceEuro')}</label>
                     <input
                       type="number"
                       min="1"
@@ -710,7 +713,7 @@ function OfferDesktop({
                       <div className="mt-3 p-4 rounded-xl bg-primary/10 border border-primary/20 backdrop-blur-sm">
                         <div className="flex items-center gap-2 mb-2">
                           <Sparkles className="w-4 h-4 text-primary" />
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Prezzo Intelligente</span>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-primary">{t('smartPrice')}</span>
                         </div>
                         <div className="flex items-center gap-6">
                           <div className="flex items-baseline gap-1">
@@ -734,7 +737,7 @@ function OfferDesktop({
 
                 {/* Meeting Point & Notes */}
                 <div className="space-y-4">
-                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Dettagli opzionali</label>
+                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('optionalDetails')}</label>
                   <div className="bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 ring-primary transition-all">
                     <input
                       type="text"
@@ -757,7 +760,7 @@ function OfferDesktop({
 
                 {/* Intermediate Stops */}
                 <div className="space-y-4">
-                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Fermate intermedie</label>
+                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('intermediateStops')}</label>
                   <div className="space-y-3">
                     {formData.stops.map((stop, index) => (
                       <div key={index} className="flex items-center gap-2">
@@ -794,7 +797,7 @@ function OfferDesktop({
                         className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                       >
                         <Plus className="w-4 h-4" />
-                        Aggiungi fermata
+                        t('addStop')
                       </button>
                     )}
                     {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
@@ -807,7 +810,7 @@ function OfferDesktop({
             <div className="space-y-8">
               {/* Preferences */}
               <div className="space-y-4">
-                <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">Preferenze di viaggio</label>
+                <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('travelPreferences')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
                     <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
@@ -912,8 +915,8 @@ function OfferDesktop({
                   className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-2xl shadow-lg transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 min-h-[56px]"
                 >
                   {isSubmitting
-                    ? formData.isRecurring ? "Creazione in corso..." : "Pubblicazione in corso..."
-                    : formData.isRecurring ? "CREA CORSA RICORRENTE" : "PUBBLICA PASSAGGIO"
+                    ? formData.isRecurring ? "t('creating')" : "t('publishing')"
+                    : formData.isRecurring ? "t('createRecurringRide')" : "t('publishRide')"
                   }
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -927,6 +930,7 @@ function OfferDesktop({
 }
 
 export default function OfferPage() {
+  const t = useTranslations('offer');
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const deviceType = useDeviceType();
@@ -1156,7 +1160,7 @@ export default function OfferPage() {
     }
 
     setIsSubmitting(true);
-    const toastId = toast.loading(formData.isRecurring ? "Creazione corsa ricorrente..." : "Pubblicazione in corso...");
+    const toastId = toast.loading(formData.isRecurring ? "Creazione corsa ricorrente..." : "t('publishing')");
 
     try {
       let rideId: string | null = null;
@@ -1328,10 +1332,10 @@ export default function OfferPage() {
             <Car className="w-10 h-10 text-primary" />
           </div>
           <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-on-surface">
-            Offri un passaggio
+            {t('offerRide')}
           </h1>
           <p className="mb-8 text-on-surface-variant">
-            Devi accedere per pubblicare un passaggio.
+            {t('loginRequired')}
           </p>
           <button
             onClick={handleLogin}
@@ -1343,7 +1347,7 @@ export default function OfferPage() {
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
             </svg>
-            Accedi con Google
+            t('loginWithGoogle')
           </button>
           <div className="mt-6">
             <Link
@@ -1368,7 +1372,7 @@ export default function OfferPage() {
             <Check className="h-8 w-8 text-tertiary" />
           </div>
           <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-on-surface">
-            Passaggio pubblicato!
+            {t('ridePublished')}
           </h1>
           {isFirstRide && (
             <p className="mb-4 text-sm text-primary font-medium">
@@ -1392,14 +1396,14 @@ export default function OfferPage() {
               href="/profilo"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary transition-colors hover:opacity-90"
             >
-              Vai al profilo
+              t('goToProfile')
             </Link>
             <Link
               href="/cerca"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-6 py-3 text-sm font-extrabold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
               <ArrowLeft className="w-4 h-4" />
-              Cerca altri passaggi
+              t('searchOtherRides')
             </Link>
           </div>
         </div>
