@@ -178,6 +178,12 @@ export function Navbar() {
 
         {/* Desktop Auth Section */}
         <div className="hidden md:flex md:items-center md:gap-2 lg:gap-3 flex-shrink-0">
+          {/* Language Selector — always visible */}
+          <LanguageSelector isHome={isHome} />
+
+          {/* Theme Toggle — always visible */}
+          <ThemeToggle isHome={isHome} />
+
           {!loading && (
             <>
               {user ? (
@@ -196,12 +202,6 @@ export function Navbar() {
                       <Shield className="h-5 w-5" />
                     </Link>
                   )}
-                  
-                  {/* Language Selector */}
-                  <LanguageSelector isHome={isHome} />
-
-                  {/* Theme Toggle */}
-                  <ThemeToggle isHome={isHome} />
 
                   {/* Notification Bell */}
                   <NotificationBell isHome={isHome} />
