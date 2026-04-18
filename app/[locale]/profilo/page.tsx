@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield } from "lucide-react";
@@ -148,6 +149,9 @@ export default function ProfilePage() {
   const supabase = createClient();
 
   const deviceType = useDeviceType();
+  const t = useTranslations("profile");
+  const tc = useTranslations("common");
+  const locale = useLocale();
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -252,7 +256,7 @@ export default function ProfilePage() {
 
       await notifyBookingAccepted(
         request.passenger_id,
-        profile?.name || "Conducente",
+        profile?.name || t("driver"),
         request.ride_id,
         request.id
       );
@@ -263,9 +267,9 @@ export default function ProfilePage() {
       );
 
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
-      toast.success("Prenotazione accettata!");
+      toast.success(t("bookingAccepted"));
     } catch {
-      toast.error("Errore nell'accettare la prenotazione");
+      toast.error(t("errorAcceptingBooking"));
     } finally {
       setProcessingBooking(null);
     }
@@ -284,15 +288,15 @@ export default function ProfilePage() {
 
       await notifyBookingRejected(
         request.passenger_id,
-        profile?.name || "Conducente",
+        profile?.name || t("driver"),
         request.ride_id,
         request.id
       );
 
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
-      toast.success("Prenotazione rifiutata");
+      toast.success(t("bookingRejected"));
     } catch {
-      toast.error("Errore nel rifiutare la prenotazione");
+      toast.error(t("errorRejectingBooking"));
     } finally {
       setProcessingBooking(null);
     }
@@ -301,9 +305,9 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await signOut();
-      toast.success("Logout effettuato");
+      toast.success(t("logoutSuccess"));
     } catch {
-      toast.error("Errore durante il logout");
+      toast.error(t("logoutError"));
     }
   };
 
@@ -321,9 +325,9 @@ export default function ProfilePage() {
       .eq("id", user.id);
     
     if (error) {
-      toast.error("Errore nel salvare le informazioni del veicolo");
+      toast.error(t("errorSavingCarInfo"));
     } else {
-      toast.success("Veicolo salvato con successo!");
+      toast.success(t("carSavedSuccess"));
       // Update local profile state
       setProfile(prev => prev ? { ...prev, ...carData } : null);
     }
@@ -342,7 +346,7 @@ export default function ProfilePage() {
       .update({ status: "canceled" })
       .eq("id", cancelBookingId);
     if (error) {
-      toast.error("Errore nell'annullamento");
+      toast.error(t("errorCancelling"));
       return;
     }
     await supabase.from("booking_cancellations").insert({
@@ -353,7 +357,7 @@ export default function ProfilePage() {
     setMyBookings((prev) =>
       prev.map((b) => (b.id === cancelBookingId ? { ...b, status: "canceled" } : b))
     );
-    toast.success("Prenotazione annullata");
+    toast.success(t("bookingCancelled"));
     setCancelBookingId(null);
     setCancelReason("");
   };
@@ -361,10 +365,10 @@ export default function ProfilePage() {
   const handleDeleteAlert = async (alertId: string) => {
     const { error } = await supabase.from("ride_alerts").delete().eq("id", alertId);
     if (error) {
-      toast.error("Errore nell'eliminazione dell'alerta");
+      toast.error(t("errorDeletingAlert"));
     } else {
       setRideAlerts((prev) => prev.filter((a) => a.id !== alertId));
-      toast.success("Alerta eliminata");
+      toast.success(t("alertDeleted"));
     }
   };
 
@@ -374,28 +378,28 @@ export default function ProfilePage() {
       .update({ is_active: !template.is_active })
       .eq("id", template.id);
     if (error) {
-      toast.error("Errore nell'aggiornamento");
+      toast.error(t("errorUpdating"));
     } else {
       setRideTemplates((prev) =>
         prev.map((t) => (t.id === template.id ? { ...t, is_active: !template.is_active } : t))
       );
-      toast.success(!template.is_active ? "Template attivato" : "Template disattivato");
+      toast.success(!template.is_active ? t("templateActivated") : t("templateDeactivated"));
     }
   };
 
   const handleDeleteTemplate = async (templateId: string) => {
     const { error } = await supabase.from("ride_templates").delete().eq("id", templateId);
     if (error) {
-      toast.error("Errore nell'eliminazione del template");
+      toast.error(t("errorDeletingTemplate"));
     } else {
       setRideTemplates((prev) => prev.filter((t) => t.id !== templateId));
-      toast.success("Template eliminato");
+      toast.success(t("templateDeleted"));
     }
   };
 
   const getUserName = () => {
     if (!user) return "";
-    return profile?.name || user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "Utente";
+    return profile?.name || user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || t("user");
   };
 
   const getUserAvatar = () => {
@@ -404,7 +408,7 @@ export default function ProfilePage() {
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("it-IT", { 
+    return new Date(dateStr).toLocaleDateString(locale, { 
       weekday: "short", day: "numeric", month: "short" 
     });
   };
@@ -421,10 +425,10 @@ export default function ProfilePage() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "confirmed": return "Confermato";
-      case "pending": return "In attesa";
-      case "rejected": return "Rifiutato";
-      case "canceled": return "Annullato";
+      case "confirmed": return t("statusConfirmed");
+      case "pending": return t("statusPending");
+      case "rejected": return t("statusRejected");
+      case "canceled": return t("statusCancelled");
       default: return status;
     }
   };
@@ -471,7 +475,7 @@ export default function ProfilePage() {
               {getUserAvatar() ? (
                 <Image 
                   src={getUserAvatar()!} 
-                  alt="Profile" 
+                  alt={t("profilePhotoAlt")} 
                   width={40} 
                   height={40} 
                   className="w-full h-full object-cover rounded-full" 
@@ -519,7 +523,7 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">Livello</span>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">{t("level")}</span>
                 <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
               </div>
               <div className="absolute -bottom-2 bg-primary text-on-primary px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl">
@@ -529,7 +533,7 @@ export default function ProfilePage() {
             <div className="mt-8 text-center">
               <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{getUserName()}</h2>
               <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
-                Esploratore dal {user?.created_at ? new Date(user.created_at).getFullYear() : "2022"}
+                {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
             </div>
           </section>
@@ -540,28 +544,28 @@ export default function ProfilePage() {
                 <Car className="w-6 h-6 text-primary" />
                 <div>
                   <p className="text-xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
                 </div>
               </div>
               <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
                 <Route className="w-6 h-6 text-primary" />
                 <div>
                   <p className="text-xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
                 </div>
               </div>
               <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
                 <Star className="w-6 h-6 text-primary" />
                 <div>
                   <p className="text-xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
                 </div>
               </div>
               <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
                 <Leaf className="w-6 h-6 text-primary" />
                 <div>
                   <p className="text-xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
                 </div>
               </div>
             </div>
@@ -571,15 +575,15 @@ export default function ProfilePage() {
             <div className="bg-surface-container p-4 rounded-xl space-y-4">
               <h3 className="text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                 <Shield className="w-5 h-5 text-primary" />
-                Verifica e Sicurezza
+                {t("verificationAndSecurity")}
               </h3>
               
               {/* Phone Verification */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-on-surface">Numero di telefono</p>
+                  <p className="text-sm font-medium text-on-surface">{t("phoneNumber")}</p>
                   <p className="text-xs text-on-surface-variant">
-                    {user?.phone ? user.phone : "Non verificato"}
+                    {user?.phone ? user.phone : t("notVerified")}
                   </p>
                 </div>
                 <PhoneVerification 
@@ -606,7 +610,7 @@ export default function ProfilePage() {
             <div className="bg-surface-container p-4 rounded-xl">
               <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                 <Car className="w-5 h-5 text-primary" />
-                Il tuo veicolo
+                {t("yourVehicle")}
               </h3>
               <CarInfoForm
                 initialData={{
@@ -624,7 +628,7 @@ export default function ProfilePage() {
             <div className="bg-surface-container p-4 rounded-xl">
               <h3 className="mb-3 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                 <Bell className="w-5 h-5 text-primary" />
-                Notifiche push
+                {t("pushNotifications")}
               </h3>
               <PushNotificationToggle />
             </div>
@@ -641,11 +645,11 @@ export default function ProfilePage() {
               <div className="bg-surface-container p-4 rounded-xl">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Livello attuale</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
                     <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Punti</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("points")}</p>
                     <p className="font-extrabold text-primary text-xl">{profile.points}</p>
                   </div>
                 </div>
@@ -661,8 +665,8 @@ export default function ProfilePage() {
                 </div>
                 <p className="text-xs text-on-surface-variant mt-2">
                   {levelInfo.next
-                    ? `${levelInfo.next.min - profile.points} punti al prossimo livello`
-                    : "Hai raggiunto il livello massimo!"}
+                    ? t("pointsToNextLevel", { points: levelInfo.next.min - profile.points })
+                    : t("maxLevelReached")}
                 </p>
               </div>
             </section>
@@ -691,7 +695,7 @@ export default function ProfilePage() {
                             {request.ride.from_city} → {request.ride.to_city}
                           </p>
                           <p className="text-xs text-on-surface-variant">
-                            {formatDate(request.ride.date)} alle {request.ride.time.slice(0, 5)}
+                            {t("dateAtTime", { date: formatDate(request.ride.date), time: request.ride.time.slice(0, 5) })}
                           </p>
                         </div>
                       </div>
@@ -702,7 +706,7 @@ export default function ProfilePage() {
                           className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
                         >
                           <X className="h-4 w-4" />
-                          Rifiuta
+                          {t("reject")}
                         </button>
                         <button
                           onClick={() => handleAcceptBooking(request)}
@@ -727,10 +731,10 @@ export default function ProfilePage() {
           <section className="px-4 sm:px-6 mb-6 overflow-x-hidden">
             <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
               {[
-                { id: "rides", label: "Corse" },
-                { id: "bookings", label: "Passaggi" },
-                { id: "templates", label: "Ricorrenti" },
-                { id: "alerts", label: "Alert" },
+                { id: "rides", label: t("tabRides") },
+                { id: "bookings", label: t("tabBookings") },
+                { id: "templates", label: t("tabRecurring") },
+                { id: "alerts", label: t("tabAlerts") },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -768,9 +772,9 @@ export default function ProfilePage() {
                           <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
                         </div>
                         <div className="text-right">
-                          <span className="text-xl font-extrabold text-on-surface">{ride.price === 0 ? "Gratis" : `€${ride.price}`}</span>
+                          <span className="text-xl font-extrabold text-on-surface">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
                           <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">
-                            {isRideCompleted(ride.date) ? "Completata" : "Attiva"}
+                            {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
                           </p>
                         </div>
                       </div>
@@ -778,7 +782,7 @@ export default function ProfilePage() {
                         <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
                           <User className="w-3.5 h-3.5 text-on-surface-variant" />
                         </div>
-                        <span className="text-[11px] font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
+                        <span className="text-[11px] font-semibold text-on-surface-variant">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
                       </div>
                     </Link>
                   ))
@@ -803,8 +807,8 @@ export default function ProfilePage() {
                             <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
                           </div>
                           <div className="text-right">
-                            <span className="text-xl font-extrabold text-on-surface">{booking.rides.price === 0 ? "Gratis" : `€${booking.rides.price}`}</span>
-                            {completed && <p className="text-[10px] font-bold text-tertiary uppercase tracking-tighter">Completata</p>}
+                            <span className="text-xl font-extrabold text-on-surface">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
+                            {completed && <p className="text-[10px] font-bold text-tertiary uppercase tracking-tighter">{t("rideCompleted")}</p>}
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
@@ -825,7 +829,7 @@ export default function ProfilePage() {
                                 className="flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1.5 text-sm font-bold text-primary"
                               >
                                 <Star className="h-3 w-3" />
-                                Recensisci
+                                {t("review")}
                               </button>
                             ) : (
                               <>
@@ -833,13 +837,13 @@ export default function ProfilePage() {
                                   <>
                                     <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
                                       <MessageCircle className="h-3 w-3" />
-                                      Chat
+                                      {t("chat")}
                                     </Link>
                                     <Link
                                       href={`/cancella/${booking.id}`}
                                       className="flex items-center gap-1 rounded-full bg-error/20 px-3 py-1.5 text-sm font-bold text-error"
                                     >
-                                      Annulla
+                                      {t("cancel")}
                                     </Link>
                                   </>
                                 )}
@@ -858,10 +862,10 @@ export default function ProfilePage() {
               <>
                 {rideTemplates.length === 0 ? (
                   <EmptyState
-                    title="Nessuna corsa ricorrente"
-                    description="Crea una corsa ricorrente per i tuoi viaggi abituali e risparmia tempo."
+                    title={t("noRecurringRides")}
+                    description={t("noRecurringRidesDescription")}
                     icon={<Repeat className="w-12 h-12 text-[#e63946]" />}
-                    action={{ label: "Crea ricorrente", href: "/offri", variant: "outline" }}
+                    action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
                   />
                 ) : (
                   rideTemplates.map((template) => (
@@ -870,10 +874,10 @@ export default function ProfilePage() {
                         <div className="flex flex-col">
                           <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
                           <p className="text-sm text-on-surface-variant mt-1">
-                            {template.time.slice(0, 5)} · {template.seats} posti · {template.price === 0 ? "Gratis" : `€${template.price}`}
+                            {template.time.slice(0, 5)} · {template.seats} {t("seats")} · {template.price === 0 ? t("free") : `€${template.price}`}
                           </p>
                           <p className="text-xs text-on-surface-variant mt-1">
-                            {template.recurrence_days.map((d) => ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"][d]).join(", ")}
+                            {template.recurrence_days.map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" })).join(", ")}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -881,7 +885,7 @@ export default function ProfilePage() {
                             onClick={() => handleToggleTemplate(template)}
                             className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
                           >
-                            {template.is_active ? "Sospendi" : "Attiva"}
+                            {template.is_active ? t("suspend") : t("activate")}
                           </button>
                           <button
                             onClick={() => handleDeleteTemplate(template.id)}
@@ -901,21 +905,21 @@ export default function ProfilePage() {
               <>
                 {rideAlerts.length === 0 ? (
                   <EmptyState
-                    title="Nessun alert salvato"
-                    description="Crea un alert per ricevere notifiche quando ci sono nuovi passaggi sulla tua tratta preferita."
+                    title={t("noAlerts")}
+                    description={t("noAlertsDescription")}
                     icon={<Bell className="w-12 h-12 text-[#e63946]" />}
-                    action={{ label: "Cerca e crea alert", href: "/cerca", variant: "outline" }}
+                    action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
                   />
                 ) : (
                   rideAlerts.map((alert) => (
                     <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-surface-container-highest">
                       <div>
-                        <h3 className="font-bold text-on-surface">{alert.from_city || "Qualsiasi"} → {alert.to_city || "Qualsiasi"}</h3>
+                        <h3 className="font-bold text-on-surface">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
                         <p className="text-sm text-on-surface-variant">
-                          {alert.start_date && `Dal ${formatDate(alert.start_date)}`}
-                          {alert.end_date && ` al ${formatDate(alert.end_date)}`}
-                          {alert.min_seats !== null && ` · Min ${alert.min_seats} posti`}
-                          {alert.max_price !== null && ` · Max ${alert.max_price}€`}
+                          {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
+                          {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
+                          {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats} ${t("seats")}`}
+                          {alert.max_price !== null && ` · ${t("max")} ${alert.max_price}€`}
                         </p>
                       </div>
                       <button
@@ -935,20 +939,20 @@ export default function ProfilePage() {
         {showLogoutConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">Vuoi uscire?</h3>
-              <p className="text-sm text-on-surface-variant mb-6">Dovrai accedere di nuovo per usare l&apos;app.</p>
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("wantToLeave")}</h3>
+              <p className="text-sm text-on-surface-variant mb-6">{t("loginAgainToUseApp")}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
                   className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
                 >
-                  Annulla
+                  {t("cancel")}
                 </button>
                 <button
                   onClick={handleLogout}
                   className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
                 >
-                  Esci
+                  {t("logout")}
                 </button>
               </div>
             </div>
@@ -958,28 +962,28 @@ export default function ProfilePage() {
         {cancelBookingId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">Annulla prenotazione</h3>
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("cancelBookingTitle")}</h3>
               <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
                 rows={3}
-                placeholder="Motivo..."
+                placeholder={t("reasonPlaceholder")}
               />
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
                   className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
                 >
-                  Annulla
+                  {t("cancel")}
                 </button>
                 <button
                   onClick={handleCancelBooking}
                   disabled={!cancelReason.trim()}
                   className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
-                  Conferma
+                  {t("confirm")}
                 </button>
               </div>
             </div>
@@ -1019,7 +1023,7 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-primary mb-1">Livello</span>
+                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-primary mb-1">{t("level")}</span>
                 <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
               </div>
               <div className="absolute -bottom-2 bg-primary text-on-primary px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl">
@@ -1029,7 +1033,7 @@ export default function ProfilePage() {
             <div>
               <h2 className="text-5xl font-extrabold tracking-tight mb-2 text-on-surface">{getUserName()}</h2>
               <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
-                Esploratore dal {user?.created_at ? new Date(user.created_at).getFullYear() : "2022"}
+                {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
             </div>
           </section>
@@ -1039,28 +1043,28 @@ export default function ProfilePage() {
               <Car className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Viaggi</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
               <Route className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Km Totali</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
               <Star className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Rating</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
               </div>
             </div>
             <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
               <Leaf className="w-8 h-8 text-primary" />
               <div>
                 <p className="text-3xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">CO2 Salvata</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
               </div>
             </div>
           </section>
@@ -1090,7 +1094,7 @@ export default function ProfilePage() {
                                 {request.ride.from_city} → {request.ride.to_city}
                               </p>
                               <p className="text-xs text-on-surface-variant">
-                                {formatDate(request.ride.date)} alle {request.ride.time.slice(0, 5)}
+                                {t("dateAtTime", { date: formatDate(request.ride.date), time: request.ride.time.slice(0, 5) })}
                               </p>
                             </div>
                           </div>
@@ -1101,7 +1105,7 @@ export default function ProfilePage() {
                               className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
                             >
                               <X className="h-4 w-4" />
-                              Rifiuta
+                              {t("reject")}
                             </button>
                             <button
                               onClick={() => handleAcceptBooking(request)}
@@ -1126,10 +1130,10 @@ export default function ProfilePage() {
               <section>
                 <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
                   {[
-                    { id: "rides", label: "Corse" },
-                    { id: "bookings", label: "Passaggi" },
-                    { id: "templates", label: "Ricorrenti" },
-                    { id: "alerts", label: "Alert" },
+                    { id: "rides", label: t("tabRides") },
+                    { id: "bookings", label: t("tabBookings") },
+                    { id: "templates", label: t("tabRecurring") },
+                    { id: "alerts", label: t("tabAlerts") },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -1168,9 +1172,9 @@ export default function ProfilePage() {
                                 <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
                               </div>
                               <div className="text-right">
-                                <span className="text-2xl font-extrabold text-on-surface">{ride.price === 0 ? "Gratis" : `€${ride.price}`}</span>
+                                <span className="text-2xl font-extrabold text-on-surface">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
                                 <p className="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">
-                                  {isRideCompleted(ride.date) ? "Completata" : "Attiva"}
+                                  {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
                                 </p>
                               </div>
                             </div>
@@ -1178,7 +1182,7 @@ export default function ProfilePage() {
                               <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
                                 <User className="w-3.5 h-3.5 text-on-surface-variant" />
                               </div>
-                              <span className="text-sm font-semibold text-on-surface-variant">{ride.seats} posti · {(ride.bookings_count || 0)} richieste</span>
+                              <span className="text-sm font-semibold text-on-surface-variant">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
                             </div>
                           </Link>
                         ))}
@@ -1205,8 +1209,8 @@ export default function ProfilePage() {
                                   <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
                                 </div>
                                 <div className="text-right">
-                                  <span className="text-2xl font-extrabold text-on-surface">{booking.rides.price === 0 ? "Gratis" : `€${booking.rides.price}`}</span>
-                                  {completed && <p className="text-xs font-bold text-tertiary uppercase tracking-tighter">Completata</p>}
+                                  <span className="text-2xl font-extrabold text-on-surface">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
+                                  {completed && <p className="text-xs font-bold text-tertiary uppercase tracking-tighter">{t("rideCompleted")}</p>}
                                 </div>
                               </div>
                               <div className="flex items-center justify-between">
@@ -1227,7 +1231,7 @@ export default function ProfilePage() {
                                       className="flex items-center gap-1 rounded-full bg-primary/20 px-4 py-2 text-sm font-bold text-primary"
                                     >
                                       <Star className="h-4 w-4" />
-                                      Recensisci
+                                      {t("review")}
                                     </button>
                                   ) : (
                                     <>
@@ -1235,13 +1239,13 @@ export default function ProfilePage() {
                                         <>
                                           <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary">
                                             <MessageCircle className="h-4 w-4" />
-                                            Chat
+                                            {t("chat")}
                                           </Link>
                                           <Link
                                             href={`/cancella/${booking.id}`}
                                             className="flex items-center gap-1 rounded-full bg-error/20 px-4 py-2 text-sm font-bold text-error"
                                           >
-                                            Annulla
+                                            {t("cancel")}
                                           </Link>
                                         </>
                                       )}
@@ -1261,10 +1265,10 @@ export default function ProfilePage() {
                   <>
                     {rideTemplates.length === 0 ? (
                       <EmptyState
-                        title="Nessuna corsa ricorrente"
-                        description="Crea una corsa ricorrente per i tuoi viaggi abituali e risparmia tempo."
+                        title={t("noRecurringRides")}
+                        description={t("noRecurringRidesDescription")}
                         icon={<Repeat className="w-12 h-12 text-[#e63946]" />}
-                        action={{ label: "Crea ricorrente", href: "/offri", variant: "outline" }}
+                        action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
                       />
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1274,10 +1278,10 @@ export default function ProfilePage() {
                               <div className="flex flex-col">
                                 <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
                                 <p className="text-sm text-on-surface-variant mt-1">
-                                  {template.time.slice(0, 5)} · {template.seats} posti · {template.price === 0 ? "Gratis" : `€${template.price}`}
+                                  {template.time.slice(0, 5)} · {template.seats} {t("seats")} · {template.price === 0 ? t("free") : `€${template.price}`}
                                 </p>
                                 <p className="text-xs text-on-surface-variant mt-1">
-                                  {template.recurrence_days.map((d) => ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"][d]).join(", ")}
+                                  {template.recurrence_days.map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" })).join(", ")}
                                 </p>
                               </div>
                               <div className="flex items-center gap-2">
@@ -1285,7 +1289,7 @@ export default function ProfilePage() {
                                   onClick={() => handleToggleTemplate(template)}
                                   className={`rounded-full px-4 py-2 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
                                 >
-                                  {template.is_active ? "Sospendi" : "Attiva"}
+                                  {template.is_active ? t("suspend") : t("activate")}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteTemplate(template.id)}
@@ -1306,22 +1310,22 @@ export default function ProfilePage() {
                   <>
                     {rideAlerts.length === 0 ? (
                       <EmptyState
-                        title="Nessun alert salvato"
-                        description="Crea un alert per ricevere notifiche quando ci sono nuovi passaggi sulla tua tratta preferita."
+                        title={t("noAlerts")}
+                        description={t("noAlertsDescription")}
                         icon={<Bell className="w-12 h-12 text-[#e63946]" />}
-                        action={{ label: "Cerca e crea alert", href: "/cerca", variant: "outline" }}
+                        action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
                       />
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {rideAlerts.map((alert) => (
                           <div key={alert.id} className="bg-surface p-6 rounded-2xl flex items-center justify-between border-l-4 border-surface-container-highest">
                             <div>
-                              <h3 className="font-bold text-lg text-on-surface">{alert.from_city || "Qualsiasi"} → {alert.to_city || "Qualsiasi"}</h3>
+                              <h3 className="font-bold text-lg text-on-surface">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
                               <p className="text-sm text-on-surface-variant">
-                                {alert.start_date && `Dal ${formatDate(alert.start_date)}`}
-                                {alert.end_date && ` al ${formatDate(alert.end_date)}`}
-                                {alert.min_seats !== null && ` · Min ${alert.min_seats} posti`}
-                                {alert.max_price !== null && ` · Max ${alert.max_price}€`}
+                                {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
+                                {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
+                                {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats} ${t("seats")}`}
+                                {alert.max_price !== null && ` · ${t("max")} ${alert.max_price}€`}
                               </p>
                             </div>
                             <button
@@ -1343,16 +1347,16 @@ export default function ProfilePage() {
               <div className="bg-surface-container p-6 rounded-2xl">
                 <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                   <Shield className="w-5 h-5 text-primary" />
-                  Verifica e Sicurezza
+                  {t("verificationAndSecurity")}
                 </h3>
                 
                 {/* Phone Verification - Desktop */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-on-surface">Numero di telefono</p>
+                      <p className="text-sm font-medium text-on-surface">{t("phoneNumber")}</p>
                       <p className="text-xs text-on-surface-variant">
-                        {user?.phone ? user.phone : "Non verificato"}
+                        {user?.phone ? user.phone : t("notVerified")}
                       </p>
                     </div>
                   </div>
@@ -1378,7 +1382,7 @@ export default function ProfilePage() {
               <div className="bg-surface-container p-6 rounded-2xl">
                 <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                   <Car className="w-5 h-5 text-primary" />
-                  Il tuo veicolo
+                  {t("yourVehicle")}
                 </h3>
                 <CarInfoForm
                   initialData={{
@@ -1394,7 +1398,7 @@ export default function ProfilePage() {
               <div className="bg-surface-container p-6 rounded-2xl">
                 <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
                   <Bell className="w-5 h-5 text-primary" />
-                  Notifiche push
+                  {t("pushNotifications")}
                 </h3>
                 <PushNotificationToggle />
               </div>
@@ -1409,11 +1413,11 @@ export default function ProfilePage() {
                 <div className="bg-surface-container p-6 rounded-2xl">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-primary">Livello attuale</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
                       <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-bold uppercase tracking-widest text-primary">Punti</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("points")}</p>
                       <p className="font-extrabold text-primary text-2xl">{profile.points}</p>
                     </div>
                   </div>
@@ -1429,8 +1433,8 @@ export default function ProfilePage() {
                   </div>
                   <p className="text-sm text-on-surface-variant mt-3">
                     {levelInfo.next
-                      ? `${levelInfo.next.min - profile.points} punti al prossimo livello`
-                      : "Hai raggiunto il livello massimo!"}
+                      ? t("pointsToNextLevel", { points: levelInfo.next.min - profile.points })
+                      : t("maxLevelReached")}
                   </p>
                 </div>
               )}
@@ -1441,7 +1445,7 @@ export default function ProfilePage() {
                 onClick={() => setShowLogoutConfirm(true)}
                 className="w-full bg-error/10 text-error rounded-2xl p-4 font-bold uppercase tracking-widest text-sm hover:bg-error/20 transition-colors"
               >
-                Logout
+                {t("logout")}
               </button>
             </div>
           </div>
@@ -1450,20 +1454,20 @@ export default function ProfilePage() {
         {showLogoutConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">Vuoi uscire?</h3>
-              <p className="text-sm text-on-surface-variant mb-6">Dovrai accedere di nuovo per usare l&apos;app.</p>
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("wantToLeave")}</h3>
+              <p className="text-sm text-on-surface-variant mb-6">{t("loginAgainToUseApp")}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
                   className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
                 >
-                  Annulla
+                  {t("cancel")}
                 </button>
                 <button
                   onClick={handleLogout}
                   className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
                 >
-                  Esci
+                  {t("logout")}
                 </button>
               </div>
             </div>
@@ -1473,28 +1477,28 @@ export default function ProfilePage() {
         {cancelBookingId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">Annulla prenotazione</h3>
+              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("cancelBookingTitle")}</h3>
               <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
                 rows={3}
-                placeholder="Motivo..."
+                placeholder={t("reasonPlaceholder")}
               />
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
                   className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
                 >
-                  Annulla
+                  {t("cancel")}
                 </button>
                 <button
                   onClick={handleCancelBooking}
                   disabled={!cancelReason.trim()}
                   className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
-                  Conferma
+                  {t("confirm")}
                 </button>
               </div>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -96,6 +97,7 @@ export default function ChatWindow({
 }: ChatWindowProps) {
   const supabase = createClient();
   const deviceType = useDeviceType();
+  const t = useTranslations("chat");
 
   // -- State --
   const [messages, setMessages] = useState<Message[]>([]);
@@ -151,7 +153,7 @@ export default function ChatWindow({
   };
 
   const senderName =
-    user.user_metadata?.name || user.email?.split("@")[0] || "Utente";
+    user.user_metadata?.name || user.email?.split("@")[0] || t("user");
 
   const notifyRecipient = async () => {
     if (!user || !booking) return;
@@ -187,7 +189,7 @@ export default function ChatWindow({
 
   // -- Effects --
 
-  // Încărcare mesaje inițiale
+  // Load initial messages
   useEffect(() => {
     const loadMessages = async () => {
       const { data } = await supabase
@@ -241,7 +243,7 @@ export default function ChatWindow({
               return [...prev, newMessage as Message];
             });
 
-            // Eliminăm orice local message care se potrivește (evită duplicate)
+            // Remove any matching local message (avoid duplicates)
             setLocalMessages((prev) =>
               prev.filter(
                 (m) =>
@@ -297,7 +299,7 @@ export default function ChatWindow({
     } catch (err: any) {
       updateLocalMessage(tempId, { status: "failed" });
       const msg =
-        err?.message || "Errore nell'invio del messaggio. Riprova.";
+        err?.message || t("sendError");
       toast.error(msg);
       console.error("[Chat] Retry failed:", err);
     } finally {
@@ -344,7 +346,7 @@ export default function ChatWindow({
     } catch (err: any) {
       updateLocalMessage(tempId, { status: "failed" });
       const msg =
-        err?.message || "Errore nell'invio del messaggio. Riprova.";
+        err?.message || t("sendError");
       toast.error(msg);
       console.error("[Chat] Text send failed:", err);
     } finally {
@@ -359,7 +361,7 @@ export default function ChatWindow({
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'immagine deve essere inferiore a 5MB");
+      toast.error(t("imageSizeError"));
       return;
     }
 
@@ -382,7 +384,7 @@ export default function ChatWindow({
       tempId,
       booking_id: bookingId,
       sender_id: user.id,
-      content: "📷 Immagine",
+      content: `📷 ${t("image")}`,
       type: "image",
       media_url: previewUrl,
       read: false,
@@ -402,7 +404,7 @@ export default function ChatWindow({
         .from("chat-images")
         .upload(fileName, blob, { contentType: "image/jpeg" });
 
-      if (uploadError) throw new Error("Upload imagine eșuat.");
+      if (uploadError) throw new Error(t("imageUploadError"));
 
       const { data: publicUrlData } = supabase.storage
         .from("chat-images")
@@ -410,7 +412,7 @@ export default function ChatWindow({
 
       await sendMessage({
         booking_id: bookingId,
-        content: "📷 Immagine",
+        content: `📷 ${t("image")}`,
         type: "image",
         media_url: publicUrlData.publicUrl,
       });
@@ -422,7 +424,7 @@ export default function ChatWindow({
       await notifyRecipient();
     } catch (err: any) {
       updateLocalMessage(tempId, { status: "failed" });
-      const msg = err?.message || "Caricamento fallito. Controlla la connessione.";
+      const msg = err?.message || t("uploadError");
       toast.error(msg);
       console.error("[Chat] Image send failed:", err);
     } finally {
@@ -434,11 +436,11 @@ export default function ChatWindow({
 
   const sendLocation = () => {
     if (!navigator.geolocation) {
-      toast.error("Geolocalizzazione non supportata");
+      toast.error(t("geolocationNotSupported"));
       return;
     }
 
-    const toastId = toast.loading("Ottenendo posizione...");
+    const toastId = toast.loading(t("gettingLocation"));
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -452,7 +454,7 @@ export default function ChatWindow({
           tempId,
           booking_id: bookingId,
           sender_id: user.id,
-          content: "📍 Posizione condivisa",
+          content: `📍 ${t("sharedLocation")}`,
           type: "location",
           location_lat: lat,
           location_lng: lng,
@@ -465,7 +467,7 @@ export default function ChatWindow({
         retryFnsRef.current.set(tempId, async () => {
           await sendMessage({
             booking_id: bookingId,
-            content: "📍 Posizione condivisa",
+            content: `📍 ${t("sharedLocation")}`,
             type: "location",
             location_lat: lat,
             location_lng: lng,
@@ -479,14 +481,14 @@ export default function ChatWindow({
         } catch (err: any) {
           updateLocalMessage(tempId, { status: "failed" });
           const msg =
-            err?.message || "Errore nell'invio della posizione. Riprova.";
+            err?.message || t("locationError");
           toast.error(msg);
           console.error("[Chat] Location send failed:", err);
         }
       },
       () => {
         toast.dismiss(toastId);
-        toast.error("Impossibile ottenere la posizione");
+        toast.error(t("locationFailed"));
       }
     );
   };
@@ -519,7 +521,7 @@ export default function ChatWindow({
         setRecordingTime((prev) => prev + 1);
       }, 1000);
     } catch {
-      toast.error("Impossibile accedere al microfono");
+      toast.error(t("microphoneAccessError"));
     }
   };
 
@@ -546,7 +548,7 @@ export default function ChatWindow({
       tempId,
       booking_id: bookingId,
       sender_id: user.id,
-      content: "🎵 Messaggio vocale",
+      content: `🎵 ${t("voiceMessage")}`,
       type: "audio",
       duration,
       read: false,
@@ -561,7 +563,7 @@ export default function ChatWindow({
         .from("chat-audio")
         .upload(fileName, blob, { contentType: "audio/webm" });
 
-      if (uploadError) throw new Error("Upload audio eșuat.");
+      if (uploadError) throw new Error(t("audioUploadError"));
 
       const { data: publicUrlData } = supabase.storage
         .from("chat-audio")
@@ -569,7 +571,7 @@ export default function ChatWindow({
 
       await sendMessage({
         booking_id: bookingId,
-        content: "🎵 Messaggio vocale",
+        content: `🎵 ${t("voiceMessage")}`,
         type: "audio",
         media_url: publicUrlData.publicUrl,
         duration: duration,
@@ -583,7 +585,7 @@ export default function ChatWindow({
     } catch (err: any) {
       updateLocalMessage(tempId, { status: "failed" });
       const msg =
-        err?.message || "Caricamento fallito. Controlla la connessione.";
+        err?.message || t("uploadError");
       toast.error(msg);
       console.error("[Chat] Audio send failed:", err);
     }
@@ -624,7 +626,7 @@ export default function ChatWindow({
           className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary"
         >
           <ArrowLeft className="w-4 h-4" />
-          Torna al profilo
+          {t("backToProfile")}
         </Link>
       </div>
     );
@@ -632,7 +634,7 @@ export default function ChatWindow({
 
   const otherParticipant = getOtherParticipant();
 
-  // Combinează mesajele pentru afișare
+  // Combine messages for display
   const displayMessages: DisplayMessage[] = [
     ...messages,
     ...localMessages.filter(
@@ -660,12 +662,12 @@ export default function ChatWindow({
         {message.read ? (
           <>
             <CheckCheck className="w-3 h-3" />
-            Letto
+            {t("read")}
           </>
         ) : (
           <>
             <Check className="w-3 h-3" />
-            Inviato
+            {t("sent")}
           </>
         )}
       </span>
@@ -713,7 +715,7 @@ export default function ChatWindow({
                 ) : (
                   <RotateCcw className="h-4 w-4" />
                 )}
-                Riprova
+                {t("retry")}
               </button>
             </div>
           )}
@@ -722,7 +724,7 @@ export default function ChatWindow({
             <div className="mb-2">
               <Image
                 src={message.media_url}
-                alt="Immagine condivisa"
+                alt={t("sharedImageAlt")}
                 width={400}
                 height={300}
                 className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
@@ -743,7 +745,7 @@ export default function ChatWindow({
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-xs uppercase tracking-tight text-primary">
-                      Posizione Condivisa
+                      {t("sharedLocation")}
                     </span>
                     <span className="text-[10px] text-primary/70">
                       Lat: {message.location_lat.toFixed(4)}
@@ -760,7 +762,7 @@ export default function ChatWindow({
                     <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
                       <Image
                         src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
-                        alt="Mappa posizione"
+                        alt={t("locationMapAlt")}
                         fill
                         className="object-cover grayscale opacity-60"
                       />
@@ -769,13 +771,13 @@ export default function ChatWindow({
                     <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
                       <div className="text-center text-on-surface-variant">
                         <MapPin className="w-8 h-8 mx-auto mb-2" />
-                        <span className="text-xs">Posizione condivisa</span>
+                        <span className="text-xs">{t("sharedLocation")}</span>
                       </div>
                     </div>
                   )}
                   <div className="flex items-center gap-2 mt-2 text-sm text-primary">
                     <MapPin className="w-4 h-4" />
-                    <span>Apri in Google Maps</span>
+                    <span>{t("openInGoogleMaps")}</span>
                   </div>
                 </a>
               </div>
@@ -827,12 +829,12 @@ export default function ChatWindow({
           {!isLocal && <ReadIndicator message={message as Message} />}
           {isPending && (
             <span className="text-[9px] font-medium text-primary/60">
-              Invio in corso...
+              {t("sending")}
             </span>
           )}
           {isFailed && (
             <span className="text-[9px] font-medium text-error/80">
-              Fallito
+              {t("failed")}
             </span>
           )}
         </div>
@@ -864,7 +866,7 @@ export default function ChatWindow({
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
               <span className="text-error text-sm font-medium">
-                Registrazione...
+                {t("recording")}
               </span>
             </div>
             <span className="text-error font-mono text-sm">
@@ -896,7 +898,7 @@ export default function ChatWindow({
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendText()}
             placeholder={
-              isRecording ? "Registrazione..." : "Scrivi un messaggio..."
+              isRecording ? t("recording") : t("messagePlaceholder")
             }
             disabled={isRecording}
             className={inputClasses}
@@ -998,7 +1000,7 @@ export default function ChatWindow({
                 href={`/cancella/${bookingId}`}
                 className="px-3 py-2 rounded-lg bg-error/10 text-error text-xs font-bold hover:bg-error/20 transition-colors"
               >
-                Annulla
+                {t("cancel")}
               </Link>
             )}
             <div className="bg-surface-container-high px-3 py-2 rounded-lg">
@@ -1016,14 +1018,14 @@ export default function ChatWindow({
         >
           <div className="flex justify-center">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface/40">
-              Oggi
+              {t("today")}
             </span>
           </div>
 
           {displayMessages.length === 0 ? (
             <div className="py-12 text-center">
               <p className="text-on-surface-variant">
-                Inizia la conversazione...
+                {t("startConversation")}
               </p>
             </div>
           ) : (
@@ -1099,7 +1101,7 @@ export default function ChatWindow({
                   href={`/cancella/${bookingId}`}
                   className="px-4 py-2 rounded-lg bg-error/10 text-error text-sm font-bold hover:bg-error/20 transition-colors"
                 >
-                  Annulla prenotazione
+                  {t("cancelBooking")}
                 </Link>
               )}
               <div className="bg-surface-container-high px-4 py-2 rounded-lg">
@@ -1117,14 +1119,14 @@ export default function ChatWindow({
           >
             <div className="flex justify-center">
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-on-surface/40">
-                Oggi
+                {t("today")}
               </span>
             </div>
 
             {displayMessages.length === 0 ? (
               <div className="py-16 text-center">
                 <p className="text-on-surface-variant text-lg">
-                  Inizia la conversazione...
+                  {t("startConversation")}
                 </p>
               </div>
             ) : (
@@ -1170,7 +1172,7 @@ export default function ChatWindow({
                 onClick={() => setImagePreview(null)}
                 className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20"
               >
-                Annulla
+                {t("cancel")}
               </button>
               <button
                 onClick={sendImage}
@@ -1180,7 +1182,7 @@ export default function ChatWindow({
                 {uploadingImage ? (
                   <Loader2 className="h-5 w-5 animate-spin mx-auto" />
                 ) : (
-                  "Invia"
+                  t("send")
                 )}
               </button>
             </div>
@@ -1202,7 +1204,7 @@ export default function ChatWindow({
           </button>
           <Image
             src={zoomedImage}
-            alt="Immagine ingrandita"
+            alt={t("zoomedImageAlt")}
             width={800}
             height={600}
             className="max-w-full max-h-full object-contain"

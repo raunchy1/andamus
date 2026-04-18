@@ -32,6 +32,7 @@ import {
 } from "recharts";
 import toast from "react-hot-toast";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Ride {
   id: string;
@@ -75,6 +76,9 @@ interface HistoryItem {
 export default function StatisticsPage() {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("stats");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const [, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -183,7 +187,7 @@ export default function StatisticsPage() {
       const monthBookings = myBookings.filter(b => b.rides.date.startsWith(monthKey)).length;
       
       activityData.push({
-        month: date.toLocaleDateString('it-IT', { month: 'short' }),
+        month: date.toLocaleDateString(locale, { month: 'short' }),
         fullMonth: monthKey,
         autista: monthRides,
         passeggero: monthBookings,
@@ -223,7 +227,7 @@ export default function StatisticsPage() {
       activityData,
       favoriteRoutes
     };
-  }, [myRides, myBookings, profile, badges]);
+  }, [myRides, myBookings, profile, badges, locale]);
 
   // Filter history
   const filteredHistory = useMemo(() => {
@@ -274,30 +278,30 @@ export default function StatisticsPage() {
 
   const generatePDFReport = () => {
     const reportLines = [
-      "ANDAMUS - REPORT PERSONALE",
+      t('reportTitle'),
       "=".repeat(40),
       "",
-      `Utente: ${profile?.name || 'Utente'}`,
-      `Data report: ${new Date().toLocaleDateString('it-IT')}`,
+      `${t('user')}: ${profile?.name || t('user')}`,
+      `${t('reportDate')}: ${new Date().toLocaleDateString(locale)}`,
       "",
-      "STATISTICHE GENERALI",
+      t('generalStats'),
       "-".repeat(40),
-      `KM totali percorsi: ${stats.totalDistance}`,
-      `CO2 risparmiata: ${stats.co2Saved} kg`,
-      `Corse come autista: ${stats.ridesAsDriver}`,
-      `Corse come passeggero: ${stats.ridesAsPassenger}`,
-      `Persone aiutate: ${stats.passengersHelped}`,
-      `Punti totali: ${stats.totalPoints}`,
-      `Badge sbloccati: ${stats.badgesCount}`,
+      `${t('totalKm')}: ${stats.totalDistance}`,
+      `${t('co2Saved')}: ${stats.co2Saved} kg`,
+      `${t('ridesAsDriver')}: ${stats.ridesAsDriver}`,
+      `${t('ridesAsPassenger')}: ${stats.ridesAsPassenger}`,
+      `${t('peopleHelped')}: ${stats.passengersHelped}`,
+      `${t('totalPoints')}: ${stats.totalPoints}`,
+      `${t('badgesUnlocked')}: ${stats.badgesCount}`,
       "",
-      "ROTTE PREFERITE",
+      t('favoriteRoutesTitle'),
       "-".repeat(40),
-      ...stats.favoriteRoutes.map((r, i) => `${i + 1}. ${r.name} (${r.count} volte)`),
+      ...stats.favoriteRoutes.map((r, i) => `${i + 1}. ${r.name} (${r.count} ${t('times')})`),
       "",
-      "STORICO CORSE",
+      t('rideHistory'),
       "-".repeat(40),
       ...filteredHistory.map(item => 
-        `${item.date} | ${item.from_city} → ${item.to_city} | ${item.price === 0 ? 'Gratis' : item.price + '€'}`
+        `${item.date} | ${item.from_city} → ${item.to_city} | ${item.price === 0 ? t('free') : item.price + '€'}`
       ),
     ];
 
@@ -309,7 +313,7 @@ export default function StatisticsPage() {
     a.click();
     URL.revokeObjectURL(url);
     
-    toast.success("Report scaricato!");
+    toast.success(t('reportDownloaded'));
   };
 
   if (loading) {
@@ -330,13 +334,13 @@ export default function StatisticsPage() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
-            Torna al profilo
+            {t('backToProfile')}
           </Link>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
             <TrendingUp className="w-8 h-8 text-[#e63946]" />
-            Le mie statistiche
+            {t('myStats')}
           </h1>
-          <p className="text-white/60 mt-2">Analizza il tuo impatto e la tua attività su Andamus</p>
+          <p className="text-white/60 mt-2">{t('subtitle')}</p>
         </div>
 
         {/* Stats Grid */}
@@ -344,45 +348,45 @@ export default function StatisticsPage() {
           <StatCard 
             icon={<Route className="w-6 h-6 text-blue-400" />}
             value={stats.totalDistance}
-            label="KM percorsi"
+            label={t('kmTraveled')}
             suffix=" km"
           />
           <StatCard 
             icon={<TreePine className="w-6 h-6 text-green-400" />}
             value={stats.co2Saved}
-            label="CO₂ risparmiata"
+            label={t('co2Saved')}
             suffix=" kg"
           />
           <StatCard 
             icon={<Car className="w-6 h-6 text-[#e63946]" />}
             value={stats.ridesAsDriver}
-            label="Come autista"
+            label={t('asDriver')}
           />
           <StatCard 
             icon={<Users className="w-6 h-6 text-purple-400" />}
             value={stats.ridesAsPassenger}
-            label="Come passeggero"
+            label={t('asPassenger')}
           />
           <StatCard 
             icon={<Users className="w-6 h-6 text-orange-400" />}
             value={stats.passengersHelped}
-            label="Persone aiutate"
+            label={t('peopleHelped')}
           />
           <StatCard 
             icon={<Trophy className="w-6 h-6 text-yellow-400" />}
             value={stats.badgesCount}
-            label="Badge sbloccati"
+            label={t('badgesUnlocked')}
           />
           <StatCard 
             icon={<Download className="w-6 h-6 text-pink-400" />}
             value={stats.totalEarnings}
-            label="Guadagni stimati"
+            label={t('estimatedEarnings')}
             suffix="€"
           />
           <StatCard 
             icon={<Check className="w-6 h-6 text-cyan-400" />}
             value={stats.acceptanceRate}
-            label="Tasso accettazione"
+            label={t('acceptanceRate')}
             suffix="%"
           />
         </div>
@@ -391,7 +395,7 @@ export default function StatisticsPage() {
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-[#e63946]" />
-            Attività ultimi 12 mesi
+            {t('activityLast12Months')}
           </h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -414,8 +418,8 @@ export default function StatisticsPage() {
                   }}
                   labelStyle={{ color: '#fff' }}
                 />
-                <Bar dataKey="autista" name="Autista" fill="#e63946" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="passeggero" name="Passeggero" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="autista" name={t('driver')} fill="#e63946" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="passeggero" name={t('passenger')} fill="#3b82f6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -426,7 +430,7 @@ export default function StatisticsPage() {
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-[#e63946]" />
-              Rotte preferite
+              {t('favoriteRoutes')}
             </h2>
             <div className="space-y-3">
               {stats.favoriteRoutes.map((route, index) => (
@@ -446,13 +450,13 @@ export default function StatisticsPage() {
                     <div>
                       <p className="text-white font-medium">{route.name}</p>
                       <p className="text-white/50 text-sm">
-                        Ultima volta: {new Date(route.lastDate).toLocaleDateString('it-IT')}
+                        {t('lastTime')}: {new Date(route.lastDate).toLocaleDateString(locale)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-white">{route.count}</p>
-                    <p className="text-white/50 text-sm">volte</p>
+                    <p className="text-white/50 text-sm">{t('times', { count: route.count })}</p>
                   </div>
                 </div>
               ))}
@@ -465,7 +469,7 @@ export default function StatisticsPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">
               <Clock className="w-5 h-5 text-[#e63946]" />
-              Storico completo
+              {t('fullHistory')}
             </h2>
             
             {/* Export Button */}
@@ -474,7 +478,7 @@ export default function StatisticsPage() {
               className="flex items-center justify-center gap-2 px-4 py-2 bg-[#e63946] text-white rounded-lg hover:bg-[#c92a37] transition-colors"
             >
               <Download className="w-4 h-4" />
-              Scarica report
+              {t('downloadReport')}
             </button>
           </div>
 
@@ -489,7 +493,7 @@ export default function StatisticsPage() {
               }`}
             >
               <Car className="w-4 h-4" />
-              Come autista
+              {t('asDriver')}
             </button>
             <button
               onClick={() => setActiveTab("passenger")}
@@ -500,7 +504,7 @@ export default function StatisticsPage() {
               }`}
             >
               <Users className="w-4 h-4" />
-              Come passeggero
+              {t('asPassenger')}
             </button>
           </div>
 
@@ -511,7 +515,7 @@ export default function StatisticsPage() {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#e63946] outline-none"
             >
-              <option value="all">Tutti gli anni</option>
+              <option value="all">{t('allYears')}</option>
               {years.map(year => (
                 <option key={year} value={year}>{year}</option>
               ))}
@@ -522,23 +526,16 @@ export default function StatisticsPage() {
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#e63946] outline-none"
             >
-              <option value="all">Tutti i mesi</option>
-              {[
-                { value: "01", label: "Gennaio" },
-                { value: "02", label: "Febbraio" },
-                { value: "03", label: "Marzo" },
-                { value: "04", label: "Aprile" },
-                { value: "05", label: "Maggio" },
-                { value: "06", label: "Giugno" },
-                { value: "07", label: "Luglio" },
-                { value: "08", label: "Agosto" },
-                { value: "09", label: "Settembre" },
-                { value: "10", label: "Ottobre" },
-                { value: "11", label: "Novembre" },
-                { value: "12", label: "Dicembre" },
-              ].map(m => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
+              <option value="all">{t('allMonths')}</option>
+              {Array.from({ length: 12 }, (_, i) => {
+                const monthNum = String(i + 1).padStart(2, '0');
+                const d = new Date(2024, i, 1);
+                return (
+                  <option key={monthNum} value={monthNum}>
+                    {d.toLocaleDateString(locale, { month: 'long' })}
+                  </option>
+                );
+              })}
             </select>
             
             <select
@@ -546,7 +543,7 @@ export default function StatisticsPage() {
               onChange={(e) => setSelectedRoute(e.target.value)}
               className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#e63946] outline-none"
             >
-              <option value="all">Tutte le rotte</option>
+              <option value="all">{t('allRoutes')}</option>
               {uniqueRoutes.map(route => (
                 <option key={route} value={route}>{route}</option>
               ))}
@@ -556,7 +553,7 @@ export default function StatisticsPage() {
           {/* History List */}
           <div className="space-y-2">
             {filteredHistory.length === 0 ? (
-              <p className="text-center text-white/40 py-8">Nessuna corsa trovata</p>
+              <p className="text-center text-white/40 py-8">{t('noRidesFound')}</p>
             ) : (
               filteredHistory.map((item: HistoryItem) => (
                 <div 
@@ -574,28 +571,28 @@ export default function StatisticsPage() {
                         {item.from_city} → {item.to_city}
                       </p>
                       <p className="text-white/50 text-sm">
-                        {new Date(item.date).toLocaleDateString('it-IT', { 
+                        {new Date(item.date).toLocaleDateString(locale, { 
                           weekday: 'short', 
                           day: 'numeric', 
                           month: 'short',
                           year: 'numeric'
                         })}
-                        {item.time && ` alle ${item.time.slice(0, 5)}`}
+                        {item.time && ` ${t('at')} ${item.time.slice(0, 5)}`}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-white font-semibold">
-                      {item.price === 0 ? 'Gratis' : `${item.price}€`}
+                      {item.price === 0 ? t('free') : `${item.price}€`}
                     </p>
                     <p className={`text-xs ${
                       item.status === 'confirmed' ? 'text-green-400' : 
                       item.status === 'pending' ? 'text-yellow-400' : 
                       'text-white/50'
                     }`}>
-                      {item.status === 'confirmed' ? 'Confermato' : 
-                       item.status === 'pending' ? 'In attesa' : 
-                       'Completato'}
+                      {item.status === 'confirmed' ? t('confirmed') : 
+                       item.status === 'pending' ? t('pendingStatus') : 
+                       t('completed')}
                     </p>
                   </div>
                 </div>
@@ -609,11 +606,11 @@ export default function StatisticsPage() {
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
               <Award className="w-5 h-5 text-[#e63946]" />
-              Cronologia achievement
+              {t('achievementHistory')}
             </h2>
             <div className="space-y-4">
               {badges.map((badge) => {
-                const badgeDetails = getBadgeDetails(badge.type || 'unknown');
+                const badgeDetails = getBadgeDetails(badge.type || 'unknown', t);
                 return (
                   <div 
                     key={badge.id}
@@ -628,7 +625,7 @@ export default function StatisticsPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-white/60 text-sm">
-                        {new Date(badge.earned_at || '2024-01-01').toLocaleDateString('it-IT', {
+                        {new Date(badge.earned_at || '2024-01-01').toLocaleDateString(locale, {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric'
@@ -668,41 +665,41 @@ function StatCard({
 }
 
 // Helper function for badge details
-function getBadgeDetails(type: string) {
+function getBadgeDetails(type: string, translate: ReturnType<typeof useTranslations>) {
   const badges: Record<string, { name: string; description: string; icon: string; color: string }> = {
     'first_ride': {
-      name: "Prima Corsa",
-      description: "Hai pubblicato la tua prima corsa",
+      name: translate('badgeFirstRideName'),
+      description: translate('badgeFirstRideDesc'),
       icon: "🚗",
       color: "bg-blue-500",
     },
     'welcome': {
-      name: "Benvenuto",
-      description: "Profilo completato",
+      name: translate('badgeWelcomeName'),
+      description: translate('badgeWelcomeDesc'),
       icon: "👋",
       color: "bg-green-500",
     },
     'verified': {
-      name: "Verificato",
-      description: "Identità verificata",
+      name: translate('badgeVerifiedName'),
+      description: translate('badgeVerifiedDesc'),
       icon: "✅",
       color: "bg-purple-500",
     },
     'five_stars': {
-      name: "5 Stelle",
-      description: "Hai ricevuto la tua prima recensione 5 stelle",
+      name: translate('badgeFiveStarsName'),
+      description: translate('badgeFiveStarsDesc'),
       icon: "⭐",
       color: "bg-yellow-500",
     },
     'habitue': {
-      name: "Habitué",
-      description: "10 corse pubblicate",
+      name: translate('badgeHabitueName'),
+      description: translate('badgeHabitueDesc'),
       icon: "🎯",
       color: "bg-orange-500",
     },
     'ambassador': {
-      name: "Ambasciatore",
-      description: "50 corse pubblicate",
+      name: translate('badgeAmbassadorName'),
+      description: translate('badgeAmbassadorDesc'),
       icon: "🏆",
       color: "bg-red-500",
     },

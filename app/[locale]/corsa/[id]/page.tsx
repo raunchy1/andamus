@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { Loader2, AlertCircle, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
 import { CarInfoCard } from "@/components/CarInfoCard";
@@ -96,6 +97,8 @@ function RideDetailMobile({
   formatReviewDate,
 }: RideDetailViewProps) {
   const router = useRouter();
+  const t = useTranslations("ride");
+  const tc = useTranslations("common");
   const isMyRide = user?.id === ride.driver_id;
 
   return (
@@ -139,15 +142,15 @@ function RideDetailMobile({
               </div>
               <div className="text-right shrink-0 pt-1">
                 <span className="font-headline font-extrabold text-4xl tracking-tight text-on-surface">
-                  {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                  {ride.price === 0 ? t('free') : `€${ride.price}`}
                 </span>
-                <p className="font-label font-semibold text-[10px] uppercase tracking-wider text-on-surface/40 mt-1">a persona</p>
+                <p className="font-label font-semibold text-[10px] uppercase tracking-wider text-on-surface/40 mt-1">{t('perPerson')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
               <p className="font-label font-semibold text-sm uppercase tracking-wide text-primary">
-                Partenza • {formatDate(ride.date)} · {ride.time.slice(0,5)}
+                {t('departure')} • {formatDate(ride.date)} · {ride.time.slice(0,5)}
               </p>
             </div>
           </div>
@@ -173,7 +176,7 @@ function RideDetailMobile({
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-primary fill-current" />
                     <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
-                    <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} viaggi</span>
+                    <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')}</span>
                   </div>
                 </div>
               </div>
@@ -192,8 +195,8 @@ function RideDetailMobile({
                 <DoorOpen className="w-8 h-8 text-primary" />
               </div>
               <div>
-                <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40 mb-2">Punto di ritiro</p>
-                <p className="font-semibold text-on-surface text-base leading-snug">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
+                <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40 mb-2">{t('pickupPoint')}</p>
+                <p className="font-semibold text-on-surface text-base leading-snug">{ride.meeting_point || t('defaultMeetingPoint', { city: ride.from_city })}</p>
               </div>
             </div>
             
@@ -213,8 +216,8 @@ function RideDetailMobile({
                   <Car className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40 mb-2">Veicolo</p>
-                  <p className="font-semibold text-on-surface text-base leading-snug">Auto del guidatore</p>
+                  <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40 mb-2">{t('vehicle')}</p>
+                  <p className="font-semibold text-on-surface text-base leading-snug">{t('driverCar')}</p>
                 </div>
               </div>
             )}
@@ -223,7 +226,7 @@ function RideDetailMobile({
           {/* The Path Indicator */}
           {stops.length > 0 && (
             <div className="mb-10 px-2">
-              <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/50 mb-6 ml-1">Fermate intermedie</h4>
+              <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/50 mb-6 ml-1">{t('waypoints')}</h4>
               <div className="space-y-6 relative">
                 <div className="absolute left-[11px] top-3 bottom-3 w-0.5 bg-surface-container-highest" />
                 <div className="flex items-center gap-5 relative">
@@ -255,38 +258,38 @@ function RideDetailMobile({
             {!ride.smoking_allowed && (
               <div className="flex items-center gap-2.5 bg-surface-container-high/60 px-4 py-2.5 rounded-full border border-surface-container-high">
                 <Cigarette className="w-4 h-4 text-on-surface/60" />
-                <span className="font-medium text-sm text-on-surface/80">No fumo</span>
+                <span className="font-medium text-sm text-on-surface/80">{t('noSmoking')}</span>
               </div>
             )}
             {ride.pets_allowed && (
               <div className="flex items-center gap-2.5 bg-surface-container-high/60 px-4 py-2.5 rounded-full border border-surface-container-high">
                 <Dog className="w-4 h-4 text-on-surface/60" />
-                <span className="font-medium text-sm text-on-surface/80">Animali OK</span>
+                <span className="font-medium text-sm text-on-surface/80">{t('petsOk')}</span>
               </div>
             )}
             {ride.large_luggage && (
               <div className="flex items-center gap-2.5 bg-surface-container-high/60 px-4 py-2.5 rounded-full border border-surface-container-high">
                 <Briefcase className="w-4 h-4 text-on-surface/60" />
-                <span className="font-medium text-sm text-on-surface/80">Bagaglio grande</span>
+                <span className="font-medium text-sm text-on-surface/80">{t('largeLuggage')}</span>
               </div>
             )}
             {ride.women_only && (
               <div className="flex items-center gap-2.5 bg-surface-container-high/60 px-4 py-2.5 rounded-full border border-surface-container-high">
                 <UserCircle className="w-4 h-4 text-on-surface/60" />
-                <span className="font-medium text-sm text-on-surface/80">Solo donne</span>
+                <span className="font-medium text-sm text-on-surface/80">{t('womenOnly')}</span>
               </div>
             )}
             {ride.students_only && (
               <div className="flex items-center gap-2.5 bg-surface-container-high/60 px-4 py-2.5 rounded-full border border-surface-container-high">
                 <GraduationCap className="w-4 h-4 text-on-surface/60" />
-                <span className="font-medium text-sm text-on-surface/80">Solo studenti</span>
+                <span className="font-medium text-sm text-on-surface/80">{t('studentsOnly')}</span>
               </div>
             )}
             {ride.music_preference && (
               <div className="flex items-center gap-2.5 bg-surface-container-high/60 px-4 py-2.5 rounded-full border border-surface-container-high">
                 <Music className="w-4 h-4 text-on-surface/60" />
                 <span className="font-medium text-sm text-on-surface/80">
-                  {ride.music_preference === "quiet" ? "Silenzio" : ride.music_preference === "music" ? "Musica" : "Chiacchiere"}
+                  {ride.music_preference === "quiet" ? t('quiet') : ride.music_preference === "music" ? t('music') : t('chat')}
                 </span>
               </div>
             )}
@@ -295,7 +298,7 @@ function RideDetailMobile({
           {/* Reviews */}
           {reviews.length > 0 && (
             <div className="mb-12">
-              <h4 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40 mb-5">Recensioni</h4>
+              <h4 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40 mb-5">{t('reviews')}</h4>
               <div className="space-y-4">
                 {reviews.map((review) => (
                   <div key={review.id} className="bg-surface-container-low p-6 rounded-3xl shadow-sm">
@@ -334,7 +337,7 @@ function RideDetailMobile({
           {/* Similar Rides */}
           {similarRides.length > 0 && (
             <div className="mb-12">
-              <h4 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40 mb-5">Corse simili</h4>
+              <h4 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40 mb-5">{t('similarRides')}</h4>
               <div className="space-y-3">
                 {similarRides.map((similar) => (
                   <Link
@@ -347,7 +350,7 @@ function RideDetailMobile({
                       <p className="text-sm text-on-surface/50">{similar.time.slice(0,5)} · {similar.profiles.name}</p>
                     </div>
                     <span className="font-bold text-lg text-on-surface shrink-0 ml-3">
-                      {similar.price === 0 ? "Gratis" : `€${similar.price}`}
+                      {similar.price === 0 ? t('free') : `€${similar.price}`}
                     </span>
                   </Link>
                 ))}
@@ -366,7 +369,7 @@ function RideDetailMobile({
               href="/profilo"
               className="w-full bg-surface-container-highest text-on-surface py-4.5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
             >
-              <span>Gestisci dal profilo</span>
+              <span>{t('manageFromProfile')}</span>
               <ChevronRight className="w-6 h-6" />
             </Link>
           ) : existingBooking ? (
@@ -374,7 +377,7 @@ function RideDetailMobile({
               href={`/chat/${existingBooking.id}`}
               className="w-full bg-[#e63946] text-white py-4.5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
             >
-              <span>Apri chat</span>
+              <span>{t('openChat')}</span>
               <ChevronRight className="w-6 h-6" />
             </Link>
           ) : (
@@ -383,7 +386,7 @@ function RideDetailMobile({
               disabled={requesting}
               className="w-full bg-[#e63946] text-white py-4.5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200 disabled:opacity-70"
             >
-              <span>{requesting ? "Prenotazione..." : "Richiedi passaggio"}</span>
+              <span>{requesting ? t('booking') : t('requestRide')}</span>
               <ChevronRight className="w-6 h-6" />
             </button>
           )}
@@ -394,20 +397,20 @@ function RideDetailMobile({
       {showLoginModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-sm rounded-3xl border border-outline-variant bg-surface-container-low p-8 shadow-2xl">
-            <h3 className="mb-3 text-2xl font-extrabold tracking-tight text-on-surface">Accedi per prenotare</h3>
-            <p className="mb-8 text-on-surface/70 text-base">Devi essere autenticato per richiedere un passaggio.</p>
+            <h3 className="mb-3 text-2xl font-extrabold tracking-tight text-on-surface">{t('loginToBook')}</h3>
+            <p className="mb-8 text-on-surface/70 text-base">{t('authRequiredToBook')}</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLoginModal(false)}
                 className="flex-1 rounded-2xl bg-surface-container-high py-4 text-base font-semibold text-on-surface hover:bg-surface-container-highest transition-all active:scale-95"
               >
-                Annulla
+                {tc('cancel')}
               </button>
               <button
                 onClick={signInWithGoogle}
                 className="flex-1 rounded-2xl bg-primary py-4 text-base font-semibold text-on-primary hover:opacity-90 transition-all active:scale-95"
               >
-                Accedi
+                {tc('login')}
               </button>
             </div>
           </div>
@@ -433,6 +436,8 @@ function RideDetailDesktop({
   formatReviewDate,
 }: RideDetailViewProps) {
   const router = useRouter();
+  const t = useTranslations("ride");
+  const tc = useTranslations("common");
   const isMyRide = user?.id === ride.driver_id;
 
   return (
@@ -444,7 +449,7 @@ function RideDetailDesktop({
             <button onClick={() => router.back()} className="p-2 rounded-xl text-on-surface hover:bg-white/5 transition-all">
               <ArrowLeft className="w-6 h-6" />
             </button>
-            <span className="font-semibold text-on-surface">Dettaglio corsa</span>
+            <span className="font-semibold text-on-surface">{t('details')}</span>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={handleShare} className="p-2 rounded-xl text-on-surface hover:bg-white/5 transition-all">
@@ -478,7 +483,7 @@ function RideDetailDesktop({
               <h1 className="font-headline font-extrabold text-6xl tracking-tighter text-on-surface mb-3">
                 {ride.from_city} <span className="text-primary tracking-normal">→</span> {ride.to_city}
               </h1>
-              <p className="font-label font-semibold text-sm uppercase tracking-[0.15em] text-primary">Partenza • {formatDate(ride.date)} · {ride.time.slice(0,5)}</p>
+              <p className="font-label font-semibold text-sm uppercase tracking-[0.15em] text-primary">{t('departure')} • {formatDate(ride.date)} · {ride.time.slice(0,5)}</p>
             </div>
 
             {/* Bento Info */}
@@ -486,15 +491,15 @@ function RideDetailDesktop({
               <div className="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between min-h-[160px]">
                 <DoorOpen className="w-10 h-10 text-primary mb-4" />
                 <div>
-                  <p className="font-label font-bold text-[11px] uppercase tracking-widest text-on-surface/40 mb-1">Ritiro</p>
-                  <p className="font-body font-semibold text-on-surface">{ride.meeting_point || `Piazza centrale, ${ride.from_city}`}</p>
+                  <p className="font-label font-bold text-[11px] uppercase tracking-widest text-on-surface/40 mb-1">{t('pickup')}</p>
+                  <p className="font-body font-semibold text-on-surface">{ride.meeting_point || t('defaultMeetingPoint', { city: ride.from_city })}</p>
                 </div>
               </div>
               <div className="bg-surface-container-low p-6 rounded-2xl flex flex-col justify-between min-h-[160px]">
                 <Car className="w-10 h-10 text-primary mb-4" />
                 <div>
-                  <p className="font-label font-bold text-[11px] uppercase tracking-widest text-on-surface/40 mb-1">Auto</p>
-                  <p className="font-body font-semibold text-on-surface">Auto del guidatore</p>
+                  <p className="font-label font-bold text-[11px] uppercase tracking-widest text-on-surface/40 mb-1">{t('car')}</p>
+                  <p className="font-body font-semibold text-on-surface">{t('driverCar')}</p>
                 </div>
               </div>
             </div>
@@ -502,7 +507,7 @@ function RideDetailDesktop({
             {/* Path Indicator */}
             {stops.length > 0 && (
               <div className="px-2">
-                <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/40 mb-6">Fermate Intermedie</h4>
+                <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/40 mb-6">{t('waypoints')}</h4>
                 <div className="space-y-8 relative">
                   <div className="absolute left-[9px] top-2 bottom-2 w-[2px] bg-surface-container-highest" />
                   <div className="flex items-center space-x-6 relative">
@@ -534,38 +539,38 @@ function RideDetailDesktop({
               {!ride.smoking_allowed && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
                   <Cigarette className="w-5 h-5" />
-                  <span className="font-label font-bold text-[11px] uppercase">No fumo</span>
+                  <span className="font-label font-bold text-[11px] uppercase">{t('noSmoking')}</span>
                 </div>
               )}
               {ride.pets_allowed && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
                   <Dog className="w-5 h-5" />
-                  <span className="font-label font-bold text-[11px] uppercase">Animali ok</span>
+                  <span className="font-label font-bold text-[11px] uppercase">{t('petsOk')}</span>
                 </div>
               )}
               {ride.large_luggage && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
                   <Briefcase className="w-5 h-5" />
-                  <span className="font-label font-bold text-[11px] uppercase">Bagaglio grande</span>
+                  <span className="font-label font-bold text-[11px] uppercase">{t('largeLuggage')}</span>
                 </div>
               )}
               {ride.women_only && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
                   <UserCircle className="w-5 h-5" />
-                  <span className="font-label font-bold text-[11px] uppercase">Solo donne</span>
+                  <span className="font-label font-bold text-[11px] uppercase">{t('womenOnly')}</span>
                 </div>
               )}
               {ride.students_only && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
                   <GraduationCap className="w-5 h-5" />
-                  <span className="font-label font-bold text-[11px] uppercase">Solo studenti</span>
+                  <span className="font-label font-bold text-[11px] uppercase">{t('studentsOnly')}</span>
                 </div>
               )}
               {ride.music_preference && (
                 <div className="flex items-center space-x-2 bg-surface-container-high px-4 py-2.5 rounded-xl">
                   <Music className="w-5 h-5" />
                   <span className="font-label font-bold text-[11px] uppercase">
-                    {ride.music_preference === "quiet" ? "Silenzio" : ride.music_preference === "music" ? "Musica" : "Chiacchiere"}
+                    {ride.music_preference === "quiet" ? t('quiet') : ride.music_preference === "music" ? t('music') : t('chat')}
                   </span>
                 </div>
               )}
@@ -574,7 +579,7 @@ function RideDetailDesktop({
             {/* Reviews */}
             {reviews.length > 0 && (
               <div>
-                <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/40 mb-5">Recensioni</h4>
+                <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/40 mb-5">{t('reviews')}</h4>
                 <div className="space-y-4">
                   {reviews.map((review) => (
                     <div key={review.id} className="bg-surface-container-low p-5 rounded-2xl">
@@ -616,7 +621,7 @@ function RideDetailDesktop({
             {/* Similar Rides */}
             {similarRides.length > 0 && (
               <div>
-                <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/40 mb-5">Corse simili</h4>
+                <h4 className="font-label font-bold text-xs uppercase tracking-[0.2em] text-on-surface/40 mb-5">{t('similarRides')}</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {similarRides.map((similar) => (
                     <Link
@@ -629,7 +634,7 @@ function RideDetailDesktop({
                         <p className="text-sm text-on-surface-variant">{similar.time.slice(0,5)} · {similar.profiles.name}</p>
                       </div>
                       <span className="font-extrabold text-on-surface">
-                        {similar.price === 0 ? "Gratis" : `€${similar.price}`}
+                        {similar.price === 0 ? t('free') : `€${similar.price}`}
                       </span>
                     </Link>
                   ))}
@@ -645,9 +650,9 @@ function RideDetailDesktop({
               <div className="bg-surface-container-low rounded-3xl p-8 space-y-6">
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-on-surface/40 text-sm font-semibold uppercase tracking-widest mb-1">Prezzo per posto</p>
+                    <p className="text-on-surface/40 text-sm font-semibold uppercase tracking-widest mb-1">{t('pricePerSeat')}</p>
                     <span className="font-headline font-extrabold text-5xl tracking-tighter text-on-surface">
-                      {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                      {ride.price === 0 ? t('free') : `€${ride.price}`}
                     </span>
                   </div>
                 </div>
@@ -672,7 +677,7 @@ function RideDetailDesktop({
                       <div className="flex items-center space-x-2 mt-1">
                         <Star className="w-4.5 h-4.5 text-primary fill-current" />
                         <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
-                        <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} viaggi</span>
+                        <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')}</span>
                       </div>
                     </div>
                   </div>
@@ -690,7 +695,7 @@ function RideDetailDesktop({
                       href="/profilo"
                       className="w-full bg-surface-container-highest text-on-surface py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
                     >
-                      <span>Gestisci dal profilo</span>
+                      <span>{t('manageFromProfile')}</span>
                       <ChevronRight className="w-5 h-5" />
                     </Link>
                   ) : existingBooking ? (
@@ -698,7 +703,7 @@ function RideDetailDesktop({
                       href={`/chat/${existingBooking.id}`}
                       className="w-full bg-[#e63946] text-white py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
                     >
-                      <span>Apri chat</span>
+                      <span>{t('openChat')}</span>
                       <ChevronRight className="w-5 h-5" />
                     </Link>
                   ) : (
@@ -707,7 +712,7 @@ function RideDetailDesktop({
                       disabled={requesting}
                       className="w-full bg-[#e63946] text-white py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-70"
                     >
-                      <span>{requesting ? "Prenotazione..." : "Richiedi passaggio"}</span>
+                      <span>{requesting ? t('booking') : t('requestRide')}</span>
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   )}
@@ -718,11 +723,11 @@ function RideDetailDesktop({
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-surface-container-low rounded-2xl p-5 text-center">
                   <ShieldCheck className="w-8 h-8 text-primary mb-2" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-on-surface/70">Autista verificato</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-on-surface/70">{t('verifiedDriver')}</p>
                 </div>
                 <div className="bg-surface-container-low rounded-2xl p-5 text-center">
                   <Lock className="w-8 h-8 text-primary mb-2" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-on-surface/70">Pagamento sicuro</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-on-surface/70">{t('securePayment')}</p>
                 </div>
               </div>
             </div>
@@ -734,20 +739,20 @@ function RideDetailDesktop({
       {showLoginModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-6">
-            <h3 className="mb-2 text-xl font-extrabold tracking-tight text-on-surface">Accedi per prenotare</h3>
-            <p className="mb-6 text-on-surface-variant">Devi essere autenticato per richiedere un passaggio.</p>
+            <h3 className="mb-2 text-xl font-extrabold tracking-tight text-on-surface">{t('loginToBook')}</h3>
+            <p className="mb-6 text-on-surface-variant">{t('authRequiredToBook')}</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLoginModal(false)}
                 className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-highest"
               >
-                Annulla
+                {tc('cancel')}
               </button>
               <button
                 onClick={signInWithGoogle}
                 className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary hover:opacity-90"
               >
-                Accedi
+                {tc('login')}
               </button>
             </div>
           </div>
@@ -762,6 +767,9 @@ export default function RideDetailPage() {
   const router = useRouter();
   const rideId = params.id as string;
   const deviceType = useDeviceType();
+  const t = useTranslations("ride");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   
   const [ride, setRide] = useState<Ride | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -792,7 +800,7 @@ export default function RideDetailPage() {
           .single();
 
         if (error || !data) {
-          toast.error("Passaggio non trovato");
+          toast.error(t('notFound'));
           setLoading(false);
           return;
         }
@@ -836,7 +844,7 @@ export default function RideDetailPage() {
           setExistingBooking(bookingData);
         }
       } catch {
-        toast.error("Errore durante il caricamento");
+        toast.error(t('loadingError'));
       } finally {
         setLoading(false);
       }
@@ -851,10 +859,10 @@ export default function RideDetailPage() {
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
     
     let prefix = "";
-    if (dateStr === today) prefix = "Oggi, ";
-    else if (dateStr === tomorrow) prefix = "Domani, ";
+    if (dateStr === today) prefix = `${t('today')}, `;
+    else if (dateStr === tomorrow) prefix = `${t('tomorrow')}, `;
     
-    return prefix + date.toLocaleDateString("it-IT", { 
+    return prefix + date.toLocaleDateString(locale, { 
       weekday: "long", 
       day: "numeric", 
       month: "long",
@@ -862,7 +870,7 @@ export default function RideDetailPage() {
   };
 
   const formatReviewDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("it-IT", {
+    return new Date(dateStr).toLocaleDateString(locale, {
       month: "short",
       year: "numeric"
     });
@@ -872,9 +880,9 @@ export default function RideDetailPage() {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Link copiato negli appunti!");
+      toast.success(t('linkCopied'));
     } catch {
-      toast.error("Errore nella copia");
+      toast.error(t('copyError'));
     }
   };
 
@@ -886,7 +894,7 @@ export default function RideDetailPage() {
 
     if (!ride) return;
     if (user.id === ride.driver_id) {
-      toast.error("Non puoi prenotare la tua corsa");
+      toast.error(t('cannotBookOwnRide'));
       return;
     }
     if (existingBooking) {
@@ -912,21 +920,21 @@ export default function RideDetailPage() {
       await supabase.from("messages").insert({
         booking_id: booking.id,
         sender_id: user.id,
-        content: `Ciao! Sono interessato al passaggio da ${ride.from_city} a ${ride.to_city}.`,
+        content: t('initialMessage', { from: ride.from_city, to: ride.to_city }),
         read: false,
       });
 
       await notifyBookingRequest(
         ride.driver_id,
-        user.user_metadata?.name || user.email?.split("@")[0] || "Passeggero",
+        user.user_metadata?.name || user.email?.split("@")[0] || t('passenger'),
         rideId,
         booking.id
       );
 
-      toast.success("Prenotazione effettuata!");
+      toast.success(t('bookingSuccess'));
       router.push(`/chat/${booking.id}`);
     } catch {
-      toast.error("Errore nella prenotazione");
+      toast.error(t('bookingError'));
       setRequesting(false);
     }
   };
@@ -943,9 +951,9 @@ export default function RideDetailPage() {
     return (
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4 sm:px-6">
         <AlertCircle className="h-16 w-16 text-error mb-4" />
-        <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Passaggio non trovato</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">{t('notFound')}</h1>
         <Link href="/cerca" className="mt-6 flex items-center gap-2 text-primary">
-          <ArrowLeft className="w-4 h-4" /> Torna alla ricerca
+          <ArrowLeft className="w-4 h-4" /> {t('backToSearch')}
         </Link>
       </div>
     );
