@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import toast from "react-hot-toast";
 import {
   Shield,
@@ -33,6 +34,7 @@ interface Verification {
 
 export default function VerificationPage() {
   const router = useRouter();
+  const t = useTranslations("profile");
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -98,13 +100,13 @@ export default function VerificationPage() {
 
   const handlePhoneVerify = async () => {
     if (!phoneNumber || phoneNumber.length < 10) {
-      toast.error("Inserisci un numero di telefono valido");
+      toast.error(t("enterValidPhone"));
       return;
     }
 
     // TODO: Implement real OTP via Twilio or Supabase Auth
     // For now, phone verification is disabled
-    toast("Verifica telefono temporaneamente non disponibile. Sarà attiva prossimamente!", {
+    toast(t("phoneVerifyTempUnavailable"), {
       icon: "ℹ️",
     });
     
@@ -116,9 +118,9 @@ export default function VerificationPage() {
         .eq("id", user.id);
       
       if (error) {
-        toast.error("Errore nel salvare il numero");
+        toast.error(t("errorSavingNumber"));
       } else {
-        toast.success("Numero salvato (verifica non richiesta)");
+        toast.success(t("numberSavedNoVerify"));
       }
     }
   };
@@ -153,10 +155,10 @@ export default function VerificationPage() {
 
       if (dbError) throw dbError;
 
-      toast.success("Documento caricato! In attesa di approvazione.");
+      toast.success(t("documentUploadedPending"));
       setStatus((s) => ({ ...s, [type]: "pending" }));
     } catch {
-      toast.error("Errore nel caricamento");
+      toast.error(t("uploadError"));
     } finally {
       setUploading(null);
     }
@@ -173,11 +175,11 @@ export default function VerificationPage() {
 
   const getBadgeTitle = () => {
     const level = getVerificationLevel();
-    if (level === 4) return "Utente Platinum";
-    if (level === 3) return "Utente Gold";
-    if (level === 2) return "Utente Silver";
-    if (level === 1) return "Utente Bronze";
-    return "Utente Base";
+    if (level === 4) return t("userPlatinum");
+    if (level === 3) return t("userGold");
+    if (level === 2) return t("userSilver");
+    if (level === 1) return t("userBronze");
+    return t("userBase");
   };
 
   if (loading) {
@@ -198,7 +200,7 @@ export default function VerificationPage() {
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
-            Torna al profilo
+            {t("backToProfile")}
           </Link>
         </div>
       </div>
@@ -213,7 +215,7 @@ export default function VerificationPage() {
             <div>
               <h1 className="text-2xl font-bold">{getBadgeTitle()}</h1>
               <p className="text-white/80">
-                Livello di verifica: {getVerificationLevel()}/4
+                {t("verificationLevel", { level: getVerificationLevel() })}
               </p>
               <div className="mt-3 flex gap-1">
                 {[1, 2, 3, 4].map((i) => (
@@ -243,11 +245,11 @@ export default function VerificationPage() {
                 <Phone className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Telefono</h3>
+                <h3 className="font-semibold text-white">{t("phone")}</h3>
                 <p className="text-sm text-white/50">
                   {status.phone === "verified"
-                    ? "Verificato"
-                    : "Non verificato"}
+                    ? t("verified")
+                    : t("notVerified")}
                 </p>
               </div>
               {status.phone === "verified" && (
@@ -270,24 +272,24 @@ export default function VerificationPage() {
                       onClick={handlePhoneVerify}
                       className="w-full rounded-xl bg-[#e63946] py-3 text-sm font-semibold text-white transition-all hover:bg-[#c92a37]"
                     >
-                      Invia codice OTP
+                      {t("sendOtpCode")}
                     </button>
                   </>
                 ) : (
                   <>
                     <div className="rounded-xl bg-yellow-500/10 p-4 text-center">
                       <p className="text-sm text-yellow-400">
-                        La verifica via OTP è temporaneamente non disponibile.
+                        {t("otpTempUnavailable")}
                       </p>
                       <p className="text-xs text-white/50 mt-2">
-                        Il tuo numero è stato salvato. Sarai notificato quando la verifica sarà attiva.
+                        {t("numberSavedNotification")}
                       </p>
                     </div>
                     <button
                       onClick={() => setShowOtpInput(false)}
                       className="w-full rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20"
                     >
-                      Chiudi
+                      {t("close")}
                     </button>
                   </>
                 )}
@@ -308,9 +310,9 @@ export default function VerificationPage() {
                 <Mail className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Email</h3>
+                <h3 className="font-semibold text-white">{t("email")}</h3>
                 <p className="text-sm text-white/50">
-                  {status.email === "verified" ? "Verificata" : "Non verificata"}
+                  {status.email === "verified" ? t("verified") : t("notVerified")}
                 </p>
               </div>
               {status.email === "verified" && (
@@ -321,7 +323,7 @@ export default function VerificationPage() {
             {status.email !== "verified" && (
               <div className="rounded-xl bg-yellow-500/10 p-4">
                 <p className="text-sm text-yellow-400">
-                  La tua email è stata verificata tramite Google OAuth
+                  {t("emailVerifiedViaGoogle")}
                 </p>
               </div>
             )}
@@ -342,13 +344,13 @@ export default function VerificationPage() {
                 <IdCard className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Documento d&apos;identit&agrave;</h3>
+                <h3 className="font-semibold text-white">{t("idDocument")}</h3>
                 <p className="text-sm text-white/50">
                   {status.id === "verified"
-                    ? "Verificato"
+                    ? t("verified")
                     : status.id === "pending"
-                    ? "In revisione"
-                    : "Non verificato"}
+                    ? t("underReview")
+                    : t("notVerified")}
                 </p>
               </div>
               {status.id === "verified" && (
@@ -359,8 +361,8 @@ export default function VerificationPage() {
             {status.id !== "verified" && status.id !== "pending" && (
               <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#e63946] hover:bg-white/10">
                 <Upload className="mb-2 h-8 w-8 text-white/50" />
-                <span className="text-sm text-white/70">Carica carta d&apos;identit&agrave;</span>
-                <span className="mt-1 text-xs text-white/40">PNG, JPG fino a 5MB</span>
+                <span className="text-sm text-white/70">{t("uploadIdCard")}</span>
+                <span className="mt-1 text-xs text-white/40">{t("pngJpgUpTo5mb")}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -375,7 +377,7 @@ export default function VerificationPage() {
             {uploading === "id" && (
               <div className="mt-3 flex items-center justify-center gap-2 text-white/50">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Caricamento...
+                {t("uploading")}
               </div>
             )}
           </div>
@@ -395,13 +397,13 @@ export default function VerificationPage() {
                 <Car className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Patente di guida</h3>
+                <h3 className="font-semibold text-white">{t("driverLicense")}</h3>
                 <p className="text-sm text-white/50">
                   {status.driver === "verified"
-                    ? "Verificata"
+                    ? t("verified")
                     : status.driver === "pending"
-                    ? "In revisione"
-                    : "Non verificata"}
+                    ? t("underReview")
+                    : t("notVerified")}
                 </p>
               </div>
               {status.driver === "verified" && (
@@ -412,8 +414,8 @@ export default function VerificationPage() {
             {status.driver !== "verified" && status.driver !== "pending" && (
               <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#e63946] hover:bg-white/10">
                 <Upload className="mb-2 h-8 w-8 text-white/50" />
-                <span className="text-sm text-white/70">Carica patente</span>
-                <span className="mt-1 text-xs text-white/40">PNG, JPG fino a 5MB</span>
+                <span className="text-sm text-white/70">{t("uploadLicense")}</span>
+                <span className="mt-1 text-xs text-white/40">{t("pngJpgUpTo5mb")}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -428,7 +430,7 @@ export default function VerificationPage() {
             {uploading === "driver" && (
               <div className="mt-3 flex items-center justify-center gap-2 text-white/50">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Caricamento...
+                {t("uploading")}
               </div>
             )}
           </div>
@@ -437,24 +439,24 @@ export default function VerificationPage() {
         {/* Benefits Info */}
         <div className="mt-8 rounded-2xl border border-white/10 bg-[#12121e] p-6">
           <h3 className="mb-4 text-lg font-semibold text-white">
-            Vantaggi della verifica
+            {t("verificationBenefits")}
           </h3>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-start gap-3">
               <Star className="h-5 w-5 text-yellow-400" />
               <div>
-                <p className="font-medium text-white">Badge di fiducia</p>
+                <p className="font-medium text-white">{t("trustBadge")}</p>
                 <p className="text-sm text-white/50">
-                  Gli altri utenti vedranno che sei verificato
+                  {t("othersSeeVerified")}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Shield className="h-5 w-5 text-green-400" />
               <div>
-                <p className="font-medium text-white">Più sicurezza</p>
+                <p className="font-medium text-white">{t("moreSecurity")}</p>
                 <p className="text-sm text-white/50">
-                  Maggiore protezione per te e i passeggeri
+                  {t("moreProtectionForYouAndPassengers")}
                 </p>
               </div>
             </div>

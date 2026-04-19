@@ -1,6 +1,7 @@
 "use client";
 
 import { Car, Palette, Calendar, Hash } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface CarInfoProps {
   model?: string | null;
@@ -10,6 +11,8 @@ interface CarInfoProps {
 }
 
 export function CarInfoCard({ model, color, plate, year }: CarInfoProps) {
+  const t = useTranslations("profile");
+
   // Don't show if no car info available
   if (!model && !color && !plate && !year) {
     return null;
@@ -23,10 +26,10 @@ export function CarInfoCard({ model, color, plate, year }: CarInfoProps) {
         </div>
         <div>
           <p className="font-label font-bold text-[10px] uppercase tracking-[0.15em] text-on-surface/40">
-            Veicolo
+            {t("vehicle")}
           </p>
           <p className="font-headline font-bold text-lg text-on-surface">
-            {model || "Auto del guidatore"}
+            {model || t("driverCar")}
           </p>
         </div>
       </div>
@@ -36,7 +39,7 @@ export function CarInfoCard({ model, color, plate, year }: CarInfoProps) {
           <div className="flex items-center gap-3 bg-surface-container-high/50 rounded-2xl p-3">
             <Palette className="w-4 h-4 text-on-surface/50" />
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-on-surface/40">Colore</p>
+              <p className="text-[10px] uppercase tracking-wider text-on-surface/40">{t("colorLabel")}</p>
               <p className="font-semibold text-sm text-on-surface">{color}</p>
             </div>
           </div>
@@ -46,7 +49,7 @@ export function CarInfoCard({ model, color, plate, year }: CarInfoProps) {
           <div className="flex items-center gap-3 bg-surface-container-high/50 rounded-2xl p-3">
             <Calendar className="w-4 h-4 text-on-surface/50" />
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-on-surface/40">Anno</p>
+              <p className="text-[10px] uppercase tracking-wider text-on-surface/40">{t("yearLabel")}</p>
               <p className="font-semibold text-sm text-on-surface">{year}</p>
             </div>
           </div>
@@ -56,7 +59,7 @@ export function CarInfoCard({ model, color, plate, year }: CarInfoProps) {
           <div className="col-span-2 flex items-center gap-3 bg-surface-container-high/50 rounded-2xl p-3">
             <Hash className="w-4 h-4 text-on-surface/50" />
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-on-surface/40">Targa</p>
+              <p className="text-[10px] uppercase tracking-wider text-on-surface/40">{t("plateLabel")}</p>
               <p className="font-semibold text-sm text-on-surface tracking-wider">{plate.toUpperCase()}</p>
             </div>
           </div>

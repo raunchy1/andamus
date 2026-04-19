@@ -13,11 +13,11 @@ export const POINTS = {
 
 // Levels configuration
 export const LEVELS = [
-  { min: 0, max: 99, name: "Viaggiatore", emoji: "🚗" },
-  { min: 100, max: 299, name: "Esploratore", emoji: "🗺️" },
-  { min: 300, max: 599, name: "Sardo DOC", emoji: "🦁" },
-  { min: 600, max: 999, name: "Re della Strada", emoji: "👑" },
-  { min: 1000, max: Infinity, name: "Leggenda Sarda", emoji: "⭐" },
+  { min: 0, max: 99, key: "traveler", name: "Viaggiatore", emoji: "🚗" },
+  { min: 100, max: 299, key: "explorer", name: "Esploratore", emoji: "🗺️" },
+  { min: 300, max: 599, key: "sardodoc", name: "Sardo DOC", emoji: "🦁" },
+  { min: 600, max: 999, key: "roadking", name: "Re della Strada", emoji: "👑" },
+  { min: 1000, max: Infinity, key: "sardlegend", name: "Leggenda Sarda", emoji: "⭐" },
 ];
 
 // Badges configuration

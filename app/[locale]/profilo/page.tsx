@@ -151,6 +151,7 @@ export default function ProfilePage() {
   const deviceType = useDeviceType();
   const t = useTranslations("profile");
   const tc = useTranslations("common");
+  const tl = useTranslations("levels");
   const locale = useLocale();
 
   useEffect(() => {
@@ -524,10 +525,10 @@ export default function ProfilePage() {
               </svg>
               <div className="text-center z-10">
                 <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">{t("level")}</span>
-                <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
+                <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
               <div className="absolute -bottom-2 bg-primary text-on-primary px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl">
-                {profile?.level || "Member"}
+                {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
             <div className="mt-8 text-center">
@@ -646,7 +647,7 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                    <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
+                    <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("points")}</p>
@@ -675,7 +676,7 @@ export default function ProfilePage() {
           {bookingRequests.length > 0 && (
             <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
               <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
-                Richieste in attesa ({bookingRequests.length})
+                {t("pendingRequestsCount", { count: bookingRequests.length })}
               </h3>
               <div className="space-y-3">
                 {bookingRequests.map((request) => (
@@ -1024,10 +1025,10 @@ export default function ProfilePage() {
               </svg>
               <div className="text-center z-10">
                 <span className="block text-xs font-bold uppercase tracking-[0.2em] text-primary mb-1">{t("level")}</span>
-                <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{profile?.level?.split(" ")[0] || "Novice"}</span>
+                <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
               <div className="absolute -bottom-2 bg-primary text-on-primary px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl">
-                {profile?.level || "Member"}
+                {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
             <div>
@@ -1074,7 +1075,7 @@ export default function ProfilePage() {
               {bookingRequests.length > 0 && (
                 <section>
                   <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
-                    Richieste in attesa ({bookingRequests.length})
+                    {t("pendingRequestsCount", { count: bookingRequests.length })}
                   </h3>
                   <div className="grid grid-cols-1 gap-4">
                     {bookingRequests.map((request) => (
@@ -1414,7 +1415,7 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                      <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {profile.level}</p>
+                      <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("points")}</p>

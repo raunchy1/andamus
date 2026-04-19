@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface EmptyStateProps {
   title: string;
@@ -98,13 +99,14 @@ export function EmptyStateSearch({
   hasFilters: boolean;
   onClearFilters: () => void;
 }) {
+  const t = useTranslations("emptyState");
   return (
     <EmptyState
-      title="Nessun passaggio trovato"
+      title={t("noRidesFound")}
       description={
         hasFilters
-          ? "Prova a modificare i filtri per vedere più risultati."
-          : "Nu există curse pe această rută încă. Fii primul care postează un passaggio!"
+          ? t("noRidesFiltered")
+          : t("noRidesDescription")
       }
       icon={
         <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,14 +114,14 @@ export function EmptyStateSearch({
         </svg>
       }
       action={{
-        label: "Oferă un passaggio",
+        label: t("offerRide"),
         href: "/offri",
         variant: "default",
       }}
       secondaryAction={
         hasFilters
           ? {
-              label: "Cancella filtri",
+              label: t("clearFiltersLabel"),
               onClick: onClearFilters,
             }
           : undefined
@@ -129,21 +131,22 @@ export function EmptyStateSearch({
 }
 
 export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requests" }) {
+  const t = useTranslations("emptyState");
   const configs = {
     rides: {
-      title: "Nessuna corsa pubblicata",
-      description: "Inizia a condividere i tuoi viaggi e guadagna punti esperienza!",
-      action: { label: "Pubblica una corsa", href: "/offri", variant: "default" as const },
+      title: t("noRidesPublished"),
+      description: t("startSharing"),
+      action: { label: t("publishRide"), href: "/offri", variant: "default" as const },
     },
     bookings: {
-      title: "Nessuna prenotazione",
-      description: "Cerca un passaggio per la tua prossima destinazione in Sardegna!",
-      action: { label: "Cerca passaggi", href: "/cerca", variant: "default" as const },
+      title: t("noBookings"),
+      description: t("findRide"),
+      action: { label: t("searchRides"), href: "/cerca", variant: "default" as const },
     },
     requests: {
-      title: "Nessuna richiesta",
-      description: "Le richieste di prenotazione appariranno qui.",
-      action: { label: "Vedi le corse disponibili", href: "/cerca", variant: "outline" as const },
+      title: t("noRequests"),
+      description: t("requestsAppearHere"),
+      action: { label: t("viewRides"), href: "/cerca", variant: "outline" as const },
     },
   };
 
@@ -164,17 +167,18 @@ export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requ
 }
 
 export function EmptyStateChat() {
+  const t = useTranslations("emptyState");
   return (
     <EmptyState
-      title="Nessun messaggio"
-      description="La chat sarà disponibile quando qualcuno prenota il tuo passaggio o quando tu prenoti una corsa."
+      title={t("noMessages")}
+      description={t("chatAvailable")}
       icon={
         <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       }
       action={{
-        label: "Cerca passaggi",
+        label: t("searchRidesBtn"),
         href: "/cerca",
         variant: "default",
       }}

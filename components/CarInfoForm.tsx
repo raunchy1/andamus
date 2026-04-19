@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Car, Palette, Calendar, Hash, Save, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface CarInfo {
   car_model?: string | null;
@@ -16,15 +17,31 @@ interface CarInfoFormProps {
   onCancel?: () => void;
 }
 
-const carColors = [
-  "Bianco", "Nero", "Grigio", "Argento", "Blu", "Rosso", 
-  "Verde", "Giallo", "Arancione", "Marrone", "Beige", "Viola"
+const carColorKeys = [
+  "white", "black", "gray", "silver", "blue", "red",
+  "green", "yellow", "orange", "brown", "beige", "purple"
 ];
+
+const colorKeyToItalian: Record<string, string> = {
+  white: "Bianco",
+  black: "Nero",
+  gray: "Grigio",
+  silver: "Argento",
+  blue: "Blu",
+  red: "Rosso",
+  green: "Verde",
+  yellow: "Giallo",
+  orange: "Arancione",
+  brown: "Marrone",
+  beige: "Beige",
+  purple: "Viola",
+};
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 
 export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps) {
+  const t = useTranslations("profile");
   const [model, setModel] = useState(initialData?.car_model || "");
   const [color, setColor] = useState(initialData?.car_color || "");
   const [plate, setPlate] = useState(initialData?.car_plate || "");
@@ -57,7 +74,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
             </div>
             <div>
               <p className="font-label font-bold text-[10px] uppercase tracking-wider text-on-surface/40">
-                Veicolo
+                {t("vehicle")}
               </p>
               <p className="font-semibold text-on-surface">{initialData.car_model}</p>
             </div>
@@ -66,7 +83,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
             onClick={() => setIsEditing(true)}
             className="text-primary text-sm font-semibold hover:underline"
           >
-            Modifica
+            {t("edit")}
           </button>
         </div>
         
@@ -98,7 +115,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
     <form onSubmit={handleSubmit} className="bg-surface-container-low rounded-2xl p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-headline font-bold text-lg text-on-surface">
-          {initialData?.car_model ? "Modifica veicolo" : "Aggiungi veicolo"}
+          {initialData?.car_model ? t("editVehicle") : t("addVehicle")}
         </h3>
         {onCancel && (
           <button
@@ -114,7 +131,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
       {/* Model */}
       <div>
         <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
-          Modello auto *
+          {t("carModelLabel")}
         </label>
         <div className="relative">
           <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface/30" />
@@ -122,7 +139,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
             type="text"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            placeholder="Es: Fiat Panda, Volkswagen Golf..."
+            placeholder={t("carModelPlaceholder")}
             className="w-full bg-surface-container-highest rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-on-surface/30 border border-transparent focus:border-primary/50 focus:outline-none transition-all"
             required
           />
@@ -132,23 +149,26 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
       {/* Color */}
       <div>
         <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
-          Colore
+          {t("colorLabel")}
         </label>
         <div className="flex flex-wrap gap-2">
-          {carColors.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setColor(c)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                color === c
-                  ? "bg-primary text-on-primary"
-                  : "bg-surface-container-highest text-on-surface/70 hover:bg-surface-container-high"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+          {carColorKeys.map((key) => {
+            const italianValue = colorKeyToItalian[key];
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setColor(italianValue)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  color === italianValue
+                    ? "bg-primary text-on-primary"
+                    : "bg-surface-container-highest text-on-surface/70 hover:bg-surface-container-high"
+                }`}
+              >
+                {t("colors." + key)}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -156,7 +176,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
         {/* Year */}
         <div>
           <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
-            Anno
+            {t("yearLabel")}
           </label>
           <div className="relative">
             <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface/30" />
@@ -165,7 +185,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
               onChange={(e) => setYear(e.target.value)}
               className="w-full bg-surface-container-highest rounded-xl py-3 pl-12 pr-4 text-on-surface border border-transparent focus:border-primary/50 focus:outline-none transition-all appearance-none"
             >
-              <option value="">Seleziona</option>
+              <option value="">{t("selectYear")}</option>
               {years.map((y) => (
                 <option key={y} value={y}>{y}</option>
               ))}
@@ -176,7 +196,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
         {/* Plate */}
         <div>
           <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
-            Targa
+            {t("plateLabel")}
           </label>
           <div className="relative">
             <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface/30" />
@@ -197,7 +217,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
         className="w-full bg-primary hover:bg-primary/90 text-on-primary py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] flex items-center justify-center gap-2"
       >
         <Save className="w-4 h-4" />
-        Salva veicolo
+        {t("saveVehicle")}
       </button>
     </form>
   );

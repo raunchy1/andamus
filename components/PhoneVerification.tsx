@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Phone, Shield, Check, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
@@ -18,6 +19,7 @@ export function PhoneVerification({
   isVerified = false,
   onVerified 
 }: PhoneVerificationProps) {
+  const t = useTranslations("profile");
   const [phone, setPhone] = useState(currentPhone || "");
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -47,7 +49,7 @@ export function PhoneVerification({
   // Step 1: Send OTP
   const sendOtp = async () => {
     if (!phone.trim()) {
-      toast.error("Inserisci un numero di telefono valido");
+      toast.error(t("enterValidPhone"));
       return;
     }
 
@@ -55,7 +57,7 @@ export function PhoneVerification({
     
     // Basic validation for Italian numbers
     if (!formattedPhone.match(/^\+39\d{9,10}$/)) {
-      toast.error("Inserisci un numero italiano valido (es. +39 340 1234567)");
+      toast.error(t("enterValidItalianPhone"));
       return;
     }
 
@@ -72,9 +74,9 @@ export function PhoneVerification({
       }
 
       setIsOtpSent(true);
-      toast.success("Codice OTP inviato al tuo telefono!");
+      toast.success(t("otpSent"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Errore nell'invio dell'OTP");
+      toast.error(err instanceof Error ? err.message : t("otpSendError"));
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +85,7 @@ export function PhoneVerification({
   // Step 2: Verify OTP
   const verifyOtp = async () => {
     if (!otp.trim() || otp.length !== 6) {
-      toast.error("Inserisci il codice OTP a 6 cifre");
+      toast.error(t("enterOtpCode"));
       return;
     }
 
@@ -116,13 +118,13 @@ export function PhoneVerification({
         throw profileError;
       }
 
-      toast.success("Numero di telefono verificato con successo!");
+      toast.success(t("phoneVerifiedSuccess"));
       onVerified?.();
       setShowModal(false);
       setIsOtpSent(false);
       setOtp("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Codice OTP non valido");
+      toast.error(err instanceof Error ? err.message : t("invalidOtp"));
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +144,7 @@ export function PhoneVerification({
         <div className="flex items-center justify-center w-5 h-5 rounded-full bg-tertiary/20">
           <Check className="w-3 h-3 text-tertiary" />
         </div>
-        <span>Telefono verificato</span>
+        <span>{t("phoneVerified")}</span>
         <span className="text-on-surface-variant">{currentPhone}</span>
       </div>
     );
@@ -156,7 +158,7 @@ export function PhoneVerification({
         className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container-highest text-on-surface hover:bg-surface-container-high transition-colors text-sm font-medium"
       >
         <Shield className="w-4 h-4 text-primary" />
-        <span>Verifica telefono</span>
+        <span>{t("verifyPhone")}</span>
       </button>
 
       {/* Modal */}
@@ -171,12 +173,12 @@ export function PhoneVerification({
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-on-surface">
-                    {isOtpSent ? "Inserisci codice OTP" : "Verifica il tuo numero"}
+                    {isOtpSent ? t("enterOtpTitle") : t("verifyYourNumber")}
                   </h3>
                   <p className="text-sm text-on-surface-variant">
                     {isOtpSent 
-                      ? "Hai ricevuto un SMS con il codice" 
-                      : "Aggiungi sicurezza al tuo profilo"}
+                      ? t("receivedSmsCode") 
+                      : t("addSecurityToProfile")}
                   </p>
                 </div>
               </div>
@@ -195,7 +197,7 @@ export function PhoneVerification({
                 <>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-on-surface">
-                      Numero di telefono
+                      {t("phoneNumber")}
                     </label>
                     <div className="relative">
                       <input
@@ -208,7 +210,7 @@ export function PhoneVerification({
                       <Phone className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
                     </div>
                     <p className="text-xs text-on-surface-variant">
-                      Inserisci il numero con prefisso internazionale (+39 per l&apos;Italia)
+                      {t("enterPhoneWithPrefix")}
                     </p>
                   </div>
 
@@ -220,11 +222,11 @@ export function PhoneVerification({
                     {isLoading ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Invio in corso...
+                        {t("sending")}
                       </>
                     ) : (
                       <>
-                        Invia codice OTP
+                        {t("sendOtpCode")}
                         <ChevronRight className="w-5 h-5" />
                       </>
                     )}
@@ -235,7 +237,7 @@ export function PhoneVerification({
                 <>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-on-surface">
-                      Codice OTP
+                      {t("otpCode")}
                     </label>
                     <input
                       type="text"
@@ -246,7 +248,7 @@ export function PhoneVerification({
                       className="w-full h-12 px-4 text-center text-2xl tracking-widest rounded-xl bg-surface-container-highest border-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant"
                     />
                     <p className="text-xs text-on-surface-variant text-center">
-                      Inserisci il codice a 6 cifre ricevuto via SMS
+                      {t("enter6DigitCode")}
                     </p>
                   </div>
 
@@ -259,12 +261,12 @@ export function PhoneVerification({
                       {isLoading ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          Verifica in corso...
+                          {t("verifying")}
                         </>
                       ) : (
                         <>
                           <Check className="w-5 h-5" />
-                          Verifica
+                          {t("verify")}
                         </>
                       )}
                     </button>
@@ -274,7 +276,7 @@ export function PhoneVerification({
                       disabled={isLoading}
                       className="w-full h-12 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors"
                     >
-                      Modifica numero
+                      {t("changeNumber")}
                     </button>
                   </div>
                 </>
@@ -284,7 +286,7 @@ export function PhoneVerification({
             {/* Footer */}
             <div className="px-6 py-4 bg-surface-container-low rounded-b-2xl">
               <p className="text-xs text-center text-on-surface-variant">
-                La verifica del numero aumenta la fiducia degli altri utenti e ti permette di ricevere notifiche importanti.
+                {t("phoneVerificationFooter")}
               </p>
             </div>
           </div>

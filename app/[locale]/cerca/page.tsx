@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
 import { searchRides } from "@/lib/rides-actions";
@@ -23,12 +23,14 @@ const sardinianCities = [
   "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer", "Bosa", "Castelsardo"
 ];
 
-const filterOptions = [
-  { id: "all", label: "Tutti" },
-  { id: "free", label: "Gratis" },
-  { id: "verified", label: "Verificati" },
-  { id: "today", label: "Oggi" },
-];
+function getFilterOptions(t: (key: string) => string) {
+  return [
+    { id: "all", label: t('filterAll') },
+    { id: "free", label: t('filterFree') },
+    { id: "verified", label: t('filterVerified') },
+    { id: "today", label: t('filterToday') },
+  ];
+}
 
 interface Ride {
   id: string;
@@ -217,7 +219,7 @@ function AlertModal({
             });
             setAlertSaving(false);
             if (error) {
-              toast.error("Errore nel salvare l'alerta");
+              toast.error(t('alertSaveError'));
             } else {
               toast.success(t('alertSaved'));
               setShowAlertModal(false);
@@ -227,18 +229,18 @@ function AlertModal({
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Da</label>
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('fromLabel')}</label>
               <select name="alertFrom" defaultValue={origin} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary [&>option]:bg-surface-container-high appearance-none">
-                <option value="">Qualsiasi</option>
+                <option value="">{t('any')}</option>
                 {sardinianCities.map((city) => (
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">A</label>
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('toLabel')}</label>
               <select name="alertTo" defaultValue={destination} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary [&>option]:bg-surface-container-high appearance-none">
-                <option value="">Qualsiasi</option>
+                <option value="">{t('any')}</option>
                 {sardinianCities.map((city) => (
                   <option key={city} value={city}>{city}</option>
                 ))}
@@ -247,22 +249,22 @@ function AlertModal({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Dal</label>
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('fromDateShort')}</label>
               <input type="date" name="alertStartDate" defaultValue={date} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Al</label>
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('toDateShort')}</label>
               <input type="date" name="alertEndDate" className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Posti minimi</label>
-              <input type="number" name="alertMinSeats" min="1" placeholder="Qualsiasi" defaultValue={minSeats ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('minSeatsLabel')}</label>
+              <input type="number" name="alertMinSeats" min="1" placeholder={t('any')} defaultValue={minSeats ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">Prezzo max</label>
-              <input type="number" name="alertMaxPrice" min="0" placeholder="Qualsiasi" defaultValue={maxPrice ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
+              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('maxPriceLabel')}</label>
+              <input type="number" name="alertMaxPrice" min="0" placeholder={t('any')} defaultValue={maxPrice ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
@@ -271,7 +273,7 @@ function AlertModal({
               onClick={() => setShowAlertModal(false)}
               className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
-              Annulla
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -357,7 +359,7 @@ function SearchMobile(props: SearchViewProps) {
         >
           <div className={`flex items-center gap-2 text-on-surface/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
             <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 2}deg)` }} />
-            <span className="text-sm">{pullDistance > 60 ? 'Rilascia per aggiornare' : 'Tira per aggiornare'}</span>
+            <span className="text-sm">{pullDistance > 60 ? t('releaseToRefresh') : t('pullToRefresh')}</span>
           </div>
         </div>
 
@@ -373,13 +375,13 @@ function SearchMobile(props: SearchViewProps) {
               <div className="grid grid-cols-2 gap-2 sm:gap-3 flex-1 min-w-0">
                 {/* Partenza */}
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">Da</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('fromLabel')}</span>
                   <div className="w-full">
                     <CityCombobox
                       cities={municipalities}
                       value={origin}
                       onChange={setOrigin}
-                      placeholder="Partenza"
+                      placeholder={t('departureLabel')}
                       label="partenza"
                     />
                   </div>
@@ -387,13 +389,13 @@ function SearchMobile(props: SearchViewProps) {
                 
                 {/* Destinazione */}
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">A</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('toLabel')}</span>
                   <div className="w-full">
                     <CityCombobox
                       cities={municipalities}
                       value={destination}
                       onChange={setDestination}
-                      placeholder="Destinazione"
+                      placeholder={t('destinationLabel')}
                       label="destinazione"
                     />
                   </div>
@@ -405,7 +407,7 @@ function SearchMobile(props: SearchViewProps) {
 
         {/* Elegant Filter Pills */}
         <div className="flex gap-2 sm:gap-3 mb-8 sm:mb-10 overflow-x-auto no-scrollbar pb-2">
-          {filterOptions.map((option) => (
+          {getFilterOptions(t).map((option) => (
             <button
               key={option.id}
               onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
@@ -423,7 +425,7 @@ function SearchMobile(props: SearchViewProps) {
             className="whitespace-nowrap px-4 sm:px-6 py-2 bg-surface-container-high text-primary rounded-full font-bold text-[11px] uppercase tracking-widest border border-outline-variant border-opacity-20 hover:bg-surface-container-highest transition-all active:scale-95 flex items-center gap-2 flex-shrink-0"
           >
             <Bell className="w-3 h-3" />
-            Alerta
+            {t('alertButton')}
           </button>
         </div>
 
@@ -439,7 +441,7 @@ function SearchMobile(props: SearchViewProps) {
 
             <div className="space-y-4">
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">Intervallo date</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">{t('dateRange')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     type="date"
@@ -461,24 +463,24 @@ function SearchMobile(props: SearchViewProps) {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">Fascia oraria</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">{t('timeWindowLabel')}</label>
                 <select
                   value={timeWindow}
                   onChange={(e) => setTimeWindow(e.target.value)}
                   className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary appearance-none"
                 >
-                  <option value="">Qualsiasi</option>
-                  <option value="morning">Mattina (05-12)</option>
-                  <option value="afternoon">Pomeriggio (12-17)</option>
-                  <option value="evening">Sera (17-22)</option>
-                  <option value="night">Notte (22-05)</option>
+                  <option value="">{t('any')}</option>
+                  <option value="morning">{t('timeMorning')}</option>
+                  <option value="afternoon">{t('timeAfternoon')}</option>
+                  <option value="evening">{t('timeEvening')}</option>
+                  <option value="night">{t('timeNight')}</option>
                 </select>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-primary">Prezzo max</label>
-                  <span className="text-xs font-bold text-on-surface">{maxPrice === 50 ? "Qualsiasi" : `€${maxPrice}`}</span>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-primary">{t('maxPriceLabel')}</label>
+                  <span className="text-xs font-bold text-on-surface">{maxPrice === 50 ? t('priceAny') : `€${maxPrice}`}</span>
                 </div>
                 <Slider
                   value={[maxPrice]}
@@ -490,17 +492,17 @@ function SearchMobile(props: SearchViewProps) {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Posti minimi</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">{t('minSeatsLabel')}</label>
                 <select
                   value={minSeats || ""}
                   onChange={(e) => setMinSeats(e.target.value ? parseInt(e.target.value) : null)}
                   className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary appearance-none"
                 >
-                  <option value="">Qualsiasi</option>
-                  <option value="1">1 posto</option>
-                  <option value="2">2+ posti</option>
-                  <option value="3">3+ posti</option>
-                  <option value="4">4+ posti</option>
+                  <option value="">{t('any')}</option>
+                  <option value="1">{t('seats', {count: 1})}</option>
+                  <option value="2">{t('seats', {count: 2})}</option>
+                  <option value="3">{t('seats', {count: 3})}</option>
+                  <option value="4">{t('seats', {count: 4})}</option>
                 </select>
               </div>
             </div>
@@ -508,23 +510,23 @@ function SearchMobile(props: SearchViewProps) {
             <div className="flex flex-wrap gap-2">
               <label className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${onlyVerified ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'}`}>
                 <input type="checkbox" checked={onlyVerified} onChange={(e) => setOnlyVerified(e.target.checked)} className="hidden" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Verificati</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider">{t('verifiedFilter')}</span>
               </label>
               <label className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${prefSmoking ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'}`}>
                 <input type="checkbox" checked={prefSmoking} onChange={(e) => setPrefSmoking(e.target.checked)} className="hidden" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Fumatori</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider">{t('smokingFilter')}</span>
               </label>
               <label className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${prefPets ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'}`}>
                 <input type="checkbox" checked={prefPets} onChange={(e) => setPrefPets(e.target.checked)} className="hidden" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Animali</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider">{t('petsFilter')}</span>
               </label>
               <label className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${prefLuggage ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'}`}>
                 <input type="checkbox" checked={prefLuggage} onChange={(e) => setPrefLuggage(e.target.checked)} className="hidden" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Bagaglio</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider">{t('luggageFilter')}</span>
               </label>
               <label className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${prefWomen ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'}`}>
                 <input type="checkbox" checked={prefWomen} onChange={(e) => setPrefWomen(e.target.checked)} className="hidden" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Solo donne</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider">{t('womenFilter')}</span>
               </label>
             </div>
 
@@ -549,7 +551,7 @@ function SearchMobile(props: SearchViewProps) {
               onClick={handleRefresh}
               disabled={isRefreshing}
               className="p-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest transition-colors"
-              aria-label="Aggiorna"
+              aria-label={t('ariaRefresh')}
             >
               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             </button>
@@ -582,15 +584,15 @@ function SearchMobile(props: SearchViewProps) {
               <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
                 <div className="space-y-1 min-w-0">
                   <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
-                    {ride.date === today ? "Disponibile" : formatDate(ride.date)}
+                    {ride.date === today ? t('availableToday') : formatDate(ride.date)}
                   </span>
                   <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tighter text-on-surface">{ride.time.slice(0, 5)}</h3>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <div className="text-2xl sm:text-3xl font-extrabold tracking-tighter text-on-surface">
-                    {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                    {ride.price === 0 ? t('free') : `€${ride.price}`}
                   </div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface opacity-50">Posto singolo</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface opacity-50">{t('singleSeat')}</div>
                 </div>
               </div>
 
@@ -699,27 +701,27 @@ function SearchDesktop(props: SearchViewProps) {
         {/* Horizontal Search Bar */}
         <form onSubmit={handleSearch} className="bg-[#141414] border border-white/5 rounded-2xl p-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end">
           <div className="flex-1">
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Partenza</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('departureLabel')}</label>
             <CityCombobox
               cities={municipalities}
               value={origin}
               onChange={setOrigin}
-              placeholder="Da dove parti?"
+              placeholder={t('departureLabel')}
               label="partenza"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Destinazione</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('destinationLabel')}</label>
             <CityCombobox
               cities={municipalities}
               value={destination}
               onChange={setDestination}
-              placeholder="Dove vai?"
+              placeholder={t('destinationLabel')}
               label="destinazione"
             />
           </div>
           <div className="flex-1">
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Data</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('dateLabel')}</label>
             <div className="flex gap-2">
               <input
                 type="date"
@@ -741,13 +743,13 @@ function SearchDesktop(props: SearchViewProps) {
             type="submit"
             className="bg-[#ffb3b1] text-[#0f0f0f] px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-[#ff9e9c] transition-colors"
           >
-            Cerca
+            {t('searchButton')}
           </button>
         </form>
 
         {/* Filter Pills & Actions */}
         <div className="flex flex-wrap items-center gap-3">
-          {filterOptions.map((option) => (
+          {getFilterOptions(t).map((option) => (
             <button
               key={option.id}
               onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
@@ -765,7 +767,7 @@ function SearchDesktop(props: SearchViewProps) {
             className="px-5 py-2 bg-[#1a1a1a] text-[#ffb3b1] rounded-full font-bold text-[11px] uppercase tracking-widest border border-white/10 hover:border-[#ffb3b1]/30 transition-all flex items-center gap-2"
           >
             <Bell className="w-3 h-3" />
-            Alerta
+            {t('alertButton')}
           </button>
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -798,7 +800,7 @@ function SearchDesktop(props: SearchViewProps) {
           <div className="bg-[#141414] border border-white/5 rounded-2xl p-6 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Data da</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('fromDateShort')}</label>
                 <input
                   type="date"
                   value={dateFrom}
@@ -808,7 +810,7 @@ function SearchDesktop(props: SearchViewProps) {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Data a</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('toDateShort')}</label>
                 <input
                   type="date"
                   value={dateTo}
@@ -818,31 +820,31 @@ function SearchDesktop(props: SearchViewProps) {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Fascia oraria</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('timeWindowLabel')}</label>
                 <select
                   value={timeWindow}
                   onChange={(e) => setTimeWindow(e.target.value)}
                   className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50 appearance-none cursor-pointer"
                 >
-                  <option value="">Qualsiasi</option>
-                  <option value="morning">Mattina (05-12)</option>
-                  <option value="afternoon">Pomeriggio (12-17)</option>
-                  <option value="evening">Sera (17-22)</option>
-                  <option value="night">Notte (22-05)</option>
+                  <option value="">{t('any')}</option>
+                  <option value="morning">{t('timeMorning')}</option>
+                  <option value="afternoon">{t('timeAfternoon')}</option>
+                  <option value="evening">{t('timeEvening')}</option>
+                  <option value="night">{t('timeNight')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Posti minimi</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('minSeatsLabel')}</label>
                 <select
                   value={minSeats || ""}
                   onChange={(e) => setMinSeats(e.target.value ? parseInt(e.target.value) : null)}
                   className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50 appearance-none cursor-pointer"
                 >
-                  <option value="">Qualsiasi</option>
-                  <option value="1">1 posto</option>
-                  <option value="2">2+ posti</option>
-                  <option value="3">3+ posti</option>
-                  <option value="4">4+ posti</option>
+                  <option value="">{t('any')}</option>
+                  <option value="1">{t('seats', {count: 1})}</option>
+                  <option value="2">{t('seats', {count: 2})}</option>
+                  <option value="3">{t('seats', {count: 3})}</option>
+                  <option value="4">{t('seats', {count: 4})}</option>
                 </select>
               </div>
             </div>
@@ -850,8 +852,8 @@ function SearchDesktop(props: SearchViewProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1]">Prezzo max</label>
-                  <span className="text-xs font-bold text-[#e5e2e1]">{maxPrice === 50 ? "Qualsiasi" : `€${maxPrice}`}</span>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t('maxPriceLabel')}</label>
+                  <span className="text-xs font-bold text-[#e5e2e1]">{maxPrice === 50 ? t('priceAny') : `€${maxPrice}`}</span>
                 </div>
                 <Slider
                   value={[maxPrice]}
@@ -862,28 +864,28 @@ function SearchDesktop(props: SearchViewProps) {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">Musica</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('musicLabel')}</label>
                 <select
                   value={prefMusic}
                   onChange={(e) => setPrefMusic(e.target.value)}
                   className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50 appearance-none cursor-pointer"
                 >
-                  <option value="">Qualsiasi</option>
-                  <option value="quiet">Silenzio</option>
-                  <option value="music">Musica</option>
-                  <option value="talk">Chiacchiere</option>
+                  <option value="">{t('any')}</option>
+                  <option value="quiet">{t('musicQuiet')}</option>
+                  <option value="music">{t('musicMusic')}</option>
+                  <option value="talk">{t('musicTalk')}</option>
                 </select>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-3">
               {[
-                { id: "verified", label: "Verificati", state: onlyVerified, setState: setOnlyVerified },
-                { id: "smoking", label: "Fumatori", state: prefSmoking, setState: setPrefSmoking },
-                { id: "pets", label: "Animali", state: prefPets, setState: setPrefPets },
-                { id: "luggage", label: "Bagaglio", state: prefLuggage, setState: setPrefLuggage },
-                { id: "women", label: "Solo donne", state: prefWomen, setState: setPrefWomen },
-                { id: "students", label: "Solo studenti", state: prefStudents, setState: setPrefStudents },
+                { id: "verified", label: t('verifiedFilter'), state: onlyVerified, setState: setOnlyVerified },
+                { id: "smoking", label: t('smokingFilter'), state: prefSmoking, setState: setPrefSmoking },
+                { id: "pets", label: t('petsFilter'), state: prefPets, setState: setPrefPets },
+                { id: "luggage", label: t('luggageFilter'), state: prefLuggage, setState: setPrefLuggage },
+                { id: "women", label: t('womenFilter'), state: prefWomen, setState: setPrefWomen },
+                { id: "students", label: t('studentsFilter'), state: prefStudents, setState: setPrefStudents },
               ].map((item) => (
                 <label
                   key={item.id}
@@ -910,7 +912,7 @@ function SearchDesktop(props: SearchViewProps) {
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="p-2 rounded-full bg-[#1a1a1a] text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#222] transition-colors"
-            aria-label="Aggiorna"
+            aria-label={t('ariaRefresh')}
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
@@ -948,15 +950,15 @@ function SearchDesktop(props: SearchViewProps) {
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-1">
                 <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1]">
-                  {ride.date === today ? "Oggi" : formatDate(ride.date)}
+                  {ride.date === today ? t('today') : formatDate(ride.date)}
                 </span>
                 <h3 className="text-3xl font-extrabold tracking-tighter text-[#e5e2e1]">{ride.time.slice(0, 5)}</h3>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-extrabold tracking-tighter text-[#e5e2e1]">
-                  {ride.price === 0 ? "Gratis" : `€${ride.price}`}
+                  {ride.price === 0 ? t('free') : `€${ride.price}`}
                 </div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[#e5e2e1]/50">Posto singolo</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-[#e5e2e1]/50">{t('singleSeat')}</div>
               </div>
             </div>
 
@@ -1029,6 +1031,7 @@ function SearchDesktop(props: SearchViewProps) {
 
 function SearchContent() {
   const t = useTranslations('search');
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const deviceType = useDeviceType();
 
@@ -1169,10 +1172,10 @@ function SearchContent() {
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
     const isTomorrow = dateStr === tomorrow;
 
-    if (isToday) return "Oggi";
-    if (isTomorrow) return "Domani";
+    if (isToday) return t('today');
+    if (isTomorrow) return t('tomorrow');
 
-    return date.toLocaleDateString("it-IT", {
+    return date.toLocaleDateString(locale, {
       weekday: "short",
       day: "numeric",
       month: "short"
