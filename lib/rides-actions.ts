@@ -91,7 +91,7 @@ export async function searchRides(filters: SearchFilters) {
 
   if (error) {
     console.error("[searchRides] Supabase error:", error);
-    throw new Error("Erore nella ricerca delle corse.");
+    return [];
   }
 
   let results = (data || []) as Array<{

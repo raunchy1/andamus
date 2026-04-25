@@ -171,7 +171,8 @@
     "priceAny": "Qualsiasi",
     "offerRide": "Offri un passaggio",
     "beFirst": "Sei il primo su questa tratta! Pubblica un passaggio.",
-    "clearFiltersLabel": "Cancella filtri"
+    "clearFiltersLabel": "Cancella filtri",
+    "tomorrow": "Domani"
   },
   "offer": {
     "title": "Offri un passaggio",

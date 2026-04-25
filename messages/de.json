@@ -171,7 +171,8 @@
     "priceAny": "Beliebig",
     "offerRide": "Fahrt anbieten",
     "beFirst": "Sei der Erste, der eine Fahrt anbietet!",
-    "clearFiltersLabel": "Filter löschen"
+    "clearFiltersLabel": "Filter löschen",
+    "tomorrow": "Morgen"
   },
   "offer": {
     "title": "Mitfahrgelegenheit anbieten",

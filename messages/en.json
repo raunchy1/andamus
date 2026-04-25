@@ -171,7 +171,8 @@
     "priceAny": "Any",
     "offerRide": "Offer a ride",
     "beFirst": "Be the first to post a ride!",
-    "clearFiltersLabel": "Clear filters"
+    "clearFiltersLabel": "Clear filters",
+    "tomorrow": "Tomorrow"
   },
   "offer": {
     "title": "Offer a ride",
