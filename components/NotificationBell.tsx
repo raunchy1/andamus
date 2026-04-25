@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { 
   Bell, 
   Check, 
@@ -49,20 +50,37 @@ const notificationColors = {
   ride_alert: "bg-orange-500/20 text-orange-400",
 };
 
-function timeAgo(date: string) {
+function timeAgo(date: string, locale: string) {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
   
-  if (seconds < 60) return "Adesso";
+  if (seconds < 60) {
+    if (locale === 'de') return "Gerade eben";
+    if (locale === 'en') return "Just now";
+    return "Adesso";
+  }
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m fa`;
+  if (minutes < 60) {
+    if (locale === 'de') return `vor ${minutes} Min.`;
+    if (locale === 'en') return `${minutes}m ago`;
+    return `${minutes} min fa`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h fa`;
+  if (hours < 24) {
+    if (locale === 'de') return `vor ${hours} Std.`;
+    if (locale === 'en') return `${hours}h ago`;
+    return `${hours} h fa`;
+  }
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}g fa`;
-  return new Date(date).toLocaleDateString("it-IT", { day: "numeric", month: "short" });
+  if (days < 7) {
+    if (locale === 'de') return `vor ${days} T.`;
+    if (locale === 'en') return `${days}d ago`;
+    return `${days} g fa`;
+  }
+  return new Date(date).toLocaleDateString(locale, { day: "numeric", month: "short" });
 }
 
 export function NotificationBell({ isHome = false }: NotificationBellProps) {
+  const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -255,7 +273,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white">{notification.title}</p>
                       <p className="text-sm text-white/60 line-clamp-2">{notification.body}</p>
-                      <p className="mt-1 text-xs text-white/40">{timeAgo(notification.created_at)}</p>
+                      <p className="mt-1 text-xs text-white/40">{timeAgo(notification.created_at, locale)}</p>
                     </div>
                     {!notification.read && (
                       <div className="mt-2 h-2 w-2 rounded-full bg-[#e63946]" />

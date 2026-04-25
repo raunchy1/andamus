@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -10,10 +10,12 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 function JoinContent() {
   const t = useTranslations("auth");
+  const locale = useLocale();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
   const supabase = createClient();
@@ -52,6 +54,20 @@ function JoinContent() {
         if (storedRefCode && !referralApplied) {
           await applyReferralBonus(currentUser.id, storedRefCode);
         }
+
+        // Redirect after login: new users → onboarding, existing → profile
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("id", currentUser.id)
+          .single();
+
+        if (profile) {
+          router.push(`/${locale}/profilo`);
+        } else {
+          router.push(`/${locale}/lansare`);
+        }
+        return;
       } else {
         if (referralCode) {
           localStorage.setItem("pending_referral_code", referralCode);
@@ -62,7 +78,7 @@ function JoinContent() {
     };
 
     checkAuth();
-  }, [referralCode, referralApplied, supabase, applyReferralBonus]);
+  }, [referralCode, referralApplied, supabase, applyReferralBonus, router, locale]);
 
   const handleLogin = async () => {
     if (referralCode) {

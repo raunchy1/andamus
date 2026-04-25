@@ -145,6 +145,11 @@ export default function ProfilePage() {
   const [ratingUser, setRatingUser] = useState<{ id: string; name: string; avatar_url: string | null }>({ id: "", name: "", avatar_url: null });
   const [cancelBookingId, setCancelBookingId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [deletingAlertId, setDeletingAlertId] = useState<string | null>(null);
+  const [togglingTemplateId, setTogglingTemplateId] = useState<string | null>(null);
+  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -304,11 +309,14 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await signOut();
       toast.success(t("logoutSuccess"));
     } catch {
       toast.error(t("logoutError"));
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -342,59 +350,79 @@ export default function ProfilePage() {
 
   const handleCancelBooking = async () => {
     if (!cancelBookingId || !cancelReason.trim()) return;
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status: "canceled" })
-      .eq("id", cancelBookingId);
-    if (error) {
-      toast.error(t("errorCancelling"));
-      return;
+    setIsCancelling(true);
+    try {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ status: "canceled" })
+        .eq("id", cancelBookingId);
+      if (error) {
+        toast.error(t("errorCancelling"));
+        return;
+      }
+      await supabase.from("booking_cancellations").insert({
+        booking_id: cancelBookingId,
+        canceled_by: user?.id,
+        reason: cancelReason.trim(),
+      });
+      setMyBookings((prev) =>
+        prev.map((b) => (b.id === cancelBookingId ? { ...b, status: "canceled" } : b))
+      );
+      toast.success(t("bookingCancelled"));
+      setCancelBookingId(null);
+      setCancelReason("");
+    } finally {
+      setIsCancelling(false);
     }
-    await supabase.from("booking_cancellations").insert({
-      booking_id: cancelBookingId,
-      canceled_by: user?.id,
-      reason: cancelReason.trim(),
-    });
-    setMyBookings((prev) =>
-      prev.map((b) => (b.id === cancelBookingId ? { ...b, status: "canceled" } : b))
-    );
-    toast.success(t("bookingCancelled"));
-    setCancelBookingId(null);
-    setCancelReason("");
   };
 
   const handleDeleteAlert = async (alertId: string) => {
-    const { error } = await supabase.from("ride_alerts").delete().eq("id", alertId);
-    if (error) {
-      toast.error(t("errorDeletingAlert"));
-    } else {
-      setRideAlerts((prev) => prev.filter((a) => a.id !== alertId));
-      toast.success(t("alertDeleted"));
+    setDeletingAlertId(alertId);
+    try {
+      const { error } = await supabase.from("ride_alerts").delete().eq("id", alertId);
+      if (error) {
+        toast.error(t("errorDeletingAlert"));
+      } else {
+        setRideAlerts((prev) => prev.filter((a) => a.id !== alertId));
+        toast.success(t("alertDeleted"));
+      }
+    } finally {
+      setDeletingAlertId(null);
     }
   };
 
   const handleToggleTemplate = async (template: RideTemplate) => {
-    const { error } = await supabase
-      .from("ride_templates")
-      .update({ is_active: !template.is_active })
-      .eq("id", template.id);
-    if (error) {
-      toast.error(t("errorUpdating"));
-    } else {
-      setRideTemplates((prev) =>
-        prev.map((t) => (t.id === template.id ? { ...t, is_active: !template.is_active } : t))
-      );
-      toast.success(!template.is_active ? t("templateActivated") : t("templateDeactivated"));
+    setTogglingTemplateId(template.id);
+    try {
+      const { error } = await supabase
+        .from("ride_templates")
+        .update({ is_active: !template.is_active })
+        .eq("id", template.id);
+      if (error) {
+        toast.error(t("errorUpdating"));
+      } else {
+        setRideTemplates((prev) =>
+          prev.map((t) => (t.id === template.id ? { ...t, is_active: !template.is_active } : t))
+        );
+        toast.success(!template.is_active ? t("templateActivated") : t("templateDeactivated"));
+      }
+    } finally {
+      setTogglingTemplateId(null);
     }
   };
 
   const handleDeleteTemplate = async (templateId: string) => {
-    const { error } = await supabase.from("ride_templates").delete().eq("id", templateId);
-    if (error) {
-      toast.error(t("errorDeletingTemplate"));
-    } else {
-      setRideTemplates((prev) => prev.filter((t) => t.id !== templateId));
-      toast.success(t("templateDeleted"));
+    setDeletingTemplateId(templateId);
+    try {
+      const { error } = await supabase.from("ride_templates").delete().eq("id", templateId);
+      if (error) {
+        toast.error(t("errorDeletingTemplate"));
+      } else {
+        setRideTemplates((prev) => prev.filter((t) => t.id !== templateId));
+        toast.success(t("templateDeleted"));
+      }
+    } finally {
+      setDeletingTemplateId(null);
     }
   };
 
@@ -884,13 +912,15 @@ export default function ProfilePage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleToggleTemplate(template)}
-                            className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
+                            disabled={togglingTemplateId === template.id}
+                            className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'} disabled:opacity-50`}
                           >
-                            {template.is_active ? t("suspend") : t("activate")}
+                            {togglingTemplateId === template.id ? <Loader2 className="h-3 w-3 animate-spin" /> : (template.is_active ? t("suspend") : t("activate"))}
                           </button>
                           <button
                             onClick={() => handleDeleteTemplate(template.id)}
-                            className="p-2 rounded-full bg-error/20 text-error"
+                            disabled={deletingTemplateId === template.id}
+                            className="p-2 rounded-full bg-error/20 text-error disabled:opacity-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -925,9 +955,10 @@ export default function ProfilePage() {
                       </div>
                       <button
                         onClick={() => handleDeleteAlert(alert.id)}
-                        className="p-2 rounded-full bg-error/20 text-error"
+                        disabled={deletingAlertId === alert.id}
+                        className="p-2 rounded-full bg-error/20 text-error disabled:opacity-50"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        {deletingAlertId === alert.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                       </button>
                     </div>
                   ))
@@ -951,9 +982,10 @@ export default function ProfilePage() {
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
+                  disabled={isLoggingOut}
+                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
-                  {t("logout")}
+                  {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("logout")}
                 </button>
               </div>
             </div>
@@ -981,10 +1013,10 @@ export default function ProfilePage() {
                 </button>
                 <button
                   onClick={handleCancelBooking}
-                  disabled={!cancelReason.trim()}
+                  disabled={!cancelReason.trim() || isCancelling}
                   className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
-                  {t("confirm")}
+                  {isCancelling ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("confirm")}
                 </button>
               </div>
             </div>
@@ -1331,9 +1363,10 @@ export default function ProfilePage() {
                             </div>
                             <button
                               onClick={() => handleDeleteAlert(alert.id)}
-                              className="p-3 rounded-full bg-error/20 text-error"
+                              disabled={deletingAlertId === alert.id}
+                              className="p-3 rounded-full bg-error/20 text-error disabled:opacity-50"
                             >
-                              <Trash2 className="h-5 w-5" />
+                              {deletingAlertId === alert.id ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                             </button>
                           </div>
                         ))}
@@ -1466,9 +1499,10 @@ export default function ProfilePage() {
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white"
+                  disabled={isLoggingOut}
+                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
-                  {t("logout")}
+                  {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("logout")}
                 </button>
               </div>
             </div>
