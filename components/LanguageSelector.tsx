@@ -91,7 +91,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
               transition={{ duration: 0.15 }}
               className={`absolute right-0 z-50 mt-2 w-48 rounded-xl border shadow-lg ${
                 isHome
-                  ? "border-white/10 bg-[#1a1a2e]"
+                  ? "border-white/10 bg-[#111111]"
                   : "border-gray-200 bg-white"
               }`}
             >

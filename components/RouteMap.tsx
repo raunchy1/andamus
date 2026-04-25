@@ -285,7 +285,7 @@ export function MiniMap({ fromCity, toCity }: MiniMapProps) {
   const maxDiff = Math.max(latDiff, lngDiff);
   const zoom = maxDiff > 2 ? 7 : maxDiff > 1 ? 8 : 9;
 
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLng}&zoom=${zoom}&size=400x200&maptype=roadmap&markers=color:green%7Clabel:A%7C${from.lat},${from.lng}&markers=color:red%7Clabel:B%7C${to.lat},${to.lng}&key=${apiKey}&style=feature:all%7Celement:geometry%7Ccolor:0x1a1a2e&style=feature:all%7Celement:labels.text.stroke%7Ccolor:0x1a1a2e&style=feature:all%7Celement:labels.text.fill%7Ccolor:0xffffff&style=feature:water%7Ccolor:0x0f1729`;
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLng}&zoom=${zoom}&size=400x200&maptype=roadmap&markers=color:green%7Clabel:A%7C${from.lat},${from.lng}&markers=color:red%7Clabel:B%7C${to.lat},${to.lng}&key=${apiKey}&style=feature:all%7Celement:geometry%7Ccolor:0x0a0a0a&style=feature:all%7Celement:labels.text.stroke%7Ccolor:0x0a0a0a&style=feature:all%7Celement:labels.text.fill%7Ccolor:0xffffff&style=feature:water%7Ccolor:0x0a0a0a`;
 
   return (
     <div className="relative h-[120px] w-full overflow-hidden rounded-xl">
@@ -295,7 +295,7 @@ export function MiniMap({ fromCity, toCity }: MiniMapProps) {
         fill
         className="object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e]/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 to-transparent" />
       
       {/* City labels */}
       <div className="absolute bottom-2 left-2 flex items-center gap-1.5">

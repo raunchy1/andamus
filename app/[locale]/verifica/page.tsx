@@ -184,14 +184,14 @@ export default function VerificationPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] pt-20 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-[#e63946]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] pt-20 pb-12">
+    <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
       {/* Header */}
       <div className="bg-[#12121e] border-b border-white/10 px-4 py-4">
         <div className="mx-auto max-w-4xl">

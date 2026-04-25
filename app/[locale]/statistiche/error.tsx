@@ -19,7 +19,7 @@ export default function StatisticsError({
   }, [error]);
 
   return (
-    <main className="min-h-screen bg-[#1a1a2e] pt-24 pb-12">
+    <main className="min-h-screen bg-[#0a0a0a] pt-24 pb-12">
       <div className="max-w-4xl mx-auto px-4 text-center">
         <div className="flex justify-center mb-6">
           <div className="h-24 w-24 rounded-full bg-[#e63946]/10 flex items-center justify-center">

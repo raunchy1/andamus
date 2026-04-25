@@ -170,14 +170,14 @@ export default function PremiumPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-[#e63946] animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] py-12 px-4">
+    <div className="min-h-screen bg-[#0a0a0a] py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">

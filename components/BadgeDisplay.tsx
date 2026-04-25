@@ -98,10 +98,10 @@ function BadgeItem({ badge, index }: { badge: Badge; index: number }) {
             exit={{ opacity: 0, y: 10 }}
             className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10"
           >
-            <div className="bg-[#1a1a2e] text-white px-3 py-2 rounded-lg shadow-xl border border-white/10 whitespace-nowrap">
+            <div className="bg-[#111111] text-white px-3 py-2 rounded-lg shadow-xl border border-white/10 whitespace-nowrap">
               <p className="font-semibold text-sm">{details.name}</p>
               <p className="text-xs text-white/70">{details.description}</p>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a1a2e]" />
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#111111]" />
             </div>
           </motion.div>
         )}
@@ -180,7 +180,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#1a1a2e] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+              className="bg-[#111111] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">

@@ -17,7 +17,7 @@ export default function GlobalError({
 
   return (
     <html lang="it">
-      <body className="bg-[#1a1a2e]">
+      <body className="bg-[#0a0a0a]">
         <div className="min-h-screen flex items-center justify-center px-4">
           <div className="max-w-md w-full text-center">
             <div className="flex justify-center mb-6">

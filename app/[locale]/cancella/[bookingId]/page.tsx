@@ -167,7 +167,7 @@ export default function CancelBookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-[#e63946]" />
       </div>
     );
@@ -175,7 +175,7 @@ export default function CancelBookingPage() {
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-red-400 mb-4" />
         <h1 className="text-2xl font-bold text-white">Prenotazione non trovata</h1>
         <Link href="/profilo" className="mt-6 text-[#e63946] flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function CancelBookingPage() {
   const isPassenger = userId === booking.passenger_id;
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] pt-20 pb-12">
+    <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
       <div className="bg-[#12121e] border-b border-white/10 px-4 py-4">
         <div className="mx-auto max-w-2xl">
           <Link

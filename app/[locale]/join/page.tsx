@@ -85,7 +85,7 @@ export default function JoinPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-[#e63946]" />
       </div>
     );
@@ -94,7 +94,7 @@ export default function JoinPage() {
   // User is already logged in
   if (user) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -137,7 +137,7 @@ export default function JoinPage() {
 
   // Show signup prompt with referral info
   return (
-    <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -340,7 +340,7 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className={`fixed inset-x-0 top-16 border-b md:hidden ${
           isHome 
-            ? "border-white/10 bg-[#1a1a2e]/98 backdrop-blur-lg" 
+            ? "border-white/10 bg-[#0a0a0a]/98 backdrop-blur-lg" 
             : "border-border bg-white"
         }`}>
           <div className="space-y-1 px-4 pb-4 pt-2">

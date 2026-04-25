@@ -202,7 +202,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-[10px] font-bold text-white ring-2 ring-[#1a1a2e]">
+          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}

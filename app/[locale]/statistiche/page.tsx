@@ -318,14 +318,14 @@ export default function StatisticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] pt-20 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e63946]" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#1a1a2e] pt-20 pb-12">
+    <main className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -412,7 +412,7 @@ export default function StatisticsPage() {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1a1a2e', 
+                    backgroundColor: '#111111', 
                     border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '8px'
                   }}

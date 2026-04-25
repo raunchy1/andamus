@@ -113,14 +113,14 @@ export default function InvitaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1a2e] pt-20 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-[#e63946]" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#1a1a2e] pt-20 pb-12">
+    <main className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
