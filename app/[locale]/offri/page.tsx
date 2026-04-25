@@ -1218,9 +1218,7 @@ export default function OfferPage() {
             students_only: formData.studentsOnly || null,
             // Car info
             car_model: formData.carModel || savedCarInfo?.car_model || null,
-            car_color: formData.carColor || savedCarInfo?.car_color || null,
             car_plate: formData.carPlate || savedCarInfo?.car_plate || null,
-            car_year: formData.carYear ? parseInt(formData.carYear) : savedCarInfo?.car_year || null,
           })
           .select();
 
