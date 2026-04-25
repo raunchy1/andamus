@@ -262,7 +262,6 @@ export function Navbar() {
                         : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-[#1a1a2e]"
                     }`}
                   >
-                    <span className="text-sm font-medium truncate max-w-[80px] lg:max-w-[120px] hidden sm:block">{getUserName()}</span>
                     {getUserAvatar() && !avatarError ? (
                       <Image 
                         key={avatarKey}
@@ -278,7 +277,7 @@ export function Navbar() {
                         <User className="h-4 w-4" />
                       </div>
                     )}
-                    <span className={`text-sm font-medium max-w-[100px] truncate`}>
+                    <span className="hidden xl:inline text-sm font-medium max-w-[120px] truncate">
                       {getUserName()}
                     </span>
                   </Link>
