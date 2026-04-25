@@ -40,24 +40,32 @@ export default function RequestDetailPage() {
   const [request, setRequest] = useState<RideRequest | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!requestId) return;
       setLoading(true);
+      setError(false);
 
-      const [{ data: { user: currentUser } }, { data: reqData }] = await Promise.all([
-        supabase.auth.getUser(),
-        supabase
-          .from("ride_requests")
-          .select(`*, profiles(name, avatar_url)`)
-          .eq("id", requestId)
-          .single(),
-      ]);
+      try {
+        const [{ data: { user: currentUser } }, { data: reqData }] = await Promise.all([
+          supabase.auth.getUser(),
+          supabase
+            .from("ride_requests")
+            .select(`*, profiles(name, avatar_url)`)
+            .eq("id", requestId)
+            .single(),
+        ]);
 
-      setUser(currentUser);
-      setRequest(reqData);
-      setLoading(false);
+        setUser(currentUser);
+        setRequest(reqData);
+      } catch (err) {
+        console.error('[richiesta] fetchData error:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -76,6 +84,10 @@ export default function RequestDetailPage() {
       default: return "Orario preciso";
     }
   };
+
+  if (error) {
+    return <div className="p-8 text-center text-error">Errore nel caricamento. Riprova.</div>;
+  }
 
   if (loading) {
     return (
@@ -134,7 +146,7 @@ export default function RequestDetailPage() {
           <div className="flex items-center gap-4 py-4 border-y border-border">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted overflow-hidden">
               <span className="text-lg font-bold text-muted-foreground">
-                {request.profiles.name.charAt(0).toUpperCase()}
+                {request.profiles?.name?.charAt(0)?.toUpperCase() ?? '?'}
               </span>
             </div>
             <div>

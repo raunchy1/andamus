@@ -1003,23 +1003,15 @@ export default function OfferPage() {
 
       setCalculatingPrice(true);
       
-      // Skip API call if no Google Maps API key is configured
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-      if (!apiKey) {
-        setCalculatingPrice(false);
-        setDistanceKm(null);
-        setSuggestedPrice(null);
-        return;
-      }
-      
       try {
-        // Use Google Maps Distance Matrix API
-        const originEncoded = encodeURIComponent(`${formData.origin}, Sardegna, Italia`);
-        const destinationEncoded = encodeURIComponent(`${formData.destination}, Sardegna, Italia`);
-        
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${originEncoded}&destinations=${destinationEncoded}&mode=driving&units=metric&key=${apiKey}`
-        );
+        const response = await fetch('/api/maps/distance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            origin: `${formData.origin}, Sardegna, Italia`,
+            destination: `${formData.destination}, Sardegna, Italia`,
+          }),
+        });
         
         if (!response.ok) {
           throw new Error('Distance calculation failed');

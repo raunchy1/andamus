@@ -10,7 +10,7 @@ interface ChatPageProps {
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-  const { bookingId } = params;
+  const { locale, bookingId } = await params;
   const supabase = await createClient();
 
   // 1. Verificăm autentificarea

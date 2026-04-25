@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { 
   Crown, 
@@ -86,6 +87,7 @@ function usePlans(t: ReturnType<typeof useTranslations>): Plan[] {
 
 export default function PremiumPage() {
   const router = useRouter();
+  const locale = useLocale();
   const supabase = createClient();
   const t = useTranslations("premium");
   const tc = useTranslations("common");
@@ -136,7 +138,7 @@ export default function PremiumPage() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, locale: "it" }),
+        body: JSON.stringify({ planId, locale }),
       });
       const data = await res.json();
       if (data.url) {
@@ -182,7 +184,7 @@ export default function PremiumPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <Link 
-            href="/it"
+            href={`/${locale}`}
             className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

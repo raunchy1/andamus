@@ -139,7 +139,13 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const messages = await getMessages({ locale });
+  let messages;
+  try {
+    messages = await getMessages({ locale });
+  } catch (error) {
+    console.error('[layout] Failed to load messages for locale:', locale, error);
+    messages = await getMessages({ locale: 'it' });
+  }
 
   return (
     <>

@@ -82,6 +82,7 @@ export default function StatisticsPage() {
   const [, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   
   // Data states
   const [myRides, setMyRides] = useState<Ride[]>([]);
@@ -96,49 +97,55 @@ export default function StatisticsPage() {
 
   useEffect(() => {
     const loadData = async () => {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) {
-        router.push("/");
-        return;
+      setError(false);
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser) {
+          router.push("/");
+          return;
+        }
+        setUser(currentUser);
+
+        // Load profile
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", currentUser.id)
+          .single();
+        setProfile(profileData);
+
+        // Load my rides (as driver)
+        const { data: ridesData } = await supabase
+          .from("rides")
+          .select(`*, bookings(count)`)
+          .eq("driver_id", currentUser.id)
+          .order("date", { ascending: false });
+        
+        setMyRides(ridesData || []);
+
+        // Load my bookings (as passenger)
+        const { data: bookingsData } = await supabase
+          .from("bookings")
+          .select(`
+            *,
+            rides(from_city, to_city, date, time, price, driver_id)
+          `)
+          .eq("passenger_id", currentUser.id)
+          .order("created_at", { ascending: false });
+        
+        setMyBookings(bookingsData || []);
+
+        // Load badges
+        const badgesResult = await getUserBadges(currentUser.id);
+        if (badgesResult.success) {
+          setBadges(badgesResult.badges || []);
+        }
+      } catch (err) {
+        console.error('[statistiche] loadData error:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
       }
-      setUser(currentUser);
-
-      // Load profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .single();
-      setProfile(profileData);
-
-      // Load my rides (as driver)
-      const { data: ridesData } = await supabase
-        .from("rides")
-        .select(`*, bookings(count)`)
-        .eq("driver_id", currentUser.id)
-        .order("date", { ascending: false });
-      
-      setMyRides(ridesData || []);
-
-      // Load my bookings (as passenger)
-      const { data: bookingsData } = await supabase
-        .from("bookings")
-        .select(`
-          *,
-          rides(from_city, to_city, date, time, price, driver_id)
-        `)
-        .eq("passenger_id", currentUser.id)
-        .order("created_at", { ascending: false });
-      
-      setMyBookings(bookingsData || []);
-
-      // Load badges
-      const badgesResult = await getUserBadges(currentUser.id);
-      if (badgesResult.success) {
-        setBadges(badgesResult.badges || []);
-      }
-
-      setLoading(false);
     };
 
     loadData();
@@ -315,6 +322,10 @@ export default function StatisticsPage() {
     
     toast.success(t('reportDownloaded'));
   };
+
+  if (error) {
+    return <div className="p-8 text-center text-error">Errore nel caricamento. Riprova.</div>;
+  }
 
   if (loading) {
     return (

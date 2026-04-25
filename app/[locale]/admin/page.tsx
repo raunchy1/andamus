@@ -402,9 +402,7 @@ export default function AdminDashboard() {
     return labels[type] || type;
   };
 
-  if (!isAdmin) {
-    return null;
-  }
+  if (!isAdminUser) return null;
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">

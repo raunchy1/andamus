@@ -97,6 +97,7 @@ function RideDetailMobile({
   formatReviewDate,
 }: RideDetailViewProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("ride");
   const tc = useTranslations("common");
   const isMyRide = user?.id === ride.driver_id;
@@ -181,7 +182,7 @@ function RideDetailMobile({
                 </div>
               </div>
               {existingBooking && !isMyRide && (
-                <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-high text-on-surface p-4 rounded-2xl hover:bg-primary hover:text-on-primary transition-all active:scale-95 shrink-0">
+                <Link href={`/${locale}/chat/${existingBooking.id}`} className="bg-surface-container-high text-on-surface p-4 rounded-2xl hover:bg-primary hover:text-on-primary transition-all active:scale-95 shrink-0">
                   <MessageCircle className="w-6 h-6" />
                 </Link>
               )}
@@ -342,7 +343,7 @@ function RideDetailMobile({
                 {similarRides.map((similar) => (
                   <Link
                     key={similar.id}
-                    href={`/corsa/${similar.id}`}
+                    href={`/${locale}/corsa/${similar.id}`}
                     className="flex items-center justify-between bg-surface-container-low p-5 rounded-2xl transition-all hover:bg-surface-container-high active:scale-[0.98] shadow-sm"
                   >
                     <div className="min-w-0 flex-1">
@@ -366,7 +367,7 @@ function RideDetailMobile({
         <div className="max-w-md mx-auto">
           {isMyRide ? (
             <Link
-              href="/profilo"
+              href={`/${locale}/profilo`}
               className="w-full bg-surface-container-highest text-on-surface py-4.5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
             >
               <span>{t('manageFromProfile')}</span>
@@ -374,7 +375,7 @@ function RideDetailMobile({
             </Link>
           ) : existingBooking ? (
             <Link
-              href={`/chat/${existingBooking.id}`}
+              href={`/${locale}/chat/${existingBooking.id}`}
               className="w-full bg-[#e63946] text-white py-4.5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wide flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-200"
             >
               <span>{t('openChat')}</span>
@@ -436,6 +437,7 @@ function RideDetailDesktop({
   formatReviewDate,
 }: RideDetailViewProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("ride");
   const tc = useTranslations("common");
   const isMyRide = user?.id === ride.driver_id;
@@ -626,7 +628,7 @@ function RideDetailDesktop({
                   {similarRides.map((similar) => (
                     <Link
                       key={similar.id}
-                      href={`/corsa/${similar.id}`}
+                      href={`/${locale}/corsa/${similar.id}`}
                       className="flex items-center justify-between bg-surface-container-low p-5 rounded-2xl transition-colors hover:bg-surface-container-high"
                     >
                       <div>
@@ -682,7 +684,7 @@ function RideDetailDesktop({
                     </div>
                   </div>
                   {existingBooking && !isMyRide && (
-                    <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
+                    <Link href={`/${locale}/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
                       <MessageCircle className="w-5 h-5" />
                     </Link>
                   )}
@@ -692,7 +694,7 @@ function RideDetailDesktop({
                 <div className="pt-2">
                   {isMyRide ? (
                     <Link
-                      href="/profilo"
+                      href={`/${locale}/profilo`}
                       className="w-full bg-surface-container-highest text-on-surface py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
                     >
                       <span>{t('manageFromProfile')}</span>
@@ -700,7 +702,7 @@ function RideDetailDesktop({
                     </Link>
                   ) : existingBooking ? (
                     <Link
-                      href={`/chat/${existingBooking.id}`}
+                      href={`/${locale}/chat/${existingBooking.id}`}
                       className="w-full bg-[#e63946] text-white py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
                     >
                       <span>{t('openChat')}</span>
@@ -952,7 +954,7 @@ export default function RideDetailPage() {
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4 sm:px-6">
         <AlertCircle className="h-16 w-16 text-error mb-4" />
         <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">{t('notFound')}</h1>
-        <Link href="/cerca" className="mt-6 flex items-center gap-2 text-primary">
+        <Link href={`/${locale}/cerca`} className="mt-6 flex items-center gap-2 text-primary">
           <ArrowLeft className="w-4 h-4" /> {t('backToSearch')}
         </Link>
       </div>

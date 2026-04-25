@@ -1064,7 +1064,7 @@ function SearchContent() {
   const today = new Date().toISOString().split("T")[0];
   const supabase = createClient();
 
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchRides = useCallback(async () => {
     setLoading(true);

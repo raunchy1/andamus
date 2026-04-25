@@ -137,9 +137,7 @@ export default function CancelBookingPage() {
         })
         .eq("id", bookingId);
 
-      if (updateError) {
-        // Update error - logged silently
-      }
+      if (updateError) throw updateError;
 
       // Send cancellation notification to other party
       try {

@@ -306,15 +306,6 @@ img, video, svg {
   height: auto;
 }
 
-/* Flex container overflow fix */
-.flex {
-  min-width: 0;
-}
-
-/* Grid container overflow fix */
-.grid {
-  min-width: 0;
-}
 
 /* Container consistency */
 .container-mobile {
