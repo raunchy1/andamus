@@ -97,6 +97,7 @@ export function SafetyButton() {
                 <button
                   onClick={() => setIsOpen(false)}
                   className="flex h-10 w-10 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
+                  aria-label={t("cancel")} // a11y: icon-only button
                 >
                   <X className="h-5 w-5" />
                 </button>

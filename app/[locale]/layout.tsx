@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "@/lib/env";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
@@ -153,7 +154,9 @@ export default async function LocaleLayout({
         <ThemeProvider>
           <Navbar />
           <ClientLayoutWrapper>
-            {children}
+            <div className="page-enter">
+              {children}
+            </div>
           </ClientLayoutWrapper>
           <SafetyButton />
           <VersionBadge />

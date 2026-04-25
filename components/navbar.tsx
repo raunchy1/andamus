@@ -250,6 +250,7 @@ export function Navbar() {
                         : "text-red-500 hover:bg-red-500/10 hover:text-red-600"
                     }`}
                     title={t('sosEmergency')}
+                    aria-label={t('sosEmergency')} // a11y: icon-only button
                   >
                     <Siren className="h-5 w-5" />
                   </button>
@@ -290,6 +291,7 @@ export function Navbar() {
                         : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
                     }`}
                     title={t('logout')}
+                    aria-label={t('logout')} // a11y: icon-only button
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
@@ -324,6 +326,7 @@ export function Navbar() {
               : "text-gray-600 hover:bg-gray-100"
           }`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? t('closeMenu') : t('openMenu')} // a11y: icon-only button
         >
           <span className="sr-only">
             {mobileMenuOpen ? t('closeMenu') : t('openMenu')}

@@ -210,6 +210,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
             ? "text-white/70 hover:bg-white/10 hover:text-white" 
             : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
         }`}
+        aria-label={t("notifications")} // a11y: icon-only button
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
