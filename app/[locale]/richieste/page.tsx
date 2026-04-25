@@ -99,31 +99,31 @@ export default function RequestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <div className="border-b border-border bg-card px-4 py-6">
+      <div className="border-b border-outline bg-surface-container px-4 py-6">
         <div className="mx-auto max-w-5xl">
           <div className="mb-4 flex items-center gap-2">
-            <Link href="/cerca" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/cerca" className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors">
               <ArrowLeft className="h-4 w-4" />
               {t("backToSearch")}
             </Link>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">{t("title")}</h1>
-          <p className="mt-1 text-muted-foreground">{t("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-on-surface">{t("title")}</h1>
+          <p className="mt-1 text-on-surface-variant">{t("subtitle")}</p>
         </div>
       </div>
 
       {/* Search bar */}
-      <div className="border-b border-border bg-card px-4 py-4">
+      <div className="border-b border-outline bg-surface-container px-4 py-4">
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[140px]">
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("from")}</label>
+              <label className="mb-1 block text-xs font-medium text-on-surface-variant">{t("from")}</label>
               <select
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
-                className="h-12 w-full rounded-xl border border-border bg-background px-3 text-foreground outline-none focus:border-accent"
+                className="h-12 w-full rounded-xl border border-outline bg-surface px-3 text-on-surface outline-none focus:border-accent"
               >
                 <option value="">{t("any")}</option>
                 {sardinianCities.map((c) => (
@@ -132,11 +132,11 @@ export default function RequestsPage() {
               </select>
             </div>
             <div className="flex-1 min-w-[140px]">
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("to")}</label>
+              <label className="mb-1 block text-xs font-medium text-on-surface-variant">{t("to")}</label>
               <select
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="h-12 w-full rounded-xl border border-border bg-background px-3 text-foreground outline-none focus:border-accent"
+                className="h-12 w-full rounded-xl border border-outline bg-surface px-3 text-on-surface outline-none focus:border-accent"
               >
                 <option value="">{t("any")}</option>
                 {sardinianCities.map((c) => (
@@ -145,18 +145,18 @@ export default function RequestsPage() {
               </select>
             </div>
             <div className="min-w-[140px]">
-              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("date")}</label>
+              <label className="mb-1 block text-xs font-medium text-on-surface-variant">{t("date")}</label>
               <input
                 type="date"
                 min={today}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="h-12 w-full rounded-xl border border-border bg-background px-3 text-foreground outline-none focus:border-accent"
+                className="h-12 w-full rounded-xl border border-outline bg-surface px-3 text-on-surface outline-none focus:border-accent"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="h-12 rounded-xl border border-border px-4 text-muted-foreground hover:bg-muted"
+              className="h-12 rounded-xl border border-outline px-4 text-on-surface-variant hover:bg-surface-variant"
             >
               <SlidersHorizontal className="h-5 w-5" />
             </button>
@@ -176,24 +176,24 @@ export default function RequestsPage() {
         <div className="mx-auto max-w-5xl">
           {loading ? (
             <div className="py-20 text-center">
-              <Loader2 className="mx-auto h-10 w-10 animate-spin text-accent" />
+              <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary" />
             </div>
           ) : requests.length === 0 ? (
             <div className="py-20 text-center">
-              <User className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <p className="mt-4 text-lg font-medium text-foreground">{t("noRequests")}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t("tryDifferentFilters")}</p>
+              <User className="mx-auto h-12 w-12 text-on-surface-variant/50" />
+              <p className="mt-4 text-lg font-medium text-on-surface">{t("noRequests")}</p>
+              <p className="mt-1 text-sm text-on-surface-variant">{t("tryDifferentFilters")}</p>
             </div>
           ) : (
-            <div className="divide-y divide-border rounded-2xl border border-border bg-card">
+            <div className="divide-y divide-border rounded-2xl border border-outline bg-surface-container">
               {requests.map((req) => (
                 <Link
                   key={req.id}
                   href={`/richiesta/${req.id}`}
-                  className="flex items-center justify-between p-4 transition-colors hover:bg-muted/30"
+                  className="flex items-center justify-between p-4 transition-colors hover:bg-surface-variant/30"
                 >
                   <div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-on-surface-variant">
                       <Calendar className="h-4 w-4" />
                       <span>{formatDate(req.date)}</span>
                       {req.time && (
@@ -205,10 +205,10 @@ export default function RequestsPage() {
                         </>
                       )}
                     </div>
-                    <h3 className="mt-1 font-semibold text-foreground">
+                    <h3 className="mt-1 font-semibold text-on-surface">
                       {req.from_city} → {req.to_city}
                     </h3>
-                    <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="mt-1 flex items-center gap-2 text-sm text-on-surface-variant">
                       <Users className="h-4 w-4" />
                       <span>{seatLabel(req.seats_needed)}</span>
                       {req.max_price !== null && (
@@ -221,8 +221,8 @@ export default function RequestsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-foreground">{req.profiles.name}</p>
-                    <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground" />
+                    <p className="text-sm font-medium text-on-surface">{req.profiles.name}</p>
+                    <ChevronRight className="ml-auto h-5 w-5 text-on-surface-variant" />
                   </div>
                 </Link>
               ))}

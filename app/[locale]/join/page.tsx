@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 
-export default function JoinPage() {
+function JoinContent() {
 
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
@@ -215,5 +215,13 @@ export default function JoinPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+      <JoinContent />
+    </Suspense>
   );
 }

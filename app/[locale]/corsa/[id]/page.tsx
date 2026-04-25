@@ -600,13 +600,11 @@ function RideDetailDesktop({
                           </div>
                           <div className="flex items-center gap-1 mt-1">
                             {[...Array(5)].map((_, i) => (
-                              <span
+                              <Star
                                 key={i}
-                                className={`w-4 h-4 ${i < review.rating ? "text-primary" : "text-surface-container-highest"}`}
-                                style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
-                              >
-                                star
-                              </span>
+                                size={16}
+                                className={i < Math.round(review.rating) ? 'text-primary fill-primary' : 'text-outline'}
+                              />
                             ))}
                           </div>
                           {review.comment && (
