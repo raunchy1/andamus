@@ -13,6 +13,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface RideRequest {
@@ -33,6 +34,7 @@ interface RideRequest {
 }
 
 export default function RequestDetailPage() {
+  const t = useTranslations("requests");
   const params = useParams();
   const requestId = params.id as string;
   const supabase = createClient();
@@ -78,15 +80,15 @@ export default function RequestDetailPage() {
 
   const flexibilityLabel = (val: string) => {
     switch (val) {
-      case "1h": return "Flessibile ±1h";
-      case "3h": return "Flessibile ±3h";
-      case "any": return "Orario qualsiasi";
-      default: return "Orario preciso";
+      case "1h": return t("flexibility.1h");
+      case "3h": return t("flexibility.3h");
+      case "any": return t("flexibility.any");
+      default: return t("flexibility.exact");
     }
   };
 
   if (error) {
-    return <div className="p-8 text-center text-error">Errore nel caricamento. Riprova.</div>;
+    return <div className="p-8 text-center text-error">{t("loadError")}</div>;
   }
 
   if (loading) {
@@ -101,9 +103,9 @@ export default function RequestDetailPage() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-bold text-foreground">Richiesta non trovata</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("notFound")}</h1>
         <Link href="/richieste" className="mt-6 flex items-center gap-2 text-accent">
-          <ArrowLeft className="h-4 w-4" /> Torna alle richieste
+          <ArrowLeft className="h-4 w-4" /> {t("backToRequests")}
         </Link>
       </div>
     );
@@ -117,7 +119,7 @@ export default function RequestDetailPage() {
         <div className="mx-auto max-w-3xl flex items-center justify-between">
           <Link href="/richieste" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-5 w-5" />
-            <span className="hidden sm:inline">Indietro</span>
+            <span className="hidden sm:inline">{t("back")}</span>
           </Link>
         </div>
       </div>
@@ -151,23 +153,23 @@ export default function RequestDetailPage() {
             </div>
             <div>
               <p className="font-semibold text-foreground">{request.profiles.name}</p>
-              <p className="text-sm text-muted-foreground">Cerca un passaggio</p>
+              <p className="text-sm text-muted-foreground">{t("lookingForRide")}</p>
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Posti necessari</p>
+              <p className="text-sm text-muted-foreground">{t("seatsNeeded")}</p>
               <p className="mt-1 text-xl font-semibold text-foreground">{request.seats_needed}</p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Budget max</p>
+              <p className="text-sm text-muted-foreground">{t("maxBudget")}</p>
               <p className="mt-1 text-xl font-semibold text-foreground">
                 {request.max_price !== null ? `${request.max_price}€` : "-"}
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Flessibilità</p>
+              <p className="text-sm text-muted-foreground">{t("flexibility")}</p>
               <p className="mt-1 text-xl font-semibold text-foreground">{flexibilityLabel(request.time_flexibility)}</p>
             </div>
           </div>
@@ -176,7 +178,7 @@ export default function RequestDetailPage() {
             <div className="flex gap-3">
               <FileText className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-foreground">Note</p>
+                <p className="font-medium text-foreground">{t("notes")}</p>
                 <p className="text-muted-foreground">{request.notes}</p>
               </div>
             </div>
@@ -184,21 +186,21 @@ export default function RequestDetailPage() {
 
           {!isMyRequest && user && (
             <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-foreground font-medium mb-2">Hai un passaggio per questo tragitto?</p>
+              <p className="text-foreground font-medium mb-2">{t("haveRidePrompt")}</p>
               <Link
                 href={`/offri?from=${request.from_city}&to=${request.to_city}&date=${request.date}`}
                 className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-accent/90"
               >
                 <MapPin className="h-4 w-4" />
-                Pubblica una corsa
+                {t("publishRide")}
               </Link>
             </div>
           )}
 
           {isMyRequest && (
             <div className="rounded-2xl border border-border bg-card p-4 text-center">
-              <p className="text-muted-foreground">Questa è la tua richiesta</p>
-              <p className="text-sm text-muted-foreground mt-1">Riceverai una notifica quando un autista pubblica una corsa compatibile.</p>
+              <p className="text-muted-foreground">{t("yourRequest")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t("notificationInfo")}</p>
             </div>
           )}
         </div>

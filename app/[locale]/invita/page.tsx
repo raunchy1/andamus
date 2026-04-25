@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface ReferralStats {
@@ -36,6 +37,7 @@ interface LeaderboardUser {
 }
 
 export default function InvitaPage() {
+  const t = useTranslations("referrals");
   const router = useRouter();
   const supabase = createClient();
   const [, setUser] = useState<SupabaseUser | null>(null);
@@ -57,7 +59,6 @@ export default function InvitaPage() {
       
       setUser(currentUser);
 
-      // Load profile with referral stats
       const { data: profileData } = await supabase
         .from("profiles")
         .select("referral_code, referrals_count, referral_points_earned")
@@ -66,7 +67,6 @@ export default function InvitaPage() {
 
       setProfile(profileData);
 
-      // Load leaderboard
       const { data: leaderboardData } = await supabase
         .rpc("get_referral_leaderboard", { limit_count: 5 });
 
@@ -87,21 +87,21 @@ export default function InvitaPage() {
     try {
       await navigator.clipboard.writeText(referralLink);
       setCopied(true);
-      toast.success("Link copiato!");
+      toast.success(t("copied"));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Errore nella copia");
+      toast.error(t("copyError"));
     }
   };
 
   const shareWhatsApp = () => {
-    const message = `Unisciti ad Andamus, l'app gratuita di carpooling per la Sardegna! Usa il mio codice ${profile?.referral_code} e guadagna 25 punti bonus: ${referralLink}`;
+    const message = t("shareMessage", { code: profile?.referral_code || "", link: referralLink });
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
 
   const shareTelegram = () => {
-    const message = `Unisciti ad Andamus, l'app gratuita di carpooling per la Sardegna! Usa il mio codice ${profile?.referral_code} e guadagna 25 punti bonus:`;
+    const message = t("shareMessage", { code: profile?.referral_code || "", link: "" });
     const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
@@ -129,7 +129,7 @@ export default function InvitaPage() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
-            Torna al profilo
+            {t("backToProfile")}
           </Link>
           
           <motion.div
@@ -140,8 +140,8 @@ export default function InvitaPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#e63946] to-[#c92a37] mb-4">
               <Gift className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Invita Amici</h1>
-            <p className="text-white/60">Guadagnate entrambi 25 punti bonus!</p>
+            <h1 className="text-3xl font-bold text-white mb-2">{t("title")}</h1>
+            <p className="text-white/60">{t("subtitle")}</p>
           </motion.div>
         </div>
 
@@ -154,7 +154,7 @@ export default function InvitaPage() {
         >
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Share2 className="w-5 h-5 text-[#e63946]" />
-            Il tuo link personale
+            {t("yourLink")}
           </h2>
           
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -166,9 +166,9 @@ export default function InvitaPage() {
               className="bg-[#e63946] hover:bg-[#c92a37] text-white"
             >
               {copied ? (
-                <><Check className="w-4 h-4 mr-2" /> Copiato</>
+                <><Check className="w-4 h-4 mr-2" /> {t("copied")}</>
               ) : (
-                <><Copy className="w-4 h-4 mr-2" /> Copia link</>
+                <><Copy className="w-4 h-4 mr-2" /> {t("copyLink")}</>
               )}
             </Button>
           </div>
@@ -213,7 +213,7 @@ export default function InvitaPage() {
               <Users className="w-6 h-6 text-blue-400" />
             </div>
             <p className="text-3xl font-bold text-white">{profile?.referrals_count || 0}</p>
-            <p className="text-white/60 text-sm">Amici invitati</p>
+            <p className="text-white/60 text-sm">{t("friendsInvited")}</p>
           </div>
           
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
@@ -221,7 +221,7 @@ export default function InvitaPage() {
               <Trophy className="w-6 h-6 text-yellow-400" />
             </div>
             <p className="text-3xl font-bold text-white">{profile?.referral_points_earned || 0}</p>
-            <p className="text-white/60 text-sm">Punti guadagnati</p>
+            <p className="text-white/60 text-sm">{t("pointsEarned")}</p>
           </div>
         </motion.div>
 
@@ -232,15 +232,15 @@ export default function InvitaPage() {
           transition={{ delay: 0.3 }}
           className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
         >
-          <h2 className="text-lg font-semibold text-white mb-4">Come funziona</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">{t("howItWorks")}</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
               <div className="w-8 h-8 rounded-full bg-[#e63946] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 1
               </div>
               <div>
-                <p className="text-white font-medium">Condividi il tuo link</p>
-                <p className="text-white/60 text-sm">Invia il link ai tuoi amici via WhatsApp, Telegram o Facebook</p>
+                <p className="text-white font-medium">{t("step1Title")}</p>
+                <p className="text-white/60 text-sm">{t("step1Desc")}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -248,8 +248,8 @@ export default function InvitaPage() {
                 2
               </div>
               <div>
-                <p className="text-white font-medium">I tuoi amici si iscrivono</p>
-                <p className="text-white/60 text-sm">Quando si registrano usando il tuo codice, ricevono 25 punti bonus</p>
+                <p className="text-white font-medium">{t("step2Title")}</p>
+                <p className="text-white/60 text-sm">{t("step2Desc")}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -257,8 +257,8 @@ export default function InvitaPage() {
                 3
               </div>
               <div>
-                <p className="text-white font-medium">Guadagnate entrambi!</p>
-                <p className="text-white/60 text-sm">Ricevi 25 punti bonus per ogni amico che si registra</p>
+                <p className="text-white font-medium">{t("step3Title")}</p>
+                <p className="text-white/60 text-sm">{t("step3Desc")}</p>
               </div>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function InvitaPage() {
         >
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-400" />
-            Classifica del mese
+            {t("leaderboard")}
           </h2>
           
           <div className="space-y-3">
@@ -305,12 +305,12 @@ export default function InvitaPage() {
                       <Users className="w-5 h-5 text-white/60" />
                     </div>
                   )}
-                  <span className="text-white font-medium">{user.user_name || 'Utente'}</span>
+                  <span className="text-white font-medium">{user.user_name || t("userFallback")}</span>
                 </div>
                 
                 <div className="text-right">
                   <p className="text-white font-bold">{user.referrals_count}</p>
-                  <p className="text-white/60 text-xs">inviti</p>
+                  <p className="text-white/60 text-xs">{t("invites")}</p>
                 </div>
               </div>
             ))}
@@ -318,8 +318,8 @@ export default function InvitaPage() {
             {leaderboard.length === 0 && (
               <div className="text-center py-8 text-white/40">
                 <Trophy className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Nessun invito questo mese</p>
-                <p className="text-sm">Sii il primo!</p>
+                <p>{t("emptyTitle")}</p>
+                <p className="text-sm">{t("emptySubtitle")}</p>
               </div>
             )}
           </div>

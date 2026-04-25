@@ -10,9 +10,10 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 function JoinContent() {
-
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
   const supabase = createClient();
@@ -33,13 +34,12 @@ function JoinContent() {
       if (data && data[0].success) {
         setReferralApplied(true);
         localStorage.removeItem("pending_referral_code");
-        toast.success("Bonus di 25 punti applicato! 🎉");
+        toast.success(t("referralBonusApplied"));
       }
     } catch {
-      // console.error("Error applying referral:", _error);
       localStorage.removeItem("pending_referral_code");
     }
-  }, [supabase]);
+  }, [supabase, t]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -48,13 +48,11 @@ function JoinContent() {
       if (currentUser) {
         setUser(currentUser);
         
-        // Check if we have a stored referral code to apply
         const storedRefCode = localStorage.getItem("pending_referral_code");
         if (storedRefCode && !referralApplied) {
           await applyReferralBonus(currentUser.id, storedRefCode);
         }
       } else {
-        // Store referral code in localStorage if provided
         if (referralCode) {
           localStorage.setItem("pending_referral_code", referralCode);
         }
@@ -66,20 +64,16 @@ function JoinContent() {
     checkAuth();
   }, [referralCode, referralApplied, supabase, applyReferralBonus]);
 
-
-
   const handleLogin = async () => {
     if (referralCode) {
-      // Store in localStorage for client-side handling
       localStorage.setItem("pending_referral_code", referralCode);
-      // Set cookie for server-side handling
       document.cookie = `pending_referral_code=${encodeURIComponent(referralCode)}; path=/; max-age=3600`;
     }
     
     try {
       await signInWithGoogle();
     } catch {
-      toast.error("Errore durante l'accesso");
+      toast.error(t("loginError"));
     }
   };
 
@@ -91,7 +85,6 @@ function JoinContent() {
     );
   }
 
-  // User is already logged in
   if (user) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
@@ -105,22 +98,22 @@ function JoinContent() {
           </div>
           
           <h1 className="text-2xl font-bold text-white mb-2">
-            {referralApplied ? "Benvenuto!" : "Già registrato"}
+            {referralApplied ? t("welcome") : t("alreadyRegistered")}
           </h1>
           
           {referralApplied ? (
             <>
               <p className="text-white/60 mb-6">
-                Hai ricevuto <span className="text-[#e63946] font-bold">25 punti bonus</span> per esserti registrato con un codice invito!
+                {t("referralBonusText")}
               </p>
               <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
                 <CheckCircle className="w-5 h-5" />
-                <span>Bonus applicato con successo</span>
+                <span>{t("bonusApplied")}</span>
               </div>
             </>
           ) : (
             <p className="text-white/60 mb-6">
-              Sei già registrato ad Andamus.
+              {t("alreadyRegisteredText")}
             </p>
           )}
           
@@ -128,14 +121,13 @@ function JoinContent() {
             href="/"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#e63946] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-[#c92a37]"
           >
-            Vai alla home
+            {t("goHome")}
           </Link>
         </motion.div>
       </div>
     );
   }
 
-  // Show signup prompt with referral info
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
       <motion.div
@@ -148,7 +140,7 @@ function JoinContent() {
           className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
-          Torna alla home
+          {t("backToHome")}
         </Link>
 
         <div className="text-center mb-8">
@@ -157,46 +149,44 @@ function JoinContent() {
           </div>
           
           <h1 className="text-3xl font-bold text-white mb-2">
-            Unisciti ad Andamus
+            {t("joinTitle")}
           </h1>
           
           {referralCode ? (
             <p className="text-white/60">
-              Registrati e ricevi <span className="text-[#e63946] font-bold">25 punti bonus</span>!
+              {t("referralPrompt")}
             </p>
           ) : (
             <p className="text-white/60">
-              L&apos;app gratuita di carpooling per la Sardegna
+              {t("tagline")}
             </p>
           )}
         </div>
 
-        {/* Benefits */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
-          <h2 className="text-white font-semibold mb-4">Cosa ottieni:</h2>
+          <h2 className="text-white font-semibold mb-4">{t("benefitsTitle")}</h2>
           <ul className="space-y-3">
             <li className="flex items-center gap-3 text-white/80">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Corsi gratuiti in tutta la Sardegna</span>
+              <span>{t("benefit1")}</span>
             </li>
             <li className="flex items-center gap-3 text-white/80">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Sistema di rating e recensioni</span>
+              <span>{t("benefit2")}</span>
             </li>
             <li className="flex items-center gap-3 text-white/80">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span>Chat integrata con i passeggeri</span>
+              <span>{t("benefit3")}</span>
             </li>
             {referralCode && (
               <li className="flex items-center gap-3 text-[#e63946]">
                 <Gift className="w-5 h-5" />
-                <span className="font-semibold">25 punti bonus subito!</span>
+                <span className="font-semibold">{t("referralBonus")}</span>
               </li>
             )}
           </ul>
         </div>
 
-        {/* Login Button */}
         <Button
           onClick={handleLogin}
           className="w-full bg-[#e63946] hover:bg-[#c92a37] text-white py-6 text-lg font-semibold rounded-xl"
@@ -207,11 +197,11 @@ function JoinContent() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Accedi con Google
+          {t("signInGoogle")}
         </Button>
 
         <p className="text-center text-white/40 text-sm mt-6">
-          Cliccando su &quot;Accedi con Google&quot; accetti i nostri Termini di Servizio e Privacy Policy
+          {t("termsNotice")}
         </p>
       </motion.div>
     </div>

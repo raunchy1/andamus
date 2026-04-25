@@ -5,15 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, AlertCircle, ArrowLeft, Calendar, MapPin, User, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTranslations } from "next-intl";
 import toast from "react-hot-toast";
-
-const cancellationReasons = [
-  { value: "found_other_ride", label: "Ho trovato un altro passaggio" },
-  { value: "change_plans", label: "Cambio di programma" },
-  { value: "personal_emergency", label: "Emergenza personale" },
-  { value: "driver_no_response", label: "Il guidatore non risponde" },
-  { value: "other", label: "Altro" },
-];
 
 interface BookingDetails {
   id: string;
@@ -34,6 +27,7 @@ interface BookingDetails {
 }
 
 export default function CancelBookingPage() {
+  const t = useTranslations("cancellation");
   const params = useParams();
   const router = useRouter();
   const bookingId = params.bookingId as string;
@@ -46,6 +40,14 @@ export default function CancelBookingPage() {
   const [cancelling, setCancelling] = useState(false);
 
   const supabase = createClient();
+
+  const cancellationReasons = [
+    { value: "found_other_ride", label: t("reasons.foundOtherRide") },
+    { value: "change_plans", label: t("reasons.plansChanged") },
+    { value: "personal_emergency", label: t("reasons.emergency") },
+    { value: "driver_no_response", label: t("reasons.driverIssue") },
+    { value: "other", label: t("reasons.other") },
+  ];
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -79,7 +81,7 @@ export default function CancelBookingPage() {
         if (error) throw error;
 
         if (!data) {
-          toast.error("Prenotazione non trovata");
+          toast.error(t("notFound"));
           router.push("/profilo");
           return;
         }
@@ -91,13 +93,13 @@ export default function CancelBookingPage() {
         const isDriver = ride?.driver_id === user.id;
 
         if (!isPassenger && !isDriver) {
-          toast.error("Non hai accesso a questa prenotazione");
+          toast.error(t("noAccess"));
           router.push("/profilo");
           return;
         }
 
         if (data.status === "cancelled") {
-          toast.error("Questa prenotazione è già stata cancellata");
+          toast.error(t("alreadyCancelled"));
           router.push("/profilo");
           return;
         }
@@ -108,19 +110,18 @@ export default function CancelBookingPage() {
           passenger: passenger,
         } as BookingDetails);
       } catch (_error) {
-        // Error fetching booking
-        toast.error("Errore nel caricare la prenotazione");
+        toast.error(t("loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchBooking();
-  }, [bookingId, router, supabase]);
+  }, [bookingId, router, supabase, t]);
 
   const handleCancel = async () => {
     if (!selectedReason) {
-      toast.error("Seleziona un motivo per la cancellazione");
+      toast.error(t("selectReason"));
       return;
     }
 
@@ -139,7 +140,6 @@ export default function CancelBookingPage() {
 
       if (updateError) throw updateError;
 
-      // Send cancellation notification to other party
       try {
         await fetch("/api/emails/booking-rejected", {
           method: "POST",
@@ -149,15 +149,14 @@ export default function CancelBookingPage() {
             reason: selectedReason,
           }),
         });
-      } catch (_emailError) {
+      } catch {
         // Email error - logged silently
       }
 
-      toast.success("Prenotazione cancellata con successo");
+      toast.success(t("successMessage"));
       router.push("/profilo");
     } catch (_error) {
-      // Error cancelling booking - logged silently
-      toast.error("Errore nella cancellazione");
+      toast.error(t("errorMessage"));
     } finally {
       setCancelling(false);
     }
@@ -175,9 +174,9 @@ export default function CancelBookingPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-red-400 mb-4" />
-        <h1 className="text-2xl font-bold text-white">Prenotazione non trovata</h1>
+        <h1 className="text-2xl font-bold text-white">{t("notFoundTitle")}</h1>
         <Link href="/profilo" className="mt-6 text-[#e63946] flex items-center gap-2">
-          <ArrowLeft className="w-4 h-4" /> Torna al profilo
+          <ArrowLeft className="w-4 h-4" /> {t("backToProfile")}
         </Link>
       </div>
     );
@@ -194,7 +193,7 @@ export default function CancelBookingPage() {
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
-            Torna al profilo
+            {t("backToProfile")}
           </Link>
         </div>
       </div>
@@ -204,13 +203,13 @@ export default function CancelBookingPage() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
             <X className="h-8 w-8 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Cancella prenotazione</h1>
-          <p className="text-white/60">Stai per cancellare il tuo passaggio</p>
+          <h1 className="text-2xl font-bold text-white mb-2">{t("title")}</h1>
+          <p className="text-white/60">{t("subtitle")}</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6 mb-6">
           <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
-            Dettagli corsa
+            {t("rideDetails")}
           </h3>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-white">
@@ -231,7 +230,7 @@ export default function CancelBookingPage() {
             <div className="flex items-center gap-3 text-white">
               <User className="h-5 w-5 text-[#e63946]" />
               <span>
-                {isPassenger ? "Passeggero" : "Guidatore"}: {booking.passenger.name}
+                {isPassenger ? t("passenger") : t("driver")}: {booking.passenger.name}
               </span>
             </div>
           </div>
@@ -239,7 +238,7 @@ export default function CancelBookingPage() {
 
         <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6 mb-6">
           <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
-            Motivo della cancellazione
+            {t("reasonTitle")}
           </h3>
 
           <div className="space-y-3 mb-4">
@@ -277,12 +276,12 @@ export default function CancelBookingPage() {
           {selectedReason === "other" && (
             <div className="mt-4">
               <label className="block text-sm text-white/60 mb-2">
-                Dettagli aggiuntivi (opzionale)
+                {t("detailsLabel")}
               </label>
               <textarea
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
-                placeholder="Spiega brevemente il motivo..."
+                placeholder={t("detailsPlaceholder")}
                 className="w-full h-24 px-4 py-3 rounded-xl border border-white/10 bg-[#0f1729] text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-[#e63946]"
               />
             </div>
@@ -294,7 +293,7 @@ export default function CancelBookingPage() {
             href="/profilo"
             className="flex-1 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-semibold text-center hover:bg-white/10 transition-colors"
           >
-            Torna indietro
+            {t("cancel")}
           </Link>
           <button
             onClick={handleCancel}
@@ -304,12 +303,12 @@ export default function CancelBookingPage() {
             {cancelling ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Annullamento...
+                {t("cancelling")}
               </>
             ) : (
               <>
                 <X className="h-5 w-5" />
-                Conferma cancellazione
+                {t("confirm")}
               </>
             )}
           </button>

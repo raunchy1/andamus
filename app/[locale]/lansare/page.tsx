@@ -15,61 +15,61 @@ import {
   Rocket
 } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ShareApp } from "@/components/ShareApp";
-
-const CHECKLIST_ITEMS = [
-  {
-    id: "profile",
-    icon: User,
-    title: "Completa il tuo profilo",
-    description: "Aggiungi foto, verifica il numero di telefono e costruisci la tua reputazione",
-    action: { href: "/profilo", label: "Vai al profilo" },
-  },
-  {
-    id: "search",
-    icon: Search,
-    title: "Cerca un passaggio",
-    description: "Trova corse disponibili nella tua zona e prenota il tuo primo viaggio",
-    action: { href: "/cerca", label: "Cerca ora" },
-  },
-  {
-    id: "offer",
-    icon: Car,
-    title: "Offri un passaggio",
-    description: "Hai posti liberi? Pubblica una corsa e guadagna punti esperienza",
-    action: { href: "/offri", label: "Pubblica corsa" },
-  },
-  {
-    id: "notifications",
-    icon: Bell,
-    title: "Attiva le notifiche",
-    description: "Ricevi aggiornamenti in tempo reale su prenotazioni e messaggi",
-    action: { href: "/profilo", label: "Impostazioni" },
-  },
-  {
-    id: "share",
-    icon: Share2,
-    title: "Invita gli amici",
-    description: "Condividi Andamus e aiuta la community a crescere",
-    isShare: true,
-  },
-  {
-    id: "safety",
-    icon: Shield,
-    title: "Scopri la sicurezza",
-    description: "Conosci il pulsante SOS e le funzioni di sicurezza dell'app",
-    action: { href: "/profilo", label: "Info sicurezza" },
-  },
-];
 
 export default function LaunchPage() {
   const locale = useLocale();
+  const t = useTranslations("onboarding");
   const [completedItems, setCompletedItems] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
+  const CHECKLIST_ITEMS = [
+    {
+      id: "profile",
+      icon: User,
+      title: t("checklist.completeProfile"),
+      description: t("checklist.completeProfileDesc"),
+      action: { href: "/profilo", label: t("checklist.go") },
+    },
+    {
+      id: "search",
+      icon: Search,
+      title: t("checklist.firstRide"),
+      description: t("checklist.firstRideDesc"),
+      action: { href: "/cerca", label: t("checklist.search") },
+    },
+    {
+      id: "offer",
+      icon: Car,
+      title: t("checklist.offerRide"),
+      description: t("checklist.offerRideDesc"),
+      action: { href: "/offri", label: t("checklist.publish") },
+    },
+    {
+      id: "notifications",
+      icon: Bell,
+      title: t("checklist.enableNotifications"),
+      description: t("checklist.enableNotificationsDesc"),
+      action: { href: "/profilo", label: t("checklist.settings") },
+    },
+    {
+      id: "share",
+      icon: Share2,
+      title: t("checklist.inviteFriends"),
+      description: t("checklist.inviteFriendsDesc"),
+      isShare: true,
+    },
+    {
+      id: "safety",
+      icon: Shield,
+      title: t("checklist.discoverSafety"),
+      description: t("checklist.discoverSafetyDesc"),
+      action: { href: "/profilo", label: t("checklist.safetyInfo") },
+    },
+  ];
+
   useEffect(() => {
-    // Schedule setState in microtask to avoid React 19 cascading render warning
     Promise.resolve().then(() => {
       setMounted(true);
       const saved = localStorage.getItem("andamus_launch_checklist");
@@ -117,7 +117,7 @@ export default function LaunchPage() {
             transition={{ delay: 0.1 }}
             className="text-4xl font-extrabold tracking-tight mb-4"
           >
-            Benvenuto su Andamus! 🎉
+            {t("welcome")}
           </motion.h1>
           <motion.p
             initial={{ y: 20, opacity: 0 }}
@@ -125,7 +125,7 @@ export default function LaunchPage() {
             transition={{ delay: 0.2 }}
             className="text-lg text-[#e5e2e1]/70 max-w-lg mx-auto"
           >
-            Completa questi semplici passaggi per iniziare al meglio con il carpooling in Sardegna
+            {t("subtitle")}
           </motion.p>
         </div>
 
@@ -137,7 +137,7 @@ export default function LaunchPage() {
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-[#e5e2e1]/70">Progresso</span>
+            <span className="text-sm font-medium text-[#e5e2e1]/70">{t("progress")}</span>
             <span className="text-sm font-bold text-[#e63946]">{progress}%</span>
           </div>
           <div className="h-3 bg-[#1c1b1b] rounded-full overflow-hidden">
@@ -254,10 +254,10 @@ export default function LaunchPage() {
             className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#e63946]/20 to-[#ff6b6b]/20 border border-[#e63946]/30 text-center"
           >
             <h2 className="text-2xl font-bold text-white mb-2">
-              🎉 Complimenti! Sei pronto!
+              {t("allDone")}
             </h2>
             <p className="text-[#e5e2e1]/70 mb-4">
-              Hai completato tutti i passaggi. Inizia subito a usare Andamus!
+              {t("allDoneDesc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -265,14 +265,14 @@ export default function LaunchPage() {
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#e63946] text-white font-semibold hover:bg-[#c92a37] transition-colors"
               >
                 <Search className="w-5 h-5" />
-                Cerca un passaggio
+                {t("findRide")}
               </Link>
               <Link
                 href={`/${locale}/offri`}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors"
               >
                 <Car className="w-5 h-5" />
-                Offri un passaggio
+                {t("offerRide")}
               </Link>
             </div>
           </motion.div>
@@ -281,7 +281,7 @@ export default function LaunchPage() {
         {/* Footer */}
         <div className="mt-12 text-center">
           <p className="text-sm text-[#e5e2e1]/40">
-            Andamus v1.0 - Il carpooling dei sardi
+            {t("footer")}
           </p>
         </div>
       </div>

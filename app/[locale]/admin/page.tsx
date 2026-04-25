@@ -31,6 +31,7 @@ import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { completeGamificationAction } from "@/lib/gamification";
 import { isAdmin } from "@/lib/admin";
+import { useTranslations } from "next-intl";
 
 interface User {
   id: string;
@@ -89,6 +90,7 @@ interface Stats {
 export default function AdminDashboard() {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("admin");
   const [loading, setLoading] = useState(true);
   const [isAdminUser, setIsAdminUser] = useState(false);
   
@@ -155,7 +157,7 @@ export default function AdminDashboard() {
       
       setUsers(profilesData?.map(u => ({
         id: u.id,
-        name: u.name || 'Utente',
+        name: u.name || t('unknownUser'),
         email: '', // Email not directly available in profiles
         avatar_url: u.avatar_url,
         rating: u.rating || 5,
@@ -175,9 +177,9 @@ export default function AdminDashboard() {
       
       setReports(reportsData?.map(r => ({
         id: r.id,
-        reporter_name: r.reporter?.name || 'Utente',
+        reporter_name: r.reporter?.name || t('unknownUser'),
         reporter_avatar: r.reporter?.avatar_url,
-        reported_name: r.reported?.name || 'Utente',
+        reported_name: r.reported?.name || t('unknownUser'),
         reported_avatar: r.reported?.avatar_url,
         type: r.type,
         description: r.description,
@@ -198,7 +200,7 @@ export default function AdminDashboard() {
       setVerifications(verifData?.map(v => ({
         id: v.id,
         user_id: v.user_id,
-        user_name: v.user?.name || 'Utente',
+        user_name: v.user?.name || t('unknownUser'),
         user_avatar: v.user?.avatar_url,
         type: v.type,
         status: v.status,
@@ -225,18 +227,18 @@ export default function AdminDashboard() {
         seats: r.seats,
         price: r.price,
         status: r.status,
-        driver_name: r.driver?.name || 'Utente',
+        driver_name: r.driver?.name || t('unknownUser'),
         driver_avatar: r.driver?.avatar_url,
         created_at: r.created_at
       })) || []);
 
     } catch {
       // console.error("Error fetching admin data:", _error);
-      toast.error("Errore nel caricamento dei dati");
+      toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, [isAdminUser, supabase]);
+  }, [isAdminUser, supabase, t]);
 
   useEffect(() => {
     fetchData();
@@ -255,10 +257,10 @@ export default function AdminDashboard() {
       
       if (error) throw error;
       
-      toast.success(currentStatus ? "Utente sbloccato" : "Utente bloccato");
+      toast.success(currentStatus ? t('userUnblocked') : t('userBlocked'));
       fetchData();
     } catch {
-      toast.error("Errore nell'aggiornamento dello stato");
+      toast.error(t('statusUpdateError'));
     }
   };
 
@@ -272,10 +274,10 @@ export default function AdminDashboard() {
       
       if (error) throw error;
       
-      toast.success("Segnalazione risolta");
+      toast.success(t('reportResolved'));
       fetchData();
     } catch {
-      toast.error("Errore nella risoluzione");
+      toast.error(t('reportResolveError'));
     }
   };
 
@@ -316,10 +318,10 @@ export default function AdminDashboard() {
         await completeGamificationAction(verification.user_id, 'identity_verified');
       }
       
-      toast.success("Verifica approvata");
+      toast.success(t('verificationApproved'));
       fetchData();
     } catch {
-      toast.error("Errore nell'approvazione");
+      toast.error(t('verificationApproveError'));
     }
   };
 
@@ -333,10 +335,10 @@ export default function AdminDashboard() {
       
       if (error) throw error;
       
-      toast.success("Verifica rifiutata");
+      toast.success(t('verificationRejected'));
       fetchData();
     } catch {
-      toast.error("Errore nel rifiuto");
+      toast.error(t('verificationRejectError'));
     }
   };
 
@@ -350,10 +352,10 @@ export default function AdminDashboard() {
       
       if (error) throw error;
       
-      toast.success("Corsa disattivata");
+      toast.success(t('rideDisabled'));
       fetchData();
     } catch {
-      toast.error("Errore nella disattivazione");
+      toast.error(t('rideDisableError'));
     }
   };
 
@@ -370,10 +372,10 @@ export default function AdminDashboard() {
   // Get verification type label
   const getVerifTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      'phone': 'Telefono',
-      'email': 'Email',
-      'id_document': 'Documento ID',
-      'driver_license': 'Patente'
+      'phone': t('phone'),
+      'email': t('email'),
+      'id_document': t('idDocument'),
+      'driver_license': t('driverLicense')
     };
     return labels[type] || type;
   };
@@ -392,12 +394,12 @@ export default function AdminDashboard() {
   // Get report type label
   const getReportTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      'inappropriate_behavior': 'Comportamento inappropriato',
-      'no_show': 'Mancata presenza',
-      'fake_profile': 'Profilo falso',
-      'unsafe_driving': 'Guida pericolosa',
-      'harassment': 'Molestie',
-      'other': 'Altro'
+      'inappropriate_behavior': t('reportInappropriate'),
+      'no_show': t('reportNoShow'),
+      'fake_profile': t('reportFakeProfile'),
+      'unsafe_driving': t('reportUnsafeDriving'),
+      'harassment': t('reportHarassment'),
+      'other': t('other')
     };
     return labels[type] || type;
   };
@@ -409,8 +411,8 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Pannello Admin</h1>
-          <p className="text-white/60">Gestione piattaforma Andamus</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('title')}</h1>
+          <p className="text-white/60">{t('subtitle')}</p>
         </div>
 
         {loading ? (
@@ -426,7 +428,7 @@ export default function AdminDashboard() {
                   <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-400" />
                   </div>
-                  <span className="text-white/60 text-sm">Utenti</span>
+                  <span className="text-white/60 text-sm">{t('users')}</span>
                 </div>
                 <p className="text-3xl font-bold text-white">{stats.total_users}</p>
               </div>
@@ -436,7 +438,7 @@ export default function AdminDashboard() {
                   <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
                     <Car className="w-5 h-5 text-green-400" />
                   </div>
-                  <span className="text-white/60 text-sm">Corse</span>
+                  <span className="text-white/60 text-sm">{t('rides')}</span>
                 </div>
                 <p className="text-3xl font-bold text-white">{stats.total_rides}</p>
               </div>
@@ -446,7 +448,7 @@ export default function AdminDashboard() {
                   <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
                     <Calendar className="w-5 h-5 text-purple-400" />
                   </div>
-                  <span className="text-white/60 text-sm">Prenotazioni</span>
+                  <span className="text-white/60 text-sm">{t('bookings')}</span>
                 </div>
                 <p className="text-3xl font-bold text-white">{stats.total_bookings}</p>
               </div>
@@ -456,7 +458,7 @@ export default function AdminDashboard() {
                   <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 text-red-400" />
                   </div>
-                  <span className="text-white/60 text-sm">Segnalazioni</span>
+                  <span className="text-white/60 text-sm">{t('reports')}</span>
                 </div>
                 <p className="text-3xl font-bold text-white">{stats.pending_reports}</p>
               </div>
@@ -467,13 +469,13 @@ export default function AdminDashboard() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                   <Users className="w-5 h-5 text-[#e63946]" />
-                  Gestione Utenti
+                  {t('userManagement')}
                 </h2>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                   <Input
                     type="text"
-                    placeholder="Cerca utente..."
+                    placeholder={t('searchUserPlaceholder')}
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
                     className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 w-full md:w-64"
@@ -485,11 +487,11 @@ export default function AdminDashboard() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Utente</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Rating</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Registrato</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Stato</th>
-                      <th className="text-right py-3 px-4 text-white/60 font-medium text-sm">Azioni</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('userHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('ratingHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('registeredHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('statusHeader')}</th>
+                      <th className="text-right py-3 px-4 text-white/60 font-medium text-sm">{t('actionsHeader')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -522,7 +524,7 @@ export default function AdminDashboard() {
                               ? 'bg-red-500/20 text-red-400' 
                               : 'bg-green-500/20 text-green-400'
                           }`}>
-                            {user.is_blocked ? 'Bloccato' : 'Attivo'}
+                            {user.is_blocked ? t('blocked') : t('active')}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-right">
@@ -536,9 +538,9 @@ export default function AdminDashboard() {
                             }
                           >
                             {user.is_blocked ? (
-                              <><Unlock className="w-3 h-3 mr-1" /> Sblocca</>
+                              <><Unlock className="w-3 h-3 mr-1" /> {t('unblock')}</>
                             ) : (
-                              <><Ban className="w-3 h-3 mr-1" /> Blocca</>
+                              <><Ban className="w-3 h-3 mr-1" /> {t('block')}</>
                             )}
                           </Button>
                         </td>
@@ -547,7 +549,7 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
                 {filteredUsers.length === 0 && (
-                  <p className="text-center text-white/40 py-8">Nessun utente trovato</p>
+                  <p className="text-center text-white/40 py-8">{t('noUsersFound')}</p>
                 )}
               </div>
             </section>
@@ -557,7 +559,7 @@ export default function AdminDashboard() {
               <section className="bg-white/5 border border-white/10 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
                   <AlertTriangle className="w-5 h-5 text-[#e63946]" />
-                  Segnalazioni Sicurezza
+                  {t('safetyReports')}
                 </h2>
                 
                 <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -573,7 +575,7 @@ export default function AdminDashboard() {
                       </div>
                       
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-white/60 text-sm">Da:</span>
+                        <span className="text-white/60 text-sm">{t('from')}</span>
                         <span className="text-white text-sm font-medium">{report.reporter_name}</span>
                         <span className="text-white/40">→</span>
                         <span className="text-white text-sm font-medium">{report.reported_name}</span>
@@ -587,7 +589,7 @@ export default function AdminDashboard() {
                         className="w-full bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
                       >
                         <CheckCircle className="w-4 h-4 mr-2" />
-                        Segna come risolto
+                        {t('markAsResolved')}
                       </Button>
                     </div>
                   ))}
@@ -595,7 +597,7 @@ export default function AdminDashboard() {
                   {reports.filter(r => r.status === 'pending').length === 0 && (
                     <div className="text-center py-8">
                       <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                      <p className="text-white/60">Nessuna segnalazione pendente</p>
+                      <p className="text-white/60">{t('noPendingReports')}</p>
                     </div>
                   )}
                 </div>
@@ -605,7 +607,7 @@ export default function AdminDashboard() {
               <section className="bg-white/5 border border-white/10 rounded-xl p-6">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
                   <Shield className="w-5 h-5 text-[#e63946]" />
-                  Verifiche in Attesa
+                  {t('pendingVerifications')}
                 </h2>
                 
                 <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -636,7 +638,7 @@ export default function AdminDashboard() {
                           className="flex items-center gap-2 text-blue-400 text-sm mb-3 hover:underline"
                         >
                           <FileText className="w-4 h-4" />
-                          Visualizza documento
+                          {t('viewDocument')}
                         </a>
                       )}
                       
@@ -647,7 +649,7 @@ export default function AdminDashboard() {
                           className="flex-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
                         >
                           <Check className="w-4 h-4 mr-1" />
-                          Approva
+                          {t('approve')}
                         </Button>
                         <Button
                           size="sm"
@@ -656,7 +658,7 @@ export default function AdminDashboard() {
                           className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
                         >
                           <X className="w-4 h-4 mr-1" />
-                          Rifiuta
+                          {t('reject')}
                         </Button>
                       </div>
                     </div>
@@ -665,7 +667,7 @@ export default function AdminDashboard() {
                   {verifications.length === 0 && (
                     <div className="text-center py-8">
                       <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                      <p className="text-white/60">Nessuna verifica in attesa</p>
+                      <p className="text-white/60">{t('noPendingVerifications')}</p>
                     </div>
                   )}
                 </div>
@@ -676,20 +678,20 @@ export default function AdminDashboard() {
             <section className="bg-white/5 border border-white/10 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
                 <Car className="w-5 h-5 text-[#e63946]" />
-                Corse Recenti
+                {t('recentRides')}
               </h2>
               
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Percorso</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Autista</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Data</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Posti</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Prezzo</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">Stato</th>
-                      <th className="text-right py-3 px-4 text-white/60 font-medium text-sm">Azioni</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('routeHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('driverHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('dateHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('seatsHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('priceHeader')}</th>
+                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('statusHeader')}</th>
+                      <th className="text-right py-3 px-4 text-white/60 font-medium text-sm">{t('actionsHeader')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -731,7 +733,7 @@ export default function AdminDashboard() {
                               ? 'bg-green-500/20 text-green-400' 
                               : 'bg-red-500/20 text-red-400'
                           }`}>
-                            {ride.status === 'active' ? 'Attiva' : 'Disattivata'}
+                            {ride.status === 'active' ? t('rideActive') : t('rideInactive')}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-right">
@@ -743,7 +745,7 @@ export default function AdminDashboard() {
                               className="border-red-500/50 text-red-400 hover:bg-red-500/10"
                             >
                               <Ban className="w-3 h-3 mr-1" />
-                              Disattiva
+                              {t('disable')}
                             </Button>
                           )}
                         </td>
