@@ -196,8 +196,8 @@ export default function StatisticsPage() {
       activityData.push({
         month: date.toLocaleDateString(locale, { month: 'short' }),
         fullMonth: monthKey,
-        autista: monthRides,
-        passeggero: monthBookings,
+        driver: monthRides,
+        passenger: monthBookings,
         totale: monthRides + monthBookings
       });
     }
@@ -429,8 +429,8 @@ export default function StatisticsPage() {
                   }}
                   labelStyle={{ color: '#fff' }}
                 />
-                <Bar dataKey="autista" name={t('driver')} fill="#e63946" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="passeggero" name={t('passenger')} fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="driver" name={t('driver')} fill="#e63946" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="passenger" name={t('passenger')} fill="#3b82f6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

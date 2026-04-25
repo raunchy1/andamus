@@ -229,7 +229,7 @@
     "arrivalPlaceholder": "Wohin fährst du?",
     "seatsPlaceholder": "1-8 Plätze",
     "travelMode": "Reisemodus",
-    "freeRideBonus": "Kostenlose Fahrten unterstützen die Community und erhöhen deinen \"Nomad\"-Score um 20%.",
+    "freeRideBonus": "Kostenlose Fahrten unterstützen die Community und bringen dir Extrapunkte",
     "pricePlaceholder": "Betrag in Euro",
     "calculatingPrice": "Distanz und Preis berechnen...",
     "distanceLabel": "Distanz:",
@@ -452,7 +452,7 @@
     "loginAgainToUseApp": "Du musst dich erneut anmelden, um die App zu nutzen.",
     "logout": "Ausloggen",
     "cancelBookingTitle": "Buchung stornieren",
-    "enterCancellationReason": "Gib den Grund für die Stornierung an:",
+    "enterCancellationReason": "Bitte gib einen Grund für die Stornierung an:",
     "reasonPlaceholder": "Grund...",
     "confirm": "Bestätigen",
     "vehicle": "Fahrzeug",
@@ -703,7 +703,11 @@
     "loginRequired": "Sie müssen angemeldet sein, um sich anzumelden",
     "alreadyFree": "Sie befinden sich bereits im kostenlosen Plan!",
     "checkoutError": "Checkout-Fehler",
-    "manageError": "Fehler bei der Verwaltung des Abonnements"
+    "manageError": "Fehler bei der Verwaltung des Abonnements",
+    "cancelledTitle": "Zahlung abgebrochen",
+    "cancelledDesc": "Keine Sorge, es wurde nichts berechnet.",
+    "backToPlans": "Zurück zu den Plänen",
+    "backToHome": "Zur Startseite"
   },
   "stats": {
     "pageTitle": "Statistiken",

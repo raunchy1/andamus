@@ -229,7 +229,7 @@
     "arrivalPlaceholder": "Dove vai?",
     "seatsPlaceholder": "1-8 posti",
     "travelMode": "Modalità di viaggio",
-    "freeRideBonus": "I viaggi gratuiti favoriscono la community e aumentano il tuo punteggio \"Nomad\" del 20%.",
+    "freeRideBonus": "I viaggi gratuiti favoriscono la community e ti fanno guadagnare punti extra",
     "pricePlaceholder": "Importo in euro",
     "calculatingPrice": "Calcolo distanza e prezzo...",
     "distanceLabel": "Distanza:",
@@ -703,7 +703,11 @@
     "loginRequired": "Devi essere loggato per abbonarti",
     "alreadyFree": "Stai già usando il piano gratuito!",
     "checkoutError": "Errore nel checkout",
-    "manageError": "Errore nel gestire l'abbonamento"
+    "manageError": "Errore nel gestire l'abbonamento",
+    "cancelledTitle": "Pagamento annullato",
+    "cancelledDesc": "Non ti preoccupare, non è stato addebitato nulla.",
+    "backToPlans": "Torna ai piani",
+    "backToHome": "Torna alla home"
   },
   "stats": {
     "pageTitle": "Statistiche",

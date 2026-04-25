@@ -687,7 +687,7 @@ function OfferDesktop({
                     </button>
                   </div>
                   <p className="text-xs text-outline leading-relaxed italic">
-                    I viaggi gratuiti favoriscono la community e aumentano il tuo punteggio &quot;Nomad&quot; del 20%.
+                    {t('freeRideBonus')}
                   </p>
                 </div>
 

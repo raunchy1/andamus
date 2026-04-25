@@ -719,7 +719,7 @@ export default function ProfilePage() {
                           ) : (
                             <Check className="h-4 w-4" />
                           )}
-                          Accetta
+                          {t("accept")}
                         </button>
                       </div>
                     </div>
@@ -964,7 +964,7 @@ export default function ProfilePage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
               <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("cancelBookingTitle")}</h3>
-              <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
+              <p className="text-sm text-on-surface-variant mb-4">{t("enterCancellationReason")}</p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
@@ -1118,7 +1118,7 @@ export default function ProfilePage() {
                               ) : (
                                 <Check className="h-4 w-4" />
                               )}
-                              Accetta
+                              {t("accept")}
                             </button>
                           </div>
                         </div>
@@ -1479,7 +1479,7 @@ export default function ProfilePage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
               <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("cancelBookingTitle")}</h3>
-              <p className="text-sm text-on-surface-variant mb-4">Indica il motivo dell&apos;annullamento:</p>
+              <p className="text-sm text-on-surface-variant mb-4">{t("enterCancellationReason")}</p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}

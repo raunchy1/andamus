@@ -229,7 +229,7 @@
     "arrivalPlaceholder": "Where are you going?",
     "seatsPlaceholder": "1-8 seats",
     "travelMode": "Travel mode",
-    "freeRideBonus": "Free rides support the community and increase your \"Nomad\" score by 20%.",
+    "freeRideBonus": "Free rides support the community and earn you extra points",
     "pricePlaceholder": "Amount in euros",
     "calculatingPrice": "Calculating distance and price...",
     "distanceLabel": "Distance:",
@@ -452,7 +452,7 @@
     "loginAgainToUseApp": "You will need to log in again to use the app.",
     "logout": "Log out",
     "cancelBookingTitle": "Cancel booking",
-    "enterCancellationReason": "Enter the reason for cancellation:",
+    "enterCancellationReason": "Please provide a reason for cancellation:",
     "reasonPlaceholder": "Reason...",
     "confirm": "Confirm",
     "vehicle": "Vehicle",
@@ -703,7 +703,11 @@
     "loginRequired": "You must be logged in to subscribe",
     "alreadyFree": "You are already on the free plan!",
     "checkoutError": "Checkout error",
-    "manageError": "Error managing subscription"
+    "manageError": "Error managing subscription",
+    "cancelledTitle": "Payment cancelled",
+    "cancelledDesc": "Don't worry, you have not been charged.",
+    "backToPlans": "Back to plans",
+    "backToHome": "Back to home"
   },
   "stats": {
     "pageTitle": "Statistics",
