@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Trova e offri passaggi in Sardegna. Il carpooling sardo gratuito per viaggiare insieme, risparmiare sui costi e ridurre le emissioni.",
     start_url: "/it",
     display: "standalone",
-    background_color: "#1c1b1b",
+    background_color: "#0a0a0a",
     theme_color: "#e63946",
     orientation: "portrait",
     scope: "/",

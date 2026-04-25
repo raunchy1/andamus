@@ -2,9 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileLoading() {
   return (
-    <div className="min-h-screen bg-[#1a1a2e]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Profile Header Skeleton */}
-      <div className="bg-gradient-to-br from-[#1a1a2e] via-[#1e1a3e] to-[#2a1a3e] px-4 py-12">
+      <div className="bg-gradient-to-br from-[#0a0a0a] via-[#131313] to-[#1c1b1b] px-4 py-12">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col items-center gap-6 sm:flex-row">
             <Skeleton className="h-28 w-28 rounded-full" />
@@ -42,7 +42,7 @@ export default function ProfileLoading() {
         {/* List Skeleton */}
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-[#1e2a4a] border border-white/10 rounded-2xl p-6">
+            <div key={i} className="bg-[#1c1b1b] border border-white/10 rounded-2xl p-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 space-y-3">
                   <div className="flex gap-2">

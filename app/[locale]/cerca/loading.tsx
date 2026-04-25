@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SearchLoading() {
   return (
-    <div className="min-h-screen bg-[#0e0e0e] pt-20 pb-24">
+    <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Skeleton */}
         <div className="mb-6">
@@ -11,7 +11,7 @@ export default function SearchLoading() {
         </div>
 
         {/* Search Form Skeleton */}
-        <div className="bg-[#1a1a2e] rounded-2xl p-4 sm:p-6 mb-6">
+        <div className="bg-[#1c1b1b] rounded-2xl p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="space-y-2">
@@ -34,7 +34,7 @@ export default function SearchLoading() {
         {/* 5 Ride Card Skeletons */}
         <div className="grid gap-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="rounded-2xl bg-[#1a1a2e] p-4 sm:p-5 border border-white/5">
+            <div key={i} className="rounded-2xl bg-[#1c1b1b] p-4 sm:p-5 border border-white/5">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <Skeleton className="w-10 h-10 rounded-full" />

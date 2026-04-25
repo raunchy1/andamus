@@ -2,7 +2,7 @@
 
 export default function StatisticsLoading() {
   return (
-    <main className="min-h-screen bg-[#1a1a2e] pt-24 pb-12">
+    <main className="min-h-screen bg-[#0a0a0a] pt-24 pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Skeleton */}
         <div className="mb-8">
