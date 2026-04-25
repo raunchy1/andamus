@@ -453,7 +453,7 @@ export default function StatisticsPage() {
                     <div className={`
                       w-10 h-10 rounded-full flex items-center justify-center font-bold
                       ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' : 
-                        index === 1 ? 'bg-gray-400/20 text-gray-300' : 
+                        index === 1 ? 'bg-gray-400/20 text-on-surface-variant' : 
                         'bg-orange-600/20 text-orange-400'}
                     `}>
                       {index + 1}
@@ -486,7 +486,7 @@ export default function StatisticsPage() {
             {/* Export Button */}
             <button
               onClick={generatePDFReport}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-[#e63946] text-white rounded-lg hover:bg-[#c92a37] transition-colors"
+              className="flex items-center justify-center gap-2 bg-primary text-on-primary rounded-full px-6 py-3 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               {t('downloadReport')}
@@ -667,7 +667,7 @@ function StatCard({
   suffix?: string;
 }) {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
       <div className="flex justify-center mb-2">{icon}</div>
       <p className="text-2xl font-bold text-white">{value.toLocaleString()}{suffix}</p>
       <p className="text-white/60 text-xs">{label}</p>
@@ -720,6 +720,6 @@ function getBadgeDetails(type: string, translate: ReturnType<typeof useTranslati
     name: type,
     description: "",
     icon: "🏅",
-    color: "bg-gray-500",
+    color: "bg-surface-variant",
   };
 }

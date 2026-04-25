@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /it/admin
+Disallow: /en/admin
+Disallow: /de/admin
+Sitemap: https://andamus.vercel.app/sitemap.xml
