@@ -951,10 +951,10 @@ export default function ChatWindow({
         <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4 shrink-0">
           <div className="flex flex-col">
             <span className="font-semibold uppercase tracking-widest text-[11px] text-primary">
-              ANDAMUS LIVE
+              {t("andamusLive")}
             </span>
             <h1 className="font-extrabold tracking-tighter text-2xl uppercase text-on-surface">
-              {otherParticipant?.name || "Chat"}
+              {otherParticipant?.name || t("chat")}
             </h1>
           </div>
           <div className="flex items-center gap-4 pb-1">
@@ -1005,7 +1005,7 @@ export default function ChatWindow({
             )}
             <div className="bg-surface-container-high px-3 py-2 rounded-lg">
               <span className="text-[10px] font-extrabold text-primary">
-                LIVE TRACKING
+                {t("liveTracking")}
               </span>
             </div>
           </div>
@@ -1052,10 +1052,10 @@ export default function ChatWindow({
           <header className="bg-[#0e0e0e] flex justify-between items-center w-full px-8 pt-10 pb-6 shrink-0">
             <div className="flex flex-col">
               <span className="font-semibold uppercase tracking-widest text-xs text-primary mb-1">
-                ANDAMUS LIVE
+                {t("andamusLive")}
               </span>
               <h1 className="font-extrabold tracking-tighter text-3xl uppercase text-on-surface">
-                {otherParticipant?.name || "Chat"}
+                {otherParticipant?.name || t("chat")}
               </h1>
             </div>
             <div className="flex items-center gap-6">
@@ -1106,7 +1106,7 @@ export default function ChatWindow({
               )}
               <div className="bg-surface-container-high px-4 py-2 rounded-lg">
                 <span className="text-xs font-extrabold text-primary">
-                  LIVE TRACKING
+                  {t("liveTracking")}
                 </span>
               </div>
             </div>
@@ -1162,7 +1162,7 @@ export default function ChatWindow({
             </button>
             <Image
               src={imagePreview}
-              alt="Preview"
+              alt={t("preview")}
               width={600}
               height={400}
               className="w-full rounded-lg"

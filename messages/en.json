@@ -564,7 +564,11 @@
     "sending": "Sending...",
     "failed": "Failed",
     "cancel": "Cancel",
-    "zoomedImageAlt": "Zoomed image"
+    "zoomedImageAlt": "Zoomed image",
+    "andamusLive": "ANDAMUS LIVE",
+    "chat": "Chat",
+    "liveTracking": "LIVE TRACKING",
+    "preview": "Preview"
   },
   "common": {
     "cancel": "Cancel",
@@ -583,7 +587,9 @@
     "selectCity": "Select city",
     "search": "Search",
     "city": "city",
-    "noCityFound": "No city found."
+    "noCityFound": "No city found.",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
   },
   "booking": {
     "loginRequired": "You need to sign in to book a ride",
@@ -1127,5 +1133,25 @@
     "allRightsReserved": "All rights reserved",
     "terms": "Terms",
     "privacy": "Privacy"
+  },
+  "share": {
+    "discoveredMessage": "I discovered Andamus, the carpooling app in Sardinia!",
+    "appName": "Andamus - Carpooling in Sardinia",
+    "share": "Share",
+    "shareSuccess": "Thanks for sharing! 🎉",
+    "linkCopied": "Link copied! Paste it wherever you like 📋",
+    "inviteFriends": "Invite friends",
+    "shareDescription": "Share Andamus and help the community grow"
+  },
+  "map": {
+    "addApiKey": "Configure Google Maps API key",
+    "loadingMap": "Loading map...",
+    "noCoordinates": "Coordinates not available"
+  },
+  "offline": {
+    "youAreOffline": "You are offline",
+    "checkConnection": "It seems you are not connected to the internet. Check your connection and try again.",
+    "backToHome": "Back to home",
+    "retry": "Retry"
   }
 }

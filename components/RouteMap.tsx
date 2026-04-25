@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer } from "@react-google-maps/api";
 import Image from "next/image";
 import { MapPin, Navigation } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SARDINIA_CITIES, darkMapStyles } from "@/lib/sardinia-cities";
 
 interface RouteMapProps {
@@ -33,6 +34,7 @@ const mapOptions = {
 };
 
 export function RouteMap({ fromCity, toCity, height = "400px" }: RouteMapProps) {
+  const t = useTranslations("map");
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [distance, setDistance] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
@@ -121,7 +123,7 @@ export function RouteMap({ fromCity, toCity, height = "400px" }: RouteMapProps) 
           
           {!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
             <p className="text-sm text-white/40">
-              Aggiungi NEXT_PUBLIC_GOOGLE_MAPS_API_KEY per vedere la mappa
+              {t("addApiKey")}
             </p>
           )}
         </div>
@@ -137,7 +139,7 @@ export function RouteMap({ fromCity, toCity, height = "400px" }: RouteMapProps) 
       >
         <div className="flex items-center gap-3 text-white/50">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-[#e63946]" />
-          Caricamento mappa...
+          {t("loadingMap")}
         </div>
       </div>
     );
@@ -152,7 +154,7 @@ export function RouteMap({ fromCity, toCity, height = "400px" }: RouteMapProps) 
         className="flex w-full items-center justify-center rounded-2xl border border-white/10 bg-[#1e2a4a]"
         style={{ height }}
       >
-        <p className="text-white/50">Coordinate non disponibili</p>
+        <p className="text-white/50">{t("noCoordinates")}</p>
       </div>
     );
   }

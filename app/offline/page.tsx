@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { WifiOff, RefreshCw, Home } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function OfflinePage() {
+  const t = useTranslations("offline");
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
@@ -14,12 +16,11 @@ export default function OfflinePage() {
         </div>
         
         <h1 className="text-3xl font-bold text-white mb-4">
-          Sei offline
+          {t("youAreOffline")}
         </h1>
         
         <p className="text-white/60 mb-8">
-          Sembra che tu non sia connesso a internet. 
-          Verifica la tua connessione e riprova.
+          {t("checkConnection")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -28,7 +29,7 @@ export default function OfflinePage() {
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
-            Riprova
+            {t("retry")}
           </button>
           
           <Link
@@ -36,7 +37,7 @@ export default function OfflinePage() {
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors"
           >
             <Home className="h-5 w-5" />
-            Torna alla home
+            {t("backToHome")}
           </Link>
         </div>
 

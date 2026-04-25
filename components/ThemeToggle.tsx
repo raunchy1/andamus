@@ -3,12 +3,14 @@
 import { useTheme } from "./ThemeProvider";
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ThemeToggleProps {
   isHome?: boolean;
 }
 
 export function ThemeToggle({ isHome = false }: ThemeToggleProps) {
+  const t = useTranslations("common");
   const { theme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -44,7 +46,7 @@ export function ThemeToggle({ isHome = false }: ThemeToggleProps) {
             ? "text-gray-400 hover:bg-gray-800 hover:text-white"
             : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
       }`}
-      title={isDark ? "Passa alla modalità chiara" : "Passa alla modalità scura"}
+      title={isDark ? t("switchToLight") : t("switchToDark")}
     >
       <div className="relative h-5 w-5">
         <Sun

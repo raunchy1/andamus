@@ -564,7 +564,11 @@
     "sending": "Invio in corso...",
     "failed": "Fallito",
     "cancel": "Annulla",
-    "zoomedImageAlt": "Immagine ingrandita"
+    "zoomedImageAlt": "Immagine ingrandita",
+    "andamusLive": "ANDAMUS LIVE",
+    "chat": "Chat",
+    "liveTracking": "LIVE TRACKING",
+    "preview": "Anteprima"
   },
   "common": {
     "cancel": "Annulla",
@@ -583,7 +587,9 @@
     "selectCity": "Seleziona città",
     "search": "Cerca",
     "city": "città",
-    "noCityFound": "Nessuna città trovata."
+    "noCityFound": "Nessuna città trovata.",
+    "switchToLight": "Passa alla modalità chiara",
+    "switchToDark": "Passa alla modalità scura"
   },
   "booking": {
     "loginRequired": "Devi accedere per prenotare un passaggio",
@@ -1127,5 +1133,25 @@
     "allRightsReserved": "Tutti i diritti riservati",
     "terms": "Termini",
     "privacy": "Privacy"
+  },
+  "share": {
+    "discoveredMessage": "Ho scoperto Andamus, l'app di carpooling in Sardegna!",
+    "appName": "Andamus - Carpooling in Sardegna",
+    "share": "Condividi",
+    "shareSuccess": "Grazie per condividere! 🎉",
+    "linkCopied": "Link copiato! Incollalo dove preferisci 📋",
+    "inviteFriends": "Invita gli amici",
+    "shareDescription": "Condividi Andamus e aiuta la community a crescere"
+  },
+  "map": {
+    "addApiKey": "Configura la chiave API Google Maps",
+    "loadingMap": "Caricamento mappa...",
+    "noCoordinates": "Coordinate non disponibili"
+  },
+  "offline": {
+    "youAreOffline": "Sei offline",
+    "checkConnection": "Sembra che tu non sia connesso a internet. Verifica la tua connessione e riprova.",
+    "backToHome": "Torna alla home",
+    "retry": "Riprova"
   }
 }

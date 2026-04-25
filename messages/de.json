@@ -564,7 +564,11 @@
     "sending": "Wird gesendet...",
     "failed": "Fehlgeschlagen",
     "cancel": "Abbrechen",
-    "zoomedImageAlt": "Vergrößertes Bild"
+    "zoomedImageAlt": "Vergrößertes Bild",
+    "andamusLive": "ANDAMUS LIVE",
+    "chat": "Chat",
+    "liveTracking": "LIVE TRACKING",
+    "preview": "Vorschau"
   },
   "common": {
     "cancel": "Abbrechen",
@@ -583,7 +587,9 @@
     "selectCity": "Stadt auswählen",
     "search": "Suchen",
     "city": "Stadt",
-    "noCityFound": "Keine Stadt gefunden."
+    "noCityFound": "Keine Stadt gefunden.",
+    "switchToLight": "Zum hellen Modus wechseln",
+    "switchToDark": "Zum dunklen Modus wechseln"
   },
   "booking": {
     "loginRequired": "Du musst angemeldet sein, um eine Fahrt zu buchen",
@@ -1127,5 +1133,25 @@
     "allRightsReserved": "Alle Rechte vorbehalten",
     "terms": "Bedingungen",
     "privacy": "Datenschutz"
+  },
+  "share": {
+    "discoveredMessage": "Ich habe Andamus entdeckt, die Mitfahrzentrale in Sardinien!",
+    "appName": "Andamus - Mitfahrzentrale in Sardinien",
+    "share": "Teilen",
+    "shareSuccess": "Danke fürs Teilen! 🎉",
+    "linkCopied": "Link kopiert! Füge ihn ein, wo du möchtest 📋",
+    "inviteFriends": "Freunde einladen",
+    "shareDescription": "Teile Andamus und hilf der Community zu wachsen"
+  },
+  "map": {
+    "addApiKey": "Google Maps API-Schlüssel konfigurieren",
+    "loadingMap": "Karte wird geladen...",
+    "noCoordinates": "Koordinaten nicht verfügbar"
+  },
+  "offline": {
+    "youAreOffline": "Du bist offline",
+    "checkConnection": "Es scheint, dass du nicht mit dem Internet verbunden bist. Überprüfe deine Verbindung und versuche es erneut.",
+    "backToHome": "Zur Startseite",
+    "retry": "Erneut versuchen"
   }
 }

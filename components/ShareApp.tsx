@@ -3,6 +3,7 @@
 import { Share2, Link2, Check } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
 interface ShareAppProps {
   variant?: "button" | "icon" | "outline" | "card";
@@ -10,24 +11,24 @@ interface ShareAppProps {
   onShare?: () => void;
 }
 
-const SHARE_TEXT = "Am descoperit Andamus – app-ul gratuit de passaggi doar pentru Sardinia! Intră aici: https://andamus.it #Andamus #Sardegna";
-
 export function ShareApp({ variant = "button", className = "", onShare }: ShareAppProps) {
+  const t = useTranslations("share");
+  const SHARE_TEXT = t("discoveredMessage");
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Andamus - Carpooling în Sardinia",
+          title: t("appName"),
           text: SHARE_TEXT,
           url: "https://andamus.it",
         });
-        toast.success("Grazie per condividere! 🎉");
+        toast.success(t("shareSuccess"));
       } else if (navigator.clipboard) {
         await navigator.clipboard.writeText(SHARE_TEXT);
         setCopied(true);
-        toast.success("Link copiato! Incollalo dove preferisci 📋");
+        toast.success(t("linkCopied"));
         setTimeout(() => setCopied(false), 2000);
       }
       onShare?.();
@@ -41,7 +42,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
       <button
         onClick={handleShare}
         className={`p-2 rounded-full transition-colors hover:bg-white/10 ${className}`}
-        title="Condividi Andamus"
+        title={t("share")}
       >
         <Share2 className="w-5 h-5" />
       </button>
@@ -55,7 +56,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
         className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-current transition-colors hover:bg-white/5 ${className}`}
       >
         <Share2 className="w-4 h-4" />
-        <span className="text-sm font-medium">Condividi</span>
+        <span className="text-sm font-medium">{t("share")}</span>
       </button>
     );
   }
@@ -70,8 +71,8 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
           <Share2 className="w-5 h-5 text-[#e63946]" />
         </div>
         <div className="flex-1 text-left">
-          <p className="font-semibold text-white">Invita gli amici</p>
-          <p className="text-sm text-white/60">Condividi Andamus e aiuta la community a crescere</p>
+          <p className="font-semibold text-white">{t("inviteFriends")}</p>
+          <p className="text-sm text-white/60">{t("shareDescription")}</p>
         </div>
         {copied ? <Check className="w-5 h-5 text-green-400" /> : <Link2 className="w-5 h-5 text-white/40" />}
       </button>
@@ -85,26 +86,27 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
       className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#e63946] text-white font-medium transition-colors hover:bg-[#c92a37] ${className}`}
     >
       <Share2 className="w-4 h-4" />
-      <span>Condividi Andamus</span>
+      <span>{t("share")}</span>
     </button>
   );
 }
 
 // Hook for sharing
 export function useShareApp() {
+  const t = useTranslations("share");
   const share = async (customText?: string) => {
-    const text = customText || SHARE_TEXT;
+    const text = customText || t("discoveredMessage");
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Andamus - Carpooling în Sardinia",
+          title: t("appName"),
           text,
           url: "https://andamus.it",
         });
         return true;
       } else if (navigator.clipboard) {
         await navigator.clipboard.writeText(text);
-        toast.success("Link copiato! 📋");
+        toast.success(t("linkCopied"));
         return true;
       }
     } catch {
