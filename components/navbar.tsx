@@ -463,20 +463,23 @@ export function Navbar() {
                         )}
                         <span className="font-medium">{getUserName()}</span>
                       </Link>
-                      <button
-                        onClick={() => {
-                          handleLogout();
-                          setMobileMenuOpen(false);
-                        }}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left ${
-                          isHome 
-                            ? "text-white/70 hover:bg-white/10" 
-                            : "text-gray-600 hover:bg-gray-100"
-                        }`}
-                      >
-                        <LogOut className="h-5 w-5" />
-                        <span>{t('logout')}</span>
-                      </button>
+                      <div className="border-t border-white/10 pt-3 mt-2">
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left ${
+                            isHome 
+                              ? "text-red-400 hover:bg-red-500/10" 
+                              : "text-red-500 hover:bg-red-500/10"
+                          }`}
+                          aria-label={t('logout')}
+                        >
+                          <LogOut className="h-5 w-5" />
+                          <span>{t('logout')}</span>
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-2">
