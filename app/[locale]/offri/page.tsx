@@ -1216,9 +1216,8 @@ export default function OfferPage() {
             music_preference: formData.musicPreference || null,
             women_only: formData.womenOnly || null,
             students_only: formData.studentsOnly || null,
-            // Car info
-            car_model: formData.carModel || savedCarInfo?.car_model || null,
-            car_plate: formData.carPlate || savedCarInfo?.car_plate || null,
+            // Car info (columns car_model & car_plate exist in profiles but not yet in rides table)
+            // TODO: re-enable after applying migration 018_add_car_info.sql
           })
           .select();
 
