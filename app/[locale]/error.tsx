@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function Error({
   error,
@@ -13,6 +13,7 @@ export default function Error({
   reset: () => void;
 }) {
   const locale = useLocale();
+  const t = useTranslations("error");
 
   useEffect(() => {
     // Log error to monitoring service
@@ -29,11 +30,11 @@ export default function Error({
         </div>
         
         <h1 className="text-3xl font-bold text-white mb-4">
-          Qualcosa è andato storto
+          {t("somethingWentWrong")}
         </h1>
         
         <p className="text-white/60 mb-2">
-          Si è verificato un errore imprevisto.
+          {t("errorOccurred")}
         </p>
         
         {error.digest && (
@@ -48,7 +49,7 @@ export default function Error({
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
-            Riprova
+            {t("retry")}
           </button>
           
           <Link
@@ -56,7 +57,7 @@ export default function Error({
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors"
           >
             <Home className="h-5 w-5" />
-            Torna alla home
+            {t("backToHome")}
           </Link>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { SearchX, RefreshCw, Home } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function SearchError({
   error,
@@ -13,6 +13,7 @@ export default function SearchError({
   reset: () => void;
 }) {
   const locale = useLocale();
+  const t = useTranslations("error");
 
   useEffect(() => {
     console.error("Search page error:", error);
@@ -28,12 +29,11 @@ export default function SearchError({
         </div>
         
         <h1 className="text-3xl font-bold text-white mb-4">
-          Errore nella ricerca
+          {t("somethingWentWrong")}
         </h1>
         
         <p className="text-white/60 mb-8">
-          Non siamo riusciti a caricare i risultati della ricerca. 
-          Riprova tra qualche istante.
+          {t("errorOccurred")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -42,7 +42,7 @@ export default function SearchError({
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
-            Riprova
+            {t("retry")}
           </button>
           
           <Link
@@ -50,7 +50,7 @@ export default function SearchError({
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors"
           >
             <Home className="h-5 w-5" />
-            Torna alla home
+            {t("backToHome")}
           </Link>
         </div>
       </div>

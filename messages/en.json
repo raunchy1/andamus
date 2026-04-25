@@ -798,5 +798,13 @@
     "searchRidesBtn": "Search rides",
     "offerRide": "Offer a ride",
     "clearFiltersLabel": "Clear filters"
+  },
+  "error": {
+    "somethingWentWrong": "Something went wrong",
+    "errorOccurred": "An error occurred",
+    "retry": "Try again",
+    "backToHome": "Back to home",
+    "statsLoadError": "Error loading statistics",
+    "statsLoadFailed": "We couldn't load the statistics"
   }
 }

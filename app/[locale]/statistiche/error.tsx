@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { BarChart3, RefreshCw, Home } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function StatisticsError({
   error,
@@ -13,6 +13,7 @@ export default function StatisticsError({
   reset: () => void;
 }) {
   const locale = useLocale();
+  const t = useTranslations("error");
 
   useEffect(() => {
     console.error("Statistics page error:", error);
@@ -28,12 +29,11 @@ export default function StatisticsError({
         </div>
         
         <h1 className="text-3xl font-bold text-white mb-4">
-          Errore nel caricamento statistiche
+          {t("statsLoadError")}
         </h1>
         
         <p className="text-white/60 mb-8">
-          Non siamo riusciti a caricare le tue statistiche. 
-          Riprova tra qualche istante.
+          {t("statsLoadFailed")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -42,7 +42,7 @@ export default function StatisticsError({
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
-            Riprova
+            {t("retry")}
           </button>
           
           <Link
@@ -50,7 +50,7 @@ export default function StatisticsError({
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors"
           >
             <Home className="h-5 w-5" />
-            Torna alla home
+            {t("backToHome")}
           </Link>
         </div>
       </div>

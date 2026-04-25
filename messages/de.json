@@ -798,5 +798,13 @@
     "searchRidesBtn": "Fahrten suchen",
     "offerRide": "Fahrt anbieten",
     "clearFiltersLabel": "Filter löschen"
+  },
+  "error": {
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
+    "errorOccurred": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen",
+    "backToHome": "Zur Startseite",
+    "statsLoadError": "Fehler beim Laden der Statistiken",
+    "statsLoadFailed": "Statistiken konnten nicht geladen werden"
   }
 }

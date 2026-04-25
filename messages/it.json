@@ -798,5 +798,13 @@
     "searchRidesBtn": "Cerca passaggi",
     "offerRide": "Offri un passaggio",
     "clearFiltersLabel": "Cancella filtri"
+  },
+  "error": {
+    "somethingWentWrong": "Qualcosa è andato storto",
+    "errorOccurred": "Si è verificato un errore",
+    "retry": "Riprova",
+    "backToHome": "Torna alla home",
+    "statsLoadError": "Errore nel caricamento statistiche",
+    "statsLoadFailed": "Non siamo riusciti a caricare le statistiche"
   }
 }
