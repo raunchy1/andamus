@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Compass, Route, Car, User } from "lucide-react";
 
 const navItems = [
-  { href: "/", icon: Compass, label: "Explore" },
-  { href: "/cerca", icon: Route, label: "Routes" },
-  { href: "/offri", icon: Car, label: "Trips" },
-  { href: "/profilo", icon: User, label: "Profile" },
+  { href: "/", icon: Compass, labelKey: "explore" },
+  { href: "/cerca", icon: Route, labelKey: "routes" },
+  { href: "/offri", icon: Car, labelKey: "trips" },
+  { href: "/profilo", icon: User, labelKey: "profile" },
 ];
 
 export function BottomNav() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const locale = useLocale();
 
@@ -44,7 +45,7 @@ export function BottomNav() {
               }`}
             />
             <span className="font-bold uppercase tracking-[0.05em] text-[10px] mt-1">
-              {item.label}
+              {t(item.labelKey)}
             </span>
           </Link>
         );

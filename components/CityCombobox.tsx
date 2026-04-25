@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export interface City {
   id: string;
@@ -37,11 +38,12 @@ export function CityCombobox({
   cities,
   value,
   onChange,
-  placeholder = "Seleziona città",
+  placeholder,
   label,
   disabled = false,
   buttonClassName,
 }: CityComboboxProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
 
   const selectedCity = useMemo(
@@ -66,7 +68,7 @@ export function CityCombobox({
           <span className="flex items-center gap-2 truncate">
             <MapPin className="h-4 w-4 shrink-0 opacity-50" />
             <span className="truncate">
-              {selectedCity ? selectedCity.name : placeholder}
+              {selectedCity ? selectedCity.name : (placeholder || t("selectCity"))}
             </span>
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -79,18 +81,17 @@ export function CityCombobox({
           filter={(value, search) => {
             const cityName = value.toLowerCase();
             const query = search.toLowerCase();
-            // Prefer starts-with matches
             if (cityName.startsWith(query)) return 1;
             if (cityName.includes(query)) return 0.5;
             return 0;
           }}
         >
           <CommandInput
-            placeholder={`Cerca ${label ? label.toLowerCase() : "città"}...`}
+            placeholder={`${t("search")} ${label ? label.toLowerCase() : t("city").toLowerCase()}...`}
             className="h-11"
           />
           <CommandList className="max-h-[300px] overflow-y-auto">
-            <CommandEmpty>Nessuna città trovata.</CommandEmpty>
+            <CommandEmpty>{t("noCityFound")}</CommandEmpty>
             <CommandGroup>
               {cities.map((city) => (
                 <CommandItem

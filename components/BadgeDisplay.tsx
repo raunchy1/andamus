@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getUserBadges, getBadgeDetails, BADGES, type Badge } from "@/lib/gamification";
 import { Award, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface BadgeDisplayProps {
   userId: string;
@@ -19,6 +20,7 @@ export function BadgeUnlockNotification({
   badgeType: string;
   onClose: () => void;
 }) {
+  const t = useTranslations("badges");
   const badge = getBadgeDetails(badgeType);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export function BadgeUnlockNotification({
           </motion.div>
           
           <div>
-            <p className="text-white/80 text-sm font-medium mb-1">Nuovo Badge Sbloccato!</p>
+            <p className="text-white/80 text-sm font-medium mb-1">{t("newBadgeUnlocked")}</p>
             <h4 className="text-white text-xl font-bold">{badge.name}</h4>
             <p className="text-white/70 text-sm mt-1">{badge.description}</p>
           </div>
@@ -112,6 +114,7 @@ function BadgeItem({ badge, index }: { badge: Badge; index: number }) {
 
 // Main badge display component
 export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeDisplayProps) {
+  const t = useTranslations("badges");
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
@@ -142,8 +145,8 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
     return (
       <div className="text-center py-6">
         <Award className="w-12 h-12 text-white/20 mx-auto mb-3" />
-        <p className="text-white/50 text-sm">Nessun badge ancora</p>
-        <p className="text-white/30 text-xs mt-1">Completa azioni per sbloccare badge!</p>
+        <p className="text-white/50 text-sm">{t("noBadgesYet")}</p>
+        <p className="text-white/30 text-xs mt-1">{t("completeActionsToUnlock")}</p>
       </div>
     );
   }
@@ -184,7 +187,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">Tutti i Badge</h3>
+                <h3 className="text-xl font-bold text-white">{t("allBadges")}</h3>
                 <button
                   onClick={() => setShowUnlockModal(false)}
                   className="text-white/60 hover:text-white"
@@ -213,7 +216,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
               </div>
               
               <div className="mt-8 pt-6 border-t border-white/10">
-                <h4 className="text-white/60 text-sm font-medium mb-4">Badge da sbloccare</h4>
+                <h4 className="text-white/60 text-sm font-medium mb-4">{t("badgesToUnlock")}</h4>
                 <div className="space-y-3">
                   {Object.values(BADGES)
                     .filter((b) => !badges.some((ub) => ub.type === b.type))
@@ -240,6 +243,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
 
 // Level progress component
 export function LevelProgress({ points }: { points: number }) {
+  const t = useTranslations("badges");
   const { current, next, progress } = (() => {
     const LEVELS = [
       { min: 0, max: 99, name: "Viaggiatore", emoji: "🚗" },
@@ -269,12 +273,12 @@ export function LevelProgress({ points }: { points: number }) {
         <div className="flex items-center gap-3">
           <span className="text-4xl">{current.emoji}</span>
           <div>
-            <p className="text-white/60 text-sm">Livello attuale</p>
+            <p className="text-white/60 text-sm">{t("currentLevel")}</p>
             <p className="text-white text-xl font-bold">{current.name}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-white/60 text-sm">Punti</p>
+          <p className="text-white/60 text-sm">{t("points")}</p>
           <p className="text-[#e63946] text-2xl font-bold">{points}</p>
         </div>
       </div>
@@ -292,16 +296,16 @@ export function LevelProgress({ points }: { points: number }) {
         <div className="flex justify-between mt-2 text-xs text-white/40">
           <span>{current.min} pts</span>
           {next ? (
-            <span>{next.min} pts per {next.name}</span>
+            <span>{t("pointsFor", { min: next.min, name: next.name })}</span>
           ) : (
-            <span>Livello massimo!</span>
+            <span>{t("maxLevel")}</span>
           )}
         </div>
       </div>
       
       {next && (
         <p className="text-white/50 text-sm mt-4 text-center">
-          Mancano <span className="text-[#e63946] font-semibold">{next.min - points}</span> punti per diventare {next.name} {next.emoji}
+          {t("pointsToNext", { remaining: next.min - points, name: next.name, emoji: next.emoji })}
         </p>
       )}
     </div>
@@ -310,27 +314,28 @@ export function LevelProgress({ points }: { points: number }) {
 
 // Points info component
 export function PointsInfo() {
+  const t = useTranslations("badges");
   const pointActions = [
-    { action: "Prima corsa pubblicata", points: 50, icon: "🚗" },
-    { action: "Ogni corsa pubblicata", points: 10, icon: "📍" },
-    { action: "Prenotazione confermata", points: 15, icon: "✅" },
-    { action: "Recensione 5 stelle ricevuta", points: 20, icon: "⭐" },
-    { action: "Verifica identità completata", points: 30, icon: "🛡️" },
+    { key: "firstRide", points: 50, icon: "🚗" },
+    { key: "everyRide", points: 10, icon: "📍" },
+    { key: "bookingConfirmed", points: 15, icon: "✅" },
+    { key: "fiveStarReview", points: 20, icon: "⭐" },
+    { key: "identityVerified", points: 30, icon: "🛡️" },
   ];
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-6">
       <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
         <span className="text-[#e63946]">💎</span>
-        Come guadagnare punti
+        {t("howToEarnPoints")}
       </h3>
       
       <div className="space-y-3">
         {pointActions.map((item) => (
-          <div key={item.action} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+          <div key={item.key} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
             <div className="flex items-center gap-3">
               <span className="text-lg">{item.icon}</span>
-              <span className="text-white/80 text-sm">{item.action}</span>
+              <span className="text-white/80 text-sm">{t(`pointActions.${item.key}`)}</span>
             </div>
             <span className="text-[#e63946] font-semibold text-sm">+{item.points} pts</span>
           </div>

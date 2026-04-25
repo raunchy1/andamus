@@ -12,7 +12,17 @@
     "invite": "Invite friends",
     "login": "Sign in",
     "logout": "Sign out",
-    "loginWithGoogle": "Sign in with Google"
+    "loginWithGoogle": "Sign in with Google",
+    "requests": "Requests",
+    "events": "Events",
+    "groups": "Groups",
+    "statistics": "Statistics",
+    "sosEmergency": "SOS Emergency",
+    "register": "Sign Up",
+    "user": "User",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu",
+    "language": "Language"
   },
   "theme": {
     "light": "Light",
@@ -569,7 +579,11 @@
     "success": "Success",
     "warning": "Warning",
     "info": "Info",
-    "login": "Sign in"
+    "login": "Sign in",
+    "selectCity": "Select city",
+    "search": "Search",
+    "city": "city",
+    "noCityFound": "No city found."
   },
   "booking": {
     "loginRequired": "You need to sign in to book a ride",
@@ -853,7 +867,8 @@
     "retry": "Try again",
     "backToHome": "Back to home",
     "statsLoadError": "Error loading statistics",
-    "statsLoadFailed": "We couldn't load the statistics"
+    "statsLoadFailed": "We couldn't load the statistics",
+    "reloadPage": "Reload the page to try again"
   },
   "admin": {
     "actionsHeader": "Actions",
@@ -997,5 +1012,120 @@
     "progress": "Progress",
     "subtitle": "Complete these simple steps to get started with carpooling in Sardinia",
     "welcome": "Welcome to Andamus! 🎉"
+  },
+  "badges": {
+    "newBadgeUnlocked": "New Badge Unlocked!",
+    "noBadgesYet": "No badges yet",
+    "completeActionsToUnlock": "Complete actions to unlock badges!",
+    "allBadges": "All Badges",
+    "badgesToUnlock": "Badges to unlock",
+    "currentLevel": "Current level",
+    "points": "Points",
+    "pointsFor": "{min} pts for {name}",
+    "maxLevel": "Max level!",
+    "pointsToNext": "{remaining} points to become {name} {emoji}",
+    "howToEarnPoints": "How to earn points",
+    "pointActions": {
+      "firstRide": "First ride published",
+      "everyRide": "Every ride published",
+      "bookingConfirmed": "Booking confirmed",
+      "fiveStarReview": "5-star review received",
+      "identityVerified": "Identity verification completed"
+    }
+  },
+  "notifications": {
+    "notifications": "Notifications",
+    "markAll": "Mark all",
+    "noNotifications": "No notifications",
+    "seeAll": "See all notifications",
+    "allNotificationsRead": "All notifications read",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago"
+  },
+  "rating": {
+    "selectRating": "Select a rating",
+    "alreadyReviewed": "You have already reviewed this ride",
+    "fiveStarPoints": "The driver earned +{points} points for the 5-star review! ⭐",
+    "reviewSent": "Review sent!",
+    "sendError": "Error during submission",
+    "leaveReview": "Leave a review",
+    "alreadyReviewedMessage": "You have already left a review for this ride.",
+    "howWouldYouRate": "How do you rate",
+    "tapToRate": "Tap to rate",
+    "rating1": "Terrible",
+    "rating2": "Poor",
+    "rating3": "Good",
+    "rating4": "Great",
+    "rating5": "Excellent",
+    "commentOptional": "Comment (optional)",
+    "describeExperience": "Describe your experience...",
+    "sendReview": "Send review"
+  },
+  "report": {
+    "selectReason": "Select a reason",
+    "mustBeAuthenticated": "You must be authenticated",
+    "reportSent": "Report sent. Thank you for your cooperation!",
+    "reportError": "Error sending the report",
+    "reportUser": "Report user",
+    "reportReason": "Report reason",
+    "descriptionOptional": "Description (optional)",
+    "describeWhatHappened": "Describe what happened...",
+    "sendReport": "Send report",
+    "reasons": {
+      "inappropriate_behavior": "Inappropriate behavior",
+      "no_show": "No show",
+      "fake_profile": "Fake profile",
+      "unsafe_driving": "Unsafe driving",
+      "harassment": "Harassment",
+      "other": "Other"
+    }
+  },
+  "safety": {
+    "emergencyCall": "Emergency call 112",
+    "geolocationNotSupported": "Geolocation not supported by browser",
+    "shareLocationTitle": "Andamus Location",
+    "locationShared": "Location shared",
+    "locationCopied": "Location copied! Paste it to your trusted contacts",
+    "locationError": "Unable to get location. Check permissions.",
+    "sosSafety": "SOS Safety",
+    "safety": "Safety",
+    "emergencyTools": "Emergency tools",
+    "sosEmergency": "SOS Emergency",
+    "callOrShare": "Call 112 or share location",
+    "shareLocation": "Share location",
+    "sendToContacts": "Send to trusted contacts",
+    "call112": "Call 112",
+    "emergencyNumber": "Emergency number",
+    "safetyTips": "Safety tips:",
+    "tip1": "Always share trip details with someone",
+    "tip2": "Verify the other user's identity",
+    "tip3": "Meet in public places",
+    "tip4": "Trust your instincts",
+    "emergencyQuestion": "Emergency?",
+    "emergencyDescription": "Are you in danger? Call 112 immediately or share your location.",
+    "cancel": "Cancel"
+  },
+  "footer": {
+    "searchRides": "Search rides",
+    "offerRide": "Offer a ride",
+    "yourProfile": "Your profile",
+    "termsAndConditions": "Terms and Conditions",
+    "privacyPolicy": "Privacy Policy",
+    "tagline": "Sardinian carpooling to travel together. We connect people to share rides across Sardinia.",
+    "shareText": "🚗 Discover Andamus - Sardinian carpooling! Find and offer rides across Sardinia. Free and designed for island residents. https://andamus.it",
+    "shareTitle": "Andamus - Carpooling in Sardinia",
+    "shareSuccess": "Thanks for sharing Andamus!",
+    "copySuccess": "Link copied! Paste it wherever you like",
+    "shareAndamus": "Share Andamus",
+    "navigation": "Navigation",
+    "legal": "Legal",
+    "info": "Info",
+    "madeWithLove": "Made with ❤️ in Sardinia",
+    "version": "Version",
+    "allRightsReserved": "All rights reserved",
+    "terms": "Terms",
+    "privacy": "Privacy"
   }
 }

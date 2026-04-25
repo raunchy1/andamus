@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Car } from "lucide-react";
 
 const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/cerca", label: "Cerca" },
-  { href: "/offri", label: "Offri" },
-  { href: "/profilo", label: "Profilo" },
+  { href: "/", labelKey: "home" },
+  { href: "/cerca", labelKey: "search" },
+  { href: "/offri", labelKey: "offer" },
+  { href: "/profilo", labelKey: "profile" },
 ];
 
 export function DesktopNav() {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const locale = useLocale();
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
@@ -37,7 +38,7 @@ export function DesktopNav() {
                   isActive ? "text-[#ffb3b1]" : "text-white/50 hover:text-white"
                 }`}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}

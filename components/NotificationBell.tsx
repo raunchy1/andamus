@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { 
   Bell, 
   Check, 
@@ -50,36 +50,29 @@ const notificationColors = {
   ride_alert: "bg-orange-500/20 text-orange-400",
 };
 
-function timeAgo(date: string, locale: string) {
+function timeAgo(date: string, t: (key: string, values?: Record<string, string | number>) => string) {
   const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-  
+
   if (seconds < 60) {
-    if (locale === 'de') return "Gerade eben";
-    if (locale === 'en') return "Just now";
-    return "Adesso";
+    return t("justNow");
   }
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) {
-    if (locale === 'de') return `vor ${minutes} Min.`;
-    if (locale === 'en') return `${minutes}m ago`;
-    return `${minutes} min fa`;
+    return t("minutesAgo", { count: minutes });
   }
   const hours = Math.floor(minutes / 60);
   if (hours < 24) {
-    if (locale === 'de') return `vor ${hours} Std.`;
-    if (locale === 'en') return `${hours}h ago`;
-    return `${hours} h fa`;
+    return t("hoursAgo", { count: hours });
   }
   const days = Math.floor(hours / 24);
   if (days < 7) {
-    if (locale === 'de') return `vor ${days} T.`;
-    if (locale === 'en') return `${days}d ago`;
-    return `${days} g fa`;
+    return t("daysAgo", { count: days });
   }
-  return new Date(date).toLocaleDateString(locale, { day: "numeric", month: "short" });
+  return new Date(date).toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
 export function NotificationBell({ isHome = false }: NotificationBellProps) {
+  const t = useTranslations("notifications");
   const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -182,7 +175,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
     if (!error) {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
-      toast.success("Tutte le notifiche lette");
+      toast.success(t("allNotificationsRead"));
     }
     setLoading(false);
   };
@@ -231,7 +224,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
         <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-            <h3 className="font-semibold text-white">Notifiche</h3>
+            <h3 className="font-semibold text-white">{t("notifications")}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
@@ -243,7 +236,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                 ) : (
                   <CheckCheck className="h-3 w-3" />
                 )}
-                Segna tutte
+                {t("markAll")}
               </button>
             )}
           </div>
@@ -253,7 +246,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
             {notifications.length === 0 ? (
               <div className="px-4 py-8 text-center">
                 <Bell className="mx-auto h-12 w-12 text-white/20" />
-                <p className="mt-2 text-sm text-white/50">Nessuna notifica</p>
+                <p className="mt-2 text-sm text-white/50">{t("noNotifications")}</p>
               </div>
             ) : (
               notifications.map((notification) => {
@@ -273,7 +266,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white">{notification.title}</p>
                       <p className="text-sm text-white/60 line-clamp-2">{notification.body}</p>
-                      <p className="mt-1 text-xs text-white/40">{timeAgo(notification.created_at, locale)}</p>
+                      <p className="mt-1 text-xs text-white/40">{timeAgo(notification.created_at, t)}</p>
                     </div>
                     {!notification.read && (
                       <div className="mt-2 h-2 w-2 rounded-full bg-[#e63946]" />
@@ -292,7 +285,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                 onClick={() => setIsOpen(false)}
                 className="text-xs text-white/50 hover:text-white transition-colors"
               >
-                Vedi tutte le notifiche
+                {t("seeAll")}
               </Link>
             </div>
           )}

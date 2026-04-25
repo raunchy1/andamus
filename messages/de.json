@@ -12,7 +12,17 @@
     "invite": "Freunde einladen",
     "login": "Anmelden",
     "logout": "Abmelden",
-    "loginWithGoogle": "Mit Google anmelden"
+    "loginWithGoogle": "Mit Google anmelden",
+    "requests": "Anfragen",
+    "events": "Veranstaltungen",
+    "groups": "Gruppen",
+    "statistics": "Statistiken",
+    "sosEmergency": "SOS Notfall",
+    "register": "Registrieren",
+    "user": "Benutzer",
+    "closeMenu": "Menü schließen",
+    "openMenu": "Menü öffnen",
+    "language": "Sprache"
   },
   "theme": {
     "light": "Hell",
@@ -569,7 +579,11 @@
     "success": "Erfolg",
     "warning": "Warnung",
     "info": "Info",
-    "login": "Anmelden"
+    "login": "Anmelden",
+    "selectCity": "Stadt auswählen",
+    "search": "Suchen",
+    "city": "Stadt",
+    "noCityFound": "Keine Stadt gefunden."
   },
   "booking": {
     "loginRequired": "Du musst angemeldet sein, um eine Fahrt zu buchen",
@@ -853,7 +867,8 @@
     "retry": "Erneut versuchen",
     "backToHome": "Zur Startseite",
     "statsLoadError": "Fehler beim Laden der Statistiken",
-    "statsLoadFailed": "Statistiken konnten nicht geladen werden"
+    "statsLoadFailed": "Statistiken konnten nicht geladen werden",
+    "reloadPage": "Lade die Seite neu, um es erneut zu versuchen"
   },
   "admin": {
     "actionsHeader": "Aktionen",
@@ -997,5 +1012,120 @@
     "progress": "Fortschritt",
     "subtitle": "Schließe diese einfachen Schritte ab, um mit dem Mitfahren in Sardinien zu beginnen",
     "welcome": "Willkommen bei Andamus! 🎉"
+  },
+  "badges": {
+    "newBadgeUnlocked": "Neues Badge freigeschaltet!",
+    "noBadgesYet": "Noch keine Badges",
+    "completeActionsToUnlock": "Schließe Aktionen ab, um Badges freizuschalten!",
+    "allBadges": "Alle Badges",
+    "badgesToUnlock": "Badges zum Freischalten",
+    "currentLevel": "Aktuelles Level",
+    "points": "Punkte",
+    "pointsFor": "{min} Pkt. für {name}",
+    "maxLevel": "Maximales Level!",
+    "pointsToNext": "Noch {remaining} Punkte bis {name} {emoji}",
+    "howToEarnPoints": "Wie man Punkte verdient",
+    "pointActions": {
+      "firstRide": "Erste Fahrt veröffentlicht",
+      "everyRide": "Jede veröffentlichte Fahrt",
+      "bookingConfirmed": "Buchung bestätigt",
+      "fiveStarReview": "5-Sterne-Bewertung erhalten",
+      "identityVerified": "Identitätsverifizierung abgeschlossen"
+    }
+  },
+  "notifications": {
+    "notifications": "Benachrichtigungen",
+    "markAll": "Alle als gelesen",
+    "noNotifications": "Keine Benachrichtigungen",
+    "seeAll": "Alle Benachrichtigungen anzeigen",
+    "allNotificationsRead": "Alle Benachrichtigungen gelesen",
+    "justNow": "Gerade eben",
+    "minutesAgo": "vor {count} Min.",
+    "hoursAgo": "vor {count} Std.",
+    "daysAgo": "vor {count} T."
+  },
+  "rating": {
+    "selectRating": "Bewertung auswählen",
+    "alreadyReviewed": "Du hast diese Fahrt bereits bewertet",
+    "fiveStarPoints": "Der Fahrer hat +{points} Punkte für die 5-Sterne-Bewertung verdient! ⭐",
+    "reviewSent": "Bewertung gesendet!",
+    "sendError": "Fehler beim Senden",
+    "leaveReview": "Bewertung abgeben",
+    "alreadyReviewedMessage": "Du hast bereits eine Bewertung für diese Fahrt abgegeben.",
+    "howWouldYouRate": "Wie bewertest du",
+    "tapToRate": "Tippe zum Bewerten",
+    "rating1": "Schrecklich",
+    "rating2": "Schlecht",
+    "rating3": "Gut",
+    "rating4": "Sehr gut",
+    "rating5": "Hervorragend",
+    "commentOptional": "Kommentar (optional)",
+    "describeExperience": "Beschreibe deine Erfahrung...",
+    "sendReview": "Bewertung senden"
+  },
+  "report": {
+    "selectReason": "Grund auswählen",
+    "mustBeAuthenticated": "Du musst angemeldet sein",
+    "reportSent": "Meldung gesendet. Danke für deine Mithilfe!",
+    "reportError": "Fehler beim Senden der Meldung",
+    "reportUser": "Benutzer melden",
+    "reportReason": "Meldungsgrund",
+    "descriptionOptional": "Beschreibung (optional)",
+    "describeWhatHappened": "Beschreibe, was passiert ist...",
+    "sendReport": "Meldung senden",
+    "reasons": {
+      "inappropriate_behavior": "Unangemessenes Verhalten",
+      "no_show": "Nicht erschienen",
+      "fake_profile": "Falsches Profil",
+      "unsafe_driving": "Gefährliches Fahren",
+      "harassment": "Belästigung",
+      "other": "Sonstiges"
+    }
+  },
+  "safety": {
+    "emergencyCall": "Notruf 112",
+    "geolocationNotSupported": "Geolokalisierung vom Browser nicht unterstützt",
+    "shareLocationTitle": "Andamus Standort",
+    "locationShared": "Standort geteilt",
+    "locationCopied": "Standort kopiert! Füge ihn deinen vertrauenswürdigen Kontakten hinzu",
+    "locationError": "Standort kann nicht ermittelt werden. Überprüfe die Berechtigungen.",
+    "sosSafety": "SOS Sicherheit",
+    "safety": "Sicherheit",
+    "emergencyTools": "Notfallwerkzeuge",
+    "sosEmergency": "SOS Notfall",
+    "callOrShare": "Rufe 112 an oder teile deinen Standort",
+    "shareLocation": "Standort teilen",
+    "sendToContacts": "An vertrauenswürdige Kontakte senden",
+    "call112": "112 anrufen",
+    "emergencyNumber": "Notrufnummer",
+    "safetyTips": "Sicherheitstipps:",
+    "tip1": "Teile Reisedetails immer mit jemandem",
+    "tip2": "Überprüfe die Identität des anderen Benutzers",
+    "tip3": "Triff dich an öffentlichen Orten",
+    "tip4": "Vertraue deinem Instinkt",
+    "emergencyQuestion": "Notfall?",
+    "emergencyDescription": "Bist du in Gefahr? Rufe sofort 112 an oder teile deinen Standort.",
+    "cancel": "Abbrechen"
+  },
+  "footer": {
+    "searchRides": "Fahrten suchen",
+    "offerRide": "Fahrt anbieten",
+    "yourProfile": "Dein Profil",
+    "termsAndConditions": "Allgemeine Geschäftsbedingungen",
+    "privacyPolicy": "Datenschutzerklärung",
+    "tagline": "Sardisches Carpooling, um zusammen zu reisen. Wir verbinden Menschen, um Fahrten in ganz Sardinien zu teilen.",
+    "shareText": "🚗 Entdecke Andamus - Sardisches Carpooling! Finde und biete Fahrten in ganz Sardinien an. Kostenlos und für Inselbewohner konzipiert. https://andamus.it",
+    "shareTitle": "Andamus - Carpooling in Sardinien",
+    "shareSuccess": "Danke, dass du Andamus teilst!",
+    "copySuccess": "Link kopiert! Füge ihn ein, wo du möchtest",
+    "shareAndamus": "Andamus teilen",
+    "navigation": "Navigation",
+    "legal": "Rechtliches",
+    "info": "Info",
+    "madeWithLove": "Made with ❤️ in Sardinien",
+    "version": "Version",
+    "allRightsReserved": "Alle Rechte vorbehalten",
+    "terms": "Bedingungen",
+    "privacy": "Datenschutz"
   }
 }

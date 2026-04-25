@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   children: ReactNode;
@@ -10,6 +11,22 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
+}
+
+function ErrorFallback({ onRetry }: { onRetry: () => void }) {
+  const t = useTranslations("error");
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[200px] p-8 text-center">
+      <p className="text-red-500 font-semibold mb-2">{t("somethingWentWrong")}</p>
+      <p className="text-gray-400 text-sm mb-4">{t("reloadPage")}</p>
+      <button
+        onClick={onRetry}
+        className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
+      >
+        {t("retry")}
+      </button>
+    </div>
+  );
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -30,16 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <div className="flex flex-col items-center justify-center min-h-[200px] p-8 text-center">
-            <p className="text-red-500 font-semibold mb-2">Qualcosa è andato storto</p>
-            <p className="text-gray-400 text-sm mb-4">Ricarica la pagina per riprovare</p>
-            <button
-              onClick={() => this.setState({ hasError: false })}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
-            >
-              Riprova
-            </button>
-          </div>
+          <ErrorFallback onRetry={() => this.setState({ hasError: false })} />
         )
       );
     }

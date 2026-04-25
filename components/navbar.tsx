@@ -61,10 +61,10 @@ export function Navbar() {
   const navLinks = [
     { href: `/${locale}/`, label: t('home'), icon: Home },
     { href: `/${locale}/cerca`, label: t('search'), icon: Search },
-    { href: `/${locale}/richieste`, label: "Richieste", icon: User },
+    { href: `/${locale}/richieste`, label: t('requests'), icon: User },
     { href: `/${locale}/offri`, label: t('offer'), icon: PlusCircle },
-    { href: `/${locale}/eventi`, label: "Eventi", icon: Car },
-    { href: `/${locale}/gruppi`, label: "Gruppi", icon: Users },
+    { href: `/${locale}/eventi`, label: t('events'), icon: Car },
+    { href: `/${locale}/gruppi`, label: t('groups'), icon: Users },
   ];
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export function Navbar() {
     return user.user_metadata?.name || 
            user.user_metadata?.full_name || 
            user.email?.split("@")[0] || 
-           "Utente";
+           t('user');
   };
 
   const getUserAvatar = () => {
@@ -197,7 +197,7 @@ export function Navbar() {
                           ? "text-white/70 hover:bg-white/10 hover:text-white" 
                           : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
                       }`}
-                      title="Admin"
+                      title={t('admin')}
                     >
                       <Shield className="h-5 w-5" />
                     </Link>
@@ -236,7 +236,7 @@ export function Navbar() {
                         ? "text-white/70 hover:bg-white/10 hover:text-white" 
                         : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
                     }`}
-                    title="Statistiche"
+                    title={t('statistics')}
                   >
                     <BarChart3 className="h-5 w-5" />
                   </Link>
@@ -249,7 +249,7 @@ export function Navbar() {
                         ? "text-red-400 hover:bg-red-500/10 hover:text-red-300" 
                         : "text-red-500 hover:bg-red-500/10 hover:text-red-600"
                     }`}
-                    title="SOS Emergenza"
+                    title={t('sosEmergency')}
                   >
                     <Siren className="h-5 w-5" />
                   </button>
@@ -307,7 +307,7 @@ export function Navbar() {
                     onClick={handleOpenRegister}
                     className="bg-[#e63946] text-white hover:bg-[#c92a37] shadow-lg shadow-[#e63946]/20"
                   >
-                    Registrati
+                    {t('register')}
                   </Button>
                 </div>
               )}
@@ -326,7 +326,7 @@ export function Navbar() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <span className="sr-only">
-            {mobileMenuOpen ? "Chiudi menu" : "Apri menu"}
+            {mobileMenuOpen ? t('closeMenu') : t('openMenu')}
           </span>
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
@@ -348,7 +348,7 @@ export function Navbar() {
             <div className={`flex items-center justify-between rounded-lg px-3 py-3 ${
               isHome ? "text-white/70" : "text-gray-600"
             }`}>
-              <span className="font-medium">Lingua / Language</span>
+              <span className="font-medium">{t('language')}</span>
               <div className="flex items-center gap-2">
                 <LanguageSelector isHome={isHome} />
                 <ThemeToggle isHome={isHome} />
@@ -406,7 +406,7 @@ export function Navbar() {
                         }`}
                       >
                         <BarChart3 className="h-5 w-5" />
-                        <span>Statistiche</span>
+                        <span>{t('statistics')}</span>
                       </Link>
                       <button
                         onClick={() => {
@@ -420,7 +420,7 @@ export function Navbar() {
                         }`}
                       >
                         <Siren className="h-5 w-5" />
-                        <span>SOS Emergenza</span>
+                        <span>{t('sosEmergency')}</span>
                       </button>
                       {isAdmin(user?.email) && (
                         <Link
@@ -433,7 +433,7 @@ export function Navbar() {
                           }`}
                         >
                           <Shield className="h-5 w-5" />
-                          <span>Admin</span>
+                          <span>{t('admin')}</span>
                         </Link>
                       )}
                       <Link
@@ -494,7 +494,7 @@ export function Navbar() {
                         }}
                         className="w-full bg-[#e63946] text-white hover:bg-[#c92a37]"
                       >
-                        Registrati
+                        {t('register')}
                       </Button>
                     </div>
                   )}

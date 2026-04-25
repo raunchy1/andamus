@@ -3,37 +3,39 @@
 import Link from "next/link";
 import { Car, Heart, Share2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
 const footerLinks = [
-  { href: "/cerca", label: "Cerca passaggi" },
-  { href: "/offri", label: "Offri un passaggio" },
-  { href: "/profilo", label: "Il tuo profilo" },
+  { href: "/cerca", labelKey: "searchRides" },
+  { href: "/offri", labelKey: "offerRide" },
+  { href: "/profilo", labelKey: "yourProfile" },
 ];
 
 const legalLinks = [
-  { href: "/termini-e-condizioni", label: "Termini e Condizioni" },
-  { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/termini-e-condizioni", labelKey: "termsAndConditions" },
+  { href: "/privacy-policy", labelKey: "privacyPolicy" },
 ];
 
 const APP_VERSION = "v1.0";
 
 export function Footer() {
+  const t = useTranslations("footer");
   const currentYear = new Date().getFullYear();
 
   const handleShare = async () => {
-    const shareText = "🚗 Scopri Andamus - Il carpooling dei sardi! Trova e offri passaggi in tutta la Sardegna. Gratuito e pensato per chi vive nell'isola. https://andamus.it";
-    
+    const shareText = t("shareText");
+
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Andamus - Carpooling in Sardegna",
+          title: t("shareTitle"),
           text: shareText,
           url: "https://andamus.it",
         });
-        toast.success("Grazie per condividere Andamus!");
+        toast.success(t("shareSuccess"));
       } else if (navigator.clipboard) {
         await navigator.clipboard.writeText(shareText);
-        toast.success("Link copiato! Incollalo dove preferisci");
+        toast.success(t("copySuccess"));
       }
     } catch {
       // User cancelled share
@@ -51,22 +53,21 @@ export function Footer() {
               <span className="text-lg font-bold">Andamus</span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Il carpooling sardo per viaggiare insieme. 
-              Connettiamo persone per condividere passaggi in tutta la Sardegna.
+              {t("tagline")}
             </p>
             <button
               onClick={handleShare}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#e63946]/10 text-[#e63946] text-sm font-medium hover:bg-[#e63946]/20 transition-colors"
             >
               <Share2 className="h-4 w-4" />
-              Condividi Andamus
+              {t("shareAndamus")}
             </button>
           </div>
 
           {/* Links */}
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
-              Navigazione
+              {t("navigation")}
             </h3>
             <ul className="space-y-3">
               {footerLinks.map((link) => (
@@ -75,7 +76,7 @@ export function Footer() {
                     href={link.href}
                     className="text-sm text-gray-400 transition-colors hover:text-white hover:translate-x-1 inline-block"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -85,7 +86,7 @@ export function Footer() {
           {/* Legal */}
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
-              Legale
+              {t("legal")}
             </h3>
             <ul className="space-y-3">
               {legalLinks.map((link) => (
@@ -94,7 +95,7 @@ export function Footer() {
                     href={link.href}
                     className="text-sm text-gray-400 transition-colors hover:text-white hover:translate-x-1 inline-block"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -104,15 +105,13 @@ export function Footer() {
           {/* Info */}
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
-              Info
+              {t("info")}
             </h3>
             <p className="text-sm text-gray-400">
-              Made with{" "}
-              <Heart className="inline h-4 w-4 text-[#e63946] animate-pulse" />{" "}
-              in Sardegna
+              {t("madeWithLove")}
             </p>
             <p className="mt-2 text-xs text-gray-500">
-              Versione {APP_VERSION}
+              {t("version")} {APP_VERSION}
             </p>
           </div>
         </div>
@@ -120,14 +119,14 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-400">
-            © {currentYear} Andamus. Tutti i diritti riservati.
+            © {currentYear} Andamus. {t("allRightsReserved")}.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/termini-e-condizioni" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-              Termini
+              {t("terms")}
             </Link>
             <Link href="/privacy-policy" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-              Privacy
+              {t("privacy")}
             </Link>
           </div>
         </div>

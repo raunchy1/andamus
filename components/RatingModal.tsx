@@ -7,6 +7,7 @@ import { notifyNewReview } from "@/lib/notifications";
 import { completeGamificationAction } from "@/lib/gamification";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export function RatingModal({
   currentUserId,
   onSuccess,
 }: RatingModalProps) {
+  const t = useTranslations("rating");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -57,7 +59,7 @@ export function RatingModal({
 
     const handleSubmit = async () => {
     if (rating === 0) {
-      toast.error("Seleziona una valutazione");
+      toast.error(t("selectRating"));
       return;
     }
 
@@ -74,7 +76,7 @@ export function RatingModal({
 
       if (error) {
         if (error.code === "23505") {
-          toast.error("Hai già recensito questo passaggio");
+          toast.error(t("alreadyReviewed"));
         } else {
           throw error;
         }
@@ -94,18 +96,18 @@ export function RatingModal({
           );
           
           if (result.pointsAdded > 0) {
-            toast.success(`Il conducente ha guadagnato +${result.pointsAdded} punti per la recensione 5 stelle! ⭐`);
+            toast.success(t("fiveStarPoints", { points: result.pointsAdded }));
           }
         }
         
-        toast.success("Recensione inviata!");
+        toast.success(t("reviewSent"));
         onSuccess?.();
         onClose();
         setRating(0);
         setComment("");
       }
     } catch {
-      toast.error("Errore durante l'invio");
+      toast.error(t("sendError"));
     } finally {
       setLoading(false);
     }
@@ -118,7 +120,7 @@ export function RatingModal({
       <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2a4a] p-6 shadow-2xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white">Lascia una recensione</h3>
+          <h3 className="text-xl font-bold text-white">{t("leaveReview")}</h3>
           <button
             onClick={onClose}
             className="flex h-10 w-10 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white"
@@ -132,7 +134,7 @@ export function RatingModal({
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/20">
               <Star className="h-8 w-8 text-yellow-400 fill-yellow-400" />
             </div>
-            <p className="text-white/60">Hai già lasciato una recensione per questo passaggio.</p>
+            <p className="text-white/60">{t("alreadyReviewedMessage")}</p>
           </div>
         ) : (
           <>
@@ -154,14 +156,14 @@ export function RatingModal({
                 )}
               </div>
               <div>
-                <p className="text-sm text-white/50">Come valuti</p>
+                <p className="text-sm text-white/50">{t("howWouldYouRate")}</p>
                 <p className="text-lg font-semibold text-white">{reviewedUser.name}?</p>
               </div>
             </div>
 
             {/* Star Rating */}
             <div className="mb-6">
-              <p className="mb-3 text-center text-sm text-white/50">Tocca per valutare</p>
+              <p className="mb-3 text-center text-sm text-white/50">{t("tapToRate")}</p>
               <div className="flex justify-center gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -182,23 +184,23 @@ export function RatingModal({
                 ))}
               </div>
               <p className="mt-2 text-center text-sm font-medium text-[#e63946]">
-                {rating === 1 && "Pessimo"}
-                {rating === 2 && "Scarso"}
-                {rating === 3 && "Buono"}
-                {rating === 4 && "Ottimo"}
-                {rating === 5 && "Eccellente"}
+                {rating === 1 && t("rating1")}
+                {rating === 2 && t("rating2")}
+                {rating === 3 && t("rating3")}
+                {rating === 4 && t("rating4")}
+                {rating === 5 && t("rating5")}
               </p>
             </div>
 
             {/* Comment */}
             <div className="mb-6">
               <label className="mb-2 block text-sm font-medium text-white/70">
-                Commento (opzionale)
+                {t("commentOptional")}
               </label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Descrivi la tua esperienza..."
+                placeholder={t("describeExperience")}
                 rows={3}
                 className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-4 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[#e63946]"
               />
@@ -213,7 +215,7 @@ export function RatingModal({
               {loading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin" />
               ) : (
-                "Invia recensione"
+                t("sendReview")
               )}
             </button>
           </>

@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, Phone, MapPin, X, Shield, Siren } from "lucide-react";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
 export function SafetyButton() {
+  const t = useTranslations("safety");
   const [isOpen, setIsOpen] = useState(false);
   const [showSOS, setShowSOS] = useState(false);
 
@@ -17,12 +19,12 @@ export function SafetyButton() {
 
   const handleEmergencyCall = () => {
     window.location.href = "tel:112";
-    toast.success("Chiamata emergenza 112");
+    toast.success(t("emergencyCall"));
   };
 
   const handleShareLocation = async () => {
     if (!navigator.geolocation) {
-      toast.error("Geolocalizzazione non supportata dal browser");
+      toast.error(t("geolocationNotSupported"));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -33,21 +35,21 @@ export function SafetyButton() {
         try {
           if (navigator.share) {
             await navigator.share({
-              title: "Posizione Andamus",
+              title: t("shareLocationTitle"),
               text: shareText,
             });
-            toast.success("Posizione condivisa");
+            toast.success(t("locationShared"));
           } else if (navigator.clipboard) {
             await navigator.clipboard.writeText(shareText);
-            toast.success("Posizione copiata! Incollala ai tuoi contatti fidati");
+            toast.success(t("locationCopied"));
           }
         } catch {
           await navigator.clipboard.writeText(shareText);
-          toast.success("Posizione copiata! Incollala ai tuoi contatti fidati");
+          toast.success(t("locationCopied"));
         }
       },
       () => {
-        toast.error("Impossibile ottenere la posizione. Verifica i permessi.");
+        toast.error(t("locationError"));
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -59,7 +61,7 @@ export function SafetyButton() {
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-[96px] right-6 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600"
-        aria-label="SOS Sicurezza"
+        aria-label={t("sosSafety")}
       >
         <Shield className="h-6 w-6" />
       </button>
@@ -88,8 +90,8 @@ export function SafetyButton() {
                     <Shield className="h-6 w-6 text-red-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Sicurezza</h3>
-                    <p className="text-sm text-white/50">Strumenti di emergenza</p>
+                    <h3 className="text-xl font-bold text-white">{t("safety")}</h3>
+                    <p className="text-sm text-white/50">{t("emergencyTools")}</p>
                   </div>
                 </div>
                 <button
@@ -112,8 +114,8 @@ export function SafetyButton() {
                       <Siren className="h-7 w-7 text-white" />
                     </div>
                     <div>
-                      <p className="text-lg font-bold text-white">SOS Emergenza</p>
-                      <p className="text-sm text-white/70">Chiama 112 o condividi posizione</p>
+                      <p className="text-lg font-bold text-white">{t("sosEmergency")}</p>
+                      <p className="text-sm text-white/70">{t("callOrShare")}</p>
                     </div>
                   </div>
                 </button>
@@ -128,8 +130,8 @@ export function SafetyButton() {
                       <MapPin className="h-7 w-7 text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold text-white">Condividi posizione</p>
-                      <p className="text-sm text-white/50">Invia ai contatti fidati</p>
+                      <p className="text-lg font-semibold text-white">{t("shareLocation")}</p>
+                      <p className="text-sm text-white/50">{t("sendToContacts")}</p>
                     </div>
                   </div>
                 </button>
@@ -143,20 +145,20 @@ export function SafetyButton() {
                     <Phone className="h-7 w-7 text-green-400" />
                   </div>
                   <div>
-                    <p className="text-lg font-semibold text-white">Chiama 112</p>
-                    <p className="text-sm text-white/50">Numero di emergenza</p>
+                    <p className="text-lg font-semibold text-white">{t("call112")}</p>
+                    <p className="text-sm text-white/50">{t("emergencyNumber")}</p>
                   </div>
                 </a>
               </div>
 
               {/* Safety Tips */}
               <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-                <p className="text-sm font-medium text-white">Consigli di sicurezza:</p>
+                <p className="text-sm font-medium text-white">{t("safetyTips")}</p>
                 <ul className="mt-2 space-y-1 text-xs text-white/60">
-                  <li>• Condividi sempre i dettagli del viaggio con qualcuno</li>
-                  <li>• Verifica l&apos;identità dell&apos;altro utente</li>
-                  <li>• Incontra in luoghi pubblici</li>
-                  <li>• Fidati del tuo istinto</li>
+                  <li>• {t("tip1")}</li>
+                  <li>• {t("tip2")}</li>
+                  <li>• {t("tip3")}</li>
+                  <li>• {t("tip4")}</li>
                 </ul>
               </div>
             </motion.div>
@@ -182,28 +184,28 @@ export function SafetyButton() {
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20">
                 <AlertTriangle className="h-10 w-10 text-red-400" />
               </div>
-              <h3 className="mb-2 text-2xl font-bold text-white">Emergenza?</h3>
+              <h3 className="mb-2 text-2xl font-bold text-white">{t("emergencyQuestion")}</h3>
               <p className="mb-6 text-white/60">
-                Sei in pericolo? Chiama immediatamente il 112 o condividi la tua posizione.
+                {t("emergencyDescription")}
               </p>
               <div className="space-y-3">
                 <button
                   onClick={handleEmergencyCall}
                   className="w-full rounded-xl bg-red-500 py-4 text-lg font-bold text-white transition-all hover:bg-red-600"
                 >
-                  Chiama 112
+                  {t("call112")}
                 </button>
                 <button
                   onClick={handleShareLocation}
                   className="w-full rounded-xl border border-white/10 bg-white/5 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
                 >
-                  Condividi posizione
+                  {t("shareLocation")}
                 </button>
                 <button
                   onClick={() => setShowSOS(false)}
                   className="text-sm text-white/50 hover:text-white"
                 >
-                  Annulla
+                  {t("cancel")}
                 </button>
               </div>
             </motion.div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Flag, X, AlertTriangle, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 
 interface ReportUserProps {
   reportedId: string;
@@ -12,15 +13,16 @@ interface ReportUserProps {
 }
 
 const reportReasons = [
-  { id: "inappropriate_behavior", label: "Comportamento inappropriato" },
-  { id: "no_show", label: "Non si è presentato" },
-  { id: "fake_profile", label: "Profilo falso" },
-  { id: "unsafe_driving", label: "Guida pericolosa" },
-  { id: "harassment", label: "Molestie" },
-  { id: "other", label: "Altro" },
+  { id: "inappropriate_behavior" },
+  { id: "no_show" },
+  { id: "fake_profile" },
+  { id: "unsafe_driving" },
+  { id: "harassment" },
+  { id: "other" },
 ];
 
 export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps) {
+  const t = useTranslations("report");
   const [isOpen, setIsOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
@@ -29,7 +31,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
 
   const handleSubmit = async () => {
     if (!reason) {
-      toast.error("Seleziona un motivo");
+      toast.error(t("selectReason"));
       return;
     }
 
@@ -38,7 +40,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("Devi essere autenticato");
+        toast.error(t("mustBeAuthenticated"));
         return;
       }
 
@@ -52,12 +54,12 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
 
       if (error) throw error;
 
-      toast.success("Segnalazione inviata. Grazie per la tua collaborazione!");
+      toast.success(t("reportSent"));
       setIsOpen(false);
       setReason("");
       setDescription("");
     } catch {
-      toast.error("Errore nell'invio della segnalazione");
+      toast.error(t("reportError"));
     } finally {
       setLoading(false);
     }
@@ -70,7 +72,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
         className="flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-red-400"
       >
         <Flag className="h-4 w-4" />
-        Segnala utente
+        {t("reportUser")}
       </button>
 
       {isOpen && (
@@ -83,7 +85,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
                   <AlertTriangle className="h-5 w-5 text-red-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">Segnala utente</h3>
+                  <h3 className="font-semibold text-white">{t("reportUser")}</h3>
                   <p className="text-sm text-white/50">{reportedName}</p>
                 </div>
               </div>
@@ -98,7 +100,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
             {/* Reasons */}
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium text-white/70">
-                Motivo della segnalazione
+                {t("reportReason")}
               </label>
               <div className="space-y-2">
                 {reportReasons.map((r) => (
@@ -118,7 +120,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
                       onChange={(e) => setReason(e.target.value)}
                       className="h-4 w-4 accent-[#e63946]"
                     />
-                    <span className="text-sm text-white">{r.label}</span>
+                    <span className="text-sm text-white">{t(`reasons.${r.id}`)}</span>
                   </label>
                 ))}
               </div>
@@ -127,12 +129,12 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
             {/* Description */}
             <div className="mb-6">
               <label className="mb-2 block text-sm font-medium text-white/70">
-                Descrizione (opzionale)
+                {t("descriptionOptional")}
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descrivi cosa è successo..."
+                placeholder={t("describeWhatHappened")}
                 rows={3}
                 className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-3 text-sm text-white outline-none focus:border-[#e63946] placeholder:text-white/30"
               />
@@ -147,7 +149,7 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
               {loading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin" />
               ) : (
-                "Invia segnalazione"
+                t("sendReport")
               )}
             </button>
           </div>

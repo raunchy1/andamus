@@ -12,7 +12,17 @@
     "invite": "Invita amici",
     "login": "Accedi",
     "logout": "Esci",
-    "loginWithGoogle": "Accedi con Google"
+    "loginWithGoogle": "Accedi con Google",
+    "requests": "Richieste",
+    "events": "Eventi",
+    "groups": "Gruppi",
+    "statistics": "Statistiche",
+    "sosEmergency": "SOS Emergenza",
+    "register": "Registrati",
+    "user": "Utente",
+    "closeMenu": "Chiudi menu",
+    "openMenu": "Apri menu",
+    "language": "Lingua"
   },
   "theme": {
     "light": "Chiaro",
@@ -569,7 +579,11 @@
     "success": "Successo",
     "warning": "Attenzione",
     "info": "Info",
-    "login": "Accedi"
+    "login": "Accedi",
+    "selectCity": "Seleziona città",
+    "search": "Cerca",
+    "city": "città",
+    "noCityFound": "Nessuna città trovata."
   },
   "booking": {
     "loginRequired": "Devi accedere per prenotare un passaggio",
@@ -853,7 +867,8 @@
     "retry": "Riprova",
     "backToHome": "Torna alla home",
     "statsLoadError": "Errore nel caricamento statistiche",
-    "statsLoadFailed": "Non siamo riusciti a caricare le statistiche"
+    "statsLoadFailed": "Non siamo riusciti a caricare le statistiche",
+    "reloadPage": "Ricarica la pagina per riprovare"
   },
   "admin": {
     "actionsHeader": "Azioni",
@@ -997,5 +1012,120 @@
     "progress": "Progresso",
     "subtitle": "Completa questi semplici passaggi per iniziare al meglio con il carpooling in Sardegna",
     "welcome": "Benvenuto su Andamus! 🎉"
+  },
+  "badges": {
+    "newBadgeUnlocked": "Nuovo Badge Sbloccato!",
+    "noBadgesYet": "Nessun badge ancora",
+    "completeActionsToUnlock": "Completa azioni per sbloccare badge!",
+    "allBadges": "Tutti i Badge",
+    "badgesToUnlock": "Badge da sbloccare",
+    "currentLevel": "Livello attuale",
+    "points": "Punti",
+    "pointsFor": "{min} pts per {name}",
+    "maxLevel": "Livello massimo!",
+    "pointsToNext": "Mancano {remaining} punti per diventare {name} {emoji}",
+    "howToEarnPoints": "Come guadagnare punti",
+    "pointActions": {
+      "firstRide": "Prima corsa pubblicata",
+      "everyRide": "Ogni corsa pubblicata",
+      "bookingConfirmed": "Prenotazione confermata",
+      "fiveStarReview": "Recensione 5 stelle ricevuta",
+      "identityVerified": "Verifica identità completata"
+    }
+  },
+  "notifications": {
+    "notifications": "Notifiche",
+    "markAll": "Segna tutte",
+    "noNotifications": "Nessuna notifica",
+    "seeAll": "Vedi tutte le notifiche",
+    "allNotificationsRead": "Tutte le notifiche lette",
+    "justNow": "Adesso",
+    "minutesAgo": "{count} min fa",
+    "hoursAgo": "{count} h fa",
+    "daysAgo": "{count} g fa"
+  },
+  "rating": {
+    "selectRating": "Seleziona una valutazione",
+    "alreadyReviewed": "Hai già recensito questo passaggio",
+    "fiveStarPoints": "Il conducente ha guadagnato +{points} punti per la recensione 5 stelle! ⭐",
+    "reviewSent": "Recensione inviata!",
+    "sendError": "Errore durante l'invio",
+    "leaveReview": "Lascia una recensione",
+    "alreadyReviewedMessage": "Hai già lasciato una recensione per questo passaggio.",
+    "howWouldYouRate": "Come valuti",
+    "tapToRate": "Tocca per valutare",
+    "rating1": "Pessimo",
+    "rating2": "Scarso",
+    "rating3": "Buono",
+    "rating4": "Ottimo",
+    "rating5": "Eccellente",
+    "commentOptional": "Commento (opzionale)",
+    "describeExperience": "Descrivi la tua esperienza...",
+    "sendReview": "Invia recensione"
+  },
+  "report": {
+    "selectReason": "Seleziona un motivo",
+    "mustBeAuthenticated": "Devi essere autenticato",
+    "reportSent": "Segnalazione inviata. Grazie per la tua collaborazione!",
+    "reportError": "Errore nell'invio della segnalazione",
+    "reportUser": "Segnala utente",
+    "reportReason": "Motivo della segnalazione",
+    "descriptionOptional": "Descrizione (opzionale)",
+    "describeWhatHappened": "Descrivi cosa è successo...",
+    "sendReport": "Invia segnalazione",
+    "reasons": {
+      "inappropriate_behavior": "Comportamento inappropriato",
+      "no_show": "Non si è presentato",
+      "fake_profile": "Profilo falso",
+      "unsafe_driving": "Guida pericolosa",
+      "harassment": "Molestie",
+      "other": "Altro"
+    }
+  },
+  "safety": {
+    "emergencyCall": "Chiamata emergenza 112",
+    "geolocationNotSupported": "Geolocalizzazione non supportata dal browser",
+    "shareLocationTitle": "Posizione Andamus",
+    "locationShared": "Posizione condivisa",
+    "locationCopied": "Posizione copiata! Incollala ai tuoi contatti fidati",
+    "locationError": "Impossibile ottenere la posizione. Verifica i permessi.",
+    "sosSafety": "SOS Sicurezza",
+    "safety": "Sicurezza",
+    "emergencyTools": "Strumenti di emergenza",
+    "sosEmergency": "SOS Emergenza",
+    "callOrShare": "Chiama 112 o condividi posizione",
+    "shareLocation": "Condividi posizione",
+    "sendToContacts": "Invia ai contatti fidati",
+    "call112": "Chiama 112",
+    "emergencyNumber": "Numero di emergenza",
+    "safetyTips": "Consigli di sicurezza:",
+    "tip1": "Condividi sempre i dettagli del viaggio con qualcuno",
+    "tip2": "Verifica l'identità dell'altro utente",
+    "tip3": "Incontra in luoghi pubblici",
+    "tip4": "Fidati del tuo istinto",
+    "emergencyQuestion": "Emergenza?",
+    "emergencyDescription": "Sei in pericolo? Chiama immediatamente il 112 o condividi la tua posizione.",
+    "cancel": "Annulla"
+  },
+  "footer": {
+    "searchRides": "Cerca passaggi",
+    "offerRide": "Offri un passaggio",
+    "yourProfile": "Il tuo profilo",
+    "termsAndConditions": "Termini e Condizioni",
+    "privacyPolicy": "Privacy Policy",
+    "tagline": "Il carpooling sardo per viaggiare insieme. Connettiamo persone per condividere passaggi in tutta la Sardegna.",
+    "shareText": "🚗 Scopri Andamus - Il carpooling dei sardi! Trova e offri passaggi in tutta la Sardegna. Gratuito e pensato per chi vive nell'isola. https://andamus.it",
+    "shareTitle": "Andamus - Carpooling in Sardegna",
+    "shareSuccess": "Grazie per condividere Andamus!",
+    "copySuccess": "Link copiato! Incollalo dove preferisci",
+    "shareAndamus": "Condividi Andamus",
+    "navigation": "Navigazione",
+    "legal": "Legale",
+    "info": "Info",
+    "madeWithLove": "Made with ❤️ in Sardegna",
+    "version": "Versione",
+    "allRightsReserved": "Tutti i diritti riservati",
+    "terms": "Termini",
+    "privacy": "Privacy"
   }
 }
