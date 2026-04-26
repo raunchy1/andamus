@@ -1,11 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Bebas_Neue, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "600", "800"],
+});
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-bebas",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  style: ["italic"],
+  variable: "--font-playfair",
 });
 
 export const metadata: Metadata = {
@@ -61,7 +73,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${inter.variable} dark h-full antialiased`}
+      className={`${inter.variable} ${bebasNeue.variable} ${playfair.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

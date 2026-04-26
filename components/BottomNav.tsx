@@ -20,7 +20,7 @@ export function BottomNav() {
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-nav flex justify-around items-center h-16 px-4 bg-[#0f0f0f] border-t border-[#2a2a2a] md:hidden safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-nav bg-[#0a0a0a] border-t border-white/5 h-[70px] flex items-center justify-around px-4 md:hidden safe-area-bottom">
       {navItems.map((item) => {
         const fullHref = `/${locale}${item.href}`;
         const isActive =
@@ -30,23 +30,21 @@ export function BottomNav() {
         const Icon = item.icon;
 
         return (
-          <Link
-            key={item.href}
-            href={fullHref}
-            className={`flex flex-col items-center justify-center group ${
-              isActive
-                ? "text-[#ffb3b1] font-bold"
-                : "text-[#353534] hover:text-[#e5e2e1]"
-            } transition-colors active:scale-90 duration-300`}
-          >
-            <Icon
-              className={`w-6 h-6 group-active:scale-90 transition-all duration-300 ${
-                isActive ? "fill-current" : ""
+          <Link key={item.href} href={fullHref}>
+            <div
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
+                isActive
+                  ? "bg-[#e63946] text-white"
+                  : "text-[#9ca3af]"
               }`}
-            />
-            <span className="font-bold uppercase tracking-[0.05em] text-[10px] mt-1">
-              {t(item.labelKey)}
-            </span>
+            >
+              <Icon size={20} />
+              {isActive && (
+                <span className="text-sm font-inter font-semibold">
+                  {t(item.labelKey)}
+                </span>
+              )}
+            </div>
           </Link>
         );
       })}
