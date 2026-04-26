@@ -1,23 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Check, ChevronsUpDown, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { Check, MapPin, Search, X, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 export interface City {
   id: string;
@@ -44,7 +30,29 @@ export function CityCombobox({
   buttonClassName,
 }: CityComboboxProps) {
   const t = useTranslations("common");
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(() => {
+    const query = search.toLowerCase().trim();
+    if (!query) return cities.slice(0, 50);
+    return cities
+      .filter((city) => city.name.toLowerCase().includes(query))
+      .slice(0, 50);
+  }, [cities, search]);
+
+  const handleSelect = (cityName: string) => {
+    onChange(cityName === value ? "" : cityName);
+    setIsOpen(false);
+    setSearch("");
+  };
+
+  const handleOpen = () => {
+    if (!disabled) {
+      setIsOpen(true);
+      setSearch("");
+    }
+  };
 
   const selectedCity = useMemo(
     () => cities.find((city) => city.name === value),
@@ -52,70 +60,140 @@ export function CityCombobox({
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled}
+    <>
+      {/* Trigger button */}
+      <button
+        type="button"
+        onClick={handleOpen}
+        disabled={disabled}
+        className={cn(
+          "w-full flex items-center gap-2 bg-surface-container border border-outline/30 rounded-xl px-4 py-3.5 text-left hover:border-primary transition-colors min-h-[44px] touch-manipulation",
+          disabled && "opacity-50 cursor-not-allowed",
+          buttonClassName
+        )}
+      >
+        <MapPin size={18} className="text-primary flex-shrink-0" />
+        <span
           className={cn(
-            "w-full justify-between text-left font-normal min-h-[44px] touch-manipulation",
-            !value && "text-muted-foreground",
-            buttonClassName
+            "flex-1 truncate",
+            selectedCity ? "text-on-surface" : "text-on-surface-variant"
           )}
         >
-          <span className="flex items-center gap-2 truncate">
-            <MapPin className="h-4 w-4 shrink-0 opacity-50" />
-            <span className="truncate">
-              {selectedCity ? selectedCity.name : (placeholder || t("selectCity"))}
-            </span>
-          </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0"
-      >
-        <Command
-          filter={(value, search) => {
-            const cityName = value.toLowerCase();
-            const query = search.toLowerCase();
-            if (cityName.startsWith(query)) return 1;
-            if (cityName.includes(query)) return 0.5;
-            return 0;
+          {selectedCity ? selectedCity.name : placeholder || t("selectCity")}
+        </span>
+        <ChevronDown
+          size={16}
+          className="text-on-surface-variant flex-shrink-0"
+        />
+      </button>
+
+      {/* Bottom sheet overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+          onClick={() => {
+            setIsOpen(false);
+            setSearch("");
           }}
         >
-          <CommandInput
-            placeholder={`${t("search")} ${label ? label.toLowerCase() : t("city").toLowerCase()}...`}
-            className="h-11"
-          />
-          <CommandList className="max-h-[300px] overflow-y-auto">
-            <CommandEmpty>{t("noCityFound")}</CommandEmpty>
-            <CommandGroup>
-              {cities.map((city) => (
-                <CommandItem
-                  key={city.id}
-                  value={city.name}
-                  onSelect={() => {
-                    onChange(city.name === value ? "" : city.name);
-                    setOpen(false);
-                  }}
-                  className="cursor-pointer touch-manipulation"
-                >
-                  <Check
+          <div
+            className="w-full sm:w-[28rem] sm:rounded-3xl bg-surface-container rounded-t-3xl flex flex-col shadow-2xl"
+            style={{ maxHeight: "80vh" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-1 sm:hidden">
+              <div className="w-10 h-1 bg-outline/40 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3">
+              <span className="font-semibold text-on-surface text-lg">
+                {placeholder || label || t("selectCity")}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  setSearch("");
+                }}
+                className="p-2 rounded-full bg-surface-variant active:bg-surface-variant/80 touch-manipulation"
+              >
+                <X size={18} className="text-on-surface-variant" />
+              </button>
+            </div>
+
+            {/* Search input */}
+            <div className="px-5 pb-3">
+              <div className="flex items-center gap-3 bg-surface border border-outline/30 rounded-2xl px-4 py-3">
+                <Search
+                  size={18}
+                  className="text-on-surface-variant flex-shrink-0"
+                />
+                <input
+                  autoFocus
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder={`${t("search")} ${
+                    label ? label.toLowerCase() : t("city").toLowerCase()
+                  }...`}
+                  className="flex-1 bg-transparent text-on-surface placeholder:text-on-surface-variant focus:outline-none text-base"
+                />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch("")}
+                    className="touch-manipulation"
+                  >
+                    <X size={16} className="text-on-surface-variant" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Cities list */}
+            <div
+              className="overflow-y-auto flex-1 pb-8"
+              style={{ overscrollBehavior: "contain" }}
+            >
+              {filtered.length === 0 ? (
+                <div className="py-12 text-center text-on-surface-variant">
+                  <MapPin size={32} className="mx-auto mb-2 opacity-40" />
+                  <p>{t("noCityFound")}</p>
+                </div>
+              ) : (
+                filtered.map((city) => (
+                  <button
+                    key={city.id}
+                    type="button"
+                    onClick={() => handleSelect(city.name)}
                     className={cn(
-                      "mr-2 h-4 w-4 shrink-0",
-                      value === city.name ? "opacity-100" : "opacity-0"
+                      "w-full flex items-center gap-4 px-5 py-4 text-left transition-colors border-b border-outline/10 last:border-0 min-h-[44px] touch-manipulation",
+                      value === city.name
+                        ? "bg-primary/15 text-primary font-semibold"
+                        : "text-on-surface active:bg-primary/20 hover:bg-surface-variant"
                     )}
-                  />
-                  <span className="truncate">{city.name}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+                  >
+                    <MapPin
+                      size={18}
+                      className={
+                        value === city.name
+                          ? "text-primary"
+                          : "text-on-surface-variant"
+                      }
+                    />
+                    <span className="text-base truncate">{city.name}</span>
+                    {value === city.name && (
+                      <Check size={18} className="ml-auto text-primary flex-shrink-0" />
+                    )}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
