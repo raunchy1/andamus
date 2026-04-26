@@ -95,31 +95,31 @@ function JoinContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#e63946]" />
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
 
   if (user) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center px-4 pt-16 pb-16 md:pb-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full text-center"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#e63946] to-[#c92a37] flex items-center justify-center mx-auto mb-6">
-            <Gift className="w-10 h-10 text-white" />
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-6">
+            <Gift className="w-10 h-10 text-on-primary" />
           </div>
           
-          <h1 className="text-2xl font-bold text-white mb-2">
+          <h1 className="text-2xl font-bold text-on-surface mb-2">
             {referralApplied ? t("welcome") : t("alreadyRegistered")}
           </h1>
           
           {referralApplied ? (
             <>
-              <p className="text-white/60 mb-6">
+              <p className="text-on-surface-variant mb-6">
                 {t("referralBonusText")}
               </p>
               <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
@@ -128,14 +128,14 @@ function JoinContent() {
               </div>
             </>
           ) : (
-            <p className="text-white/60 mb-6">
+            <p className="text-on-surface-variant mb-6">
               {t("alreadyRegisteredText")}
             </p>
           )}
           
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#e63946] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-[#c92a37]"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-on-primary transition-all hover:opacity-90"
           >
             {t("goHome")}
           </Link>
@@ -145,7 +145,7 @@ function JoinContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+    <div className="min-h-[100dvh] bg-background flex items-center justify-center px-4 pt-16 pb-16 md:pb-0">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -153,49 +153,49 @@ function JoinContent() {
       >
         <Link 
           href="/"
-          className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
           {t("backToHome")}
         </Link>
 
         <div className="text-center mb-8">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#e63946] to-[#c92a37] flex items-center justify-center mx-auto mb-6">
-            <Gift className="w-10 h-10 text-white" />
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-6">
+            <Gift className="w-10 h-10 text-on-primary" />
           </div>
           
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-on-surface mb-2">
             {t("joinTitle")}
           </h1>
           
           {referralCode ? (
-            <p className="text-white/60">
+            <p className="text-on-surface-variant">
               {t("referralPrompt")}
             </p>
           ) : (
-            <p className="text-white/60">
+            <p className="text-on-surface-variant">
               {t("tagline")}
             </p>
           )}
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
-          <h2 className="text-white font-semibold mb-4">{t("benefitsTitle")}</h2>
+        <div className="bg-surface-container border border-outline/20 rounded-2xl p-6 mb-8">
+          <h2 className="text-on-surface font-semibold mb-4">{t("benefitsTitle")}</h2>
           <ul className="space-y-3">
-            <li className="flex items-center gap-3 text-white/80">
+            <li className="flex items-center gap-3 text-on-surface-variant">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span>{t("benefit1")}</span>
             </li>
-            <li className="flex items-center gap-3 text-white/80">
+            <li className="flex items-center gap-3 text-on-surface-variant">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span>{t("benefit2")}</span>
             </li>
-            <li className="flex items-center gap-3 text-white/80">
+            <li className="flex items-center gap-3 text-on-surface-variant">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span>{t("benefit3")}</span>
             </li>
             {referralCode && (
-              <li className="flex items-center gap-3 text-[#e63946]">
+              <li className="flex items-center gap-3 text-primary">
                 <Gift className="w-5 h-5" />
                 <span className="font-semibold">{t("referralBonus")}</span>
               </li>
@@ -205,7 +205,7 @@ function JoinContent() {
 
         <Button
           onClick={handleLogin}
-          className="w-full bg-[#e63946] hover:bg-[#c92a37] text-white py-6 text-lg font-semibold rounded-xl"
+          className="w-full bg-primary hover:opacity-90 text-on-primary py-6 text-lg font-semibold rounded-xl"
         >
           <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -216,7 +216,7 @@ function JoinContent() {
           {t("signInGoogle")}
         </Button>
 
-        <p className="text-center text-white/40 text-sm mt-6">
+        <p className="text-center text-on-surface-variant text-sm mt-6">
           {t("termsNotice")}
         </p>
       </motion.div>
@@ -226,7 +226,7 @@ function JoinContent() {
 
 export default function JoinPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[100dvh]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
       <JoinContent />
     </Suspense>
   );

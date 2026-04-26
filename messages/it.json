@@ -667,7 +667,11 @@
     "signInGoogle": "Accedi con Google",
     "tagline": "L'app gratuita di carpooling per la Sardegna",
     "termsNotice": "Cliccando su \"Accedi con Google\" accetti i nostri Termini di Servizio e Privacy Policy",
-    "welcome": "Benvenuto!"
+    "welcome": "Benvenuto!",
+    "alreadyHaveAccount": "Hai già un account?",
+    "noAccount": "Non hai un account?",
+    "min8chars": "min. 8 caratteri",
+    "signIn": "Accedi"
   },
   "events": {
     "title": "Eventi in Sardegna",

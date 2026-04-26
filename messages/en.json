@@ -667,7 +667,11 @@
     "signInGoogle": "Sign in with Google",
     "tagline": "The free carpooling app for Sardinia",
     "termsNotice": "By clicking \"Sign in with Google\" you accept our Terms of Service and Privacy Policy",
-    "welcome": "Welcome!"
+    "welcome": "Welcome!",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "min8chars": "min. 8 characters",
+    "signIn": "Sign in"
   },
   "events": {
     "title": "Events in Sardinia",

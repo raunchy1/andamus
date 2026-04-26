@@ -667,7 +667,11 @@
     "signInGoogle": "Mit Google anmelden",
     "tagline": "Die kostenlose Mitfahr-App für Sardinien",
     "termsNotice": "Durch Klicken auf \"Mit Google anmelden\" akzeptierst du unsere Nutzungsbedingungen und Datenschutzrichtlinie",
-    "welcome": "Willkommen!"
+    "welcome": "Willkommen!",
+    "alreadyHaveAccount": "Hast du bereits ein Konto?",
+    "noAccount": "Kein Konto?",
+    "min8chars": "min. 8 Zeichen",
+    "signIn": "Anmelden"
   },
   "events": {
     "title": "Veranstaltungen in Sardinien",
