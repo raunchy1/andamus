@@ -99,8 +99,7 @@ export function CityCombobox({
           }}
         >
           <div
-            className="w-full sm:w-[28rem] sm:mx-auto sm:mb-8 sm:rounded-3xl bg-surface-container rounded-t-3xl flex flex-col shadow-2xl"
-            style={{ height: "85dvh", maxHeight: "85dvh" }}
+            className="w-full sm:w-[28rem] sm:mx-auto sm:mb-8 sm:rounded-3xl bg-surface-container rounded-t-3xl flex flex-col shadow-2xl max-h-[85%] sm:max-h-[85vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Handle bar */}
