@@ -408,7 +408,7 @@ function RideDetailMobile({
                 {tc('cancel')}
               </button>
               <button
-                onClick={signInWithGoogle}
+                onClick={() => signInWithGoogle()}
                 className="flex-1 rounded-2xl bg-primary py-4 text-base font-semibold text-on-primary hover:opacity-90 transition-all active:scale-95"
               >
                 {tc('login')}
@@ -749,7 +749,7 @@ function RideDetailDesktop({
                 {tc('cancel')}
               </button>
               <button
-                onClick={signInWithGoogle}
+                onClick={() => signInWithGoogle()}
                 className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary hover:opacity-90"
               >
                 {tc('login')}

@@ -4,6 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  
+  // Extract locale from URL path (e.g. /it/auth/callback -> it)
+  const pathSegments = new URL(request.url).pathname.split('/').filter(Boolean);
+  const locale = pathSegments[0] || "it";
 
   if (code) {
     const supabase = await createClient();
@@ -16,23 +20,36 @@ export async function GET(request: Request) {
       const pendingRefCode = pendingRefMatch ? decodeURIComponent(pendingRefMatch[1]) : null;
       
       if (pendingRefCode) {
-        // Apply referral bonus
         await supabase.rpc("apply_referral_bonus", {
           new_user_id: user.id,
           referrer_code: pendingRefCode
         });
       }
       
+      // Check if user has a profile — new users go to onboarding, existing to profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+      
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
       
+      let redirectPath: string;
+      if (profile) {
+        redirectPath = `/${locale}/profilo`;
+      } else {
+        redirectPath = `/${locale}/lansare`;
+      }
+      
       let response;
       if (isLocalEnv) {
-        response = NextResponse.redirect(`${origin}/profilo`);
+        response = NextResponse.redirect(`${origin}${redirectPath}`);
       } else if (forwardedHost) {
-        response = NextResponse.redirect(`https://${forwardedHost}/profilo`);
+        response = NextResponse.redirect(`https://${forwardedHost}${redirectPath}`);
       } else {
-        response = NextResponse.redirect(`${origin}/profilo`);
+        response = NextResponse.redirect(`${origin}${redirectPath}`);
       }
       
       // Clear the referral code cookie
@@ -45,5 +62,5 @@ export async function GET(request: Request) {
   }
 
   // Return the user to an error page
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  return NextResponse.redirect(`${origin}/${locale}/auth/auth-code-error`);
 }

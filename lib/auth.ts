@@ -2,18 +2,17 @@
 
 import { createClient } from "@/lib/supabase/client";
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(redirectTo?: string) {
   const supabase = createClient();
   
-  // Use dynamic redirect URL based on environment
-  const redirectTo = typeof window !== "undefined"
-    ? `${window.location.origin}/auth/callback`
-    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/auth/callback";
+  const finalRedirectTo = redirectTo || (typeof window !== "undefined"
+    ? `${window.location.origin}${window.location.pathname.split('/').slice(0, 2).join('/')}/auth/callback`
+    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/it/auth/callback");
   
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo,
+      redirectTo: finalRedirectTo,
     },
   });
   
@@ -22,28 +21,12 @@ export async function signInWithGoogle() {
   }
 }
 
-export async function signInWithFacebook() {
+export async function signUpWithEmail(email: string, password: string, fullName: string, redirectTo?: string) {
   const supabase = createClient();
   
-  // Use dynamic redirect URL based on environment
-  const redirectTo = typeof window !== "undefined"
-    ? `${window.location.origin}/auth/callback`
-    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/auth/callback";
-  
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "facebook",
-    options: {
-      redirectTo,
-    },
-  });
-  
-  if (error) {
-    throw error;
-  }
-}
-
-export async function signUpWithEmail(email: string, password: string, fullName: string) {
-  const supabase = createClient();
+  const finalRedirectTo = redirectTo || (typeof window !== "undefined"
+    ? `${window.location.origin}${window.location.pathname.split('/').slice(0, 2).join('/')}/auth/callback`
+    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/it/auth/callback");
   
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -53,10 +36,7 @@ export async function signUpWithEmail(email: string, password: string, fullName:
         full_name: fullName,
         name: fullName,
       },
-      // Email confirmation is handled by Supabase
-      emailRedirectTo: typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback`
-        : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/auth/callback",
+      emailRedirectTo: finalRedirectTo,
     },
   });
   
@@ -64,8 +44,6 @@ export async function signUpWithEmail(email: string, password: string, fullName:
     throw error;
   }
   
-  // If auto-confirm is enabled, the user will be logged in immediately
-  // Otherwise, they need to confirm their email
   return data;
 }
 
@@ -92,7 +70,7 @@ export async function signOut() {
     throw error;
   }
   
-  // Redirect to home
+  // Hard reload to clear all state and re-run middleware
   if (typeof window !== "undefined") {
     window.location.href = "/";
   }
@@ -120,13 +98,15 @@ export async function getSession() {
   return session;
 }
 
-export async function resetPassword(email: string) {
+export async function resetPassword(email: string, redirectTo?: string) {
   const supabase = createClient();
   
+  const finalRedirectTo = redirectTo || (typeof window !== "undefined"
+    ? `${window.location.origin}${window.location.pathname.split('/').slice(0, 2).join('/')}/auth/reset-password`
+    : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/it/auth/reset-password");
+  
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: typeof window !== "undefined"
-      ? `${window.location.origin}/auth/reset-password`
-      : (process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app") + "/auth/reset-password",
+    redirectTo: finalRedirectTo,
   });
   
   if (error) {
