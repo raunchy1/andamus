@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Check, MapPin, Search, X, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,7 @@ export function CityCombobox({
   const t = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     const query = search.toLowerCase().trim();
@@ -51,6 +52,7 @@ export function CityCombobox({
     if (!disabled) {
       setIsOpen(true);
       setSearch("");
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   };
 
@@ -90,15 +92,15 @@ export function CityCombobox({
       {/* Bottom sheet overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+          className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex flex-col justify-end"
           onClick={() => {
             setIsOpen(false);
             setSearch("");
           }}
         >
           <div
-            className="w-full sm:w-[28rem] sm:rounded-3xl bg-surface-container rounded-t-3xl flex flex-col shadow-2xl"
-            style={{ maxHeight: "80vh" }}
+            className="w-full sm:w-[28rem] sm:mx-auto sm:mb-8 sm:rounded-3xl bg-surface-container rounded-t-3xl flex flex-col shadow-2xl"
+            style={{ height: "85dvh", maxHeight: "85dvh" }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Handle bar */}
@@ -107,7 +109,7 @@ export function CityCombobox({
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3">
+            <div className="flex items-center justify-between px-5 py-3 flex-shrink-0">
               <span className="font-semibold text-on-surface text-lg">
                 {placeholder || label || t("selectCity")}
               </span>
@@ -124,14 +126,14 @@ export function CityCombobox({
             </div>
 
             {/* Search input */}
-            <div className="px-5 pb-3">
+            <div className="px-5 pb-3 flex-shrink-0">
               <div className="flex items-center gap-3 bg-surface border border-outline/30 rounded-2xl px-4 py-3">
                 <Search
                   size={18}
                   className="text-on-surface-variant flex-shrink-0"
                 />
                 <input
-                  autoFocus
+                  ref={inputRef}
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -154,8 +156,8 @@ export function CityCombobox({
 
             {/* Cities list */}
             <div
-              className="overflow-y-auto flex-1 pb-8"
-              style={{ overscrollBehavior: "contain" }}
+              className="overflow-y-auto pb-8"
+              style={{ flex: 1, minHeight: 0, overscrollBehavior: "contain" }}
             >
               {filtered.length === 0 ? (
                 <div className="py-12 text-center text-on-surface-variant">
