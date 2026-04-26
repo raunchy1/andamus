@@ -41,22 +41,6 @@
   --color-card: var(--card);
   --color-sardinian-red: #e63946;
   --color-sardinian-red-hover: #c92a37;
-
-  /* Brand design system */
-  --color-brand-red: #e63946;
-  --color-brand-bg: #0a0a0a;
-  --color-brand-card: #0d0d0d;
-  --color-brand-card2: #111111;
-  --color-brand-grey: #9ca3af;
-
-  /* Font families */
-  --font-bebas: var(--font-bebas);
-  --font-inter: var(--font-inter);
-  --font-playfair: var(--font-playfair);
-
-  /* Box shadows */
-  --shadow-red-glow: 0 0 30px rgba(230, 57, 70, 0.3);
-  --shadow-red-glow-sm: 0 0 15px rgba(230, 57, 70, 0.2);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -154,44 +138,16 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #0a0a0a;
-    color: #ffffff;
-    font-family: var(--font-inter), sans-serif;
   }
   html {
     @apply font-sans;
   }
-
+  
   /* Global spacing system - prevent overflow */
   html, body {
     overflow-x: hidden;
     max-width: 100vw;
   }
-}
-
-/* Font utilities */
-.font-bebas { font-family: var(--font-bebas), sans-serif; }
-.font-inter { font-family: var(--font-inter), sans-serif; }
-.font-playfair { font-family: var(--font-playfair), serif; }
-
-/* Red glow shadows */
-.shadow-red-glow {
-  box-shadow: 0 0 30px rgba(230, 57, 70, 0.3);
-}
-.shadow-red-glow-sm {
-  box-shadow: 0 0 15px rgba(230, 57, 70, 0.2);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-::-webkit-scrollbar-thumb {
-  background: #e63946;
-  border-radius: 2px;
 }
 
 /* ============================================
