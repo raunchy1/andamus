@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
 import { Calculator, Sparkles } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
@@ -88,14 +88,14 @@ function OfferMobile({
       {/* Top Navigation */}
       <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
+          <button type="button" onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="font-extrabold tracking-tighter text-3xl text-[#e5e2e1]">Andamus</h1>
         </div>
         <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
           {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-            <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
+            <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} sizes="40px" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
           ) : (
             <User className="w-5 h-5 text-on-surface-variant" />
           )}
@@ -210,8 +210,8 @@ function OfferMobile({
             <div className="space-y-4 pt-4">
               <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('travelMode')}</label>
               <div className="flex p-1 bg-surface-container-lowest rounded-xl border border-surface-container-highest">
-                <button
-                  type="button"
+                <button type="button"
+                  
                   onClick={() => handleChange("isFree", true)}
                   className={`flex-1 py-3 px-2 rounded-lg font-extrabold text-[12px] uppercase tracking-wider transition-all ${
                     formData.isFree ? 'bg-primary text-on-primary' : 'text-outline hover:text-on-surface'
@@ -219,8 +219,8 @@ function OfferMobile({
                 >
                   {t('free')}
                 </button>
-                <button
-                  type="button"
+                <button type="button"
+                  
                   onClick={() => handleChange("isFree", false)}
                   className={`flex-1 py-3 px-2 rounded-lg font-extrabold text-[12px] uppercase tracking-wider transition-all ${
                     !formData.isFree ? 'bg-primary text-on-primary' : 'text-outline hover:text-on-surface'
@@ -375,8 +375,8 @@ function OfferMobile({
                         <option key={city} value={city}>{city}</option>
                       ))}
                     </select>
-                    <button
-                      type="button"
+                    <button type="button"
+                      
                       onClick={() => {
                         const next = formData.stops.filter((_, i) => i !== index);
                         handleChange("stops", next);
@@ -388,8 +388,8 @@ function OfferMobile({
                   </div>
                 ))}
                 {formData.stops.length < 3 && (
-                  <button
-                    type="button"
+                  <button type="button"
+                    
                     onClick={() => handleChange("stops", [...formData.stops, ""])}
                     className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                   >
@@ -503,8 +503,8 @@ function OfferMobile({
 
           {/* Action Button */}
           <div className="pt-4 pb-12">
-            <button
-              type="submit"
+            <button type="submit"
+              
               disabled={isSubmitting}
               className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-xl shadow-lg transform active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
             >
@@ -544,14 +544,14 @@ function OfferDesktop({
       <header className="bg-[#0e0e0e] border-b border-white/5 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
+            <button type="button" onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
               <ArrowLeft className="w-6 h-6" />
             </button>
             <h1 className="font-extrabold tracking-tighter text-2xl text-[#e5e2e1]">Andamus</h1>
           </div>
           <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
             {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-              <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
+              <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} sizes="40px" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
             ) : (
               <User className="w-5 h-5 text-on-surface-variant" />
             )}
@@ -667,8 +667,8 @@ function OfferDesktop({
                 <div className="space-y-4 pt-2">
                   <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('travelMode')}</label>
                   <div className="flex p-1.5 bg-surface-container-lowest rounded-2xl border border-surface-container-highest">
-                    <button
-                      type="button"
+                    <button type="button"
+                      
                       onClick={() => handleChange("isFree", true)}
                       className={`flex-1 py-4 px-4 rounded-xl font-extrabold text-sm uppercase tracking-wider transition-all ${
                         formData.isFree ? 'bg-primary text-on-primary shadow-lg' : 'text-outline hover:text-on-surface'
@@ -676,8 +676,8 @@ function OfferDesktop({
                     >
                       {t('free')}
                     </button>
-                    <button
-                      type="button"
+                    <button type="button"
+                      
                       onClick={() => handleChange("isFree", false)}
                       className={`flex-1 py-4 px-4 rounded-xl font-extrabold text-sm uppercase tracking-wider transition-all ${
                         !formData.isFree ? 'bg-primary text-on-primary shadow-lg' : 'text-outline hover:text-on-surface'
@@ -778,8 +778,8 @@ function OfferDesktop({
                             <option key={city} value={city}>{city}</option>
                           ))}
                         </select>
-                        <button
-                          type="button"
+                        <button type="button"
+                          
                           onClick={() => {
                             const next = formData.stops.filter((_, i) => i !== index);
                             handleChange("stops", next);
@@ -791,8 +791,8 @@ function OfferDesktop({
                       </div>
                     ))}
                     {formData.stops.length < 3 && (
-                      <button
-                        type="button"
+                      <button type="button"
+                        
                         onClick={() => handleChange("stops", [...formData.stops, ""])}
                         className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
                       >
@@ -909,8 +909,8 @@ function OfferDesktop({
 
               {/* Action Button */}
               <div className="pt-2">
-                <button
-                  type="submit"
+                <button type="submit"
+                  
                   disabled={isSubmitting}
                   className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-2xl shadow-lg transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 min-h-[56px]"
                 >
@@ -1327,7 +1327,7 @@ export default function OfferPage() {
           <p className="mb-8 text-on-surface-variant">
             {t('loginRequired')}
           </p>
-          <button
+          <button type="button"
             onClick={handleLogin}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 text-base font-extrabold text-on-primary transition-colors hover:opacity-90 active:scale-95"
           >

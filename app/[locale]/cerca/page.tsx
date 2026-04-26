@@ -268,15 +268,15 @@ function AlertModal({
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button
-              type="button"
+            <button type="button"
+              
               onClick={() => setShowAlertModal(false)}
               className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
               {t('cancel')}
             </button>
-            <button
-              type="submit"
+            <button type="submit"
+              
               disabled={alertSaving}
               className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary transition-colors hover:opacity-90 disabled:opacity-50"
             >
@@ -334,7 +334,7 @@ function SearchMobile(props: SearchViewProps) {
           </Link>
           <h1 className="font-extrabold tracking-tighter text-2xl sm:text-3xl text-[#e5e2e1] uppercase truncate">Andamus</h1>
         </div>
-        <button
+        <button type="button"
           onClick={() => setShowFilters(!showFilters)}
           className="text-[#ffb3b1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out relative"
         >
@@ -408,7 +408,7 @@ function SearchMobile(props: SearchViewProps) {
         {/* Elegant Filter Pills */}
         <div className="flex gap-2 sm:gap-3 mb-8 sm:mb-10 overflow-x-auto no-scrollbar pb-2">
           {getFilterOptions(t).map((option) => (
-            <button
+            <button type="button"
               key={option.id}
               onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
               className={`whitespace-nowrap px-4 sm:px-6 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all active:scale-95 flex-shrink-0 ${
@@ -420,7 +420,7 @@ function SearchMobile(props: SearchViewProps) {
               {option.label}
             </button>
           ))}
-          <button
+          <button type="button"
             onClick={() => setShowAlertModal(true)}
             className="whitespace-nowrap px-4 sm:px-6 py-2 bg-surface-container-high text-primary rounded-full font-bold text-[11px] uppercase tracking-widest border border-outline-variant border-opacity-20 hover:bg-surface-container-highest transition-all active:scale-95 flex items-center gap-2 flex-shrink-0"
           >
@@ -434,7 +434,7 @@ function SearchMobile(props: SearchViewProps) {
           <div className="mb-6 sm:mb-8 bg-surface-container-low rounded-xl p-3 sm:p-4 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">{t('advancedFilters')}</h3>
-              <button onClick={() => setShowFilters(false)} className="text-on-surface-variant hover:text-on-surface">
+              <button type="button" onClick={() => setShowFilters(false)} className="text-on-surface-variant hover:text-on-surface">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -531,7 +531,7 @@ function SearchMobile(props: SearchViewProps) {
             </div>
 
             {activeFiltersCount > 0 && (
-              <button
+              <button type="button"
                 onClick={clearFilters}
                 className="w-full py-2 rounded-lg border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-high transition-colors"
               >
@@ -547,7 +547,7 @@ function SearchMobile(props: SearchViewProps) {
             {loading ? t('loading') : t('resultsCount', { count: rides.length })}
           </p>
           <div className="flex items-center gap-2">
-            <button
+            <button type="button"
               onClick={handleRefresh}
               disabled={isRefreshing}
               className="p-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest transition-colors"
@@ -739,8 +739,8 @@ function SearchDesktop(props: SearchViewProps) {
               />
             </div>
           </div>
-          <button
-            type="submit"
+          <button type="submit"
+            
             className="bg-[#ffb3b1] text-[#0f0f0f] px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-[#ff9e9c] transition-colors"
           >
             {t('searchButton')}
@@ -750,7 +750,7 @@ function SearchDesktop(props: SearchViewProps) {
         {/* Filter Pills & Actions */}
         <div className="flex flex-wrap items-center gap-3">
           {getFilterOptions(t).map((option) => (
-            <button
+            <button type="button"
               key={option.id}
               onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
               className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${
@@ -762,14 +762,14 @@ function SearchDesktop(props: SearchViewProps) {
               {option.label}
             </button>
           ))}
-          <button
+          <button type="button"
             onClick={() => setShowAlertModal(true)}
             className="px-5 py-2 bg-[#1a1a1a] text-[#ffb3b1] rounded-full font-bold text-[11px] uppercase tracking-widest border border-white/10 hover:border-[#ffb3b1]/30 transition-all flex items-center gap-2"
           >
             <Bell className="w-3 h-3" />
             {t('alertButton')}
           </button>
-          <button
+          <button type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest border transition-all flex items-center gap-2 ${
               showFilters || activeFiltersCount > 0
@@ -786,7 +786,7 @@ function SearchDesktop(props: SearchViewProps) {
             )}
           </button>
           {activeFiltersCount > 0 && (
-            <button
+            <button type="button"
               onClick={clearFilters}
               className="px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest text-[#e5e2e1] hover:text-[#ffb3b1] transition-colors"
             >
@@ -908,7 +908,7 @@ function SearchDesktop(props: SearchViewProps) {
           {loading ? t('loading') : t('resultsCount', { count: rides.length })}
         </p>
         <div className="flex items-center gap-2">
-          <button
+          <button type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="p-2 rounded-full bg-[#1a1a1a] text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#222] transition-colors"
@@ -1106,7 +1106,8 @@ function SearchContent() {
     };
   }, [fetchRides]);
 
-  // Initial load
+  // Initial load — intentionally omitting fetchRides from deps
+  // to avoid double-fetch on mount. fetchRides is stable via useCallback.
   useEffect(() => {
     fetchRides();
     // eslint-disable-next-line react-hooks/exhaustive-deps

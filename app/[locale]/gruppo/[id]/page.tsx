@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Loader2, AlertCircle, PlusCircle, Search, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface Group {
   id: string;

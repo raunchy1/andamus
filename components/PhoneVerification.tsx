@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Phone, Shield, Check, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface PhoneVerificationProps {
   userId: string;

@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
 import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
-import { Toaster } from "react-hot-toast";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { SafetyButton } from "@/components/SafetyButton";
 import { VersionBadge } from "@/components/VersionBadge";
@@ -161,29 +160,6 @@ export default async function LocaleLayout({
           <SafetyButton />
           <VersionBadge />
           <Sonner richColors position="top-center" />
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: "#1c1b1b",
-                color: "#e5e2e1",
-                border: "1px solid #2a2a2a",
-              },
-              success: {
-                iconTheme: {
-                  primary: "#6fd8cc",
-                  secondary: "#1c1b1b",
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: "#e63946",
-                  secondary: "#1c1b1b",
-                },
-              },
-            }}
-          />
         </ThemeProvider>
       </NextIntlClientProvider>
     </>

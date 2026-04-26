@@ -2,7 +2,7 @@
 
 import { Share2, Link2, Check } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 interface ShareAppProps {

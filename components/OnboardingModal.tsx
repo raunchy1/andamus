@@ -19,7 +19,7 @@ import {
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface OnboardingModalProps {
   onComplete?: () => void;

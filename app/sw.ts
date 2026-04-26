@@ -1,5 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck - Service Worker types not available in standard lib
+/// <reference lib="webworker" />
+// Service Worker runs in a Web Worker context; types provided by TypeScript's webworker lib
+
+declare const self: ServiceWorkerGlobalScope & {
+  __SW_MANIFEST: Array<{ url: string; revision: string | null }>;
+};
 
 import { 
   Serwist, 
@@ -156,6 +160,7 @@ self.addEventListener("push", (event) => {
         icon: "/icon-192x192.png",
         badge: "/icon-72x72.png",
         data: data.data,
+        // @ts-expect-error Notification actions not in standard DOM types
         actions: [
           {
             action: "open",

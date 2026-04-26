@@ -30,7 +30,7 @@ import {
   Tooltip, 
   ResponsiveContainer
 } from "recharts";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
 

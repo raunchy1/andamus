@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
   Shield,
   CheckCircle,

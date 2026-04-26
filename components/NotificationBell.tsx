@@ -15,7 +15,7 @@ import {
   BellRing
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface Notification {
   id: string;

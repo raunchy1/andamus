@@ -8,7 +8,7 @@ import { signInWithGoogle } from "@/lib/auth";
 import { Gift, Loader2, ArrowLeft, CheckCircle } from "lucide-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 

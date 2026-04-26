@@ -12,7 +12,7 @@ import { signInWithGoogle } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notifications";
 import { useDeviceType } from "@/components/view-mode";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface Review {

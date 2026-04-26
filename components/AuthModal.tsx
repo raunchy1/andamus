@@ -6,7 +6,7 @@ import { X, Mail, Lock, User, Eye, EyeOff, Loader2, Car } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 interface AuthModalProps {
   isOpen: boolean;

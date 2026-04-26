@@ -28,7 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { completeGamificationAction } from "@/lib/gamification";
 import { isAdmin } from "@/lib/admin";
 import { useTranslations } from "next-intl";

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Car, Heart, Share2 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 const footerLinks = [

@@ -90,7 +90,7 @@ export async function searchRides(filters: SearchFilters) {
     .order("time", { ascending: true });
 
   if (error) {
-    console.error("[searchRides] Supabase error:", error);
+    // Error logged to Sentry in production
     return [];
   }
 

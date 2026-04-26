@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Loader2, AlertCircle, ArrowLeft, Calendar, MapPin, User, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface BookingDetails {
   id: string;

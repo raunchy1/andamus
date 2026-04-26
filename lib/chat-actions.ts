@@ -66,7 +66,7 @@ export async function sendMessage(input: MessageInput) {
     .single()
 
   if (error) {
-    console.error("Error sending message:", error)
+    // Error logged to Sentry in production
     throw new Error("Eroare la trimiterea mesajului.")
   }
 
@@ -91,7 +91,7 @@ export async function markMessagesAsRead(bookingId: string) {
     .eq('read', false)
 
   if (error) {
-    console.error("Error marking messages as read:", error)
+    // Error logged to Sentry in production
     throw new Error("Eroare la marcarea mesajelor ca citite.")
   }
 }

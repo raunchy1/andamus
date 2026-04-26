@@ -12,7 +12,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { notifyBookingRequest } from "@/lib/notifications";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 

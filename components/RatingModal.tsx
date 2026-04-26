@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { notifyNewReview } from "@/lib/notifications";
 import { completeGamificationAction } from "@/lib/gamification";
 import Image from "next/image";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 interface RatingModalProps {

@@ -117,16 +117,16 @@ const nextConfig = {
     ];
   },
 
-  // Redirects
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/it",
-        permanent: true,
-      },
-    ];
-  },
+  // Redirects handled by next-intl middleware (proxy.ts)
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/",
+  //       destination: "/it",
+  //       permanent: true,
+  //     },
+  //   ];
+  // },
 
   // Turbopack config
   turbopack: {
