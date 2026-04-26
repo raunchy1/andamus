@@ -60,19 +60,26 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const handleLogin = async () => {
     if (!email || !password) { toast.error(t("enterEmailPassword")); return; }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      if (error.message.includes("Invalid login credentials")) toast.error(t("invalidCredentials"));
-      else if (error.message.includes("Email not confirmed")) toast.error(t("emailNotConfirmed"));
-      else toast.error(error.message);
-    } else {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).single();
-        handleClose();
-        router.push(profile ? `/${locale}/profilo` : `/${locale}/lansare`);
-        router.refresh();
+    try {
+      console.log("[auth] login attempt:", email);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      console.log("[auth] login result:", { error });
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) toast.error(t("invalidCredentials"));
+        else if (error.message.includes("Email not confirmed")) toast.error(t("emailNotConfirmed"));
+        else toast.error(error.message);
+      } else {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).single();
+          handleClose();
+          router.push(profile ? `/${locale}/profilo` : `/${locale}/lansare`);
+          router.refresh();
+        }
       }
+    } catch (err) {
+      console.error("[auth] login exception:", err);
+      toast.error(err instanceof Error ? err.message : t("loginError"));
     }
     setLoading(false);
   };
@@ -82,16 +89,41 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     if (password !== confirmPassword) { toast.error(t("passwordsDoNotMatch")); return; }
     if (password.length < 8) { toast.error(t("passwordMinLength")); return; }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { data: { full_name: name, name } }
-    });
-    if (error) {
-      if (error.message.includes("already registered")) toast.error(t("emailAlreadyRegistered"));
-      else toast.error(error.message);
-    } else {
-      toast.success(t("registerSuccess"));
-      setMode("login");
+    try {
+      console.log("[auth] register attempt:", email);
+      const { data, error } = await supabase.auth.signUp({
+        email, password,
+        options: {
+          data: { full_name: name, name },
+          emailRedirectTo: `${window.location.origin}/${locale}/auth/callback`,
+        }
+      });
+      console.log("[auth] register result:", { data, error });
+
+      if (error) {
+        console.error("[auth] register error:", error);
+        if (error.message.includes("already registered")) toast.error(t("emailAlreadyRegistered"));
+        else toast.error(error.message);
+      } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+        // User already exists (email taken, no new identity created)
+        toast.error("Email già registrata. Prova ad accedere.");
+        setMode("login");
+      } else if (data.session) {
+        // Auto-confirmed: user is logged in immediately
+        toast.success("Benvenuto in Andamus!");
+        handleClose();
+        setTimeout(() => {
+          router.push(`/${locale}/lansare`);
+          router.refresh();
+        }, 300);
+      } else {
+        // Email confirmation required
+        toast.success("Controlla la tua email per confermare la registrazione!");
+        setMode("login");
+      }
+    } catch (err) {
+      console.error("[auth] register exception:", err);
+      toast.error(err instanceof Error ? err.message : t("registerError"));
     }
     setLoading(false);
   };
