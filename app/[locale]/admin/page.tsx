@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { toast } from "sonner";
 import { completeGamificationAction } from "@/lib/gamification";
-import { isAdmin } from "@/lib/admin";
+import { checkAdminAccess } from "@/lib/admin";
 import { useTranslations } from "next-intl";
 
 interface User {
@@ -118,15 +118,15 @@ export default function AdminDashboard() {
   // Check admin access
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !user.email || !isAdmin(user.email)) {
+      const isAdmin = await checkAdminAccess();
+      if (!isAdmin) {
         router.push("/");
         return;
       }
       setIsAdminUser(true);
     };
     checkAdmin();
-  }, [router, supabase]);
+  }, [router]);
 
   // Fetch all data
   const fetchData = useCallback(async () => {

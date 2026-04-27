@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 export type DeviceType = "mobile" | "desktop";
 
-export function useDeviceType(): DeviceType {
-  const [deviceType, setDeviceType] = useState<DeviceType>("desktop");
+function getDeviceType(): DeviceType {
+  if (typeof window === "undefined") return "mobile";
+  return window.innerWidth < 768 ? "mobile" : "desktop";
+}
 
-  useEffect(() => {
+export function useDeviceType(): DeviceType {
+  const [deviceType, setDeviceType] = useState<DeviceType>(getDeviceType);
+
+  useLayoutEffect(() => {
     const checkDevice = () => {
-      const isMobile = window.innerWidth < 768;
-      setDeviceType(isMobile ? "mobile" : "desktop");
+      setDeviceType(getDeviceType());
     };
 
-    // Initial check
     checkDevice();
 
-    // Listen for resize
     window.addEventListener("resize", checkDevice);
     return () => window.removeEventListener("resize", checkDevice);
   }, []);

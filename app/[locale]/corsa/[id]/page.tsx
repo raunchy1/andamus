@@ -905,6 +905,25 @@ export default function RideDetailPage() {
     setRequesting(true);
 
     try {
+      // Check available seats before booking to prevent race conditions
+      const { count: confirmedCount, error: countError } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true })
+        .eq("ride_id", rideId)
+        .eq("status", "confirmed");
+
+      if (countError) {
+        console.error('[booking] seat count error:', countError);
+        throw new Error(`Seat count failed: ${countError.message}`);
+      }
+
+      const availableSeats = ride.seats - (confirmedCount || 0);
+      if (availableSeats <= 0) {
+        toast.error(t('noSeatsAvailable'));
+        setRequesting(false);
+        return;
+      }
+
       const { data: booking, error } = await supabase
         .from("bookings")
         .insert({
@@ -915,26 +934,46 @@ export default function RideDetailPage() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[booking] insert error:', error);
+        throw new Error(`Booking insert failed: ${error.message}`);
+      }
 
-      await supabase.from("messages").insert({
+      if (!booking || !booking.id) {
+        console.error('[booking] insert returned no data');
+        throw new Error('Booking insert returned no data');
+      }
+
+      // Create initial chat message — non-fatal if it fails
+      const { error: msgError } = await supabase.from("messages").insert({
         booking_id: booking.id,
         sender_id: user.id,
         content: t('initialMessage', { from: ride.from_city, to: ride.to_city }),
         read: false,
       });
 
-      await notifyBookingRequest(
-        ride.driver_id,
-        user.user_metadata?.name || user.email?.split("@")[0] || t('passenger'),
-        rideId,
-        booking.id
-      );
+      if (msgError) {
+        console.error('[booking] message insert error (non-fatal):', msgError);
+      }
+
+      // Notify driver — non-fatal if it fails
+      try {
+        await notifyBookingRequest(
+          ride.driver_id,
+          user.user_metadata?.name || user.email?.split("@")[0] || t('passenger'),
+          rideId,
+          booking.id
+        );
+      } catch (notifyErr) {
+        console.error('[booking] notification error (non-fatal):', notifyErr);
+      }
 
       toast.success(t('bookingSuccess'));
       router.push(`/chat/${booking.id}`);
-    } catch {
-      toast.error(t('bookingError'));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[booking] error:', err);
+      toast.error(`${t('bookingError')}: ${message}`);
       setRequesting(false);
     }
   };

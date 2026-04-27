@@ -16,10 +16,12 @@ import municipalities from "@/scripts/sardinia-municipalities.json";
 import { EmptyStateSearch } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
+import { AlertModal } from "@/components/cerca/AlertModal";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Carbonia", "Alghero", "Tempio Pausania", "La Maddalena",
+  "Iglesias", "Alghero",
   "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer", "Bosa", "Castelsardo"
 ];
 
@@ -115,179 +117,6 @@ interface SearchViewProps {
   supabase: ReturnType<typeof createClient>;
 }
 
-// Premium Skeleton for loading state - matches exact ride card layout
-function RideCardSkeleton() {
-  return (
-    <div className="bg-surface p-4 sm:p-6 rounded-xl animate-pulse">
-      {/* Top Row: Date/Time + Price */}
-      <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
-        <div className="space-y-1 min-w-0">
-          <Skeleton className="h-3 w-20 sm:w-24 rounded" />
-          <Skeleton className="h-8 sm:h-10 w-16 sm:w-20 rounded" />
-        </div>
-        <div className="text-right flex-shrink-0 space-y-1">
-          <Skeleton className="h-6 sm:h-8 w-16 sm:w-20 rounded ml-auto" />
-          <Skeleton className="h-2.5 w-12 sm:w-16 rounded ml-auto" />
-        </div>
-      </div>
-
-      {/* Path Indicator */}
-      <div className="relative py-6 sm:py-8 flex items-center justify-between">
-        <Skeleton className="absolute left-0 right-0 h-[2px] rounded" />
-        <div className="relative z-10 flex flex-col items-start bg-surface pr-2 sm:pr-4 max-w-[40%]">
-          <Skeleton className="h-2.5 sm:h-3 w-16 sm:w-20 rounded mb-1" />
-          <Skeleton className="w-3 h-3 rounded-full" />
-        </div>
-        <div className="relative z-10 flex flex-col items-center bg-surface px-2 sm:px-4 flex-shrink-0">
-          <Skeleton className="w-5 h-5 sm:w-6 sm:h-6 rounded" />
-        </div>
-        <div className="relative z-10 flex flex-col items-end bg-surface pl-2 sm:pl-4 max-w-[40%]">
-          <Skeleton className="h-2.5 sm:h-3 w-16 sm:w-20 rounded mb-1" />
-          <Skeleton className="w-3 h-3 rounded-full" />
-        </div>
-      </div>
-
-      {/* Driver Info */}
-      <div className="flex items-center justify-between mt-4 sm:mt-6">
-        <div className="flex items-center gap-3 min-w-0">
-          <Skeleton className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0" />
-          <div className="min-w-0 space-y-1.5">
-            <Skeleton className="h-4 w-24 sm:w-32 rounded" />
-            <Skeleton className="h-3 w-12 sm:w-16 rounded" />
-          </div>
-        </div>
-        <Skeleton className="w-5 h-5 rounded flex-shrink-0" />
-      </div>
-    </div>
-  );
-}
-
-// Backward compatibility alias
-const SkeletonRow = RideCardSkeleton;
-
-function AlertModal({
-  showAlertModal,
-  setShowAlertModal,
-  alertSaving,
-  setAlertSaving,
-  origin,
-  destination,
-  date,
-  minSeats,
-  maxPrice,
-  supabase,
-}: {
-  showAlertModal: boolean;
-  setShowAlertModal: (v: boolean) => void;
-  alertSaving: boolean;
-  setAlertSaving: (v: boolean) => void;
-  origin: string;
-  destination: string;
-  date: string;
-  minSeats: number | null;
-  maxPrice: number | null;
-  supabase: ReturnType<typeof createClient>;
-}) {
-  const t = useTranslations('search');
-  if (!showAlertModal) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-6">
-        <h3 className="mb-1 text-xl font-extrabold tracking-tight text-on-surface">{t('saveAlert')}</h3>
-        <p className="mb-4 text-sm text-on-surface-variant">{t('alertDescription')}</p>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setAlertSaving(true);
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-              toast.error(t('loginToSaveAlert'));
-              setAlertSaving(false);
-              return;
-            }
-            const form = e.target as HTMLFormElement;
-            const fd = new FormData(form);
-            const { error } = await supabase.from("ride_alerts").insert({
-              user_id: user.id,
-              from_city: fd.get("alertFrom") as string,
-              to_city: fd.get("alertTo") as string,
-              start_date: (fd.get("alertStartDate") as string) || null,
-              end_date: (fd.get("alertEndDate") as string) || null,
-              min_seats: fd.get("alertMinSeats") ? parseInt(fd.get("alertMinSeats") as string) : null,
-              max_price: fd.get("alertMaxPrice") ? parseInt(fd.get("alertMaxPrice") as string) : null,
-            });
-            setAlertSaving(false);
-            if (error) {
-              toast.error(t('alertSaveError'));
-            } else {
-              toast.success(t('alertSaved'));
-              setShowAlertModal(false);
-            }
-          }}
-          className="space-y-4"
-        >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('fromLabel')}</label>
-              <select name="alertFrom" defaultValue={origin} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary [&>option]:bg-surface-container-high appearance-none">
-                <option value="">{t('any')}</option>
-                {sardinianCities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('toLabel')}</label>
-              <select name="alertTo" defaultValue={destination} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary [&>option]:bg-surface-container-high appearance-none">
-                <option value="">{t('any')}</option>
-                {sardinianCities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('fromDateShort')}</label>
-              <input type="date" name="alertStartDate" defaultValue={date} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
-            </div>
-            <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('toDateShort')}</label>
-              <input type="date" name="alertEndDate" className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('minSeatsLabel')}</label>
-              <input type="number" name="alertMinSeats" min="1" placeholder={t('any')} defaultValue={minSeats ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
-            </div>
-            <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t('maxPriceLabel')}</label>
-              <input type="number" name="alertMaxPrice" min="0" placeholder={t('any')} defaultValue={maxPrice ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
-            </div>
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button type="button"
-              
-              onClick={() => setShowAlertModal(false)}
-              className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-highest"
-            >
-              {t('cancel')}
-            </button>
-            <button type="submit"
-              
-              disabled={alertSaving}
-              className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary transition-colors hover:opacity-90 disabled:opacity-50"
-            >
-              {alertSaving ? t('saving') : t('saveAlert')}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function SearchMobile(props: SearchViewProps) {
   const t = useTranslations('search');
@@ -364,7 +193,7 @@ function SearchMobile(props: SearchViewProps) {
         </div>
 
         {/* Sticky Minimal Search Bar - Full Width Responsive */}
-        <div className="sticky top-24 z-40 mb-6 sm:mb-8">
+        <div className="z-40 mb-6 sm:sticky sm:top-24 sm:mb-8">
           <div className="bg-surface-container-high rounded-xl p-2.5 sm:p-4 shadow-2xl w-full max-w-full">
             {/* Mobile: Stacked layout, Desktop: Side by side */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
@@ -562,9 +391,9 @@ function SearchMobile(props: SearchViewProps) {
         <div className="space-y-4 sm:space-y-6">
           {loading && (
             <>
-              <SkeletonRow />
-              <SkeletonRow />
-              <SkeletonRow />
+              <RideCardSkeleton />
+              <RideCardSkeleton />
+              <RideCardSkeleton />
             </>
           )}
 
@@ -646,7 +475,7 @@ function SearchMobile(props: SearchViewProps) {
         </div>
       </main>
 
-      <AlertModal
+      <AlertModal cities={sardinianCities}
         showAlertModal={showAlertModal}
         setShowAlertModal={setShowAlertModal}
         alertSaving={alertSaving}
@@ -923,12 +752,12 @@ function SearchDesktop(props: SearchViewProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {loading && (
           <>
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
-            <SkeletonRow />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
           </>
         )}
 
@@ -1013,7 +842,7 @@ function SearchDesktop(props: SearchViewProps) {
         ))}
       </div>
 
-      <AlertModal
+      <AlertModal cities={sardinianCities}
         showAlertModal={showAlertModal}
         setShowAlertModal={setShowAlertModal}
         alertSaving={alertSaving}
@@ -1093,7 +922,7 @@ function SearchContent() {
     } finally {
       setLoading(false);
     }
-  }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen]);
+  }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, t]);
 
   // Debounced fetch
   useEffect(() => {

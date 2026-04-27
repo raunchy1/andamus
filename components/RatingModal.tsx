@@ -66,6 +66,21 @@ export function RatingModal({
     setLoading(true);
 
     try {
+      // Verify the reviewer actually participated in the ride
+      const { data: participation, error: participationError } = await supabase
+        .from("bookings")
+        .select("id")
+        .eq("ride_id", rideId)
+        .eq("status", "confirmed")
+        .or(`passenger_id.eq.${currentUserId},passenger_id.eq.${reviewedUser.id}`)
+        .single();
+
+      if (participationError || !participation) {
+        toast.error(t("notAuthorizedToReview"));
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.from("reviews").insert({
         ride_id: rideId,
         reviewer_id: currentUserId,

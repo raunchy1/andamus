@@ -32,9 +32,12 @@ export async function POST(req: NextRequest) {
       .select("user_id")
       .eq("from_city", ride.from_city)
       .eq("to_city", ride.to_city)
-      .or(`start_date.is.null,and(start_date.lte.${ride.date},end_date.gte.${ride.date})`)
-      .or(`max_price.is.null,max_price.gte.${ride.price}`)
-      .or(`min_seats.is.null,min_seats.lte.${ride.seats}`);
+      .or(
+        `and(start_date.is.null,end_date.is.null),and(start_date.lte.${ride.date},end_date.gte.${ride.date})`
+      )
+      .or(
+        `and(max_price.is.null,min_seats.is.null),and(max_price.gte.${ride.price},min_seats.is.null),and(max_price.is.null,min_seats.lte.${ride.seats}),and(max_price.gte.${ride.price},min_seats.lte.${ride.seats})`
+      );
 
     if (!alerts || alerts.length === 0) {
       return NextResponse.json({ sent: 0 });

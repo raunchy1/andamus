@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,7 +12,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Andamus - Carpooling in Sardegna",
   description: "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme, risparmiare e ridurre le emissioni.",
-  manifest: "/manifest.json",
   keywords: ["carpooling", "Sardegna", "passaggi", "viaggi", "condivisione", "auto", "trasporto"],
   authors: [{ name: "Andamus Team" }],
   openGraph: {
@@ -65,7 +65,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
 
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -73,11 +72,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans bg-[#131313] text-[#e5e2e1]">
         {children}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js');});}`,
-          }}
-        />
+        <Script src="/sw-register.js" strategy="afterInteractive" />
       </body>
     </html>
   );

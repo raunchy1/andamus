@@ -38,11 +38,11 @@ function getProfileData(profiles: ProfileData | ProfileData[] | null | undefined
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret if provided (for security)
+    // Verify cron secret (fail closed)
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+
+    if (!cronSecret || !authHeader || authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }

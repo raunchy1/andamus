@@ -629,6 +629,8 @@
     "fillAllFields": "Alle Felder ausfüllen",
     "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
     "registerSuccess": "Konto erfolgreich erstellt! Weiterleitung...",
+    "welcomeToAndamus": "Willkommen bei Andamus!",
+    "checkEmailConfirmation": "Prüfe deine E-Mail, um die Registrierung zu bestätigen!",
     "registerError": "Fehler bei der Registrierung",
     "emailAlreadyRegistered": "E-Mail bereits registriert. Versuche dich anzumelden.",
     "invalidEmail": "Gib eine gültige E-Mail ein",

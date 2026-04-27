@@ -1,59 +1,3 @@
-import { createClient } from "@/lib/supabase/client";
-
-// Rate limiting for ride creation
-interface RateLimitEntry {
-  count: number;
-  timestamp: number;
-}
-
-const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
-  ride_creation: { max: 10, windowMs: 24 * 60 * 60 * 1000 }, // 10 rides per day
-  booking_creation: { max: 20, windowMs: 24 * 60 * 60 * 1000 }, // 20 bookings per day
-  review_creation: { max: 10, windowMs: 24 * 60 * 60 * 1000 }, // 10 reviews per day
-};
-
-// In-memory rate limit store (per user)
-const rateLimitStore: Record<string, RateLimitEntry> = {};
-
-/**
- * Check rate limit for a specific action
- */
-export async function checkRateLimit(
-  userId: string,
-  action: keyof typeof RATE_LIMITS
-): Promise<{ allowed: boolean; remaining: number; resetAt?: Date }> {
-  const limit = RATE_LIMITS[action];
-  const key = `${userId}:${action}`;
-  const now = Date.now();
-
-  const entry = rateLimitStore[key];
-
-  if (!entry || now - entry.timestamp > limit.windowMs) {
-    // Reset if window expired
-    rateLimitStore[key] = { count: 1, timestamp: now };
-    return {
-      allowed: true,
-      remaining: limit.max - 1,
-      resetAt: new Date(now + limit.windowMs),
-    };
-  }
-
-  if (entry.count >= limit.max) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetAt: new Date(entry.timestamp + limit.windowMs),
-    };
-  }
-
-  entry.count++;
-  return {
-    allowed: true,
-    remaining: limit.max - entry.count,
-    resetAt: new Date(entry.timestamp + limit.windowMs),
-  };
-}
-
 // Input sanitization patterns
 const XSS_PATTERNS = [
   /<script[^>]*>.*?<\/script>/gi,
@@ -65,9 +9,9 @@ const XSS_PATTERNS = [
 ];
 
 const SQL_INJECTION_PATTERNS = [
-  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|TABLE)\b)/gi,
   /(--|#|\/\*|\*\/)/g,
   /(\b(OR|AND)\b\s*\d+\s*=\s*\d+)/gi,
+  /(\b(DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|EXEC\s*\()\b)/gi,
 ];
 
 /**
@@ -252,6 +196,10 @@ export function sanitizeRideData(data: {
   };
 }
 
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+
 /**
  * Server-side rate limit check using Supabase
  */
@@ -261,7 +209,7 @@ export async function checkServerRateLimit(
   maxAttempts: number = 10,
   windowHours: number = 24
 ): Promise<{ allowed: boolean; remaining: number }> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const windowStart = new Date();
   windowStart.setHours(windowStart.getHours() - windowHours);

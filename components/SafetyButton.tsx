@@ -60,10 +60,10 @@ export function SafetyButton() {
       {/* Floating Safety Button - positioned above BottomNav (64px + safe area) */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-[96px] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600"
+        className="fixed bottom-[4.25rem] right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600 md:bottom-24 md:right-6 md:h-14 md:w-14"
         aria-label={t("sosSafety")}
       >
-        <Shield className="h-6 w-6" />
+        <Shield className="h-5 w-5 md:h-6 md:w-6" />
       </button>
 
       {/* Safety Modal */}

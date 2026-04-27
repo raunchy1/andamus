@@ -5,9 +5,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const authHeader = req.headers.get("authorization");
 
-  // Simple cron secret protection
+  // Simple cron secret protection (fail closed)
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || !authHeader || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

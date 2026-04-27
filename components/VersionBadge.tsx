@@ -34,7 +34,7 @@ export function VersionBadge() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[90]">
+    <div className="fixed bottom-4 right-4 z-[90] hidden md:block">
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e63946]/90 text-white text-xs font-mono shadow-lg backdrop-blur-sm">
         <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
         <span>{APP_VERSION}</span>

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { WifiOff, RefreshCw, Home } from "lucide-react";
+import { WifiOff, Home } from "lucide-react";
+import { RetryButton } from "@/components/RetryButton";
 
 export const metadata = {
   title: "Offline | Andamus",
@@ -25,13 +26,7 @@ export default function OfflinePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <a
-            href=""
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
-          >
-            <RefreshCw className="h-5 w-5" />
-            Riprova
-          </a>
+          <RetryButton label="Riprova" />
 
           <Link
             href="/"

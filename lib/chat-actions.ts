@@ -49,6 +49,22 @@ export async function sendMessage(input: MessageInput) {
     throw new Error("Trebuie să fii autentificat pentru a trimite mesaje.")
   }
 
+  // ── Verify participant ──
+  const { data: booking, error: bookingError } = await supabase
+    .from('bookings')
+    .select('id, passenger_id, rides!inner(driver_id)')
+    .eq('id', input.booking_id)
+    .single()
+
+  if (bookingError || !booking) {
+    throw new Error("Rezervarea nu a fost găsită.")
+  }
+
+  const rideDriverId = (booking.rides as unknown as { driver_id: string })?.driver_id
+  if (user.id !== booking.passenger_id && user.id !== rideDriverId) {
+    throw new Error("Nu ai permisiunea de a trimite mesaje în această conversație.")
+  }
+
   // ── Insert ──
   const { data: message, error } = await supabase
     .from('messages')
@@ -81,6 +97,22 @@ export async function markMessagesAsRead(bookingId: string) {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
     throw new Error("Trebuie să fii autentificat.")
+  }
+
+  // ── Verify participant ──
+  const { data: booking, error: bookingError } = await supabase
+    .from('bookings')
+    .select('id, passenger_id, rides!inner(driver_id)')
+    .eq('id', bookingId)
+    .single()
+
+  if (bookingError || !booking) {
+    throw new Error("Rezervarea nu a fost găsită.")
+  }
+
+  const rideDriverId = (booking.rides as unknown as { driver_id: string })?.driver_id
+  if (user.id !== booking.passenger_id && user.id !== rideDriverId) {
+    throw new Error("Nu ai permisiunea de a marca mesajele ca citite.")
   }
 
   const { error } = await supabase

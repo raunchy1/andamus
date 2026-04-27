@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       if (userId && planId && session.subscription) {
         const subscription = await getStripe().subscriptions.retrieve(session.subscription as string);
 
-        await supabase.from("subscriptions").upsert({
+        const { error: subError } = await supabase.from("subscriptions").upsert({
           user_id: userId,
           stripe_subscription_id: subscription.id,
           stripe_customer_id: subscription.customer as string,
@@ -46,12 +46,22 @@ export async function POST(req: NextRequest) {
           current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
         }, { onConflict: "stripe_subscription_id" });
 
-        await supabase.from("profiles").update({
+        if (subError) {
+          console.error("[stripe/webhook] Failed to upsert subscription:", subError);
+          return NextResponse.json({ error: "Database error" }, { status: 500 });
+        }
+
+        const { error: profileError } = await supabase.from("profiles").update({
           subscription_plan: planId,
           subscription_status: "active",
           // @ts-expect-error stripe SDK types mismatch
           subscription_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
         }).eq("id", userId);
+
+        if (profileError) {
+          console.error("[stripe/webhook] Failed to update profile:", profileError);
+          return NextResponse.json({ error: "Database error" }, { status: 500 });
+        }
       }
       break;
     }
@@ -67,21 +77,37 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (subRow) {
-        await supabase.from("subscriptions").update({
+        const canceledAt = subscription.canceled_at && typeof subscription.canceled_at === "number"
+          ? new Date(subscription.canceled_at * 1000).toISOString()
+          : null;
+
+        const { error: subUpdateError } = await supabase.from("subscriptions").update({
           status: subscription.status,
-          canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+          canceled_at: canceledAt,
         }).eq("stripe_subscription_id", subscription.id);
 
+        if (subUpdateError) {
+          console.error("[stripe/webhook] Failed to update subscription:", subUpdateError);
+          return NextResponse.json({ error: "Database error" }, { status: 500 });
+        }
+
         const isActive = subscription.status === "active" || subscription.status === "trialing";
-        await supabase.from("profiles").update({
+        // @ts-expect-error stripe SDK types mismatch
+        const periodEnd = subscription.current_period_end && typeof subscription.current_period_end === "number"
+          // @ts-expect-error stripe SDK types mismatch
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null;
+
+        const { error: profileUpdateError } = await supabase.from("profiles").update({
           subscription_plan: isActive ? subRow.plan_id : "free",
           subscription_status: isActive ? "active" : subscription.status,
-          // @ts-expect-error stripe SDK types mismatch
-          subscription_period_end: subscription.current_period_end
-            // @ts-expect-error stripe SDK types mismatch
-            ? new Date(subscription.current_period_end * 1000).toISOString()
-            : null,
+          subscription_period_end: periodEnd,
         }).eq("id", subRow.user_id);
+
+        if (profileUpdateError) {
+          console.error("[stripe/webhook] Failed to update profile:", profileUpdateError);
+          return NextResponse.json({ error: "Database error" }, { status: 500 });
+        }
       }
       break;
     }

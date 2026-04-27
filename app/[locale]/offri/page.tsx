@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Check, AlertCircle, ArrowLeft, User, CircleDot, MapPin, ArrowDown, X, Plus, ChevronRight, Car } from "lucide-react";
+import { Loader2, Check, AlertCircle, ArrowLeft, User, CircleDot, MapPin, ArrowDown, ChevronRight, Car } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
@@ -13,11 +13,14 @@ import { useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
 import { ShareApp } from "@/components/ShareApp";
+import { CarInfoSection } from "@/components/offri/CarInfoSection";
+import { PreferencesSection } from "@/components/offri/PreferencesSection";
+import { StopsSection } from "@/components/offri/StopsSection";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Carbonia", "Alghero", "Tempio Pausania", "La Maddalena",
+  "Iglesias", "Alghero",
   "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer",
   "Bosa", "Castelsardo"
 ];
@@ -299,145 +302,24 @@ function OfferMobile({
               </div>
             </div>
 
-            {/* Car Info Section */}
-            <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('vehicle')}</label>
-              
-              {savedCarInfo?.car_model && (
-                <div className="flex items-center gap-3 mb-3">
-                  <input
-                    type="checkbox"
-                    id="useSavedCar"
-                    checked={formData.useSavedCar}
-                    onChange={(e) => handleChange("useSavedCar", e.target.checked)}
-                    className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary"
-                  />
-                  <label htmlFor="useSavedCar" className="text-sm text-on-surface">
-                    {t('useSavedCar')}: <span className="font-semibold">{savedCarInfo.car_model}</span>
-                    {savedCarInfo.car_color && ` (${savedCarInfo.car_color})`}
-                  </label>
-                </div>
-              )}
-              
-              {!formData.useSavedCar || !savedCarInfo?.car_model ? (
-                <div className="space-y-3 bg-surface-container-highest p-4 rounded-xl">
-                  <input
-                    type="text"
-                    placeholder={t('carModelPlaceholder')}
-                    value={formData.carModel}
-                    onChange={(e) => handleChange("carModel", e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold"
-                  />
-                  <div className="grid grid-cols-3 gap-2">
-                    <input
-                      type="text"
-                      placeholder={t('carColorPlaceholder')}
-                      value={formData.carColor}
-                      onChange={(e) => handleChange("carColor", e.target.value)}
-                      className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
-                    />
-                    <input
-                      type="text"
-                      placeholder={t('carYearPlaceholder')}
-                      value={formData.carYear}
-                      onChange={(e) => handleChange("carYear", e.target.value.replace(/\D/g, '').slice(0, 4))}
-                      className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
-                    />
-                    <input
-                      type="text"
-                      placeholder={t('carPlatePlaceholder')}
-                      value={formData.carPlate}
-                      onChange={(e) => handleChange("carPlate", e.target.value.toUpperCase().slice(0, 7))}
-                      className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary font-mono"
-                    />
-                  </div>
-                </div>
-              ) : null}
-            </div>
+            <CarInfoSection
+              carModel={formData.carModel}
+              carColor={formData.carColor}
+              carYear={formData.carYear}
+              carPlate={formData.carPlate}
+              useSavedCar={formData.useSavedCar}
+              savedCarInfo={savedCarInfo}
+              onChange={handleChange}
+            />
 
-            {/* Intermediate Stops */}
-            <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('intermediateStops')}</label>
-              <div className="space-y-3">
-                {formData.stops.map((stop, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <select
-                      value={stop}
-                      onChange={(e) => {
-                        const next = [...formData.stops];
-                        next[index] = e.target.value;
-                        handleChange("stops", next);
-                      }}
-                      className="h-12 flex-1 rounded-xl border-none bg-surface-container-highest pl-4 pr-10 text-on-surface font-semibold outline-none focus:ring-1 focus:ring-primary appearance-none"
-                    >
-                      <option value="">{t('cityPlaceholder')}</option>
-                      {sardinianCities.map((city) => (
-                        <option key={city} value={city}>{city}</option>
-                      ))}
-                    </select>
-                    <button type="button"
-                      
-                      onClick={() => {
-                        const next = formData.stops.filter((_, i) => i !== index);
-                        handleChange("stops", next);
-                      }}
-                      className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                ))}
-                {formData.stops.length < 3 && (
-                  <button type="button"
-                    
-                    onClick={() => handleChange("stops", [...formData.stops, ""])}
-                    className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    {t('addStop')}
-                  </button>
-                )}
-                {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
-              </div>
-            </div>
+            <StopsSection
+              stops={formData.stops}
+              cities={sardinianCities}
+              onChange={(next) => handleChange("stops", next)}
+              errors={errors}
+            />
 
-            {/* Preferences */}
-            <div className="space-y-4">
-              <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('travelPreferences')}</label>
-              <div className="grid grid-cols-2 gap-3">
-                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                  <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">{t('smokersAllowed')}</span>
-                </label>
-                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.petsAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                  <input type="checkbox" checked={formData.petsAllowed} onChange={(e) => handleChange("petsAllowed", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">{t('petsAllowed')}</span>
-                </label>
-                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.largeLuggage ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                  <input type="checkbox" checked={formData.largeLuggage} onChange={(e) => handleChange("largeLuggage", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">{t('largeLuggage')}</span>
-                </label>
-                <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-4 transition-colors ${formData.womenOnly ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                  <input type="checkbox" checked={formData.womenOnly} onChange={(e) => handleChange("womenOnly", e.target.checked)} className="hidden" />
-                  <span className="text-sm font-semibold">{t('womenOnly')}</span>
-                </label>
-              </div>
-
-              <div className="bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 ring-primary transition-all">
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block mb-2">{t('music')}</label>
-                <select
-                  value={formData.musicPreference}
-                  onChange={(e) => handleChange("musicPreference", e.target.value)}
-                  className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold appearance-none cursor-pointer"
-                >
-                  <option value="" className="bg-surface-container-highest">{t('musicAny')}</option>
-                  <option value="quiet" className="bg-surface-container-highest">{t('musicQuiet')}</option>
-                  <option value="music" className="bg-surface-container-highest">{t('musicMusic')}</option>
-                  <option value="talk" className="bg-surface-container-highest">{t('musicTalk')}</option>
-                </select>
-              </div>
-              {errors.musicPreference && <p className="text-sm text-error">{errors.musicPreference}</p>}
-            </div>
+            <PreferencesSection formData={formData} onChange={handleChange} errors={errors} />
 
             {/* Recurring Option */}
             <div className="space-y-4">
@@ -758,93 +640,19 @@ function OfferDesktop({
                   </div>
                 </div>
 
-                {/* Intermediate Stops */}
-                <div className="space-y-4">
-                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('intermediateStops')}</label>
-                  <div className="space-y-3">
-                    {formData.stops.map((stop, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <select
-                          value={stop}
-                          onChange={(e) => {
-                            const next = [...formData.stops];
-                            next[index] = e.target.value;
-                            handleChange("stops", next);
-                          }}
-                          className="h-12 flex-1 rounded-xl border-none bg-surface-container-highest pl-4 pr-10 text-on-surface font-semibold outline-none focus:ring-1 focus:ring-primary appearance-none"
-                        >
-                          <option value="">{t('cityPlaceholder')}</option>
-                          {sardinianCities.map((city) => (
-                            <option key={city} value={city}>{city}</option>
-                          ))}
-                        </select>
-                        <button type="button"
-                          
-                          onClick={() => {
-                            const next = formData.stops.filter((_, i) => i !== index);
-                            handleChange("stops", next);
-                          }}
-                          className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-                    ))}
-                    {formData.stops.length < 3 && (
-                      <button type="button"
-                        
-                        onClick={() => handleChange("stops", [...formData.stops, ""])}
-                        className="inline-flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2 text-sm font-medium text-outline hover:bg-surface-container-low transition-colors"
-                      >
-                        <Plus className="w-4 h-4" />
-                        {t('addStop')}
-                      </button>
-                    )}
-                    {errors.stops && <p className="text-sm text-error">{errors.stops}</p>}
-                  </div>
-                </div>
+                <StopsSection
+                  stops={formData.stops}
+                  cities={sardinianCities}
+                  onChange={(next) => handleChange("stops", next)}
+                  variant="desktop"
+                  errors={errors}
+                />
               </div>
             </div>
 
             {/* Right Column — Preferences, Recurrence, Map Preview, Action */}
             <div className="space-y-8">
-              {/* Preferences */}
-              <div className="space-y-4">
-                <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('travelPreferences')}</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.smokingAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                    <input type="checkbox" checked={formData.smokingAllowed} onChange={(e) => handleChange("smokingAllowed", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">{t('smokersAllowed')}</span>
-                  </label>
-                  <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.petsAllowed ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                    <input type="checkbox" checked={formData.petsAllowed} onChange={(e) => handleChange("petsAllowed", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">{t('petsAllowed')}</span>
-                  </label>
-                  <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.largeLuggage ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                    <input type="checkbox" checked={formData.largeLuggage} onChange={(e) => handleChange("largeLuggage", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">{t('largeLuggage')}</span>
-                  </label>
-                  <label className={`flex cursor-pointer items-center gap-3 rounded-xl p-5 transition-colors ${formData.womenOnly ? 'bg-primary text-on-primary' : 'bg-surface-container-highest text-on-surface'}`}>
-                    <input type="checkbox" checked={formData.womenOnly} onChange={(e) => handleChange("womenOnly", e.target.checked)} className="hidden" />
-                    <span className="text-sm font-semibold">{t('womenOnly')}</span>
-                  </label>
-                </div>
-
-                <div className="bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 ring-primary transition-all">
-                  <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block mb-2">{t('music')}</label>
-                  <select
-                    value={formData.musicPreference}
-                    onChange={(e) => handleChange("musicPreference", e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-surface-container-highest">{t('musicAny')}</option>
-                    <option value="quiet" className="bg-surface-container-highest">{t('musicQuiet')}</option>
-                    <option value="music" className="bg-surface-container-highest">{t('musicMusic')}</option>
-                    <option value="talk" className="bg-surface-container-highest">{t('musicTalk')}</option>
-                  </select>
-                </div>
-                {errors.musicPreference && <p className="text-sm text-error">{errors.musicPreference}</p>}
-              </div>
+              <PreferencesSection formData={formData} onChange={handleChange} variant="desktop" errors={errors} />
 
               {/* Recurring Option */}
               <div className="space-y-4">
@@ -1126,7 +934,7 @@ export default function OfferPage() {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1134,8 +942,9 @@ export default function OfferPage() {
     setSubmitError("");
     
     // Validate form with toast feedback
-    if (!validateForm()) {
-      const errorMessages = Object.values(errors);
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      const errorMessages = Object.values(validationErrors);
       if (errorMessages.length > 0) {
         toast.error(errorMessages[0]);
       } else {
@@ -1155,6 +964,13 @@ export default function OfferPage() {
     const toastId = toast.loading(formData.isRecurring ? t('creating') : t('publishing'));
 
     try {
+      // Check if this is the user's first ride BEFORE inserting
+      const { count: rideCount } = await supabase
+        .from('rides')
+        .select('*', { count: 'exact', head: true })
+        .eq('driver_id', currentUser.id);
+      setIsFirstRide((rideCount || 0) === 0);
+
       let rideId: string | null = null;
 
       if (formData.isRecurring) {
@@ -1218,7 +1034,9 @@ export default function OfferPage() {
             students_only: formData.studentsOnly || null,
             // Car info
             car_model: formData.carModel || savedCarInfo?.car_model || null,
+            car_color: formData.carColor || savedCarInfo?.car_color || null,
             car_plate: formData.carPlate || savedCarInfo?.car_plate || null,
+            car_year: formData.carYear ? parseInt(formData.carYear) : savedCarInfo?.car_year || null,
           })
           .select();
 
@@ -1257,18 +1075,11 @@ export default function OfferPage() {
       }
       
       if (currentUser) {
-        const { count } = await supabase
-          .from('rides')
-          .select('*', { count: 'exact', head: true })
-          .eq('driver_id', currentUser.id);
-        
-        const firstRide = (count || 0) === 0;
-        setIsFirstRide(firstRide);
-        
+        // firstRide was determined BEFORE the insert to avoid race condition
         const result = await completeGamificationAction(
           currentUser.id,
           'ride_published',
-          firstRide
+          isFirstRide
         );
         
         if (result.pointsAdded > 0) {

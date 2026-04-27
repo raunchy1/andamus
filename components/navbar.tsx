@@ -29,7 +29,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import { openSOSModal } from "./SafetyButton";
 import { ShareApp } from "./ShareApp";
-import { isAdmin } from "@/lib/admin";
+import { isAdmin } from "@/lib/admin-config";
 import { AuthModal } from "./AuthModal";
 
 interface UserData {
@@ -140,9 +140,7 @@ export function Navbar() {
         {/* Logo */}
         <Link 
           href={`/${locale}`} 
-          className={`flex items-center gap-2 md:gap-3 transition-all hover:scale-105 flex-shrink-0 ${
-            isHome ? "text-white" : "text-[#1a1a2e]"
-          }`}
+          className="flex items-center gap-2 md:gap-3 text-white transition-all hover:scale-105 flex-shrink-0"
         >
           <div className="flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-xl bg-[#e63946] flex-shrink-0">
             <Car className="h-5 w-5 md:h-6 md:w-6 text-white" />
@@ -159,13 +157,9 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={`relative px-3 xl:px-4 py-2 text-sm font-medium transition-all rounded-lg whitespace-nowrap ${
-                  isHome 
-                    ? isActive
-                      ? "text-white bg-white/10"
-                      : "text-white/70 hover:text-white hover:bg-white/5"
-                    : isActive
-                      ? "text-[#e63946] bg-[#e63946]/10"
-                      : "text-gray-600 hover:text-[#1a1a2e] hover:bg-gray-100"
+                  isActive
+                    ? "text-white bg-[#e63946]/20"
+                    : "text-white/65 hover:text-white hover:bg-white/5"
                 }`}
               >
                 {link.label}
@@ -193,11 +187,7 @@ export function Navbar() {
                   {isAdmin(user?.email) && (
                     <Link
                       href="/admin"
-                      className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                        isHome 
-                          ? "text-white/70 hover:bg-white/10 hover:text-white" 
-                          : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-                      }`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                       title={t('admin')}
                     >
                       <Shield className="h-5 w-5" />
@@ -208,22 +198,14 @@ export function Navbar() {
                   <NotificationBell isHome={isHome} />
 
                   {/* Share App */}
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                    isHome 
-                      ? "text-white/70 hover:bg-white/10 hover:text-white" 
-                      : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-                  }`}>
-                    <ShareApp variant="icon" className={isHome ? "text-white/70" : "text-gray-500"} />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white">
+                    <ShareApp variant="icon" className="text-white/70" />
                   </div>
 
                   {/* Invite Friends Link -->
                   <Link
                     href={`/${locale}/invita`}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                      isHome 
-                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
-                        : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-                    }`}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                     title={t('invite')}
                   >
                     <Gift className="h-5 w-5" />
@@ -232,11 +214,7 @@ export function Navbar() {
                   {/* Statistics Link */}
                   <Link
                     href={`/${locale}/statistiche`}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                      isHome 
-                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
-                        : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-                    }`}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                     title={t('statistics')}
                   >
                     <BarChart3 className="h-5 w-5" />
@@ -245,11 +223,7 @@ export function Navbar() {
                   {/* SOS Button */}
                   <button
                     onClick={openSOSModal}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                      isHome 
-                        ? "text-red-400 hover:bg-red-500/10 hover:text-red-300" 
-                        : "text-red-500 hover:bg-red-500/10 hover:text-red-600"
-                    }`}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
                     title={t('sosEmergency')}
                     aria-label={t('sosEmergency')} // a11y: icon-only button
                   >
@@ -258,11 +232,7 @@ export function Navbar() {
 
                   <Link 
                     href={`/${locale}/profilo`}
-                    className={`flex items-center gap-2 rounded-full border px-2 lg:px-3 py-1.5 transition-all min-w-0 ${
-                      isHome
-                        ? "border-white/10 bg-white/5 hover:bg-white/10 text-white"
-                        : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-[#1a1a2e]"
-                    }`}
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1.5 text-white transition-all hover:bg-white/10 lg:px-3 min-w-0"
                   >
                     {getUserAvatar() && !avatarError ? (
                       <Image 
@@ -286,11 +256,7 @@ export function Navbar() {
 
                   <button
                     onClick={handleLogout}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                      isHome 
-                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
-                        : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-                    }`}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                     title={t('logout')}
                     aria-label={t('logout')} // a11y: icon-only button
                   >
@@ -321,11 +287,7 @@ export function Navbar() {
         {/* Mobile menu button */}
         <button
           type="button"
-          className={`inline-flex items-center justify-center rounded-lg p-2 transition-colors md:hidden ${
-            isHome
-              ? "text-white hover:bg-white/10"
-              : "text-gray-600 hover:bg-gray-100"
-          }`}
+          className="inline-flex items-center justify-center rounded-lg p-2 text-white transition-colors hover:bg-white/10 md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? t('closeMenu') : t('openMenu')} // a11y: icon-only button
         >
@@ -342,16 +304,10 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className={`fixed inset-x-0 top-16 border-b md:hidden ${
-          isHome 
-            ? "border-white/10 bg-[#0a0a0a]/98 backdrop-blur-lg" 
-            : "border-border bg-white"
-        }`}>
+        <div className="fixed inset-x-0 top-16 border-b border-white/10 bg-[#0a0a0a]/98 backdrop-blur-lg md:hidden">
           <div className="space-y-1 px-4 pb-4 pt-2">
             {/* Language & Theme - Mobile */}
-            <div className={`flex items-center justify-between rounded-lg px-3 py-3 ${
-              isHome ? "text-white/70" : "text-gray-600"
-            }`}>
+            <div className="flex items-center justify-between rounded-lg px-3 py-3 text-white/70">
               <span className="font-medium">{t('language')}</span>
               <div className="flex items-center gap-2">
                 <LanguageSelector isHome={isHome} />
@@ -368,12 +324,8 @@ export function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-colors ${
                     isActive
-                      ? isHome
-                        ? "bg-[#e63946] text-white"
-                        : "bg-[#e63946]/10 text-[#e63946]"
-                      : isHome
-                        ? "text-white/70 hover:bg-white/10 hover:text-white"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-[#1a1a2e]"
+                      ? "bg-[#e63946] text-white"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
                   }`}
                 >
                   <link.icon className="h-5 w-5" />
@@ -391,11 +343,7 @@ export function Navbar() {
                       <Link
                         href={`/${locale}/invita`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
-                          isHome 
-                            ? "text-white/70 hover:bg-white/10" 
-                            : "text-gray-600 hover:bg-gray-100"
-                        }`}
+                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
                       >
                         <Gift className="h-5 w-5" />
                         <span>{t('invite')}</span>
@@ -403,11 +351,7 @@ export function Navbar() {
                       <Link
                         href={`/${locale}/statistiche`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
-                          isHome 
-                            ? "text-white/70 hover:bg-white/10" 
-                            : "text-gray-600 hover:bg-gray-100"
-                        }`}
+                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
                       >
                         <BarChart3 className="h-5 w-5" />
                         <span>{t('statistics')}</span>
@@ -417,11 +361,7 @@ export function Navbar() {
                           openSOSModal();
                           setMobileMenuOpen(false);
                         }}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left ${
-                          isHome 
-                            ? "text-red-400 hover:bg-red-500/10" 
-                            : "text-red-500 hover:bg-red-500/10"
-                        }`}
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-red-400 hover:bg-red-500/10"
                       >
                         <Siren className="h-5 w-5" />
                         <span>{t('sosEmergency')}</span>
@@ -430,11 +370,7 @@ export function Navbar() {
                         <Link
                           href="/admin"
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
-                            isHome 
-                              ? "text-white/70 hover:bg-white/10" 
-                              : "text-gray-600 hover:bg-gray-100"
-                          }`}
+                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
                         >
                           <Shield className="h-5 w-5" />
                           <span>{t('admin')}</span>
@@ -443,9 +379,7 @@ export function Navbar() {
                       <Link
                         href={`/${locale}/profilo`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
-                          isHome ? "text-white" : "text-[#1a1a2e]"
-                        }`}
+                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white"
                       >
                         {getUserAvatar() && !avatarError ? (
                           <Image 
@@ -470,11 +404,7 @@ export function Navbar() {
                             handleLogout();
                             setMobileMenuOpen(false);
                           }}
-                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left ${
-                            isHome 
-                              ? "text-red-400 hover:bg-red-500/10" 
-                              : "text-red-500 hover:bg-red-500/10"
-                          }`}
+                          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-red-400 hover:bg-red-500/10"
                           aria-label={t('logout')}
                         >
                           <LogOut className="h-5 w-5" />

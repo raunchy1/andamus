@@ -41,7 +41,7 @@ export function LaunchBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -100 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="fixed top-0 left-0 right-0 z-[100]"
+          className="fixed left-0 right-0 top-16 z-[90] md:top-20"
         >
           <div className="bg-gradient-to-r from-[#e63946] via-[#ff6b6b] to-[#e63946] text-white shadow-2xl">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">

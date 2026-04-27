@@ -12,9 +12,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#e63946",
-  userScalable: false,
 };
 
 export async function generateMetadata({ 
@@ -109,7 +107,7 @@ export async function generateMetadata({
     verification: {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     },
-    manifest: "/manifest.json",
+    manifest: `/${locale}/manifest.json`,
     icons: {
       icon: [
         { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },

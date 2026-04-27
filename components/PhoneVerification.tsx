@@ -30,19 +30,23 @@ export function PhoneVerification({
 
   // Format phone number to E.164 format (+39XXXXXXXXXX)
   const formatPhoneNumber = (input: string): string => {
-    // Remove all non-numeric characters
     let cleaned = input.replace(/\D/g, "");
-    
-    // If it starts with 0, replace with +39 (Italy)
+
+    // Handle international 00 prefix (e.g. 00339... -> +339...)
+    if (cleaned.startsWith("00")) {
+      cleaned = cleaned.substring(2);
+    }
+
+    // If it starts with 0, replace with 39 (Italy)
     if (cleaned.startsWith("0")) {
       cleaned = "39" + cleaned.substring(1);
     }
-    
+
     // If it doesn't start with +, add it
     if (!cleaned.startsWith("+")) {
       cleaned = "+" + cleaned;
     }
-    
+
     return cleaned;
   };
 

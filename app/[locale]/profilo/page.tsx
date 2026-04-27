@@ -250,6 +250,10 @@ export default function ProfilePage() {
   }, [router, supabase]);
 
   const handleAcceptBooking = async (request: BookingRequest) => {
+    if (!user || !myRides.some(r => r.id === request.ride_id)) {
+      toast.error(t("errorAcceptingBooking"));
+      return;
+    }
     setProcessingBooking(request.id);
     
     try {
@@ -282,6 +286,10 @@ export default function ProfilePage() {
   };
 
   const handleRejectBooking = async (request: BookingRequest) => {
+    if (!user || !myRides.some(r => r.id === request.ride_id)) {
+      toast.error(t("errorRejectingBooking"));
+      return;
+    }
     setProcessingBooking(request.id);
     
     try {
@@ -350,6 +358,10 @@ export default function ProfilePage() {
 
   const handleCancelBooking = async () => {
     if (!cancelBookingId || !cancelReason.trim()) return;
+    if (!user || !myBookings.some(b => b.id === cancelBookingId)) {
+      toast.error(t("errorCancelling"));
+      return;
+    }
     setIsCancelling(true);
     try {
       const { error } = await supabase
@@ -462,8 +474,13 @@ export default function ProfilePage() {
     }
   };
 
-  const isRideCompleted = (rideDate: string) => {
-    return new Date(rideDate) < new Date();
+  const isRideCompleted = (rideDate: string, rideTime?: string) => {
+    const date = new Date(rideDate);
+    if (rideTime) {
+      const [hours, minutes] = rideTime.split(':').map(Number);
+      date.setHours(hours || 0, minutes || 0, 0, 0);
+    }
+    return date < new Date();
   };
 
   if (loading) {
@@ -474,7 +491,7 @@ export default function ProfilePage() {
     );
   }
 
-  const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
+  const completedRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
   const completedBookings = myBookings.filter(b => b.status === 'confirmed');
   let totalKm = 0;
   let passengersHelped = 0;

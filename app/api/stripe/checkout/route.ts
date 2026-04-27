@@ -44,10 +44,28 @@ export async function POST(req: NextRequest) {
         metadata: { supabase_user_id: user.id },
       });
       customerId = customer.id;
-      await supabase
+
+      // Race-safety: another request may have set the customer_id concurrently
+      const { data: freshProfile } = await supabase
         .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", user.id);
+        .select("stripe_customer_id")
+        .eq("id", user.id)
+        .single();
+
+      if (freshProfile?.stripe_customer_id) {
+        // Another request won the race; clean up the duplicate customer
+        try {
+          await getStripe().customers.del(customerId);
+        } catch {
+          // Ignore cleanup errors
+        }
+        customerId = freshProfile.stripe_customer_id;
+      } else {
+        await supabase
+          .from("profiles")
+          .update({ stripe_customer_id: customerId })
+          .eq("id", user.id);
+      }
     }
 
     const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:7001";

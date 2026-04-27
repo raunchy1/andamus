@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { createClient } from "@/lib/supabase/server";
 
 const getStripe = () => {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -8,6 +9,12 @@ const getStripe = () => {
 };
 
 export async function GET(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const sessionId = req.nextUrl.searchParams.get("session_id");
 
   if (!sessionId) {

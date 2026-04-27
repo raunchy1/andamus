@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import crypto from "crypto";
 import {
   getBookingRequestEmailTemplate,
   getBookingConfirmedEmailTemplate,
@@ -14,11 +15,14 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Andamus <noreply@andamus.app>";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://andamus.app";
 
-// Generate unsubscribe token
+// Generate unsubscribe token using HMAC (not forgeable without secret)
 async function getUnsubscribeToken(userId: string): Promise<string | undefined> {
   try {
-    // Create a simple token based on userId and timestamp
-    const token = Buffer.from(`${userId}:${Date.now()}`).toString("base64");
+    const secret = process.env.RESEND_API_KEY || "fallback-secret";
+    const token = crypto
+      .createHmac("sha256", secret)
+      .update(`${userId}:${Date.now()}`)
+      .digest("hex");
     return token;
   } catch {
     return undefined;

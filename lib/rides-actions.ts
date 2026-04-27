@@ -87,7 +87,8 @@ export async function searchRides(filters: SearchFilters) {
 
   const { data, error } = await query
     .order("date", { ascending: true })
-    .order("time", { ascending: true });
+    .order("time", { ascending: true })
+    .limit(200);
 
   if (error) {
     // Error logged to Sentry in production
@@ -160,10 +161,18 @@ export async function searchRides(filters: SearchFilters) {
       nearbyQuery = nearbyQuery.lte("price", filters.maxPrice);
     if (filters.minSeats !== undefined && filters.minSeats > 0)
       nearbyQuery = nearbyQuery.gte("seats", filters.minSeats);
+    if (filters.smoking) nearbyQuery = nearbyQuery.eq("smoking_allowed", true);
+    if (filters.pets) nearbyQuery = nearbyQuery.eq("pets_allowed", true);
+    if (filters.luggage) nearbyQuery = nearbyQuery.eq("large_luggage", true);
+    if (filters.womenOnly) nearbyQuery = nearbyQuery.eq("women_only", true);
+    if (filters.studentsOnly) nearbyQuery = nearbyQuery.eq("students_only", true);
+    if (filters.musicPreference)
+      nearbyQuery = nearbyQuery.eq("music_preference", filters.musicPreference);
 
     const { data: nearbyData } = await nearbyQuery
       .order("date", { ascending: true })
-      .order("time", { ascending: true });
+      .order("time", { ascending: true })
+      .limit(200);
 
     if (nearbyData && nearbyData.length > 0) {
       results = nearbyData as typeof results;

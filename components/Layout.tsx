@@ -2,7 +2,6 @@
 
 import { useDeviceType } from "./view-mode";
 import { BottomNav } from "./BottomNav";
-import { DesktopNav } from "./DesktopNav";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const deviceType = useDeviceType();
@@ -36,7 +35,6 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
 function DesktopLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#e5e2e1] overflow-x-hidden">
-      <DesktopNav />
       <main className="pt-[80px] pb-16 max-w-6xl mx-auto px-6 lg:px-8 min-h-screen">
         {children}
       </main>

@@ -36,7 +36,7 @@ export function BottomNav() {
             className={`flex flex-col items-center justify-center group ${
               isActive
                 ? "text-[#ffb3b1] font-bold"
-                : "text-[#353534] hover:text-[#e5e2e1]"
+                : "text-[#77706f] hover:text-[#e5e2e1]"
             } transition-colors active:scale-90 duration-300`}
           >
             <Icon

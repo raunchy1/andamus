@@ -132,8 +132,14 @@ const serwist = new Serwist({
         plugins: [
           {
             handlerDidError: async () => {
-              // Return offline fallback if available
-              return caches.match("/offline");
+              // Return offline fallback if available (default locale)
+              const offlineResponse = await caches.match("/it/offline");
+              if (offlineResponse) return offlineResponse;
+              // Fallback to any cached offline page
+              const cache = await caches.open("pages-cache");
+              const keys = await cache.keys();
+              const offline = keys.find((req) => req.url.includes("/offline"));
+              return offline ? cache.match(offline) : undefined;
             },
           },
         ],
@@ -153,9 +159,14 @@ self.addEventListener("message", (event) => {
 // Handle push notifications (for future implementation)
 self.addEventListener("push", (event) => {
   if (event.data) {
-    const data = event.data.json();
+    let data: { title?: string; body?: string; data?: { url?: string } } = {};
+    try {
+      data = event.data.json();
+    } catch {
+      data = { title: "Andamus", body: "Nuova notifica" };
+    }
     event.waitUntil(
-      self.registration.showNotification(data.title, {
+      self.registration.showNotification(data.title || "Andamus", {
         body: data.body,
         icon: "/icon-192x192.png",
         badge: "/icon-72x72.png",
@@ -182,7 +193,7 @@ self.addEventListener("notificationclick", (event) => {
   
   if (event.action === "open" || event.action === "default") {
     event.waitUntil(
-      self.clients.openWindow(event.notification.data?.url || "/it")
+      self.clients.openWindow(event.notification.data?.url || "/")
     );
   }
 });

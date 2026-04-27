@@ -106,11 +106,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         else toast.error(error.message);
       } else if (data.user && data.user.identities && data.user.identities.length === 0) {
         // User already exists (email taken, no new identity created)
-        toast.error("Email già registrata. Prova ad accedere.");
+        toast.error(t("emailAlreadyRegistered"));
         setMode("login");
       } else if (data.session) {
         // Auto-confirmed: user is logged in immediately
-        toast.success("Benvenuto in Andamus!");
+        toast.success(t("welcomeToAndamus"));
         handleClose();
         setTimeout(() => {
           router.push(`/${locale}/lansare`);
@@ -118,7 +118,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         }, 300);
       } else {
         // Email confirmation required
-        toast.success("Controlla la tua email per confermare la registrazione!");
+        toast.success(t("checkEmailConfirmation"));
         setMode("login");
       }
     } catch (err) {

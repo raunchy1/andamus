@@ -19,7 +19,7 @@ import { useTranslations, useLocale } from "next-intl";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Carbonia", "Alghero", "Tempio Pausania", "La Maddalena",
+  "Iglesias", "Alghero",
   "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer",
   "Bosa", "Castelsardo"
 ];
