@@ -39,7 +39,7 @@ export function CityCombobox({
   // Detect mobile keyboard via visualViewport
   useEffect(() => {
     if (!isOpen) {
-      setKeyboardOpen(false);
+      requestAnimationFrame(() => setKeyboardOpen(false));
       return;
     }
     const handleResize = () => {

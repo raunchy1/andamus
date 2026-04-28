@@ -296,10 +296,9 @@ export default function ChatWindow({
       await retryFn();
       removeLocalMessage(tempId);
       await notifyRecipient();
-    } catch (err: any) {
+    } catch (err: unknown) {
       updateLocalMessage(tempId, { status: "failed" });
-      const msg =
-        err?.message || t("sendError");
+      const msg = err instanceof Error ? err.message : t("sendError");
       toast.error(msg);
       console.error("[Chat] Retry failed:", err);
     } finally {
@@ -343,10 +342,9 @@ export default function ChatWindow({
       await retryFnsRef.current.get(tempId)!();
       removeLocalMessage(tempId);
       await notifyRecipient();
-    } catch (err: any) {
+    } catch (err: unknown) {
       updateLocalMessage(tempId, { status: "failed" });
-      const msg =
-        err?.message || t("sendError");
+      const msg = err instanceof Error ? err.message : t("sendError");
       toast.error(msg);
       console.error("[Chat] Text send failed:", err);
     } finally {
@@ -422,9 +420,9 @@ export default function ChatWindow({
       await retryFnsRef.current.get(tempId)!();
       removeLocalMessage(tempId);
       await notifyRecipient();
-    } catch (err: any) {
+    } catch (err: unknown) {
       updateLocalMessage(tempId, { status: "failed" });
-      const msg = err?.message || t("uploadError");
+      const msg = err instanceof Error ? err.message : t("uploadError");
       toast.error(msg);
       console.error("[Chat] Image send failed:", err);
     } finally {
@@ -478,10 +476,9 @@ export default function ChatWindow({
           await retryFnsRef.current.get(tempId)!();
           removeLocalMessage(tempId);
           await notifyRecipient();
-        } catch (err: any) {
+        } catch (err: unknown) {
           updateLocalMessage(tempId, { status: "failed" });
-          const msg =
-            err?.message || t("locationError");
+          const msg = err instanceof Error ? err.message : t("locationError");
           toast.error(msg);
           console.error("[Chat] Location send failed:", err);
         }
@@ -582,10 +579,9 @@ export default function ChatWindow({
       await retryFnsRef.current.get(tempId)!();
       removeLocalMessage(tempId);
       await notifyRecipient();
-    } catch (err: any) {
+    } catch (err: unknown) {
       updateLocalMessage(tempId, { status: "failed" });
-      const msg =
-        err?.message || t("uploadError");
+      const msg = err instanceof Error ? err.message : t("uploadError");
       toast.error(msg);
       console.error("[Chat] Audio send failed:", err);
     }

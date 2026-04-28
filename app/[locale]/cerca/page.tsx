@@ -903,7 +903,7 @@ function SearchContent() {
         destination: destination || undefined,
         dateFrom: dateFrom || undefined,
         dateTo: dateTo || undefined,
-        timeWindow: (timeWindow as any) || undefined,
+        timeWindow: (timeWindow as "morning" | "afternoon" | "evening" | "night" | "") || undefined,
         maxPrice: maxPrice > 0 ? maxPrice : undefined,
         minSeats: minSeats ?? undefined,
         smoking: prefSmoking || undefined,
@@ -917,8 +917,8 @@ function SearchContent() {
         todayOnly: activeFilter === "today" || undefined,
       });
       setRides(results as Ride[]);
-    } catch (err: any) {
-      toast.error(err?.message || t('searchError'));
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t('searchError'));
     } finally {
       setLoading(false);
     }

@@ -11,11 +11,31 @@ export function SafetyButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [showSOS, setShowSOS] = useState(false);
 
+  // Open via custom event (e.g. from other components)
   useEffect(() => {
     const handleOpen = () => setIsOpen(true);
     window.addEventListener("open-sos-modal", handleOpen);
     return () => window.removeEventListener("open-sos-modal", handleOpen);
   }, []);
+
+  // Browser back button closes the panel
+  useEffect(() => {
+    if (!isOpen) return;
+    window.history.pushState({ sosOpen: true }, "");
+    const handlePopState = () => setIsOpen(false);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isOpen]);
+
+  // Prevent body scroll when panel is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
 
   const handleEmergencyCall = () => {
     window.location.href = "tel:112";
@@ -57,58 +77,91 @@ export function SafetyButton() {
 
   return (
     <>
-      {/* Floating Safety Button - positioned above BottomNav (64px + safe area) */}
+      {/* FAB — toggles open/close, icon changes to X when open */}
       <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-[4.25rem] right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600 md:bottom-24 md:right-6 md:h-14 md:w-14"
-        aria-label={t("sosSafety")}
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="fixed bottom-[4.25rem] right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600 active:scale-95 md:bottom-24 md:right-6 md:h-14 md:w-14"
+        aria-label={isOpen ? t("cancel") : t("sosSafety")}
       >
-        <Shield className="h-5 w-5 md:h-6 md:w-6" />
+        <AnimatePresence mode="wait" initial={false}>
+          {isOpen ? (
+            <motion.span
+              key="x"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <X className="h-5 w-5 md:h-6 md:w-6" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="shield"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Shield className="h-5 w-5 md:h-6 md:w-6" />
+            </motion.span>
+          )}
+        </AnimatePresence>
       </button>
 
-      {/* Safety Modal */}
+      {/* Safety Panel — bottom sheet */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur"
-            onClick={() => setIsOpen(false)}
-          >
+          <>
+            {/* Dark overlay — click to close */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-3xl border border-white/10 bg-[#131313] p-6"
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[150] bg-black/70 backdrop-blur-sm"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Bottom sheet panel */}
+            <motion.div
+              key="panel"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-[151] max-h-[85vh] overflow-y-auto rounded-t-3xl bg-[#131313] shadow-2xl"
             >
+              {/* Handle bar */}
+              <div className="flex justify-center pb-1 pt-3">
+                <div className="h-1 w-10 rounded-full bg-white/20" />
+              </div>
+
               {/* Header */}
-              <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20">
-                    <Shield className="h-6 w-6 text-red-400" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20">
+                    <Shield className="h-5 w-5 text-red-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">{t("safety")}</h3>
-                    <p className="text-sm text-white/50">{t("emergencyTools")}</p>
+                    <p className="font-semibold text-white">{t("safety")}</p>
+                    <p className="text-xs text-white/50">{t("emergencyTools")}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
-                  aria-label={t("cancel")} // a11y: icon-only button
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                  aria-label={t("cancel")}
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* Emergency Actions */}
-              <div className="space-y-3">
+              {/* Content */}
+              <div className="space-y-3 p-5 pb-10">
                 {/* SOS Button */}
                 <button
                   onClick={() => setShowSOS(true)}
-                  className="w-full rounded-2xl bg-red-500 p-5 text-left transition-all hover:bg-red-600"
+                  className="w-full rounded-2xl bg-red-500 p-5 text-left transition-all hover:bg-red-600 active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
@@ -124,7 +177,7 @@ export function SafetyButton() {
                 {/* Share Location */}
                 <button
                   onClick={handleShareLocation}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition-all hover:bg-white/10"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition-all hover:bg-white/10 active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/20">
@@ -140,7 +193,7 @@ export function SafetyButton() {
                 {/* Emergency Number */}
                 <a
                   href="tel:112"
-                  className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10"
+                  className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10 active:scale-[0.98]"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20">
                     <Phone className="h-7 w-7 text-green-400" />
@@ -150,20 +203,20 @@ export function SafetyButton() {
                     <p className="text-sm text-white/50">{t("emergencyNumber")}</p>
                   </div>
                 </a>
-              </div>
 
-              {/* Safety Tips */}
-              <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-                <p className="text-sm font-medium text-white">{t("safetyTips")}</p>
-                <ul className="mt-2 space-y-1 text-xs text-white/60">
-                  <li>• {t("tip1")}</li>
-                  <li>• {t("tip2")}</li>
-                  <li>• {t("tip3")}</li>
-                  <li>• {t("tip4")}</li>
-                </ul>
+                {/* Safety Tips */}
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-sm font-medium text-white">{t("safetyTips")}</p>
+                  <ul className="mt-2 space-y-1 text-xs text-white/60">
+                    <li>• {t("tip1")}</li>
+                    <li>• {t("tip2")}</li>
+                    <li>• {t("tip3")}</li>
+                    <li>• {t("tip4")}</li>
+                  </ul>
+                </div>
               </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -174,21 +227,21 @@ export function SafetyButton() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4"
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4"
+            onClick={() => setShowSOS(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
               className="w-full max-w-sm rounded-3xl border border-red-500/30 bg-[#131313] p-6 text-center"
             >
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20">
                 <AlertTriangle className="h-10 w-10 text-red-400" />
               </div>
               <h3 className="mb-2 text-2xl font-bold text-white">{t("emergencyQuestion")}</h3>
-              <p className="mb-6 text-white/60">
-                {t("emergencyDescription")}
-              </p>
+              <p className="mb-6 text-white/60">{t("emergencyDescription")}</p>
               <div className="space-y-3">
                 <button
                   onClick={handleEmergencyCall}

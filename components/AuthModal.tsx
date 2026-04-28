@@ -34,7 +34,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       document.body.style.overflow = "hidden";
       requestAnimationFrame(() => setIsVisible(true));
     } else {
-      setIsVisible(false);
+      requestAnimationFrame(() => setIsVisible(false));
       document.body.style.overflow = "";
     }
     return () => { document.body.style.overflow = ""; };
