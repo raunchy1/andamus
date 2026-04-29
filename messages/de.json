@@ -525,7 +525,25 @@
     "moreSecurity": "Mehr Sicherheit",
     "moreProtectionForYouAndPassengers": "Mehr Schutz für dich und die Mitfahrer",
     "documentUploadedPending": "Dokument hochgeladen! Warte auf Genehmigung.",
-    "uploadError": "Fehler beim Hochladen"
+    "uploadError": "Fehler beim Hochladen",
+    "verifyYourNumber": "Nummer verifizieren",
+    "addSecurityToProfile": "Sicherheit zum Profil hinzufügen",
+    "enterPhoneWithPrefix": "Telefonnummer mit Vorwahl eingeben (+39)",
+    "phoneVerificationFooter": "Du erhältst einen OTP-Code per SMS. Deine Nummer wird nicht mit anderen Nutzern geteilt.",
+    "enterOtpTitle": "OTP-Code eingeben",
+    "receivedSmsCode": "Hast du einen SMS-Code erhalten?",
+    "enterValidItalianPhone": "Gültige italienische Nummer eingeben (+39XXXXXXXXXX)",
+    "otpSent": "OTP-Code gesendet!",
+    "otpSendError": "Fehler beim Senden des OTP-Codes",
+    "enterOtpCode": "OTP-Code eingeben",
+    "phoneVerifiedSuccess": "Telefonnummer erfolgreich verifiziert!",
+    "invalidOtp": "Ungültiger OTP-Code",
+    "otpCode": "OTP-Code",
+    "enter6DigitCode": "Gib den 6-stelligen Code ein, den du per SMS erhalten hast",
+    "sending": "Wird gesendet...",
+    "verifying": "Wird überprüft...",
+    "verify": "Verifizieren",
+    "changeNumber": "Nummer ändern"
   },
   "chat": {
     "messagePlaceholder": "Nachricht schreiben...",
@@ -1048,7 +1066,61 @@
     "offerRide": "Fahrt anbieten",
     "progress": "Fortschritt",
     "subtitle": "Schließe diese einfachen Schritte ab, um mit dem Mitfahren in Sardinien zu beginnen",
-    "welcome": "Willkommen bei Andamus! 🎉"
+    "welcome": "Willkommen bei Andamus! 🎉",
+    "modal": {
+      "skip": "Überspringen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "start": "Starten",
+      "step": "Schritt {current} von {total}",
+      "searchRide": "Fahrt suchen",
+      "offerRide": "Fahrt anbieten",
+      "welcomeToast": "Willkommen bei Andamus! 🎉 Beginne mit der Suche nach Fahrten in Sardinien.",
+      "slides": [
+        {
+          "title": "Sardisches Mitfahren 🚗",
+          "description": "Willkommen bei Andamus! Die App für alle, die in Sardinien leben und reisen. Verbinde dich mit anderen Mitfahrern, spare Kosten und reduziere Emissionen.",
+          "features": []
+        },
+        {
+          "title": "Fahrt suchen",
+          "description": "Suche verfügbare Fahrten in ganz Sardinien. Filtere nach Datum, Preis und Stadt. Buche in wenigen Klicks und erhalte die Bestätigung direkt vom Fahrer!",
+          "features": [
+            { "text": "50+ Städte abgedeckt" },
+            { "text": "Echte Bewertungen" }
+          ]
+        },
+        {
+          "title": "Fahrt anbieten",
+          "description": "Hast du freie Plätze im Auto? Veröffentliche eine Fahrt in weniger als einer Minute. Verdiene Erfahrungspunkte für jeden transportierten Passagier und steige in der Rangliste auf!",
+          "features": [
+            { "text": "Punkte sammeln" },
+            { "text": "Verifizierte Nutzer" }
+          ]
+        },
+        {
+          "title": "Chat & Sicherheit",
+          "description": "Kommuniziere einfach mit Fahrern und Passagieren über den integrierten Chat. Im Notfall ist der SOS-Knopf immer griffbereit, um 112 anzurufen.",
+          "features": [
+            { "text": "In-App-Chat" },
+            { "text": "SOS-Knopf" }
+          ]
+        },
+        {
+          "title": "Community & Punkte",
+          "description": "Sei Teil einer zuverlässigen Community. Schließe Aktionen ab, sammle Punkte, schalte Level frei und baue deinen Ruf mit authentischen Bewertungen auf.",
+          "features": [
+            { "text": "Level und Abzeichen" },
+            { "text": "Sardische Community" }
+          ]
+        },
+        {
+          "title": "Alles bereit! 🎉",
+          "description": "Alles ist bereit zum Starten. Suche sofort eine Fahrt oder veröffentliche dein erstes Angebot. Gemeinsam machen wir das Reisen in Sardinien smarter und nachhaltiger!",
+          "features": []
+        }
+      ]
+    }
   },
   "badges": {
     "newBadgeUnlocked": "Neues Badge freigeschaltet!",

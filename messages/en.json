@@ -525,7 +525,25 @@
     "moreSecurity": "More security",
     "moreProtectionForYouAndPassengers": "More protection for you and passengers",
     "documentUploadedPending": "Document uploaded! Pending approval.",
-    "uploadError": "Error uploading"
+    "uploadError": "Error uploading",
+    "verifyYourNumber": "Verify your number",
+    "addSecurityToProfile": "Add security to your profile",
+    "enterPhoneWithPrefix": "Enter phone number with prefix (+39)",
+    "phoneVerificationFooter": "You will receive an OTP code via SMS. Your number won't be shared with other users.",
+    "enterOtpTitle": "Enter OTP code",
+    "receivedSmsCode": "Did you receive an SMS code?",
+    "enterValidItalianPhone": "Enter a valid Italian number (+39XXXXXXXXXX)",
+    "otpSent": "OTP code sent!",
+    "otpSendError": "Error sending OTP code",
+    "enterOtpCode": "Enter OTP code",
+    "phoneVerifiedSuccess": "Phone number verified successfully!",
+    "invalidOtp": "Invalid OTP code",
+    "otpCode": "OTP Code",
+    "enter6DigitCode": "Enter the 6-digit code received via SMS",
+    "sending": "Sending...",
+    "verifying": "Verifying...",
+    "verify": "Verify",
+    "changeNumber": "Change number"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -1048,7 +1066,61 @@
     "offerRide": "Offer a ride",
     "progress": "Progress",
     "subtitle": "Complete these simple steps to get started with carpooling in Sardinia",
-    "welcome": "Welcome to Andamus! 🎉"
+    "welcome": "Welcome to Andamus! 🎉",
+    "modal": {
+      "skip": "Skip",
+      "back": "Back",
+      "next": "Next",
+      "start": "Start",
+      "step": "Step {current} of {total}",
+      "searchRide": "Find a ride",
+      "offerRide": "Offer a ride",
+      "welcomeToast": "Welcome to Andamus! 🎉 Start searching for rides in Sardinia.",
+      "slides": [
+        {
+          "title": "Sardinian carpooling 🚗",
+          "description": "Welcome to Andamus! The app created for those who live and travel in Sardinia. Connect with other passengers, save on costs and reduce emissions.",
+          "features": []
+        },
+        {
+          "title": "Find a ride",
+          "description": "Search for available rides throughout Sardinia. Filter by date, price and city. Book in a few clicks and receive confirmation directly from the driver!",
+          "features": [
+            { "text": "50+ cities covered" },
+            { "text": "Real ratings" }
+          ]
+        },
+        {
+          "title": "Offer a ride",
+          "description": "Have free seats in your car? Publish a ride in less than a minute. Earn experience points for every passenger transported and climb the rankings!",
+          "features": [
+            { "text": "Earn points" },
+            { "text": "Verified users" }
+          ]
+        },
+        {
+          "title": "Chat & Safety",
+          "description": "Communicate easily with drivers and passengers via the integrated chat. In case of emergency, the SOS button is always at hand to call 112.",
+          "features": [
+            { "text": "In-app chat" },
+            { "text": "SOS button" }
+          ]
+        },
+        {
+          "title": "Community & Points",
+          "description": "Be part of a reliable community. Complete actions, earn points, unlock levels and build your reputation with authentic reviews.",
+          "features": [
+            { "text": "Levels and badges" },
+            { "text": "Sardinian community" }
+          ]
+        },
+        {
+          "title": "All set! 🎉",
+          "description": "Everything is ready to start. Search for a ride right away or publish your first offer. Together we make travel in Sardinia smarter and more sustainable!",
+          "features": []
+        }
+      ]
+    }
   },
   "badges": {
     "newBadgeUnlocked": "New Badge Unlocked!",

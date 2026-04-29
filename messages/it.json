@@ -525,7 +525,25 @@
     "moreSecurity": "Più sicurezza",
     "moreProtectionForYouAndPassengers": "Maggiore protezione per te e i passeggeri",
     "documentUploadedPending": "Documento caricato! In attesa di approvazione.",
-    "uploadError": "Errore nel caricamento"
+    "uploadError": "Errore nel caricamento",
+    "verifyYourNumber": "Verifica il tuo numero",
+    "addSecurityToProfile": "Aggiungi sicurezza al tuo profilo",
+    "enterPhoneWithPrefix": "Inserisci il numero con prefisso (+39)",
+    "phoneVerificationFooter": "Riceverai un codice OTP via SMS. Il numero non sarà condiviso con altri utenti.",
+    "enterOtpTitle": "Inserisci il codice OTP",
+    "receivedSmsCode": "Hai ricevuto un codice via SMS?",
+    "enterValidItalianPhone": "Inserisci un numero italiano valido (+39XXXXXXXXXX)",
+    "otpSent": "Codice OTP inviato!",
+    "otpSendError": "Errore nell'invio del codice OTP",
+    "enterOtpCode": "Inserisci il codice OTP",
+    "phoneVerifiedSuccess": "Numero di telefono verificato con successo!",
+    "invalidOtp": "Codice OTP non valido",
+    "otpCode": "Codice OTP",
+    "enter6DigitCode": "Inserisci il codice a 6 cifre ricevuto via SMS",
+    "sending": "Invio in corso...",
+    "verifying": "Verifica in corso...",
+    "verify": "Verifica",
+    "changeNumber": "Cambia numero"
   },
   "chat": {
     "messagePlaceholder": "Scrivi un messaggio...",
@@ -1048,7 +1066,61 @@
     "offerRide": "Offri un passaggio",
     "progress": "Progresso",
     "subtitle": "Completa questi semplici passaggi per iniziare al meglio con il carpooling in Sardegna",
-    "welcome": "Benvenuto su Andamus! 🎉"
+    "welcome": "Benvenuto su Andamus! 🎉",
+    "modal": {
+      "skip": "Salta",
+      "back": "Indietro",
+      "next": "Avanti",
+      "start": "Inizia",
+      "step": "Passo {current} di {total}",
+      "searchRide": "Cerca una corsa",
+      "offerRide": "Offri un passaggio",
+      "welcomeToast": "Benvenuto su Andamus! 🎉 Inizia a cercare passaggi in Sardegna.",
+      "slides": [
+        {
+          "title": "Il carpooling dei sardi 🚗",
+          "description": "Benvenuto su Andamus! L'app creata per chi vive e viaggia in Sardegna. Connettiti con altri passeggeri, risparmia sui costi e riduci le emissioni.",
+          "features": []
+        },
+        {
+          "title": "Cerca un passaggio",
+          "description": "Cerca corse disponibili in tutta la Sardegna. Filtra per data, prezzo e città. Prenota in pochi click e ricevi conferma direttamente dall'autista!",
+          "features": [
+            { "text": "50+ città coperte" },
+            { "text": "Valutazioni reali" }
+          ]
+        },
+        {
+          "title": "Pubblica un passaggio",
+          "description": "Hai posti liberi in macchina? Pubblica una corsa in meno di un minuto. Guadagna punti esperienza per ogni passeggero trasportato e scala la classifica!",
+          "features": [
+            { "text": "Guadagna punti" },
+            { "text": "Utenti verificati" }
+          ]
+        },
+        {
+          "title": "Chat e Sicurezza",
+          "description": "Comunica facilmente con autisti e passeggeri tramite la chat integrata. In caso di emergenza, il pulsante SOS è sempre a portata di mano per chiamare il 112.",
+          "features": [
+            { "text": "Chat in-app" },
+            { "text": "Pulsante SOS" }
+          ]
+        },
+        {
+          "title": "Community e Punti",
+          "description": "Fai parte di una community affidabile. Completa azioni, guadagna punti, sblocca livelli e costruisci la tua reputazione con recensioni autentiche.",
+          "features": [
+            { "text": "Livelli e badge" },
+            { "text": "Community sarda" }
+          ]
+        },
+        {
+          "title": "Tutto pronto! 🎉",
+          "description": "Tutto pronto per iniziare. Cerca subito una corsa o pubblica la tua prima offerta. Insieme rendiamo i viaggi in Sardegna più smart e sostenibili!",
+          "features": []
+        }
+      ]
+    }
   },
   "badges": {
     "newBadgeUnlocked": "Nuovo Badge Sbloccato!",
