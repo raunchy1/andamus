@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
 import { ShareApp } from "@/components/ShareApp";
+import { Analytics } from "@/lib/analytics";
 import { CarInfoSection } from "@/components/offri/CarInfoSection";
 import { PreferencesSection } from "@/components/offri/PreferencesSection";
 import { StopsSection } from "@/components/offri/StopsSection";
@@ -1098,6 +1099,7 @@ export default function OfferPage() {
       }
       
       setIsSubmitted(true);
+      Analytics.rideCreated(formData.origin, formData.destination);
     } catch (err) {
       // Submit error logged silently
       toast.dismiss(toastId);

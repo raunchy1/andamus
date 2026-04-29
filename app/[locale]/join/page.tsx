@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
+import { Analytics } from "@/lib/analytics";
 
 function JoinContent() {
   const t = useTranslations("auth");
@@ -65,6 +66,7 @@ function JoinContent() {
         if (profile) {
           router.push(`/${locale}/profilo`);
         } else {
+          Analytics.userRegistered();
           router.push(`/${locale}/lansare`);
         }
         return;

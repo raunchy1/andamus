@@ -3,761 +3,682 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { 
-  Users, 
-  Car, 
-  Calendar, 
-  AlertTriangle, 
-  Search, 
-  Shield, 
-  CheckCircle, 
-  
-  Ban,
-  Unlock,
-  Check,
-  X,
+import {
+  Users,
+  Car,
   MapPin,
-  Clock,
+  TrendingUp,
+  Euro,
+  Activity,
+  Globe,
+  Shield,
+  RefreshCw,
+  ArrowUp,
+  Search,
   Star,
-  FileText,
-  Phone,
-  Mail,
-  CreditCard,
-  Award
+  Calendar,
+  CheckCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { toast } from "sonner";
-import { completeGamificationAction } from "@/lib/gamification";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 import { checkAdminAccess } from "@/lib/admin";
-import { useTranslations } from "next-intl";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar_url: string | null;
-  rating: number;
-  created_at: string;
-  is_blocked: boolean;
-}
-
-interface SafetyReport {
-  id: string;
-  reporter_name: string;
-  reporter_avatar: string | null;
-  reported_name: string;
-  reported_avatar: string | null;
-  type: string;
-  description: string;
-  created_at: string;
-  status: string;
-}
-
-interface Verification {
-  id: string;
-  user_id: string;
-  user_name: string;
-  user_avatar: string | null;
-  type: string;
-  status: string;
-  created_at: string;
-  document_url: string | null;
-}
-
-interface Ride {
-  id: string;
-  from_city: string;
-  to_city: string;
-  date: string;
-  time: string;
-  seats: number;
-  price: number;
-  status: string;
-  driver_name: string;
-  driver_avatar: string | null;
-  created_at: string;
-}
+const COLORS = ["#e63946", "#ff6b6b", "#ffa07a", "#ffcc99", "#fff3cd", "#4CAF50", "#2196F3", "#FF9800"];
 
 interface Stats {
-  total_users: number;
-  total_rides: number;
-  total_bookings: number;
-  pending_reports: number;
+  totalUsers: number;
+  newUsersToday: number;
+  newUsersWeek: number;
+  totalRides: number;
+  activeRides: number;
+  totalBookings: number;
+  pendingBookings: number;
+  totalGroups: number;
+  premiumUsers: number;
+  topRoutes: { origin: string; destination: string; count: number }[];
+  usersPerDay: { date: string; count: number }[];
+  ridesPerDay: { date: string; count: number }[];
+  citiesStats: { city: string; rides: number }[];
 }
 
-export default function AdminDashboard() {
+export default function AdminPage() {
+  const [stats, setStats] = useState<Partial<Stats>>({});
+  const [loading, setLoading] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "rides" | "revenue" | "realtime">("overview");
+  const [authorized, setAuthorized] = useState<boolean | null>(null);
   const router = useRouter();
   const supabase = createClient();
-  const t = useTranslations("admin");
-  const [loading, setLoading] = useState(true);
-  const [isAdminUser, setIsAdminUser] = useState(false);
-  
-  // Stats
-  const [stats, setStats] = useState<Stats>({
-    total_users: 0,
-    total_rides: 0,
-    total_bookings: 0,
-    pending_reports: 0
-  });
-  
-  // Users
-  const [users, setUsers] = useState<User[]>([]);
-  const [userSearch, setUserSearch] = useState("");
-  
-  // Safety Reports
-  const [reports, setReports] = useState<SafetyReport[]>([]);
-  
-  // Verifications
-  const [verifications, setVerifications] = useState<Verification[]>([]);
-  
-  // Rides
-  const [rides, setRides] = useState<Ride[]>([]);
 
-  // Check admin access
   useEffect(() => {
-    const checkAdmin = async () => {
-      const isAdmin = await checkAdminAccess();
-      if (!isAdmin) {
-        router.push("/");
-        return;
-      }
-      setIsAdminUser(true);
-    };
-    checkAdmin();
-  }, [router]);
+    checkAuth();
+  }, []);
 
-  // Fetch all data
-  const fetchData = useCallback(async () => {
-    if (!isAdminUser) return;
-    
+  const checkAuth = async () => {
+    const isAdmin = await checkAdminAccess();
+    if (!isAdmin) {
+      router.replace("/");
+      return;
+    }
+    setAuthorized(true);
+    loadStats();
+  };
+
+  const loadStats = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch stats
-      const { data: statsData } = await supabase
-        .rpc('get_admin_stats')
-        .single();
-      
-      if (statsData) {
-        const stats = statsData as { total_users: number; total_rides: number; total_bookings: number; pending_reports: number };
-        setStats({
-          total_users: Number(stats.total_users),
-          total_rides: Number(stats.total_rides),
-          total_bookings: Number(stats.total_bookings),
-          pending_reports: Number(stats.pending_reports)
+      const todayStr = new Date().toISOString().split("T")[0];
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+
+      // Total users
+      const { count: totalUsers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true });
+
+      // New users today
+      const { count: newUsersToday } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", todayStr);
+
+      // New users this week
+      const { count: newUsersWeek } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", weekAgo);
+
+      // Total rides
+      const { count: totalRides } = await supabase
+        .from("rides")
+        .select("*", { count: "exact", head: true });
+
+      // Active rides (future dates, active status)
+      const { count: activeRides } = await supabase
+        .from("rides")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active")
+        .gte("date", todayStr);
+
+      // Bookings
+      const { count: totalBookings } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true });
+
+      const { count: pendingBookings } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+
+      // Groups
+      const { count: totalGroups } = await supabase
+        .from("groups")
+        .select("*", { count: "exact", head: true });
+
+      // Users per day (last 14 days)
+      const { data: usersRaw } = await supabase
+        .from("profiles")
+        .select("created_at")
+        .gte("created_at", fourteenDaysAgo)
+        .order("created_at");
+
+      const usersPerDay = groupByDay(usersRaw || [], 14);
+
+      // Rides per day (last 14 days)
+      const { data: ridesRaw } = await supabase
+        .from("rides")
+        .select("created_at")
+        .gte("created_at", fourteenDaysAgo);
+
+      const ridesPerDay = groupByDay(ridesRaw || [], 14);
+
+      // Top routes
+      const { data: routesRaw } = await supabase
+        .from("rides")
+        .select("from_city, to_city")
+        .limit(500);
+
+      const routeMap: Record<string, number> = {};
+      routesRaw?.forEach((r) => {
+        const key = `${r.from_city} → ${r.to_city}`;
+        routeMap[key] = (routeMap[key] || 0) + 1;
+      });
+      const topRoutes = Object.entries(routeMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([route, count]) => {
+          const [origin, destination] = route.split(" → ");
+          return { origin, destination, count };
         });
-      }
 
-      // Fetch users
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      setUsers(profilesData?.map(u => ({
-        id: u.id,
-        name: u.name || t('unknownUser'),
-        email: '', // Email not directly available in profiles
-        avatar_url: u.avatar_url,
-        rating: u.rating || 5,
-        created_at: u.created_at,
-        is_blocked: u.is_blocked || false
-      })) || []);
+      // Cities stats (origin cities)
+      const { data: citiesRaw } = await supabase.from("rides").select("from_city");
 
-      // Fetch safety reports with reporter and reported names
-      const { data: reportsData } = await supabase
-        .from('safety_reports')
-        .select(`
-          *,
-          reporter:reporter_id(name, avatar_url),
-          reported:reported_id(name, avatar_url)
-        `)
-        .order('created_at', { ascending: false });
-      
-      setReports(reportsData?.map(r => ({
-        id: r.id,
-        reporter_name: r.reporter?.name || t('unknownUser'),
-        reporter_avatar: r.reporter?.avatar_url,
-        reported_name: r.reported?.name || t('unknownUser'),
-        reported_avatar: r.reported?.avatar_url,
-        type: r.type,
-        description: r.description,
-        created_at: r.created_at,
-        status: r.status
-      })) || []);
+      const cityMap: Record<string, number> = {};
+      citiesRaw?.forEach((r) => {
+        cityMap[r.from_city] = (cityMap[r.from_city] || 0) + 1;
+      });
+      const citiesStats = Object.entries(cityMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([city, rides]) => ({ city, rides }));
 
-      // Fetch pending verifications
-      const { data: verifData } = await supabase
-        .from('verifications')
-        .select(`
-          *,
-          user:user_id(name, avatar_url)
-        `)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
-      
-      setVerifications(verifData?.map(v => ({
-        id: v.id,
-        user_id: v.user_id,
-        user_name: v.user?.name || t('unknownUser'),
-        user_avatar: v.user?.avatar_url,
-        type: v.type,
-        status: v.status,
-        created_at: v.created_at,
-        document_url: v.document_url
-      })) || []);
+      setStats({
+        totalUsers: totalUsers || 0,
+        newUsersToday: newUsersToday || 0,
+        newUsersWeek: newUsersWeek || 0,
+        totalRides: totalRides || 0,
+        activeRides: activeRides || 0,
+        totalBookings: totalBookings || 0,
+        pendingBookings: pendingBookings || 0,
+        totalGroups: totalGroups || 0,
+        premiumUsers: 0,
+        topRoutes,
+        usersPerDay,
+        ridesPerDay,
+        citiesStats,
+      });
 
-      // Fetch recent rides
-      const { data: ridesData } = await supabase
-        .from('rides')
-        .select(`
-          *,
-          driver:driver_id(name, avatar_url)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      
-      setRides(ridesData?.map(r => ({
-        id: r.id,
-        from_city: r.from_city,
-        to_city: r.to_city,
-        date: r.date,
-        time: r.time,
-        seats: r.seats,
-        price: r.price,
-        status: r.status,
-        driver_name: r.driver?.name || t('unknownUser'),
-        driver_avatar: r.driver?.avatar_url,
-        created_at: r.created_at
-      })) || []);
-
-    } catch {
-      // console.error("Error fetching admin data:", _error);
-      toast.error(t('loadError'));
+      setLastRefresh(new Date());
+    } catch (err) {
+      console.error("[admin] stats error:", err);
     } finally {
       setLoading(false);
     }
-  }, [isAdminUser, supabase, t]);
+  }, [supabase]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  // Block/Unblock user
-  const toggleUserBlock = async (userId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          is_blocked: !currentStatus,
-          blocked_at: !currentStatus ? new Date().toISOString() : null
-        })
-        .eq('id', userId);
-      
-      if (error) throw error;
-      
-      toast.success(currentStatus ? t('userUnblocked') : t('userBlocked'));
-      fetchData();
-    } catch {
-      toast.error(t('statusUpdateError'));
+  const groupByDay = (records: any[], days: number) => {
+    const result = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split("T")[0];
+      const shortDate = `${date.getDate()}/${date.getMonth() + 1}`;
+      const count = records.filter((r) => r.created_at?.startsWith(dateStr)).length;
+      result.push({ date: shortDate, count });
     }
+    return result;
   };
 
-  // Resolve report
-  const resolveReport = async (reportId: string) => {
-    try {
-      const { error } = await supabase
-        .from('safety_reports')
-        .update({ status: 'resolved' })
-        .eq('id', reportId);
-      
-      if (error) throw error;
-      
-      toast.success(t('reportResolved'));
-      fetchData();
-    } catch {
-      toast.error(t('reportResolveError'));
-    }
-  };
+  if (authorized === null) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="w-12 h-12 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
-  // Approve verification
-  const approveVerification = async (verification: Verification) => {
-    try {
-      // Update verification status
-      const { error: verifError } = await supabase
-        .from('verifications')
-        .update({ 
-          status: 'approved',
-          verified_at: new Date().toISOString()
-        })
-        .eq('id', verification.id);
-      
-      if (verifError) throw verifError;
-      
-      // Update profile verification field
-      const fieldMap: Record<string, string> = {
-        'phone': 'phone_verified',
-        'email': 'email_verified',
-        'id_document': 'id_verified',
-        'driver_license': 'driver_verified'
-      };
-      
-      const field = fieldMap[verification.type];
-      if (field) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ [field]: true })
-          .eq('id', verification.user_id);
-        
-        if (profileError) throw profileError;
-      }
-      
-      // Add gamification points for identity verification (only for ID and driver license)
-      if (verification.type === 'id_document' || verification.type === 'driver_license') {
-        await completeGamificationAction(verification.user_id, 'identity_verified');
-      }
-      
-      toast.success(t('verificationApproved'));
-      fetchData();
-    } catch {
-      toast.error(t('verificationApproveError'));
-    }
-  };
-
-  // Reject verification
-  const rejectVerification = async (verificationId: string) => {
-    try {
-      const { error } = await supabase
-        .from('verifications')
-        .update({ status: 'rejected' })
-        .eq('id', verificationId);
-      
-      if (error) throw error;
-      
-      toast.success(t('verificationRejected'));
-      fetchData();
-    } catch {
-      toast.error(t('verificationRejectError'));
-    }
-  };
-
-  // Disable ride
-  const disableRide = async (rideId: string) => {
-    try {
-      const { error } = await supabase
-        .from('rides')
-        .update({ status: 'cancelled' })
-        .eq('id', rideId);
-      
-      if (error) throw error;
-      
-      toast.success(t('rideDisabled'));
-      fetchData();
-    } catch {
-      toast.error(t('rideDisableError'));
-    }
-  };
-
-  // Filter users by search
-  const filteredUsers = users.filter(u => 
-    u.name?.toLowerCase().includes(userSearch.toLowerCase())
-  );
-
-  // Format date
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('it-IT');
-  };
-
-  // Get verification type label
-  const getVerifTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      'phone': t('phone'),
-      'email': t('email'),
-      'id_document': t('idDocument'),
-      'driver_license': t('driverLicense')
-    };
-    return labels[type] || type;
-  };
-
-  // Get verification icon
-  const getVerifIcon = (type: string) => {
-    switch (type) {
-      case 'phone': return <Phone className="w-4 h-4" />;
-      case 'email': return <Mail className="w-4 h-4" />;
-      case 'id_document': return <CreditCard className="w-4 h-4" />;
-      case 'driver_license': return <Award className="w-4 h-4" />;
-      default: return <Shield className="w-4 h-4" />;
-    }
-  };
-
-  // Get report type label
-  const getReportTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      'inappropriate_behavior': t('reportInappropriate'),
-      'no_show': t('reportNoShow'),
-      'fake_profile': t('reportFakeProfile'),
-      'unsafe_driving': t('reportUnsafeDriving'),
-      'harassment': t('reportHarassment'),
-      'other': t('other')
-    };
-    return labels[type] || type;
-  };
-
-  if (!isAdminUser) return null;
+  if (authorized === false) {
+    return null;
+  }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">{t('title')}</h1>
-          <p className="text-white/60">{t('subtitle')}</p>
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Header */}
+      <div className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0a0a0a] z-10">
+        <div className="flex items-center gap-3">
+          <Shield size={24} className="text-[#e63946]" />
+          <div>
+            <h1 className="font-bold text-lg">Admin Dashboard</h1>
+            <p className="text-white/30 text-xs">Aggiornato: {lastRefresh.toLocaleTimeString("it")}</p>
+          </div>
         </div>
+        <button onClick={loadStats} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+          <RefreshCw size={18} className="text-white/60" />
+        </button>
+      </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 px-6 py-3 overflow-x-auto border-b border-white/10">
+        {[
+          { id: "overview", label: "Overview" },
+          { id: "users", label: "Utenti" },
+          { id: "rides", label: "Corse" },
+          { id: "revenue", label: "Revenue" },
+          { id: "realtime", label: "🔴 Live" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+              activeTab === tab.id
+                ? "bg-[#e63946] text-white"
+                : "text-white/50 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="p-6 space-y-6 max-w-7xl mx-auto">
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e63946]"></div>
+          <div className="flex items-center justify-center py-20">
+            <div className="w-12 h-12 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
-            {/* STATS BAR */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <span className="text-white/60 text-sm">{t('users')}</span>
-                </div>
-                <p className="text-3xl font-bold text-white">{stats.total_users}</p>
-              </div>
-              
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                    <Car className="w-5 h-5 text-green-400" />
-                  </div>
-                  <span className="text-white/60 text-sm">{t('rides')}</span>
-                </div>
-                <p className="text-3xl font-bold text-white">{stats.total_rides}</p>
-              </div>
-              
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-purple-400" />
-                  </div>
-                  <span className="text-white/60 text-sm">{t('bookings')}</span>
-                </div>
-                <p className="text-3xl font-bold text-white">{stats.total_bookings}</p>
-              </div>
-              
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-red-400" />
-                  </div>
-                  <span className="text-white/60 text-sm">{t('reports')}</span>
-                </div>
-                <p className="text-3xl font-bold text-white">{stats.pending_reports}</p>
-              </div>
-            </div>
-
-            {/* GESTIONE UTENTI */}
-            <section className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#e63946]" />
-                  {t('userManagement')}
-                </h2>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                  <Input
-                    type="text"
-                    placeholder={t('searchUserPlaceholder')}
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 w-full md:w-64"
-                  />
-                </div>
-              </div>
-              
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('userHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('ratingHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('registeredHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('statusHeader')}</th>
-                      <th className="text-right py-3 px-4 text-white/60 font-medium text-sm">{t('actionsHeader')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.slice(0, 10).map((user) => (
-                      <tr key={user.id} className="border-b border-white/5 hover:bg-white/5">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            {user.avatar_url ? (
-                              <Image src={user.avatar_url} alt={user.name} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                                <Users className="w-4 h-4 text-white/60" />
-                              </div>
-                            )}
-                            <div>
-                              <p className="text-white font-medium text-sm">{user.name}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                            <span className="text-white text-sm">{user.rating}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-white/60 text-sm">{formatDate(user.created_at)}</td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            user.is_blocked 
-                              ? 'bg-red-500/20 text-red-400' 
-                              : 'bg-green-500/20 text-green-400'
-                          }`}>
-                            {user.is_blocked ? t('blocked') : t('active')}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => toggleUserBlock(user.id, user.is_blocked)}
-                            className={user.is_blocked 
-                              ? "border-green-500/50 text-green-400 hover:bg-green-500/10" 
-                              : "border-red-500/50 text-red-400 hover:bg-red-500/10"
-                            }
-                          >
-                            {user.is_blocked ? (
-                              <><Unlock className="w-3 h-3 mr-1" /> {t('unblock')}</>
-                            ) : (
-                              <><Ban className="w-3 h-3 mr-1" /> {t('block')}</>
-                            )}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {filteredUsers.length === 0 && (
-                  <p className="text-center text-white/40 py-8">{t('noUsersFound')}</p>
-                )}
-              </div>
-            </section>
-
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              {/* SEGNALAZIONI SICUREZZA */}
-              <section className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
-                  <AlertTriangle className="w-5 h-5 text-[#e63946]" />
-                  {t('safetyReports')}
-                </h2>
-                
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {reports.filter(r => r.status === 'pending').slice(0, 5).map((report) => (
-                    <div key={report.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">
-                            {getReportTypeLabel(report.type)}
-                          </span>
-                          <span className="text-white/40 text-xs">{formatDate(report.created_at)}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-white/60 text-sm">{t('from')}</span>
-                        <span className="text-white text-sm font-medium">{report.reporter_name}</span>
-                        <span className="text-white/40">→</span>
-                        <span className="text-white text-sm font-medium">{report.reported_name}</span>
-                      </div>
-                      
-                      <p className="text-white/70 text-sm mb-3 line-clamp-2">{report.description}</p>
-                      
-                      <Button
-                        size="sm"
-                        onClick={() => resolveReport(report.id)}
-                        className="w-full bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        {t('markAsResolved')}
-                      </Button>
-                    </div>
-                  ))}
-                  
-                  {reports.filter(r => r.status === 'pending').length === 0 && (
-                    <div className="text-center py-8">
-                      <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                      <p className="text-white/60">{t('noPendingReports')}</p>
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              {/* VERIFICHE IN ATTESA */}
-              <section className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
-                  <Shield className="w-5 h-5 text-[#e63946]" />
-                  {t('pendingVerifications')}
-                </h2>
-                
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {verifications.map((verif) => (
-                    <div key={verif.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                      <div className="flex items-center gap-3 mb-3">
-                        {verif.user_avatar ? (
-                          <Image src={verif.user_avatar} alt={verif.user_name} width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                            <Users className="w-5 h-5 text-white/60" />
-                          </div>
-                        )}
-                        <div className="flex-1">
-                          <p className="text-white font-medium text-sm">{verif.user_name}</p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[#e63946]">{getVerifIcon(verif.type)}</span>
-                            <span className="text-white/60 text-xs">{getVerifTypeLabel(verif.type)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {verif.document_url && (
-                        <a 
-                          href={verif.document_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-blue-400 text-sm mb-3 hover:underline"
-                        >
-                          <FileText className="w-4 h-4" />
-                          {t('viewDocument')}
-                        </a>
-                      )}
-                      
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => approveVerification(verif)}
-                          className="flex-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
-                        >
-                          <Check className="w-4 h-4 mr-1" />
-                          {t('approve')}
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => rejectVerification(verif.id)}
-                          variant="outline"
-                          className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          {t('reject')}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {verifications.length === 0 && (
-                    <div className="text-center py-8">
-                      <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
-                      <p className="text-white/60">{t('noPendingVerifications')}</p>
-                    </div>
-                  )}
-                </div>
-              </section>
-            </div>
-
-            {/* CORSE RECENTI */}
-            <section className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-white flex items-center gap-2 mb-6">
-                <Car className="w-5 h-5 text-[#e63946]" />
-                {t('recentRides')}
-              </h2>
-              
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('routeHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('driverHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('dateHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('seatsHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('priceHeader')}</th>
-                      <th className="text-left py-3 px-4 text-white/60 font-medium text-sm">{t('statusHeader')}</th>
-                      <th className="text-right py-3 px-4 text-white/60 font-medium text-sm">{t('actionsHeader')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rides.map((ride) => (
-                      <tr key={ride.id} className="border-b border-white/5 hover:bg-white/5">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2 text-white text-sm">
-                            <MapPin className="w-4 h-4 text-[#e63946]" />
-                            {ride.from_city}
-                            <span className="text-white/40">→</span>
-                            {ride.to_city}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            {ride.driver_avatar ? (
-                              <Image src={ride.driver_avatar} alt={ride.driver_name} width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                                <Users className="w-3 h-3 text-white/60" />
-                              </div>
-                            )}
-                            <span className="text-white text-sm">{ride.driver_name}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-white/60 text-sm">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(ride.date)}
-                            <Clock className="w-3 h-3 ml-1" />
-                            {ride.time?.slice(0, 5)}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-white text-sm">{ride.seats}</td>
-                        <td className="py-3 px-4 text-white text-sm">€{ride.price}</td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            ride.status === 'active' 
-                              ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-red-500/20 text-red-400'
-                          }`}>
-                            {ride.status === 'active' ? t('rideActive') : t('rideInactive')}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {ride.status === 'active' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => disableRide(ride.id)}
-                              className="border-red-500/50 text-red-400 hover:bg-red-500/10"
-                            >
-                              <Ban className="w-3 h-3 mr-1" />
-                              {t('disable')}
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
+            {activeTab === "overview" && <OverviewTab stats={stats} colors={COLORS} />}
+            {activeTab === "users" && <UsersList supabase={supabase} />}
+            {activeTab === "rides" && <RidesList supabase={supabase} />}
+            {activeTab === "revenue" && <RevenueTab />}
+            {activeTab === "realtime" && <RealtimePanel supabase={supabase} />}
           </>
         )}
       </div>
-    </main>
+    </div>
+  );
+}
+
+function OverviewTab({ stats, colors }: { stats: Partial<Stats>; colors: string[] }) {
+  return (
+    <>
+      {/* KPI Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Utenti totali",
+            value: stats.totalUsers,
+            sub: `+${stats.newUsersToday} oggi`,
+            icon: Users,
+            color: "#e63946",
+          },
+          {
+            label: "Corse attive",
+            value: stats.activeRides,
+            sub: `${stats.totalRides} totali`,
+            icon: Car,
+            color: "#4CAF50",
+          },
+          {
+            label: "Prenotazioni",
+            value: stats.totalBookings,
+            sub: `${stats.pendingBookings} in attesa`,
+            icon: Activity,
+            color: "#2196F3",
+          },
+          {
+            label: "Gruppi",
+            value: stats.totalGroups,
+            sub: "gruppi creati",
+            icon: Globe,
+            color: "#FF9800",
+          },
+        ].map((kpi, i) => (
+          <div key={i} className="bg-[#111] border border-white/10 rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 rounded-xl" style={{ backgroundColor: kpi.color + "20" }}>
+                <kpi.icon size={18} style={{ color: kpi.color }} />
+              </div>
+              <ArrowUp size={14} className="text-green-400" />
+            </div>
+            <p className="text-3xl font-bold text-white">{kpi.value ?? "—"}</p>
+            <p className="text-white/50 text-xs mt-1">{kpi.label}</p>
+            <p className="text-white/30 text-xs">{kpi.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts row */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
+          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <TrendingUp size={18} className="text-[#e63946]" />
+            Nuovi utenti (14 giorni)
+          </h3>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={stats.usersPerDay}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <Tooltip
+                contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12 }}
+                labelStyle={{ color: "white" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#e63946"
+                strokeWidth={2}
+                dot={{ fill: "#e63946", r: 3 }}
+                name="Utenti"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
+          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <Car size={18} className="text-[#e63946]" />
+            Corse create (14 giorni)
+          </h3>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={stats.ridesPerDay}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <Tooltip
+                contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12 }}
+              />
+              <Bar dataKey="count" fill="#e63946" radius={[4, 4, 0, 0]} name="Corse" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Top routes + Cities */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
+          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <MapPin size={18} className="text-[#e63946]" />
+            Percorsi più popolari
+          </h3>
+          <div className="space-y-3">
+            {stats.topRoutes?.map((route, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-white/30 text-sm w-5">{i + 1}.</span>
+                <div className="flex-1">
+                  <p className="text-white text-sm font-medium">
+                    {route.origin} → {route.destination}
+                  </p>
+                  <div className="mt-1 bg-white/10 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full bg-[#e63946] rounded-full"
+                      style={{
+                        width: `${(route.count / (stats.topRoutes?.[0]?.count || 1)) * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+                <span className="text-[#e63946] font-bold text-sm">{route.count}</span>
+              </div>
+            ))}
+            {(!stats.topRoutes || stats.topRoutes.length === 0) && (
+              <p className="text-white/30 text-sm text-center py-4">Nessun dato disponibile</p>
+            )}
+          </div>
+        </div>
+
+        {stats.citiesStats && stats.citiesStats.length > 0 && (
+          <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
+            <h3 className="font-semibold text-white mb-4">Distribuzione per città</h3>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <ResponsiveContainer width={200} height={200}>
+                <PieChart>
+                  <Pie
+                    data={stats.citiesStats}
+                    dataKey="rides"
+                    nameKey="city"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                  >
+                    {stats.citiesStats.map((_, i) => (
+                      <Cell key={i} fill={colors[i % colors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12 }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-2 flex-1 w-full">
+                {stats.citiesStats.map((c, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
+                    <span className="text-white/70 text-sm flex-1">{c.city}</span>
+                    <span className="text-white font-medium text-sm">{c.rides}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function UsersList({ supabase }: { supabase: any }) {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50)
+      .then(({ data }: any) => {
+        setUsers(data || []);
+        setLoading(false);
+      });
+  }, [supabase]);
+
+  if (loading)
+    return (
+      <div className="animate-pulse space-y-3">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="bg-[#111] rounded-2xl h-16" />
+        ))}
+      </div>
+    );
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold text-white">Ultimi {users.length} utenti</h3>
+        <span className="text-white/40 text-sm">{users.length} risultati</span>
+      </div>
+      {users.map((user) => (
+        <div
+          key={user.id}
+          className="bg-[#111] border border-white/10 rounded-2xl p-4 flex items-center gap-3"
+        >
+          <div className="w-10 h-10 rounded-full bg-[#e63946]/20 flex items-center justify-center flex-shrink-0">
+            <span className="text-[#e63946] font-bold">{(user.name || "?").charAt(0).toUpperCase()}</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-medium text-sm truncate">{user.name || "Senza nome"}</p>
+            <p className="text-white/40 text-xs truncate">{user.phone || "—"}</p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-white/30 text-xs">{new Date(user.created_at).toLocaleDateString("it")}</p>
+            {user.phone_verified && (
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Verificato</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RidesList({ supabase }: { supabase: any }) {
+  const [rides, setRides] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("rides")
+      .select("*, profiles(name)")
+      .order("created_at", { ascending: false })
+      .limit(30)
+      .then(({ data }: any) => {
+        setRides(data || []);
+        setLoading(false);
+      });
+  }, [supabase]);
+
+  if (loading)
+    return (
+      <div className="animate-pulse space-y-3">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="bg-[#111] rounded-2xl h-16" />
+        ))}
+      </div>
+    );
+
+  return (
+    <div className="space-y-3">
+      <h3 className="font-bold text-white">Ultime {rides.length} corse</h3>
+      {rides.map((ride) => (
+        <div key={ride.id} className="bg-[#111] border border-white/10 rounded-2xl p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-white font-medium text-sm">
+              {ride.from_city} → {ride.to_city}
+            </p>
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full ${
+                ride.status === "active" ? "bg-green-500/20 text-green-400" : "bg-white/10 text-white/40"
+              }`}
+            >
+              {ride.status}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-white/40 text-xs">
+              {ride.date} · {ride.time}
+            </p>
+            <p className="text-white/40 text-xs">{ride.seats} posti</p>
+            <p className="text-[#e63946] text-xs font-medium">
+              {ride.price ? `€${ride.price}` : "Gratis"}
+            </p>
+          </div>
+          <p className="text-white/30 text-xs mt-1">Driver: {ride.profiles?.name || "Sconosciuto"}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RevenueTab() {
+  return (
+    <div className="space-y-4">
+      <div className="bg-[#111] border border-white/10 rounded-2xl p-6 text-center">
+        <Euro size={40} className="text-[#e63946] mx-auto mb-3" />
+        <h3 className="text-white font-bold text-xl mb-2">Revenue Dashboard</h3>
+        <p className="text-white/50 text-sm">
+          Configura Stripe per vedere le metriche di revenue in tempo reale.
+        </p>
+        <div className="mt-4 space-y-3">
+          <div className="bg-white/5 rounded-xl p-4 text-left">
+            <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Da configurare</p>
+            <p className="text-white text-sm">1. Aggiungi STRIPE_SECRET_KEY su Vercel</p>
+            <p className="text-white text-sm">2. Configura webhook Stripe → /api/stripe/webhook</p>
+            <p className="text-white text-sm">3. Le transazioni appariranno qui automaticamente</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RealtimePanel({ supabase }: { supabase: any }) {
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    const ridesChannel = supabase
+      .channel("admin-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "rides" },
+        (payload: any) => {
+          setEvents((prev) =>
+            [
+              {
+                type: "ride_created",
+                icon: "🚗",
+                message: `Nuova corsa: ${payload.new.from_city} → ${payload.new.to_city}`,
+                time: new Date().toLocaleTimeString("it"),
+              },
+              ...prev,
+            ].slice(0, 20)
+          );
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "profiles" },
+        (payload: any) => {
+          setEvents((prev) =>
+            [
+              {
+                type: "user_joined",
+                icon: "👤",
+                message: `Nuovo utente registrato`,
+                time: new Date().toLocaleTimeString("it"),
+              },
+              ...prev,
+            ].slice(0, 20)
+          );
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "bookings" },
+        (payload: any) => {
+          setEvents((prev) =>
+            [
+              {
+                type: "booking",
+                icon: "📋",
+                message: `Nuova prenotazione`,
+                time: new Date().toLocaleTimeString("it"),
+              },
+              ...prev,
+            ].slice(0, 20)
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ridesChannel);
+    };
+  }, [supabase]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+        <h3 className="font-bold text-white">Attività in tempo reale</h3>
+      </div>
+
+      {events.length === 0 ? (
+        <div className="bg-[#111] border border-white/10 rounded-2xl p-8 text-center">
+          <Activity size={32} className="text-white/20 mx-auto mb-3" />
+          <p className="text-white/40">In ascolto per nuovi eventi...</p>
+          <p className="text-white/20 text-sm mt-1">Le attività appariranno qui in tempo reale</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {events.map((event, i) => (
+            <div
+              key={i}
+              className="bg-[#111] border border-white/10 rounded-xl p-3 flex items-center gap-3 animate-in fade-in slide-in-from-top-2"
+            >
+              <span className="text-2xl">{event.icon}</span>
+              <div className="flex-1">
+                <p className="text-white text-sm">{event.message}</p>
+              </div>
+              <span className="text-white/30 text-xs flex-shrink-0">{event.time}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

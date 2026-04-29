@@ -14,6 +14,7 @@ import { Slider } from "@/components/ui/slider";
 import { CityCombobox } from "@/components/CityCombobox";
 import municipalities from "@/scripts/sardinia-municipalities.json";
 import { EmptyStateSearch } from "@/components/EmptyState";
+import { Analytics } from "@/lib/analytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
@@ -917,6 +918,9 @@ function SearchContent() {
         todayOnly: activeFilter === "today" || undefined,
       });
       setRides(results as Ride[]);
+      if (origin || destination) {
+        Analytics.searchPerformed(origin, destination);
+      }
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : t('searchError'));
     } finally {

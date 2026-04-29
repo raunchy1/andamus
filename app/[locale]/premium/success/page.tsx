@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, Loader2 } from "lucide-react";
+import { Analytics } from "@/lib/analytics";
 
 export default function PremiumSuccessPage() {
   const [verifying, setVerifying] = useState(true);
@@ -26,6 +27,7 @@ export default function PremiumSuccessPage() {
         const res = await fetch(`/api/premium/verify?session_id=${sessionId}`);
         if (!res.ok) throw new Error('Verifica fallita');
         setVerifying(false);
+        Analytics.premiumUpgrade('premium', 4.99);
       } catch (err) {
         console.error('[premium/success] verify error:', err);
         setVerifying(false);
