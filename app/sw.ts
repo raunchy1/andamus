@@ -124,29 +124,38 @@ const serwist = new Serwist({
       }),
     },
     
-    // Cache page navigations (HTML documents)
+    // Page navigations: NetworkOnly with offline fallback.
+    // We deliberately do NOT cache HTML pages — stale cached HTML across
+    // deploys caused users to see broken pages from previous middleware bugs.
+    // Only fall back to /offline if the network truly fails.
     {
       matcher: ({ request }: { request: Request }) => request.mode === "navigate",
-      handler: new NetworkFirst({
-        cacheName: "pages-cache",
-        plugins: [
-          {
-            handlerDidError: async () => {
-              // Return offline fallback if available (default locale)
-              const offlineResponse = await caches.match("/it/offline");
-              if (offlineResponse) return offlineResponse;
-              // Fallback to any cached offline page
-              const cache = await caches.open("pages-cache");
-              const keys = await cache.keys();
-              const offline = keys.find((req) => req.url.includes("/offline"));
-              return offline ? cache.match(offline) : undefined;
-            },
-          },
-        ],
-        networkTimeoutSeconds: 3,
-      }),
+      handler: async ({ request }: { request: Request }) => {
+        try {
+          return await fetch(request);
+        } catch {
+          const offline =
+            (await caches.match("/it/offline")) ??
+            (await caches.match("/offline"));
+          return offline ?? new Response("Offline", { status: 503 });
+        }
+      },
     },
   ],
+});
+
+// Drop any stale page caches left over from prior NetworkFirst strategy.
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      const names = await caches.keys();
+      await Promise.all(
+        names
+          .filter((n) => n === "pages-cache" || n === "api-internal-cache")
+          .map((n) => caches.delete(n))
+      );
+    })()
+  );
 });
 
 // Listen for messages from the client
