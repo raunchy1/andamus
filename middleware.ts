@@ -14,11 +14,26 @@ const intlMiddleware = createMiddleware({
 // Matches /admin or /{locale}/admin (and nested), but NOT /admin-anything-else
 const ADMIN_PATH_REGEX = /^\/(?:it|en|de)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
 
+// Detect Supabase auth cookies — only refresh session if user is actually signed in.
+// Skipping the Supabase round-trip for anonymous visitors keeps cold-start latency
+// well under Vercel's middleware timeout (was causing MIDDLEWARE_INVOCATION_TIMEOUT).
+function hasSupabaseAuthCookie(request: NextRequest): boolean {
+  for (const c of request.cookies.getAll()) {
+    if (c.name.startsWith("sb-") && c.name.endsWith("-auth-token")) return true;
+  }
+  return false;
+}
+
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const isAdminPath = ADMIN_PATH_REGEX.test(pathname);
+  const needsSupabase = isAdminPath || hasSupabaseAuthCookie(request);
 
-  // 1. Update Supabase session (refreshes tokens, sets cookies)
-  const supabaseResponse = await updateSession(request);
+  // 1. Update Supabase session — only when needed (admin routes or signed-in users).
+  //    Anonymous visitors skip this to avoid cold-start middleware timeouts.
+  const supabaseResponse = needsSupabase
+    ? await updateSession(request)
+    : NextResponse.next({ request });
 
   // 2. If updateSession wants to redirect, respect it
   if (supabaseResponse.status !== 200) {
@@ -26,7 +41,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   // 3. Admin route protection — strict path matching
-  if (ADMIN_PATH_REGEX.test(pathname)) {
+  if (isAdminPath) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
