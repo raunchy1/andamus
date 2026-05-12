@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "framer-motion";
+import { useLocale } from "next-intl";
 
 /**
  * Number-flow style animated counter — inspired by number-flow shadcn extension.
@@ -13,6 +14,7 @@ export function AnimatedCounter({
   prefix = "",
   suffix = "",
   decimals = 0,
+  locale,
   className,
 }: {
   value: number;
@@ -20,11 +22,14 @@ export function AnimatedCounter({
   prefix?: string;
   suffix?: string;
   decimals?: number;
+  locale?: string;
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
   const [display, setDisplay] = useState("0");
+  const ctxLocale = useLocale();
+  const effectiveLocale = locale ?? ctxLocale ?? "it-IT";
 
   useEffect(() => {
     if (!inView) return;
@@ -33,7 +38,7 @@ export function AnimatedCounter({
       ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => {
         setDisplay(
-          v.toLocaleString("it-IT", {
+          v.toLocaleString(effectiveLocale, {
             minimumFractionDigits: decimals,
             maximumFractionDigits: decimals,
           })
@@ -41,7 +46,7 @@ export function AnimatedCounter({
       },
     });
     return () => controls.stop();
-  }, [inView, value, duration, decimals]);
+  }, [inView, value, duration, decimals, effectiveLocale]);
 
   return (
     <motion.span

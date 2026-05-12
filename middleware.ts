@@ -98,6 +98,6 @@ export const config = {
   matcher: [
     "/",
     "/(it|en|de)/:path*",
-    "/((?!api|_next|_vercel|monitoring|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next|_vercel|monitoring|sw\\.js|manifest\\.json|offline|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|css|js|map|txt|xml)$).*)",
   ],
 };

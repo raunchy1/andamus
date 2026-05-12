@@ -126,7 +126,7 @@ function RideDetailMobile({
         <AuroraBackground className="relative h-[400px] w-full" showRadialMask={false}>
           <OrbGlow className="-top-10 -right-20" color="#e63946" size={360} opacity={0.4} />
           <OrbGlow className="bottom-10 -left-20" color="#ffb3b1" size={300} opacity={0.3} blur={140} />
-          <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center mix-blend-luminosity grayscale" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a]/70 via-[#0e0e0e]/40 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
           {/* Weather Widget */}
           <div className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/[0.06] backdrop-blur-xl px-4 py-2.5 rounded-2xl shadow-lg border border-white/10">
@@ -494,7 +494,7 @@ function RideDetailDesktop({
               <Spotlight size={600} color="rgba(230,57,70,0.20)" />
               <OrbGlow className="-top-20 -right-20" color="#e63946" size={400} opacity={0.35} />
               <OrbGlow className="bottom-0 -left-20" color="#ffb3b1" size={300} opacity={0.3} blur={140} />
-              <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center grayscale mix-blend-luminosity" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a]/70 via-[#0e0e0e]/40 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 flex items-center space-x-3 bg-white/[0.06] border border-white/10 backdrop-blur-xl px-4 py-2 rounded-xl">
                 <Sun className="w-5 h-5 text-[#ffb3b1]" />

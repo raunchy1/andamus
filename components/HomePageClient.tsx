@@ -158,7 +158,7 @@ function HomeMobile({
           {/* Interactive Sardinia Map Area */}
           <Reveal delay={0.2}>
             <div className="relative w-full aspect-[4/5] bg-surface-container-low rounded-2xl overflow-hidden sardinia-map-container mt-6 mb-6 sm:mb-8 border border-white/8">
-              <div className="absolute inset-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-luminosity grayscale" />
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1a1a1a] via-[#141414] to-[#0d0d0d] opacity-80" />
 
               <div className="absolute inset-0 flex items-center justify-center p-4">
                 <SardiniaMap
@@ -437,7 +437,7 @@ function HomeDesktop({
               <div className="relative aspect-[4/5] rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] p-2 backdrop-blur-xl shadow-[0_50px_120px_-30px_rgba(230,57,70,0.45)]">
                 <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(circle_at_30%_20%,rgba(255,179,177,0.15),transparent_55%)]" />
                 <div className="relative w-full h-full overflow-hidden rounded-[1.4rem] bg-[#0d0d0d]">
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-luminosity grayscale" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#141414] to-[#0d0d0d] opacity-80" />
                   <div className="absolute inset-0 flex items-center justify-center p-6">
                     <SardiniaMap
                       mode="desktop"
