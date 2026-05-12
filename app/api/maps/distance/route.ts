@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
     return NextResponse.json(data);
-  } catch (error) {
+  } catch {
     // Error logged to Sentry in production
     return NextResponse.json(
       { error: "Distance calculation failed" },

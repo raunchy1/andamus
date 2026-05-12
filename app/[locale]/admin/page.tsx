@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import {
   Users,
@@ -14,10 +15,6 @@ import {
   Shield,
   RefreshCw,
   ArrowUp,
-  Search,
-  Star,
-  Calendar,
-  CheckCircle,
 } from "lucide-react";
 import {
   LineChart,
@@ -53,6 +50,8 @@ interface Stats {
   citiesStats: { city: string; rides: number }[];
 }
 
+type AdminSupabase = SupabaseClient;
+
 export default function AdminPage() {
   const [stats, setStats] = useState<Partial<Stats>>({});
   const [loading, setLoading] = useState(true);
@@ -60,28 +59,13 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "users" | "rides" | "revenue" | "realtime">("overview");
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const isAdmin = await checkAdminAccess();
-    if (!isAdmin) {
-      router.replace("/");
-      return;
-    }
-    setAuthorized(true);
-    loadStats();
-  };
+  const supabase = useMemo(() => createClient(), []);
 
   const loadStats = useCallback(async () => {
     setLoading(true);
     try {
       const todayStr = new Date().toISOString().split("T")[0];
       const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
       // Total users
@@ -200,7 +184,24 @@ export default function AdminPage() {
     }
   }, [supabase]);
 
-  const groupByDay = (records: any[], days: number) => {
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const allowed = await checkAdminAccess();
+      if (cancelled) return;
+      if (!allowed) {
+        router.replace("/");
+        return;
+      }
+      setAuthorized(true);
+      loadStats();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [router, loadStats]);
+
+  const groupByDay = (records: { created_at?: string | null }[], days: number) => {
     const result = [];
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
@@ -251,7 +252,7 @@ export default function AdminPage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
               activeTab === tab.id
                 ? "bg-[#e63946] text-white"
@@ -451,18 +452,26 @@ function OverviewTab({ stats, colors }: { stats: Partial<Stats>; colors: string[
   );
 }
 
-function UsersList({ supabase }: { supabase: any }) {
-  const [users, setUsers] = useState<any[]>([]);
+interface AdminUserRow {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  created_at: string;
+  phone_verified: boolean | null;
+}
+
+function UsersList({ supabase }: { supabase: AdminSupabase }) {
+  const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("*")
+      .select("id, name, phone, created_at, phone_verified")
       .order("created_at", { ascending: false })
       .limit(50)
-      .then(({ data }: any) => {
-        setUsers(data || []);
+      .then(({ data }) => {
+        setUsers((data ?? []) as AdminUserRow[]);
         setLoading(false);
       });
   }, [supabase]);
@@ -506,18 +515,30 @@ function UsersList({ supabase }: { supabase: any }) {
   );
 }
 
-function RidesList({ supabase }: { supabase: any }) {
-  const [rides, setRides] = useState<any[]>([]);
+interface AdminRideRow {
+  id: string;
+  from_city: string;
+  to_city: string;
+  date: string;
+  time: string;
+  seats: number;
+  price: number | null;
+  status: string;
+  profiles: { name: string | null } | { name: string | null }[] | null;
+}
+
+function RidesList({ supabase }: { supabase: AdminSupabase }) {
+  const [rides, setRides] = useState<AdminRideRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase
       .from("rides")
-      .select("*, profiles(name)")
+      .select("id, from_city, to_city, date, time, seats, price, status, profiles(name)")
       .order("created_at", { ascending: false })
       .limit(30)
-      .then(({ data }: any) => {
-        setRides(data || []);
+      .then(({ data }) => {
+        setRides((data ?? []) as unknown as AdminRideRow[]);
         setLoading(false);
       });
   }, [supabase]);
@@ -557,7 +578,9 @@ function RidesList({ supabase }: { supabase: any }) {
               {ride.price ? `€${ride.price}` : "Gratis"}
             </p>
           </div>
-          <p className="text-white/30 text-xs mt-1">Driver: {ride.profiles?.name || "Sconosciuto"}</p>
+          <p className="text-white/30 text-xs mt-1">
+            Driver: {(Array.isArray(ride.profiles) ? ride.profiles[0]?.name : ride.profiles?.name) || "Sconosciuto"}
+          </p>
         </div>
       ))}
     </div>
@@ -586,20 +609,31 @@ function RevenueTab() {
   );
 }
 
-function RealtimePanel({ supabase }: { supabase: any }) {
-  const [events, setEvents] = useState<any[]>([]);
+interface RealtimeEvent {
+  type: "ride_created" | "user_joined" | "booking";
+  icon: string;
+  message: string;
+  time: string;
+}
+
+interface RidePayload {
+  new: { from_city?: string; to_city?: string };
+}
+
+function RealtimePanel({ supabase }: { supabase: AdminSupabase }) {
+  const [events, setEvents] = useState<RealtimeEvent[]>([]);
 
   useEffect(() => {
     const ridesChannel = supabase
       .channel("admin-realtime")
       .on(
-        "postgres_changes",
+        "postgres_changes" as never,
         { event: "INSERT", schema: "public", table: "rides" },
-        (payload: any) => {
+        (payload: RidePayload) => {
           setEvents((prev) =>
             [
               {
-                type: "ride_created",
+                type: "ride_created" as const,
                 icon: "🚗",
                 message: `Nuova corsa: ${payload.new.from_city} → ${payload.new.to_city}`,
                 time: new Date().toLocaleTimeString("it"),
@@ -610,13 +644,13 @@ function RealtimePanel({ supabase }: { supabase: any }) {
         }
       )
       .on(
-        "postgres_changes",
+        "postgres_changes" as never,
         { event: "INSERT", schema: "public", table: "profiles" },
-        (payload: any) => {
+        () => {
           setEvents((prev) =>
             [
               {
-                type: "user_joined",
+                type: "user_joined" as const,
                 icon: "👤",
                 message: `Nuovo utente registrato`,
                 time: new Date().toLocaleTimeString("it"),
@@ -627,13 +661,13 @@ function RealtimePanel({ supabase }: { supabase: any }) {
         }
       )
       .on(
-        "postgres_changes",
+        "postgres_changes" as never,
         { event: "INSERT", schema: "public", table: "bookings" },
-        (payload: any) => {
+        () => {
           setEvents((prev) =>
             [
               {
-                type: "booking",
+                type: "booking" as const,
                 icon: "📋",
                 message: `Nuova prenotazione`,
                 time: new Date().toLocaleTimeString("it"),

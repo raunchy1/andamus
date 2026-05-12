@@ -22,6 +22,14 @@ import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
 import { ShareApp } from "@/components/ShareApp";
+import { AuroraBackground } from "@/components/ui/premium/aurora-background";
+import { Spotlight } from "@/components/ui/premium/spotlight";
+import { OrbGlow } from "@/components/ui/premium/orb-glow";
+import { GradientText } from "@/components/ui/premium/gradient-text";
+import { MagneticButton } from "@/components/ui/premium/magnetic-button";
+import { TiltCard } from "@/components/ui/premium/tilt-card";
+import { AnimatedCounter } from "@/components/ui/premium/animated-counter";
+import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
 interface Profile {
   id: string;
@@ -155,7 +163,6 @@ export default function ProfilePage() {
 
   const deviceType = useDeviceType();
   const t = useTranslations("profile");
-  const tc = useTranslations("common");
   const tl = useTranslations("levels");
   const locale = useLocale();
 
@@ -515,49 +522,54 @@ export default function ProfilePage() {
   function ProfileMobile() {
     return (
       <div className="min-h-screen bg-surface-container-lowest">
-        <header className="bg-[#0e0e0e] text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
-          <div className="flex items-center gap-3">
-            <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20 flex items-center justify-center">
-              {getUserAvatar() ? (
-                <Image 
-                  src={getUserAvatar()!} 
-                  alt={t("profilePhotoAlt")} 
-                  width={40} 
-                  height={40} 
-                  className="w-full h-full object-cover rounded-full" 
-                  onError={(e) => { 
-                    (e.target as HTMLImageElement).style.display = 'none';
-                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }} 
-                />
-              ) : null}
-              <div className={`w-full h-full items-center justify-center ${getUserAvatar() ? 'hidden' : 'flex'}`}>
-                <User className="w-5 h-5 text-on-surface-variant" />
-              </div>
-            </Link>
-            <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase">Andamus</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-primary p-2">
-              <ShareApp variant="icon" className="text-primary" />
+        <AuroraBackground className="border-b border-white/5">
+          <OrbGlow className="-top-10 -right-20" color="#e63946" size={300} opacity={0.35} />
+          <OrbGlow className="-bottom-10 -left-10" color="#ffb3b1" size={200} opacity={0.25} blur={100} />
+          <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <Link href="/profilo" className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
+                {getUserAvatar() ? (
+                  <Image
+                    src={getUserAvatar()!}
+                    alt={t("profilePhotoAlt")}
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div className={`w-full h-full items-center justify-center ${getUserAvatar() ? 'hidden' : 'flex'}`}>
+                  <User className="w-5 h-5 text-on-surface-variant" />
+                </div>
+              </Link>
+              <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase"><GradientText>Andamus</GradientText></h1>
             </div>
-            <button
-              onClick={() => setShowLogoutConfirm(true)}
-              className="text-primary hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out p-2"
-            >
-              <LogOut className="w-8 h-8" />
-            </button>
-          </div>
-        </header>
+            <div className="flex items-center gap-2">
+              <div className="text-primary p-2">
+                <ShareApp variant="icon" className="text-primary" />
+              </div>
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-[#ffb3b1] hover:bg-white/[0.08] transition-all active:scale-95"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          </header>
+        </AuroraBackground>
 
         <main className="max-w-md mx-auto">
+          <Reveal>
           <section className="px-4 sm:px-6 py-8 flex flex-col items-center overflow-x-hidden">
             <div className="relative w-40 h-40 flex items-center justify-center">
               <svg className="custom-ring w-full h-full absolute">
-                <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
+                <circle className="text-white/8" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
                 <circle
-                  className="text-primary"
+                  className="text-[#ffb3b1]"
                   cx="80"
                   cy="80"
                   fill="transparent"
@@ -566,13 +578,14 @@ export default function ProfilePage() {
                   strokeDasharray="465"
                   strokeDashoffset={profile ? 465 - (465 * Math.min((profile.points % 100) / 100, 1)) : 120}
                   strokeWidth="6"
+                  style={{ filter: "drop-shadow(0 0 8px rgba(255,179,177,0.5))" }}
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">{t("level")}</span>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] mb-1">{t("level")}</span>
                 <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
-              <div className="absolute -bottom-2 bg-primary text-on-primary px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl">
+              <div className="absolute -bottom-2 bg-[#e63946] text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-[#e63946]/40">
                 {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
@@ -583,38 +596,63 @@ export default function ProfilePage() {
               </p>
             </div>
           </section>
+          </Reveal>
 
           <section className="px-4 sm:px-6 mb-12">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
-                <Car className="w-6 h-6 text-primary" />
-                <div>
-                  <p className="text-xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
+            <RevealStagger className="grid grid-cols-2 gap-3">
+              <RevealItem>
+              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                  <Car className="w-5 h-5 text-[#ffb3b1]" />
                 </div>
-              </div>
-              <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
-                <Route className="w-6 h-6 text-primary" />
                 <div>
-                  <p className="text-xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
+                  <p className="text-2xl font-extrabold text-on-surface">
+                    <AnimatedCounter value={myRides.length + myBookings.length} />
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
                 </div>
-              </div>
-              <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
-                <Star className="w-6 h-6 text-primary" />
+              </TiltCard>
+              </RevealItem>
+              <RevealItem>
+              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                  <Route className="w-5 h-5 text-[#ffb3b1]" />
+                </div>
                 <div>
-                  <p className="text-xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
+                  <p className="text-2xl font-extrabold text-on-surface">
+                    <GradientText><AnimatedCounter value={Math.round(totalKm)} suffix="km" /></GradientText>
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
                 </div>
-              </div>
-              <div className="bg-surface-container p-4 rounded-xl flex flex-col justify-between min-h-[100px]">
-                <Leaf className="w-6 h-6 text-primary" />
+              </TiltCard>
+              </RevealItem>
+              <RevealItem>
+              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                  <Star className="w-5 h-5 text-[#ffb3b1]" />
+                </div>
                 <div>
-                  <p className="text-xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
+                  <p className="text-2xl font-extrabold text-on-surface">
+                    <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
                 </div>
-              </div>
-            </div>
+              </TiltCard>
+              </RevealItem>
+              <RevealItem>
+              <TiltCard tiltStrength={5} className="bg-gradient-to-br from-emerald-400/[0.07] to-transparent border border-emerald-400/15 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-400/10 ring-1 ring-emerald-400/20">
+                  <Leaf className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-extrabold text-emerald-400">
+                    <AnimatedCounter value={Math.round(co2Saved)} suffix="kg" />
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
+                </div>
+              </TiltCard>
+              </RevealItem>
+            </RevealStagger>
           </section>
 
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
@@ -1054,14 +1092,20 @@ export default function ProfilePage() {
   }
   function ProfileDesktop() {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-on-surface pb-16">
-        <div className="max-w-6xl mx-auto px-8 py-10">
+      <div className="min-h-screen bg-[#0a0a0a] text-on-surface pb-16 relative">
+        <AuroraBackground className="absolute inset-x-0 top-0 h-[520px] -z-10 pointer-events-none" showRadialMask={false}>
+          <Spotlight size={700} color="rgba(230,57,70,0.18)" />
+          <OrbGlow className="-top-20 -left-20" color="#e63946" size={450} opacity={0.30} />
+          <OrbGlow className="top-20 -right-32" color="#ffb3b1" size={380} opacity={0.22} blur={140} />
+        </AuroraBackground>
+        <div className="max-w-6xl mx-auto px-8 py-10 relative">
+          <Reveal>
           <section className="flex items-center gap-10 mb-12">
             <div className="relative w-48 h-48 flex items-center justify-center">
               <svg className="custom-ring w-full h-full absolute">
-                <circle className="text-surface-container-highest" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
+                <circle className="text-white/8" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
                 <circle
-                  className="text-primary"
+                  className="text-[#ffb3b1]"
                   cx="96"
                   cy="96"
                   fill="transparent"
@@ -1070,54 +1114,82 @@ export default function ProfilePage() {
                   strokeDasharray="565"
                   strokeDashoffset={profile ? 565 - (565 * Math.min((profile.points % 100) / 100, 1)) : 120}
                   strokeWidth="6"
+                  style={{ filter: "drop-shadow(0 0 10px rgba(255,179,177,0.5))" }}
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-primary mb-1">{t("level")}</span>
+                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-[#ffb3b1] mb-1">{t("level")}</span>
                 <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
-              <div className="absolute -bottom-2 bg-primary text-on-primary px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl">
+              <div className="absolute -bottom-2 bg-[#e63946] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-[#e63946]/40">
                 {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
             <div>
-              <h2 className="text-5xl font-extrabold tracking-tight mb-2 text-on-surface">{getUserName()}</h2>
+              <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight mb-2 text-on-surface">
+                <GradientText>{getUserName()}</GradientText>
+              </h2>
               <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
                 {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
             </div>
           </section>
+          </Reveal>
 
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <Car className="w-8 h-8 text-primary" />
+          <RevealStagger className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <RevealItem>
+            <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                <Car className="w-6 h-6 text-[#ffb3b1]" />
+              </div>
               <div>
-                <p className="text-3xl font-extrabold text-on-surface">{myRides.length + myBookings.length}</p>
+                <p className="text-4xl font-extrabold text-on-surface">
+                  <AnimatedCounter value={myRides.length + myBookings.length} />
+                </p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
               </div>
-            </div>
-            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <Route className="w-8 h-8 text-primary" />
+            </TiltCard>
+            </RevealItem>
+            <RevealItem>
+            <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                <Route className="w-6 h-6 text-[#ffb3b1]" />
+              </div>
               <div>
-                <p className="text-3xl font-extrabold text-on-surface">{Math.round(totalKm / 100) / 10}k</p>
+                <p className="text-4xl font-extrabold">
+                  <GradientText><AnimatedCounter value={Math.round(totalKm)} suffix="km" /></GradientText>
+                </p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
               </div>
-            </div>
-            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <Star className="w-8 h-8 text-primary" />
+            </TiltCard>
+            </RevealItem>
+            <RevealItem>
+            <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                <Star className="w-6 h-6 text-[#ffb3b1]" />
+              </div>
               <div>
-                <p className="text-3xl font-extrabold text-on-surface">{profile?.rating || 5.0}</p>
+                <p className="text-4xl font-extrabold text-on-surface">
+                  <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
+                </p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
               </div>
-            </div>
-            <div className="bg-surface-container p-6 rounded-2xl flex flex-col justify-between min-h-[140px]">
-              <Leaf className="w-8 h-8 text-primary" />
+            </TiltCard>
+            </RevealItem>
+            <RevealItem>
+            <TiltCard tiltStrength={6} className="bg-gradient-to-br from-emerald-400/[0.08] to-transparent border border-emerald-400/15 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-400/10 ring-1 ring-emerald-400/20">
+                <Leaf className="w-6 h-6 text-emerald-400" />
+              </div>
               <div>
-                <p className="text-3xl font-extrabold text-on-surface">{Math.round(co2Saved)}kg</p>
+                <p className="text-4xl font-extrabold text-emerald-400">
+                  <AnimatedCounter value={Math.round(co2Saved)} suffix="kg" />
+                </p>
                 <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
               </div>
-            </div>
-          </section>
+            </TiltCard>
+            </RevealItem>
+          </RevealStagger>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">

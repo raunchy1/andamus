@@ -4,7 +4,26 @@
       "Bash(xargs ls:*)",
       "Bash(grep:*)",
       "Bash(ls -la /home/cristian/Desktop/Andamusu/andamus/components/*.tsx)",
-      "Bash(find /home/cristian/Desktop/Andamusu/andamus -maxdepth 2 -type f \\\\\\( -name \"*.json\" -o -name \"*.config.*\" \\\\\\) ! -path \"*/node_modules/*\" -exec basename {} \\\\;)"
+      "Bash(find /home/cristian/Desktop/Andamusu/andamus -maxdepth 2 -type f \\\\\\( -name \"*.json\" -o -name \"*.config.*\" \\\\\\) ! -path \"*/node_modules/*\" -exec basename {} \\\\;)",
+      "Bash(npx tsc *)",
+      "Bash(tee /tmp/tsc.log)",
+      "Bash(tee /tmp/lint.log)",
+      "Bash(node *)",
+      "Bash(tee /tmp/build2.log)",
+      "Bash(pdfinfo \"/home/cristian/Desktop/100+ Ready-to-Use Web Development Resources for Tourism & Hospitality Freelancers.pdf\")",
+      "Bash(tee /tmp/ts.log)",
+      "Bash(tee /tmp/build3.log)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:7001/it)",
+      "Bash(SERWIST_SUPPRESS_TURBOPACK_WARNING=1 nohup npm run dev)",
+      "Bash(echo \"pid=$!\")",
+      "Bash(curl -s -o /tmp/page.html -w \"HTTP=%{http_code} time=%{time_total}s size=%{size_download}\\\\n\" http://localhost:7001/it)",
+      "Bash(git -C /mnt/data/Desktop/Andamusu/andamus log --oneline -20)",
+      "Bash(git -C /mnt/data/Desktop/Andamusu/andamus diff --stat)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(git -C /mnt/data/Desktop/Andamusu/andamus status --short)",
+      "Bash(git -C /mnt/data/Desktop/Andamusu/andamus remote -v)",
+      "Bash(git -C /mnt/data/Desktop/Andamusu/andamus log -5 --oneline)",
+      "Bash(vercel --version)"
     ]
   }
 }

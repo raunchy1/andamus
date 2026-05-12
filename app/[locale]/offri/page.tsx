@@ -18,6 +18,12 @@ import { CarInfoSection } from "@/components/offri/CarInfoSection";
 import { PreferencesSection } from "@/components/offri/PreferencesSection";
 import { StopsSection } from "@/components/offri/StopsSection";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { AuroraBackground } from "@/components/ui/premium/aurora-background";
+import { OrbGlow } from "@/components/ui/premium/orb-glow";
+import { GradientText } from "@/components/ui/premium/gradient-text";
+import { MagneticButton } from "@/components/ui/premium/magnetic-button";
+import { TiltCard } from "@/components/ui/premium/tilt-card";
+import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -89,29 +95,39 @@ function OfferMobile({
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-32">
-      {/* Top Navigation */}
-      <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
-        <div className="flex items-center gap-3">
-          <button type="button" onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h1 className="font-extrabold tracking-tighter text-3xl text-[#e5e2e1]">Andamus</h1>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
-          {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
-            <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} sizes="40px" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
-          ) : (
-            <User className="w-5 h-5 text-on-surface-variant" />
-          )}
-        </div>
-      </header>
+      {/* Top Navigation — Aurora */}
+      <AuroraBackground className="border-b border-white/5">
+        <OrbGlow className="-top-10 -right-10" color="#e63946" size={240} opacity={0.3} />
+        <header className="relative flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => router.back()} className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-[#e5e2e1] hover:bg-white/[0.08] transition-all active:scale-95">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="font-extrabold tracking-tighter text-3xl text-[#e5e2e1]"><GradientText>Andamus</GradientText></h1>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center overflow-hidden backdrop-blur-md">
+            {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+              <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} sizes="40px" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
+            ) : (
+              <User className="w-5 h-5 text-on-surface-variant" />
+            )}
+          </div>
+        </header>
+      </AuroraBackground>
 
       <main className="px-4 sm:px-6 py-6 sm:py-8 space-y-8 sm:space-y-10 max-w-2xl mx-auto overflow-x-hidden">
         {/* Hero Heading */}
+        <Reveal>
         <section>
-          <span className="font-semibold uppercase tracking-widest text-[11px] text-primary mb-2 block">{t('newTrip')}</span>
-          <h2 className="text-4xl font-extrabold tracking-tighter leading-none text-on-surface">{t('createRide')}</h2>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ffb3b1]/30 bg-[#ffb3b1]/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] backdrop-blur-md mb-3">
+            <Sparkles className="h-2.5 w-2.5" />
+            {t('newTrip')}
+          </span>
+          <h2 className="text-4xl font-extrabold tracking-tighter leading-none text-on-surface">
+            {t('createRide').split(' ').map((w, i, a) => i === a.length - 1 ? <GradientText key={i}>{w}</GradientText> : <span key={i}>{w} </span>)}
+          </h2>
         </section>
+        </Reveal>
 
         {/* Error Message */}
         {submitError && (
@@ -384,20 +400,23 @@ function OfferMobile({
             </div>
           </section>
 
-          {/* Action Button */}
+          {/* Action Button — Magnetic CTA */}
+          <Reveal>
           <div className="pt-4 pb-12">
-            <button type="submit"
-              
+            <MagneticButton
+              type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-xl shadow-lg transform active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
+              strength={16}
+              className="w-full py-5 text-base disabled:opacity-50"
             >
               {isSubmitting
                 ? formData.isRecurring ? t('creating') : t('publishing')
                 : formData.isRecurring ? t('createRecurringRide') : t('publishRide')
               }
               <ChevronRight className="w-5 h-5" />
-            </button>
+            </MagneticButton>
           </div>
+          </Reveal>
         </form>
       </main>
     </div>
@@ -416,23 +435,28 @@ function OfferDesktop({
   today,
   handleChange,
   handleSubmit,
-  savedCarInfo,
+  savedCarInfo: _savedCarInfo,
 }: OfferViewProps) {
   const t = useTranslations('offer');
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-[#0a0a0a] relative">
+      <AuroraBackground className="absolute inset-x-0 top-0 h-[480px] -z-10 pointer-events-none" showRadialMask={false}>
+        <OrbGlow className="-top-20 -left-20" color="#e63946" size={420} opacity={0.30} />
+        <OrbGlow className="top-20 -right-32" color="#ffb3b1" size={360} opacity={0.22} blur={140} />
+      </AuroraBackground>
+
       {/* Top Navigation */}
-      <header className="bg-[#0e0e0e] border-b border-white/5 sticky top-0 z-50">
+      <header className="bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button type="button" onClick={() => router.back()} className="text-[#e5e2e1] hover:opacity-80 transition-opacity">
-              <ArrowLeft className="w-6 h-6" />
+            <button type="button" onClick={() => router.back()} className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] text-[#e5e2e1] hover:bg-white/[0.06] transition-all">
+              <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="font-extrabold tracking-tighter text-2xl text-[#e5e2e1]">Andamus</h1>
+            <h1 className="font-extrabold tracking-tighter text-2xl text-[#e5e2e1]"><GradientText>Andamus</GradientText></h1>
           </div>
-          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+          <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center overflow-hidden">
             {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
               <Image src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" width={40} height={40} sizes="40px" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/default-avatar.png'; }} />
             ) : (
@@ -442,12 +466,19 @@ function OfferDesktop({
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 lg:px-8 py-8 lg:py-10 overflow-x-hidden">
+      <main className="max-w-5xl mx-auto px-6 lg:px-8 py-8 lg:py-10 overflow-x-hidden relative">
         {/* Hero Heading */}
+        <Reveal>
         <section className="mb-10">
-          <span className="font-semibold uppercase tracking-widest text-xs text-primary mb-2 block">{t('newTrip')}</span>
-          <h2 className="text-5xl font-extrabold tracking-tighter leading-tight text-on-surface">{t('createRide')}</h2>
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb3b1]/30 bg-[#ffb3b1]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] backdrop-blur-md mb-4">
+            <Sparkles className="h-3 w-3" />
+            {t('newTrip')}
+          </span>
+          <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tighter leading-tight text-on-surface">
+            {t('createRide').split(' ').map((w, i, a) => i === a.length - 1 ? <GradientText key={i}>{w}</GradientText> : <span key={i}>{w} </span>)}
+          </h2>
         </section>
+        </Reveal>
 
         {/* Error Message */}
         {submitError && (
@@ -716,20 +747,23 @@ function OfferDesktop({
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button — Magnetic CTA */}
+              <Reveal>
               <div className="pt-2">
-                <button type="submit"
-                  
+                <MagneticButton
+                  type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-primary hover:opacity-90 text-on-primary font-extrabold text-lg py-5 rounded-2xl shadow-lg transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 min-h-[56px]"
+                  strength={18}
+                  className="w-full py-5 text-base min-h-[56px] disabled:opacity-50"
                 >
                   {isSubmitting
                     ? formData.isRecurring ? t('creating') : t('publishing')
                     : formData.isRecurring ? t('createRecurringRide') : t('publishRide')
                   }
                   <ChevronRight className="w-5 h-5" />
-                </button>
+                </MagneticButton>
               </div>
+              </Reveal>
             </div>
           </div>
         </form>
@@ -1167,50 +1201,51 @@ export default function OfferPage() {
   }
 
   if (isSubmitted) {
-    
+
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
-        <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-tertiary/20">
-            <Check className="h-8 w-8 text-tertiary" />
+      <AuroraBackground className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4" showRadialMask={false}>
+        <OrbGlow className="-top-20 -left-20" color="#e63946" size={500} opacity={0.35} />
+        <OrbGlow className="-bottom-20 -right-20" color="#ffb3b1" size={400} opacity={0.3} blur={140} />
+        <Reveal>
+        <div className="relative mx-auto max-w-md text-center">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-400/15 ring-2 ring-emerald-400/30">
+            <Check className="h-10 w-10 text-emerald-400" />
           </div>
-          <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-on-surface">
-            {t('ridePublished')}
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-on-surface">
+            <GradientText>{t('ridePublished')}</GradientText>
           </h1>
           {isFirstRide && (
-            <p className="mb-4 text-sm text-primary font-medium">
+            <p className="mb-4 text-sm text-[#ffb3b1] font-medium">
               {t('firstRideMessage')}
             </p>
           )}
           <p className="mb-6 text-on-surface-variant">
             {t('manageSoon')}
           </p>
-          
+
           {/* Share Section */}
-          <div className="mb-6 p-4 rounded-2xl bg-surface-container border border-outline-variant/30">
+          <div className="mb-6 p-5 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xl">
             <p className="text-sm font-medium text-on-surface mb-3">
               {t('shareRidePrompt')}
             </p>
             <ShareApp variant="button" className="w-full justify-center" />
           </div>
-          
+
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/profilo"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary transition-colors hover:opacity-90"
-            >
+            <MagneticButton onClick={() => window.location.assign("/profilo")} strength={14} className="px-6 py-3.5">
               {t('goToProfile')}
-            </Link>
+            </MagneticButton>
             <Link
               href="/cerca"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-6 py-3 text-sm font-extrabold text-on-surface transition-colors hover:bg-surface-container-highest"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-on-surface backdrop-blur-md transition-all hover:bg-white/[0.08] hover:border-white/25"
             >
               <ArrowLeft className="w-4 h-4" />
               {t('searchOtherRides')}
             </Link>
           </div>
         </div>
-      </div>
+        </Reveal>
+      </AuroraBackground>
     );
   }
 

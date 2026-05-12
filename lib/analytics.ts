@@ -1,9 +1,22 @@
+type GtagFn = (
+  command: "event" | "config" | "js" | "set",
+  eventName: string | Date,
+  params?: Record<string, unknown>
+) => void;
+
+declare global {
+  interface Window {
+    gtag?: GtagFn;
+    dataLayer?: unknown[];
+  }
+}
+
 export const trackEvent = (
   eventName: string,
   params?: Record<string, unknown>
 ) => {
-  if (typeof window !== "undefined" && (window as any).gtag) {
-    (window as any).gtag("event", eventName, params);
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", eventName, params);
   }
 };
 

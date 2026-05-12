@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { 
   Bell, 
   Check, 
@@ -73,7 +73,6 @@ function timeAgo(date: string, t: (key: string, values?: Record<string, string |
 
 export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const t = useTranslations("notifications");
-  const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);

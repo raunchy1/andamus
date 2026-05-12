@@ -15,10 +15,16 @@ import { CityCombobox } from "@/components/CityCombobox";
 import municipalities from "@/scripts/sardinia-municipalities.json";
 import { EmptyStateSearch } from "@/components/EmptyState";
 import { Analytics } from "@/lib/analytics";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
 import { AlertModal } from "@/components/cerca/AlertModal";
+import { AuroraBackground } from "@/components/ui/premium/aurora-background";
+import { Spotlight } from "@/components/ui/premium/spotlight";
+import { OrbGlow } from "@/components/ui/premium/orb-glow";
+import { GradientText } from "@/components/ui/premium/gradient-text";
+import { MagneticButton } from "@/components/ui/premium/magnetic-button";
+import { TiltCard } from "@/components/ui/premium/tilt-card";
+import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
 const sardinianCities = [
   "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
@@ -156,26 +162,34 @@ function SearchMobile(props: SearchViewProps) {
 
   return (
     <div className="min-h-screen bg-[#0e0e0e] text-[#e5e2e1] overflow-x-hidden">
-      {/* TopAppBar */}
-      <header className="bg-[#0e0e0e] flex justify-between items-end px-4 sm:px-6 pt-4 pb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden flex-shrink-0">
-            <User className="w-5 h-5 text-on-surface" />
-          </Link>
-          <h1 className="font-extrabold tracking-tighter text-2xl sm:text-3xl text-[#e5e2e1] uppercase truncate">Andamus</h1>
-        </div>
-        <button type="button"
-          onClick={() => setShowFilters(!showFilters)}
-          className="text-[#ffb3b1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out relative"
-        >
-          <SlidersHorizontal className="w-8 h-8" />
-          {activeFiltersCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-on-primary rounded-full text-[9px] font-bold flex items-center justify-center">
-              {activeFiltersCount}
-            </span>
-          )}
-        </button>
-      </header>
+      {/* TopAppBar with aurora glow */}
+      <AuroraBackground className="border-b border-white/5">
+        <OrbGlow className="-top-10 -right-10" color="#e63946" size={220} opacity={0.28} />
+        <header className="relative flex justify-between items-end px-4 sm:px-6 pt-4 pb-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/profilo" className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-md">
+              <User className="w-5 h-5 text-[#e5e2e1]" />
+            </Link>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#ffb3b1]/70">{t('resultsCount', { count: rides.length })}</span>
+              <h1 className="font-extrabold tracking-tighter text-2xl sm:text-3xl text-[#e5e2e1] uppercase truncate">
+                <GradientText>Cerca</GradientText>
+              </h1>
+            </div>
+          </div>
+          <button type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-md text-[#ffb3b1] hover:bg-white/[0.06] hover:border-[#ffb3b1]/30 transition-all active:scale-95"
+          >
+            <SlidersHorizontal className="w-5 h-5" />
+            {activeFiltersCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#e63946] text-white rounded-full text-[9px] font-bold flex items-center justify-center ring-2 ring-[#0e0e0e]">
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
+        </header>
+      </AuroraBackground>
 
       <main className="px-4 sm:px-6 max-w-2xl mx-auto overflow-x-hidden" ref={resultsRef}
         onTouchStart={handleTouchStart}
@@ -388,8 +402,8 @@ function SearchMobile(props: SearchViewProps) {
           </div>
         </div>
 
-        {/* Innovative Ride List (Asymmetric Editorial Style) */}
-        <div className="space-y-4 sm:space-y-6">
+        {/* Innovative Ride List (Premium Editorial Style) */}
+        <RevealStagger className="space-y-4 sm:space-y-6">
           {loading && (
             <>
               <RideCardSkeleton />
@@ -405,47 +419,51 @@ function SearchMobile(props: SearchViewProps) {
             />
           )}
 
-          {!loading && rides.map((ride) => (
+          {!loading && rides.map((ride, idx) => (
+            <RevealItem key={ride.id}>
             <Link
-              key={ride.id}
               href={`/corsa/${ride.id}`}
-              className="group relative bg-surface p-4 sm:p-6 rounded-xl transition-all duration-300 hover:bg-surface-container-low cursor-pointer block overflow-hidden"
+              className={`group relative block overflow-hidden rounded-2xl p-4 sm:p-6 transition-all duration-300 active:scale-[0.98] cursor-pointer border ${
+                idx === 0
+                  ? "border-[#ffb3b1]/25 bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent"
+                  : "border-white/8 bg-white/[0.025] hover:bg-white/[0.04] hover:border-white/15"
+              }`}
             >
               <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
                 <div className="space-y-1 min-w-0">
-                  <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffb3b1]">
                     {ride.date === today ? t('availableToday') : formatDate(ride.date)}
                   </span>
-                  <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tighter text-on-surface">{ride.time.slice(0, 5)}</h3>
+                  <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tighter text-[#e5e2e1]">{ride.time.slice(0, 5)}</h3>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tighter text-on-surface">
-                    {ride.price === 0 ? t('free') : `€${ride.price}`}
+                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tighter">
+                    {ride.price === 0 ? <GradientText>{t('free')}</GradientText> : <span className="text-[#e5e2e1]">{`€${ride.price}`}</span>}
                   </div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface opacity-50">{t('singleSeat')}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-[#e5e2e1]/50">{t('singleSeat')}</div>
                 </div>
               </div>
 
               {/* Path Indicator */}
               <div className="relative py-6 sm:py-8 flex items-center justify-between">
-                <div className="absolute left-0 right-0 h-[2px] bg-surface-container-highest" />
-                <div className="absolute left-0 right-0 h-[2px] bg-primary scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
-                <div className="relative z-10 flex flex-col items-start bg-surface pr-2 sm:pr-4 group-hover:bg-surface-container-low transition-colors max-w-[40%]">
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-primary mb-1 truncate max-w-full">{ride.from_city}</span>
-                  <div className="w-3 h-3 rounded-full bg-primary ring-4 ring-background" />
+                <div className="absolute left-0 right-0 h-[2px] bg-white/8" />
+                <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-[#ffb3b1] via-[#e63946] to-[#ffb3b1] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
+                <div className="relative z-10 flex flex-col items-start pr-2 sm:pr-4 max-w-[40%]">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#ffb3b1] mb-1 truncate max-w-full">{ride.from_city}</span>
+                  <div className="w-3 h-3 rounded-full bg-[#ffb3b1] ring-4 ring-[#0e0e0e]" />
                 </div>
-                <div className="relative z-10 flex flex-col items-center bg-surface px-2 sm:px-4 group-hover:bg-surface-container-low transition-colors flex-shrink-0">
-                  <Car className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 flex-shrink-0">
+                  <Car className="w-5 h-5 sm:w-6 sm:h-6 text-[#ffb3b1] transition-transform group-hover:scale-110" />
                 </div>
-                <div className="relative z-10 flex flex-col items-end bg-surface pl-2 sm:pl-4 group-hover:bg-surface-container-low transition-colors max-w-[40%]">
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-on-surface mb-1 opacity-50 truncate max-w-full">{ride.to_city}</span>
-                  <div className="w-3 h-3 rounded-full bg-surface-container-highest ring-4 ring-background" />
+                <div className="relative z-10 flex flex-col items-end pl-2 sm:pl-4 max-w-[40%]">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#e5e2e1] mb-1 opacity-60 truncate max-w-full">{ride.to_city}</span>
+                  <div className="w-3 h-3 rounded-full bg-white/20 ring-4 ring-[#0e0e0e]" />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-4 sm:mt-6">
+              <div className="flex items-center justify-between mt-4 sm:mt-6 pt-4 border-t border-white/5">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-primary overflow-hidden grayscale group-hover:grayscale-0 transition-all flex-shrink-0">
+                  <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden flex-shrink-0">
                     {ride.profiles.avatar_url ? (
                       <Image
                         src={ride.profiles.avatar_url}
@@ -454,26 +472,31 @@ function SearchMobile(props: SearchViewProps) {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-surface-container-high flex items-center justify-center">
-                        <User className="w-5 h-5 text-on-surface-variant" />
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-[#e5e2e1]/60" />
                       </div>
                     )}
+                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#0e0e0e]" />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-bold text-on-surface truncate">{ride.profiles.name}</p>
+                    <p className="font-bold text-[#e5e2e1] truncate">{ride.profiles.name}</p>
                     <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-primary fill-current" />
-                      <span className="text-[11px] font-bold text-on-surface-variant">
+                      <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
+                      <span className="text-[11px] font-bold text-[#e5e2e1]/60">
                         {ride.profiles.rating}
                       </span>
+                      {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
+                        <BadgeCheck className="w-3.5 h-3.5 text-[#ffb3b1] ml-1" />
+                      )}
                     </div>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-on-surface-variant group-hover:translate-x-2 transition-transform flex-shrink-0" />
+                <ChevronRight className="w-5 h-5 text-[#e5e2e1]/40 group-hover:translate-x-1 group-hover:text-[#ffb3b1] transition-all flex-shrink-0" />
               </div>
             </Link>
+            </RevealItem>
           ))}
-        </div>
+        </RevealStagger>
       </main>
 
       <AlertModal cities={sardinianCities}
@@ -525,11 +548,28 @@ function SearchDesktop(props: SearchViewProps) {
   } = props;
 
   return (
-    <div className="text-[#e5e2e1] max-w-7xl mx-auto w-full">
+    <div className="text-[#e5e2e1] max-w-7xl mx-auto w-full relative">
+      <AuroraBackground className="absolute inset-x-0 -top-10 h-[400px] -z-10" showRadialMask={false}>
+        <Spotlight size={700} color="rgba(230,57,70,0.18)" />
+        <OrbGlow className="-top-20 -left-20" color="#e63946" size={420} opacity={0.30} />
+        <OrbGlow className="top-20 -right-32" color="#ffb3b1" size={360} opacity={0.25} blur={140} />
+      </AuroraBackground>
+
+      {/* Section title */}
+      <Reveal>
+        <div className="mb-8 pt-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#ffb3b1]/70">Sardegna · Live</span>
+          <h2 className="mt-2 text-4xl lg:text-5xl font-extrabold tracking-tighter">
+            Trova il tuo <GradientText>passaggio</GradientText>
+          </h2>
+        </div>
+      </Reveal>
+
       {/* Search & Filters Section */}
       <div className="mb-10 space-y-6">
         {/* Horizontal Search Bar */}
-        <form onSubmit={handleSearch} className="bg-[#141414] border border-white/5 rounded-2xl p-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end">
+        <Reveal delay={0.1}>
+        <form onSubmit={handleSearch} className="bg-[#0d0d0d]/95 backdrop-blur-xl border border-white/10 rounded-3xl p-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]">
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('departureLabel')}</label>
             <CityCombobox
@@ -569,13 +609,12 @@ function SearchDesktop(props: SearchViewProps) {
               />
             </div>
           </div>
-          <button type="submit"
-            
-            className="bg-[#ffb3b1] text-[#0f0f0f] px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-[#ff9e9c] transition-colors"
-          >
+          <MagneticButton type="submit" className="lg:rounded-2xl">
+            <Search className="w-4 h-4" />
             {t('searchButton')}
-          </button>
+          </MagneticButton>
         </form>
+        </Reveal>
 
         {/* Filter Pills & Actions */}
         <div className="flex flex-wrap items-center gap-3">
@@ -750,7 +789,7 @@ function SearchDesktop(props: SearchViewProps) {
       </div>
 
       {/* Results Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <RevealStagger className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {loading && (
           <>
             <RideCardSkeleton />
@@ -771,22 +810,31 @@ function SearchDesktop(props: SearchViewProps) {
           </div>
         )}
 
-        {!loading && rides.map((ride) => (
+        {!loading && rides.map((ride, idx) => (
+          <RevealItem key={ride.id}>
+          <TiltCard
+            tiltStrength={6}
+            className={`relative h-full rounded-3xl border ${
+              idx === 0
+                ? "border-[#ffb3b1]/30 bg-gradient-to-br from-[#ffb3b1]/[0.08] via-[#e63946]/[0.04] to-transparent"
+                : "border-white/8 bg-white/[0.025] hover:border-white/15"
+            } backdrop-blur-sm`}
+          >
           <Link
-            key={ride.id}
             href={`/corsa/${ride.id}`}
-            className="group bg-[#141414] border border-white/5 rounded-2xl p-6 transition-all duration-200 hover:border-[#ffb3b1]/30 hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer block touch-manipulation"
+            className="group block p-6 touch-manipulation"
           >
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-1">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1]">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffb3b1]">
+                  {idx === 0 && <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#ffb3b1] animate-pulse" />}
                   {ride.date === today ? t('today') : formatDate(ride.date)}
                 </span>
                 <h3 className="text-3xl font-extrabold tracking-tighter text-[#e5e2e1]">{ride.time.slice(0, 5)}</h3>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-extrabold tracking-tighter text-[#e5e2e1]">
-                  {ride.price === 0 ? t('free') : `€${ride.price}`}
+                <div className="text-2xl font-extrabold tracking-tighter">
+                  {ride.price === 0 ? <GradientText>{t('free')}</GradientText> : <span className="text-[#e5e2e1]">{`€${ride.price}`}</span>}
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-[#e5e2e1]/50">{t('singleSeat')}</div>
               </div>
@@ -794,24 +842,24 @@ function SearchDesktop(props: SearchViewProps) {
 
             {/* Route */}
             <div className="relative py-6 flex items-center justify-between mb-4">
-              <div className="absolute left-0 right-0 h-[2px] bg-white/10" />
-              <div className="absolute left-0 right-0 h-[2px] bg-[#ffb3b1] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
-              <div className="relative z-10 flex flex-col items-start bg-[#141414] pr-4 group-hover:bg-[#181818] transition-colors">
+              <div className="absolute left-0 right-0 h-[2px] bg-white/8" />
+              <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-[#ffb3b1] via-[#e63946] to-[#ffb3b1] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
+              <div className="relative z-10 flex flex-col items-start pr-4">
                 <span className="text-[11px] font-bold uppercase text-[#ffb3b1] mb-1">{ride.from_city}</span>
-                <div className="w-3 h-3 rounded-full bg-[#ffb3b1] ring-4 ring-[#141414] group-hover:ring-[#181818] transition-all" />
+                <div className="w-3 h-3 rounded-full bg-[#ffb3b1] ring-4 ring-[#0a0a0a]" />
               </div>
-              <div className="relative z-10 flex flex-col items-center bg-[#141414] px-4 group-hover:bg-[#181818] transition-colors">
-                <Car className="w-5 h-5 text-[#ffb3b1]" />
+              <div className="relative z-10 flex flex-col items-center px-4">
+                <Car className="w-5 h-5 text-[#ffb3b1] transition-transform group-hover:scale-110" />
               </div>
-              <div className="relative z-10 flex flex-col items-end bg-[#141414] pl-4 group-hover:bg-[#181818] transition-colors">
-                <span className="text-[11px] font-bold uppercase text-[#e5e2e1] mb-1 opacity-50">{ride.to_city}</span>
-                <div className="w-3 h-3 rounded-full bg-white/20 ring-4 ring-[#141414] group-hover:ring-[#181818] transition-all" />
+              <div className="relative z-10 flex flex-col items-end pl-4">
+                <span className="text-[11px] font-bold uppercase text-[#e5e2e1] mb-1 opacity-60">{ride.to_city}</span>
+                <div className="w-3 h-3 rounded-full bg-white/20 ring-4 ring-[#0a0a0a]" />
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-4 border-t border-white/5">
               <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 rounded-full border-2 border-[#ffb3b1] overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+                <div className="relative w-12 h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden">
                   {ride.profiles.avatar_url ? (
                     <Image
                       src={ride.profiles.avatar_url}
@@ -820,28 +868,34 @@ function SearchDesktop(props: SearchViewProps) {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-[#1a1a1a] flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                       <User className="w-5 h-5 text-[#e5e2e1]/60" />
                     </div>
                   )}
+                  <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-2 border-[#0a0a0a]" />
                 </div>
                 <div>
                   <p className="font-bold text-[#e5e2e1]">{ride.profiles.name}</p>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 text-[#ffb3b1] fill-current" />
+                  <div className="flex items-center gap-1.5">
+                    <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
                     <span className="text-[11px] font-bold text-[#e5e2e1]/60">
                       {ride.profiles.rating}
                     </span>
                   </div>
                 </div>
               </div>
-              {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
-                <BadgeCheck className="w-5 h-5 text-[#ffb3b1]" />
-              )}
+              <div className="flex items-center gap-2">
+                {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
+                  <BadgeCheck className="w-5 h-5 text-[#ffb3b1]" />
+                )}
+                <ChevronRight className="w-4 h-4 text-[#e5e2e1]/40 group-hover:translate-x-1 group-hover:text-[#ffb3b1] transition-all" />
+              </div>
             </div>
           </Link>
+          </TiltCard>
+          </RevealItem>
         ))}
-      </div>
+      </RevealStagger>
 
       <AlertModal cities={sardinianCities}
         showAlertModal={showAlertModal}

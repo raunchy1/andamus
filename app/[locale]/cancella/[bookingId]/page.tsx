@@ -109,7 +109,7 @@ export default function CancelBookingPage() {
           ride: ride,
           passenger: passenger,
         } as BookingDetails);
-      } catch (_error) {
+      } catch {
         toast.error(t("loadError"));
       } finally {
         setLoading(false);

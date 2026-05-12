@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
+import { isAdmin } from "@/lib/admin-config";
 
 const intlMiddleware = createMiddleware({
   locales: ["it", "en", "de"],
@@ -10,7 +11,8 @@ const intlMiddleware = createMiddleware({
   localePrefix: "always",
 });
 
-const ADMIN_EMAIL = "cristiermurache@gmail.com";
+// Matches /admin or /{locale}/admin (and nested), but NOT /admin-anything-else
+const ADMIN_PATH_REGEX = /^\/(?:it|en|de)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,8 +25,8 @@ export default async function middleware(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // 3. Admin route protection — read user from the already-refreshed session
-  if (pathname.includes("/admin")) {
+  // 3. Admin route protection — strict path matching
+  if (ADMIN_PATH_REGEX.test(pathname)) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -42,10 +44,9 @@ export default async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!isAdmin(user?.email)) {
       const locale = pathname.split("/")[1] || "it";
       const redirect = NextResponse.redirect(new URL(`/${locale}`, request.url));
-      // Copy Supabase cookies to redirect response so session stays in sync
       supabaseResponse.cookies.getAll().forEach((cookie) => {
         redirect.cookies.set(cookie.name, cookie.value, {
           httpOnly: cookie.httpOnly,

@@ -655,6 +655,8 @@
     "googleLoginError": "Errore durante l'accesso con Google",
     "facebookLoginError": "Errore durante l'accesso con Facebook",
     "close": "Chiudi",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password",
     "forgotPassword": "Password dimenticata?",
     "loggingIn": "Accesso in corso...",
     "fullName": "Nome completo",

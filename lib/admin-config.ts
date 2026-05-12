@@ -1,11 +1,19 @@
 // Admin configuration (safe for client + server)
-// Add admin emails to .env.local as comma-separated list:
-// ADMIN_EMAILS=admin1@example.com,admin2@example.com
+// Configure additional admins via NEXT_PUBLIC_ADMIN_EMAILS (comma-separated).
 
-export const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
-  .split(',')
-  .map(email => email.trim())
-  .filter(Boolean);
+const DEFAULT_ADMINS = ["cristiermurache@gmail.com"];
+
+export const ADMIN_EMAILS = Array.from(
+  new Set(
+    [
+      ...DEFAULT_ADMINS,
+      ...(process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
+        .split(",")
+        .map((email) => email.trim())
+        .filter(Boolean),
+    ].map((e) => e.toLowerCase())
+  )
+);
 
 export function isAdmin(email: string | undefined | null): boolean {
   if (!email) return false;

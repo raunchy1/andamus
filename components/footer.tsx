@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Car, Heart, Share2 } from "lucide-react";
+import { Car, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 

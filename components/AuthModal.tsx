@@ -61,9 +61,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     if (!email || !password) { toast.error(t("enterEmailPassword")); return; }
     setLoading(true);
     try {
-      console.log("[auth] login attempt:", email);
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      console.log("[auth] login result:", { error });
       if (error) {
         if (error.message.includes("Invalid login credentials")) toast.error(t("invalidCredentials"));
         else if (error.message.includes("Email not confirmed")) toast.error(t("emailNotConfirmed"));
@@ -78,7 +76,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         }
       }
     } catch (err) {
-      console.error("[auth] login exception:", err);
       toast.error(err instanceof Error ? err.message : t("loginError"));
     }
     setLoading(false);
@@ -90,7 +87,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     if (password.length < 8) { toast.error(t("passwordMinLength")); return; }
     setLoading(true);
     try {
-      console.log("[auth] register attempt:", email);
       const { data, error } = await supabase.auth.signUp({
         email, password,
         options: {
@@ -98,10 +94,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           emailRedirectTo: `${window.location.origin}/${locale}/auth/callback`,
         }
       });
-      console.log("[auth] register result:", { data, error });
 
       if (error) {
-        console.error("[auth] register error:", error);
         if (error.message.includes("already registered")) toast.error(t("emailAlreadyRegistered"));
         else toast.error(error.message);
       } else if (data.user && data.user.identities && data.user.identities.length === 0) {
@@ -122,7 +116,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         setMode("login");
       }
     } catch (err) {
-      console.error("[auth] register exception:", err);
       toast.error(err instanceof Error ? err.message : t("registerError"));
     }
     setLoading(false);
@@ -193,6 +186,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
               <input
                 type="text"
+                autoComplete="name"
+                aria-label={t("namePlaceholder")}
                 placeholder={t("namePlaceholder")}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -205,6 +200,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
             <input
               type="email"
+              autoComplete="email"
+              inputMode="email"
+              aria-label={t("emailPlaceholder")}
               placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -216,6 +214,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
             <input
               type={showPassword ? "text" : "password"}
+              autoComplete={mode === "register" ? "new-password" : "current-password"}
+              aria-label={mode === "register" ? t("createPasswordPlaceholder") : t("passwordPlaceholder")}
               placeholder={mode === "register" ? t("createPasswordPlaceholder") : t("passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -225,6 +225,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -235,6 +236,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
               <input
                 type="password"
+                autoComplete="new-password"
+                aria-label={t("confirmPasswordPlaceholder")}
                 placeholder={t("confirmPasswordPlaceholder")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

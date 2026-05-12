@@ -18,35 +18,35 @@ export async function sendMessage(input: MessageInput) {
 
   // ── Server-side validation ──
   if (!input.booking_id || typeof input.booking_id !== 'string') {
-    throw new Error("ID-ul rezervării este obligatoriu.")
+    throw new Error("L'ID della prenotazione è obbligatorio.")
   }
 
   if (!input.content || input.content.trim().length === 0) {
-    throw new Error("Conținutul mesajului nu poate fi gol.")
+    throw new Error("Il contenuto del messaggio non può essere vuoto.")
   }
 
   if (input.content.trim().length > 2000) {
-    throw new Error("Mesajul este prea lung (maxim 2000 de caractere).")
+    throw new Error("Il messaggio è troppo lungo (massimo 2000 caratteri).")
   }
 
   const validTypes = ['text', 'image', 'location', 'audio'] as const
   if (input.type && !validTypes.includes(input.type)) {
-    throw new Error("Tipul de mesaj nu este valid.")
+    throw new Error("Tipo di messaggio non valido.")
   }
 
   if ((input.type === 'image' || input.type === 'audio') && !input.media_url) {
-    throw new Error("URL-ul media este obligatoriu pentru mesajele de tip imagine/audio.")
+    throw new Error("L'URL del media è obbligatorio per i messaggi di tipo immagine/audio.")
   }
 
   if (input.type === 'location' && (input.location_lat == null || input.location_lng == null)) {
-    throw new Error("Coordonatele sunt obligatorii pentru mesajele de tip locație.")
+    throw new Error("Le coordinate sono obbligatorie per i messaggi di tipo posizione.")
   }
 
   // ── Auth check ──
   const { data: { user }, error: authError } = await supabase.auth.getUser()
-  
+
   if (authError || !user) {
-    throw new Error("Trebuie să fii autentificat pentru a trimite mesaje.")
+    throw new Error("Devi essere autenticato per inviare messaggi.")
   }
 
   // ── Verify participant ──
@@ -57,12 +57,12 @@ export async function sendMessage(input: MessageInput) {
     .single()
 
   if (bookingError || !booking) {
-    throw new Error("Rezervarea nu a fost găsită.")
+    throw new Error("Prenotazione non trovata.")
   }
 
   const rideDriverId = (booking.rides as unknown as { driver_id: string })?.driver_id
   if (user.id !== booking.passenger_id && user.id !== rideDriverId) {
-    throw new Error("Nu ai permisiunea de a trimite mesaje în această conversație.")
+    throw new Error("Non hai i permessi per inviare messaggi in questa conversazione.")
   }
 
   // ── Insert ──
@@ -83,11 +83,11 @@ export async function sendMessage(input: MessageInput) {
 
   if (error) {
     // Error logged to Sentry in production
-    throw new Error("Eroare la trimiterea mesajului.")
+    throw new Error("Errore durante l'invio del messaggio.")
   }
 
   revalidatePath(`/chat/${input.booking_id}`)
-  
+
   return message
 }
 
@@ -96,7 +96,7 @@ export async function markMessagesAsRead(bookingId: string) {
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
-    throw new Error("Trebuie să fii autentificat.")
+    throw new Error("Devi essere autenticato.")
   }
 
   // ── Verify participant ──
@@ -107,12 +107,12 @@ export async function markMessagesAsRead(bookingId: string) {
     .single()
 
   if (bookingError || !booking) {
-    throw new Error("Rezervarea nu a fost găsită.")
+    throw new Error("Prenotazione non trovata.")
   }
 
   const rideDriverId = (booking.rides as unknown as { driver_id: string })?.driver_id
   if (user.id !== booking.passenger_id && user.id !== rideDriverId) {
-    throw new Error("Nu ai permisiunea de a marca mesajele ca citite.")
+    throw new Error("Non hai i permessi per marcare i messaggi come letti.")
   }
 
   const { error } = await supabase
@@ -124,6 +124,6 @@ export async function markMessagesAsRead(bookingId: string) {
 
   if (error) {
     // Error logged to Sentry in production
-    throw new Error("Eroare la marcarea mesajelor ca citite.")
+    throw new Error("Errore durante la marcatura dei messaggi come letti.")
   }
 }

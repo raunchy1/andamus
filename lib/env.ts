@@ -1,4 +1,6 @@
-// Environment variable validation — server-side only
+// Environment variable validation — runs once on first server import.
+// Avoids per-request spam in build and SSR logs.
+
 const requiredEnvVars = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -6,11 +8,15 @@ const requiredEnvVars = [
   "GOOGLE_MAPS_API_KEY",
 ] as const;
 
-if (typeof window === "undefined") {
-  for (const key of requiredEnvVars) {
-    if (!process.env[key]) {
-      console.warn(`[env] Missing environment variable: ${key}`);
-    }
+declare global {
+  var __andamusEnvChecked: boolean | undefined;
+}
+
+if (typeof window === "undefined" && !globalThis.__andamusEnvChecked) {
+  globalThis.__andamusEnvChecked = true;
+  const missing = requiredEnvVars.filter((k) => !process.env[k]);
+  if (missing.length > 0) {
+    console.warn(`[env] Missing environment variables: ${missing.join(", ")}`);
   }
 }
 

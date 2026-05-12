@@ -1,4 +1,4 @@
-// Input sanitization patterns
+// Input sanitization patterns (pure utilities — safe to import from client or server)
 const XSS_PATTERNS = [
   /<script[^>]*>.*?<\/script>/gi,
   /javascript:/gi,
@@ -14,20 +14,16 @@ const SQL_INJECTION_PATTERNS = [
   /(\b(DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|EXEC\s*\()\b)/gi,
 ];
 
-/**
- * Sanitize user input to prevent XSS
- */
+/** Sanitize user input to prevent XSS */
 export function sanitizeInput(input: string): string {
   if (!input || typeof input !== "string") return "";
 
   let sanitized = input.trim();
 
-  // Remove XSS patterns
   XSS_PATTERNS.forEach((pattern) => {
     sanitized = sanitized.replace(pattern, "");
   });
 
-  // HTML escape
   sanitized = sanitized
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -39,50 +35,31 @@ export function sanitizeInput(input: string): string {
   return sanitized;
 }
 
-/**
- * Check for SQL injection attempts
- */
+/** Check for SQL injection attempts */
 export function detectSQLInjection(input: string): boolean {
   if (!input || typeof input !== "string") return false;
-
   return SQL_INJECTION_PATTERNS.some((pattern) => pattern.test(input));
 }
 
-/**
- * Validate email format
- */
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-/**
- * Validate Sardinian city name
- */
 export function isValidCity(city: string): boolean {
   if (!city || typeof city !== "string") return false;
-  // City should be at least 2 characters and contain only letters, spaces, and hyphens
   const cityRegex = /^[a-zA-ZàèéìòùÀÈÉÌÒÙ\s'-]{2,50}$/;
   return cityRegex.test(city.trim());
 }
 
-/**
- * Validate price (should be 0 or positive number)
- */
 export function isValidPrice(price: number): boolean {
   return typeof price === "number" && price >= 0 && price <= 1000;
 }
 
-/**
- * Validate seats (1-8)
- */
 export function isValidSeats(seats: number): boolean {
   return typeof seats === "number" && seats >= 1 && seats <= 8;
 }
 
-/**
- * Validate date (should be today or in the future, within 1 year)
- */
 export function isValidDate(dateStr: string): boolean {
   if (!dateStr) return false;
 
@@ -96,34 +73,21 @@ export function isValidDate(dateStr: string): boolean {
   return date >= now && date <= oneYearFromNow;
 }
 
-/**
- * Validate time format (HH:MM)
- */
 export function isValidTime(timeStr: string): boolean {
   if (!timeStr) return false;
-
   const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
   return timeRegex.test(timeStr);
 }
 
-/**
- * Validate review rating (1-5)
- */
 export function isValidRating(rating: number): boolean {
   return typeof rating === "number" && rating >= 1 && rating <= 5;
 }
 
-/**
- * Validate review comment length
- */
 export function isValidComment(comment: string): boolean {
-  if (!comment) return true; // Comment is optional
+  if (!comment) return true;
   return comment.length <= 1000;
 }
 
-/**
- * Sanitize ride data before submission
- */
 export function sanitizeRideData(data: {
   from_city: string;
   to_city: string;
@@ -139,7 +103,6 @@ export function sanitizeRideData(data: {
 } {
   const errors: string[] = [];
 
-  // Validate cities
   if (!isValidCity(data.from_city)) {
     errors.push("Città di partenza non valida");
   }
@@ -150,27 +113,22 @@ export function sanitizeRideData(data: {
     errors.push("La città di partenza e arrivo devono essere diverse");
   }
 
-  // Validate date
   if (!isValidDate(data.date)) {
     errors.push("Data non valida. Deve essere oggi o nel futuro, entro 1 anno.");
   }
 
-  // Validate time
   if (!isValidTime(data.time)) {
     errors.push("Orario non valido");
   }
 
-  // Validate price
   if (!isValidPrice(data.price)) {
     errors.push("Prezzo non valido (max 1000€)");
   }
 
-  // Validate seats
   if (!isValidSeats(data.seats)) {
     errors.push("Numero di posti non valido (1-8)");
   }
 
-  // Check for SQL injection
   const fieldsToCheck = [data.from_city, data.to_city, data.description || ""];
   if (fieldsToCheck.some((field) => detectSQLInjection(field))) {
     errors.push("Input non valido rilevato");
@@ -180,7 +138,6 @@ export function sanitizeRideData(data: {
     return { valid: false, errors };
   }
 
-  // Sanitize the data
   return {
     valid: true,
     errors: [],
@@ -194,51 +151,4 @@ export function sanitizeRideData(data: {
       description: data.description ? sanitizeInput(data.description) : undefined,
     },
   };
-}
-
-"use server";
-
-import { createClient } from "@/lib/supabase/server";
-
-/**
- * Server-side rate limit check using Supabase
- */
-export async function checkServerRateLimit(
-  userId: string,
-  action: string,
-  maxAttempts: number = 10,
-  windowHours: number = 24
-): Promise<{ allowed: boolean; remaining: number }> {
-  const supabase = await createClient();
-
-  const windowStart = new Date();
-  windowStart.setHours(windowStart.getHours() - windowHours);
-
-  // Count actions in the time window
-  const { count, error } = await supabase
-    .from("user_actions")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("action", action)
-    .gte("created_at", windowStart.toISOString());
-
-  if (error) {
-    // console.error("Rate limit check error:", error);
-    // Allow on error to not block users
-    return { allowed: true, remaining: maxAttempts };
-  }
-
-  const currentCount = count || 0;
-
-  if (currentCount >= maxAttempts) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  // Log the action
-  await supabase.from("user_actions").insert({
-    user_id: userId,
-    action: action,
-  });
-
-  return { allowed: true, remaining: maxAttempts - currentCount - 1 };
 }

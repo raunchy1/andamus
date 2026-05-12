@@ -1,21 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { sendMessage, markMessagesAsRead } from "@/lib/chat-actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Loader2,
-  AlertCircle,
   X,
   Mic,
   Play,
   Pause,
-  ArrowLeft,
   MapPin,
   SlidersHorizontal,
   User,
@@ -105,7 +101,6 @@ export default function ChatWindow({
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
   const [retryingId, setRetryingId] = useState<string | null>(null);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -164,13 +159,13 @@ export default function ChatWindow({
     await notifyNewMessage(recipientId, senderName, booking.ride_id, booking.id);
   };
 
-  const handleMarkAsRead = async () => {
+  const handleMarkAsRead = useCallback(async () => {
     try {
       await markMessagesAsRead(bookingId);
     } catch {
       /* silent fail – read receipts are not critical */
     }
-  };
+  }, [bookingId]);
 
   const addLocalMessage = (msg: LocalMessage) => {
     setLocalMessages((prev) => [...prev, msg]);
@@ -209,7 +204,7 @@ export default function ChatWindow({
     };
 
     loadMessages();
-  }, [bookingId, supabase]);
+  }, [bookingId, supabase, handleMarkAsRead]);
 
   // Realtime subscription
   useEffect(() => {
@@ -266,7 +261,7 @@ export default function ChatWindow({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [bookingId, supabase, user.id]);
+  }, [bookingId, supabase, user.id, handleMarkAsRead]);
 
   // Auto-scroll
   useEffect(() => {
@@ -606,24 +601,6 @@ export default function ChatWindow({
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
-        <AlertCircle className="mb-4 h-16 w-16 text-error" />
-        <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-on-surface">
-          {error}
-        </h1>
-        <Link
-          href="/profilo"
-          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t("backToProfile")}
-        </Link>
       </div>
     );
   }

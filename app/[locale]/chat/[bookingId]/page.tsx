@@ -3,17 +3,17 @@ import { redirect } from "next/navigation";
 import ChatWindow from "@/components/chat/ChatWindow";
 
 interface ChatPageProps {
-  params: {
+  params: Promise<{
     locale: string;
     bookingId: string;
-  };
+  }>;
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-  const { locale, bookingId } = await params;
+  const { bookingId } = await params;
   const supabase = await createClient();
 
-  // 1. Verificăm autentificarea
+  // 1. Verify authentication
   const {
     data: { user },
     error: authError,
@@ -23,7 +23,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     redirect("/");
   }
 
-  // 2. Preluăm booking-ul cu toate relațiile
+  // 2. Fetch booking with all relations
   const { data: booking, error: bookingError } = await supabase
     .from("bookings")
     .select(
@@ -47,8 +47,9 @@ export default async function ChatPage({ params }: ChatPageProps) {
     redirect("/");
   }
 
-  // 3. Verificăm permisiunile
-  const isDriver = booking.rides.driver_id === user.id;
+  // 3. Check permissions — `rides` may come back as an object or single-row array.
+  const ride = Array.isArray(booking.rides) ? booking.rides[0] : booking.rides;
+  const isDriver = ride?.driver_id === user.id;
   const isPassenger = booking.passenger_id === user.id;
 
   if (!isDriver && !isPassenger) {

@@ -77,7 +77,6 @@ export default function StatisticsPage() {
   const router = useRouter();
   const supabase = createClient();
   const t = useTranslations("stats");
-  const tc = useTranslations("common");
   const locale = useLocale();
   const [, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);

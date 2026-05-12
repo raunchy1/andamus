@@ -65,14 +65,16 @@ export async function signInWithEmail(email: string, password: string) {
 export async function signOut() {
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();
-  
+
   if (error) {
     throw error;
   }
-  
-  // Hard reload to clear all state and re-run middleware
+
+  // Hard reload to clear all state and re-run middleware; preserve current locale.
   if (typeof window !== "undefined") {
-    window.location.href = "/";
+    const locale = window.location.pathname.split("/")[1];
+    const target = ["it", "en", "de"].includes(locale) ? `/${locale}` : "/";
+    window.location.href = target;
   }
 }
 
