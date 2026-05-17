@@ -8,15 +8,11 @@ import {
   ArrowRight,
   Check,
   Copy,
-  Crown,
   Loader2,
   MapPin,
   Route,
   ShieldCheck,
   Sparkles,
-  Trophy,
-  Users,
-  type LucideIcon,
 } from "lucide-react";
 
 type SubmitState = "idle" | "loading" | "success" | "error";
@@ -51,18 +47,22 @@ async function copyToClipboard(text: string): Promise<void> {
 }
 
 function Benefit({
-  icon: Icon,
+  mark,
   title,
   description,
 }: {
-  icon: LucideIcon;
+  mark: string;
   title: string;
   description: string;
 }) {
   return (
-    <div className="border-t border-[#1f2a24]/10 pt-5">
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#14382b] text-[#f7f2e8]">
-        <Icon className="h-5 w-5" aria-hidden="true" />
+    <div className="group border-t border-[#1f2a24]/10 pt-5">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="relative flex h-11 w-11 items-center justify-center rounded-full border border-[#14382b]/20 bg-[#14382b] text-[12px] font-black tracking-[-0.04em] text-[#f7f2e8] shadow-[0_16px_32px_rgba(20,56,43,0.16)]">
+          <span>{mark}</span>
+          <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border-2 border-[#f6f1e8] bg-[#bb152c]" />
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-r from-[#14382b]/20 to-transparent" />
       </div>
       <p className="text-sm font-semibold text-[#171614]">{title}</p>
       <p className="mt-2 text-sm leading-6 text-[#5f625a]">{description}</p>
@@ -188,8 +188,8 @@ function ComingSoonContent() {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.76),rgba(246,241,232,0.78)_42%,rgba(21,56,43,0.12))]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[#171614]/10" />
 
-      <section className="relative mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 gap-12 px-5 py-8 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:py-10">
-        <div className="flex flex-col justify-between gap-12">
+      <section className="relative mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 gap-6 px-5 py-5 sm:gap-12 sm:px-8 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:py-10">
+        <div className="flex flex-col justify-between gap-7 sm:gap-12">
           <header className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#171614] text-[#f7f2e8] shadow-[0_14px_40px_rgba(23,22,20,0.18)]">
@@ -205,38 +205,38 @@ function ComingSoonContent() {
             </div>
           </header>
 
-          <div className="max-w-2xl py-4 lg:py-10">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#bb152c]/15 bg-white/60 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#7a1d2c] backdrop-blur">
+          <div className="max-w-2xl py-2 lg:py-10">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#bb152c]/15 bg-white/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7a1d2c] backdrop-blur sm:mb-6 sm:text-xs sm:tracking-[0.16em]">
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               Accesso anticipato
             </div>
 
-            <h1 className="max-w-3xl text-5xl font-black leading-[0.92] tracking-tight text-[#171614] sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-3xl text-4xl font-black leading-[0.94] tracking-tight text-[#171614] sm:text-6xl lg:text-7xl">
               Il carpooling sardo, senza rumore.
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-8 text-[#55584f] sm:text-xl">
+            <p className="mt-4 max-w-xl text-sm leading-6 text-[#55584f] sm:mt-7 sm:text-xl sm:leading-8">
               Andamus mette in contatto chi offre e chi cerca passaggi in Sardegna:
               tratte chiare, profili verificati, chat integrata e una community
               costruita per l&apos;isola.
             </p>
 
-            <div className="mt-9 grid max-w-xl grid-cols-3 divide-x divide-[#171614]/10 border-y border-[#171614]/10">
-              <div className="py-5 pr-4">
-                <p className="text-2xl font-black tracking-tight">
+            <div className="mt-9 hidden max-w-xl grid-cols-3 divide-x divide-[#171614]/10 border-y border-[#171614]/10 sm:grid">
+              <div className="py-4 pr-3 sm:py-5 sm:pr-4">
+                <p className="text-xl font-black tracking-tight sm:text-2xl">
                   {count === null ? "..." : count.toLocaleString("it")}
                 </p>
                 <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.1em] text-[#73766e] sm:text-xs sm:tracking-[0.14em]">
                   in lista
                 </p>
               </div>
-              <div className="px-4 py-5">
-                <p className="text-2xl font-black tracking-tight">50</p>
+              <div className="px-3 py-4 sm:px-4 sm:py-5">
+                <p className="text-xl font-black tracking-tight sm:text-2xl">50</p>
                 <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.1em] text-[#73766e] sm:text-xs sm:tracking-[0.14em]">
                   beta slot
                 </p>
               </div>
-              <div className="py-5 pl-4">
-                <p className="text-2xl font-black tracking-tight">0%</p>
+              <div className="py-4 pl-3 sm:py-5 sm:pl-4">
+                <p className="text-xl font-black tracking-tight sm:text-2xl">0%</p>
                 <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.1em] text-[#73766e] sm:text-xs sm:tracking-[0.14em]">
                   commissioni
                 </p>
@@ -244,19 +244,19 @@ function ComingSoonContent() {
             </div>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="hidden gap-6 sm:grid sm:grid-cols-3">
             <Benefit
-              icon={Trophy}
+              mark="01"
               title="Primi 50"
               description="Ingresso beta prioritario per testare le tratte prima del lancio pubblico."
             />
             <Benefit
-              icon={Users}
+              mark="03"
               title="Invita 3 amici"
               description="Badge Fondatore permanente sul profilo Andamus."
             />
             <Benefit
-              icon={Crown}
+              mark="10"
               title="Invita 10 amici"
               description="Sei mesi di Premium gratis quando il piano sara attivo."
             />
@@ -289,7 +289,7 @@ function ComingSoonContent() {
               </div>
             </div>
 
-            <div className="rounded-[1.75rem] border border-white/75 bg-white/72 p-4 shadow-[0_28px_90px_rgba(45,40,31,0.17)] backdrop-blur-xl sm:p-6">
+            <div className="rounded-[1.5rem] border border-white/75 bg-white/72 p-4 shadow-[0_28px_90px_rgba(45,40,31,0.17)] backdrop-blur-xl sm:rounded-[1.75rem] sm:p-6">
               {state === "success" ? (
                 <div className="p-2">
                   <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[#14382b] text-[#f7f2e8]">
@@ -336,14 +336,14 @@ function ComingSoonContent() {
                   className="flex flex-col gap-4"
                   noValidate
                 >
-                  <div className="mb-1">
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#767166]">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#767166] sm:text-sm">
                       Waiting list
                     </p>
-                    <h2 className="mt-2 text-3xl font-black tracking-tight">
+                    <h2 className="mt-1.5 text-2xl font-black tracking-tight sm:mt-2 sm:text-3xl">
                       Prenota il tuo posto.
                     </h2>
-                    <p className="mt-2 text-sm leading-6 text-[#63665e]">
+                    <p className="mt-1.5 text-sm leading-6 text-[#63665e] sm:mt-2">
                       Ti avvisiamo appena Andamus apre nella tua zona. Nessuna
                       newsletter inutile.
                     </p>
@@ -359,7 +359,7 @@ function ComingSoonContent() {
                       placeholder="mario@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition placeholder:text-[#9b978e] focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10"
+                      className="h-11 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition placeholder:text-[#9b978e] focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10 sm:h-12"
                     />
                   </div>
 
@@ -372,7 +372,7 @@ function ComingSoonContent() {
                       placeholder="+39 333 000 0000"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition placeholder:text-[#9b978e] focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10"
+                      className="h-11 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition placeholder:text-[#9b978e] focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10 sm:h-12"
                     />
                   </div>
 
@@ -382,7 +382,7 @@ function ComingSoonContent() {
                       id="zona"
                       value={zona}
                       onChange={(e) => setZona(e.target.value)}
-                      className="h-12 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10"
+                      className="h-11 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10 sm:h-12"
                     >
                       <option value="">Seleziona la tua zona</option>
                       <option value="Cagliari">Cagliari</option>
@@ -403,7 +403,7 @@ function ComingSoonContent() {
                   <button
                     type="submit"
                     disabled={state === "loading"}
-                    className="mt-2 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#bb152c] px-5 text-sm font-bold text-white shadow-[0_18px_38px_rgba(187,21,44,0.22)] transition hover:bg-[#9f1025] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-1 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#bb152c] px-5 text-sm font-bold text-white shadow-[0_18px_38px_rgba(187,21,44,0.22)] transition hover:bg-[#9f1025] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:mt-2 sm:h-13"
                   >
                     {state === "loading" ? (
                       <>
@@ -425,6 +425,24 @@ function ComingSoonContent() {
                   </p>
                 </form>
               )}
+            </div>
+
+            <div className="mt-6 grid gap-5 sm:hidden">
+              <Benefit
+                mark="01"
+                title="Primi 50"
+                description="Ingresso beta prioritario per testare le tratte prima del lancio pubblico."
+              />
+              <Benefit
+                mark="03"
+                title="Invita 3 amici"
+                description="Badge Fondatore permanente sul profilo Andamus."
+              />
+              <Benefit
+                mark="10"
+                title="Invita 10 amici"
+                description="Sei mesi di Premium gratis quando il piano sara attivo."
+              />
             </div>
           </div>
         </div>
