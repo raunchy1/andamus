@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Loader2, AlertCircle, X, Mic, Play, Pause } from "lucide-react";
 import Image from "next/image";
@@ -54,6 +55,7 @@ interface Booking {
 }
 
 export default function ChatPage() {
+  const locale = useLocale();
   const params = useParams();
   const router = useRouter();
   const bookingId = params.bookingId as string;
@@ -101,7 +103,7 @@ export default function ChatPage() {
 
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
       setUser(currentUser);
@@ -474,7 +476,7 @@ export default function ChatPage() {
         <AlertCircle className="mb-4 h-16 w-16 text-error" />
         <h1 className="mb-2 text-2xl font-extrabold tracking-tight text-on-surface">{error}</h1>
         <Link
-          href="/profilo"
+          href={`/${locale}/profilo`}
           className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary"
         >
           <span className="material-symbols-outlined text-sm">arrow_back</span>

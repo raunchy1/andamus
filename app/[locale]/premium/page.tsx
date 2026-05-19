@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { 
   Crown, 
   Check, 
@@ -71,6 +72,7 @@ const plans = [
 ];
 
 export default function PremiumPage() {
+  const locale = useLocale();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -81,7 +83,7 @@ export default function PremiumPage() {
     const checkUser = async () => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
       setUser(currentUser);
@@ -119,7 +121,7 @@ export default function PremiumPage() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, locale: "it" }),
+        body: JSON.stringify({ planId, locale }),
       });
       const data = await res.json();
       if (data.url) {
@@ -164,8 +166,8 @@ export default function PremiumPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <Link 
-            href="/it"
+          <Link
+            href={`/${locale}/`}
             className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

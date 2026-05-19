@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { 
   Bell, 
@@ -63,6 +64,7 @@ function timeAgo(date: string) {
 }
 
 export function NotificationBell({ isHome = false }: NotificationBellProps) {
+  const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -269,7 +271,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
           {notifications.length > 0 && (
             <div className="border-t border-white/10 px-4 py-2 text-center">
               <Link
-                href="/profilo"
+                href={`/${locale}/profilo`}
                 onClick={() => setIsOpen(false)}
                 className="text-xs text-white/50 hover:text-white transition-colors"
               >

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { 
   ArrowLeft,
   Car,
@@ -75,6 +76,7 @@ interface HistoryItem {
 }
 
 export default function StatisticsPage() {
+  const locale = useLocale();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [, setUser] = useState<SupabaseUser | null>(null);
@@ -96,7 +98,7 @@ export default function StatisticsPage() {
     const loadData = async () => {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (!currentUser) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
       setUser(currentUser);
@@ -356,8 +358,8 @@ export default function StatisticsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <Link 
-            href="/profilo"
+          <Link
+            href={`/${locale}/profilo`}
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />

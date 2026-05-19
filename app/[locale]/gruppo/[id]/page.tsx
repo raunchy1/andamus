@@ -138,7 +138,7 @@ export default function GroupDetailPage() {
               disabled={joining}
               className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50"
             >
-              {joining ? "Unione..." : "Unisciti al gruppo"}
+              {joining ? "Unione in corso..." : "Unisciti al gruppo"}
             </button>
           ) : (
             <span className="inline-flex items-center gap-2 rounded-xl bg-green-100 px-5 py-3 text-sm font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
@@ -155,7 +155,7 @@ export default function GroupDetailPage() {
           ) : (
             <div className="flex flex-wrap gap-3">
               {members.map((member, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5">
+                <div key={member.id} className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-bold">
                     {member.profiles.name.charAt(0).toUpperCase()}
                   </div>

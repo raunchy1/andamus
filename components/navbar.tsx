@@ -178,7 +178,7 @@ export function Navbar() {
                   {/* Admin Link */}
                   {user?.email && ADMIN_EMAILS.includes(user.email) && (
                     <Link
-                      href="/admin"
+                      href={`/${locale}/admin`}
                       className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
                         isHome 
                           ? "text-white/70 hover:bg-white/10 hover:text-white" 
@@ -376,7 +376,7 @@ export function Navbar() {
                       </Link>
                       {user?.email && ADMIN_EMAILS.includes(user.email || '') && (
                         <Link
-                          href="/admin"
+                          href={`/${locale}/admin`}
                           onClick={() => setMobileMenuOpen(false)}
                           className={`flex items-center gap-3 rounded-lg px-3 py-3 ${
                             isHome 

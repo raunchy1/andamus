@@ -74,8 +74,8 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2a4a] p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur" onClick={() => setIsOpen(false)}>
+          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2a4a] p-6" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">

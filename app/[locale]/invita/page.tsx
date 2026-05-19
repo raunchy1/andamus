@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { 
@@ -36,6 +37,7 @@ interface LeaderboardUser {
 }
 
 export default function InvitaPage() {
+  const locale = useLocale();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [, setUser] = useState<SupabaseUser | null>(null);
@@ -51,10 +53,10 @@ export default function InvitaPage() {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       
       if (!currentUser) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
-      
+
       setUser(currentUser);
 
       // Load profile with referral stats
@@ -125,7 +127,7 @@ export default function InvitaPage() {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/profilo"
+            href={`/${locale}/profilo`}
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />

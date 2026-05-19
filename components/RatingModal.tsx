@@ -51,6 +51,9 @@ export function RatingModal({
 
   useEffect(() => {
     if (isOpen) {
+      setAlreadyReviewed(false);
+      setRating(0);
+      setComment("");
       checkExistingReview();
     }
   }, [isOpen, checkExistingReview]);

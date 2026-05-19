@@ -2,8 +2,9 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Loader2, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -93,6 +94,7 @@ function RideDetailMobile({
   formatReviewDate,
 }: RideDetailViewProps) {
   const router = useRouter();
+  const locale = useLocale();
   const isMyRide = user?.id === ride.driver_id;
 
   return (
@@ -166,7 +168,7 @@ function RideDetailMobile({
               </div>
             </div>
             {existingBooking && !isMyRide && (
-              <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
+              <Link href={`/${locale}/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
                 <span className="material-symbols-outlined">chat_bubble</span>
               </Link>
             )}
@@ -203,7 +205,7 @@ function RideDetailMobile({
                   <span className="font-headline font-semibold text-on-surface">{ride.from_city}</span>
                 </div>
                 {stops.map((stop, idx) => (
-                  <div key={idx} className="flex items-center space-x-6 relative">
+                  <div key={stop.city} className="flex items-center space-x-6 relative">
                     <div className="w-4 h-4 rounded-full bg-surface-container-lowest border-2 border-surface-container-highest z-10 flex items-center justify-center">
                       <div className="w-1.5 h-1.5 rounded-full bg-surface-container-highest" />
                     </div>
@@ -336,7 +338,7 @@ function RideDetailMobile({
       <div className="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface via-surface to-transparent pt-12 z-[45]">
         {isMyRide ? (
           <Link
-            href="/profilo"
+            href={`/${locale}/profilo`}
             className="w-full bg-surface-container-highest text-on-surface py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
           >
             <span>Gestisci dal profilo</span>
@@ -344,7 +346,7 @@ function RideDetailMobile({
           </Link>
         ) : existingBooking ? (
           <Link
-            href={`/chat/${existingBooking.id}`}
+            href={`/${locale}/chat/${existingBooking.id}`}
             className="w-full bg-[#e63946] text-white py-5 rounded-xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
           >
             <span>Apri chat</span>
@@ -406,6 +408,7 @@ function RideDetailDesktop({
   formatReviewDate,
 }: RideDetailViewProps) {
   const router = useRouter();
+  const locale = useLocale();
   const isMyRide = user?.id === ride.driver_id;
 
   return (
@@ -485,7 +488,7 @@ function RideDetailDesktop({
                     <span className="font-headline font-semibold text-xl text-on-surface">{ride.from_city}</span>
                   </div>
                   {stops.map((stop, idx) => (
-                    <div key={idx} className="flex items-center space-x-6 relative">
+                    <div key={stop.city} className="flex items-center space-x-6 relative">
                       <div className="w-5 h-5 rounded-full bg-surface-container-lowest border-2 border-surface-container-highest z-10 flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-surface-container-highest" />
                       </div>
@@ -652,7 +655,7 @@ function RideDetailDesktop({
                     </div>
                   </div>
                   {existingBooking && !isMyRide && (
-                    <Link href={`/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
+                    <Link href={`/${locale}/chat/${existingBooking.id}`} className="bg-surface-container-highest text-on-surface p-3 rounded-xl hover:bg-primary hover:text-on-primary transition-all">
                       <span className="material-symbols-outlined">chat_bubble</span>
                     </Link>
                   )}
@@ -662,7 +665,7 @@ function RideDetailDesktop({
                 <div className="pt-2">
                   {isMyRide ? (
                     <Link
-                      href="/profilo"
+                      href={`/${locale}/profilo`}
                       className="w-full bg-surface-container-highest text-on-surface py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
                     >
                       <span>Gestisci dal profilo</span>
@@ -670,7 +673,7 @@ function RideDetailDesktop({
                     </Link>
                   ) : existingBooking ? (
                     <Link
-                      href={`/chat/${existingBooking.id}`}
+                      href={`/${locale}/chat/${existingBooking.id}`}
                       className="w-full bg-[#e63946] text-white py-5 rounded-2xl font-headline font-extrabold text-lg uppercase tracking-wider flex items-center justify-center space-x-3 shadow-xl hover:scale-[1.02] active:scale-95 transition-all duration-300"
                     >
                       <span>Apri chat</span>
@@ -733,11 +736,13 @@ function RideDetailDesktop({
 }
 
 export default function RideDetailPage() {
+  const locale = useLocale();
   const params = useParams();
   const router = useRouter();
   const rideId = params.id as string;
   const { viewMode } = useViewMode();
-  
+  const requestingRef = useRef(false);
+
   const [ride, setRide] = useState<Ride | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -856,6 +861,7 @@ export default function RideDetailPage() {
   };
 
   const handleRequestRide = async () => {
+    if (requestingRef.current) return;
     if (!user) {
       setShowLoginModal(true);
       return;
@@ -867,10 +873,11 @@ export default function RideDetailPage() {
       return;
     }
     if (existingBooking) {
-      router.push(`/chat/${existingBooking.id}`);
+      router.push(`/${locale}/chat/${existingBooking.id}`);
       return;
     }
 
+    requestingRef.current = true;
     setRequesting(true);
 
     try {
@@ -901,8 +908,9 @@ export default function RideDetailPage() {
       );
 
       toast.success("Prenotazione effettuata!");
-      router.push(`/chat/${booking.id}`);
+      router.push(`/${locale}/chat/${booking.id}`);
     } catch {
+      requestingRef.current = false;
       toast.error("Errore nella prenotazione");
       setRequesting(false);
     }
@@ -921,7 +929,7 @@ export default function RideDetailPage() {
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-error mb-4" />
         <h1 className="text-2xl font-extrabold tracking-tight text-on-surface">Passaggio non trovato</h1>
-        <Link href="/cerca" className="mt-6 flex items-center gap-2 text-primary">
+        <Link href={`/${locale}/cerca`} className="mt-6 flex items-center gap-2 text-primary">
           <span className="material-symbols-outlined text-sm">arrow_back</span> Torna alla ricerca
         </Link>
       </div>

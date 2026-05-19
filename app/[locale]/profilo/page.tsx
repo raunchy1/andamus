@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { Loader2, Check, X, Trash2, ChevronRight, MessageCircle, Star } from "lucide-react";
@@ -122,6 +123,7 @@ interface RideRequestItem {
 }
 
 export default function ProfilePage() {
+  const locale = useLocale();
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -153,10 +155,11 @@ export default function ProfilePage() {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       
       if (!currentUser) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
-      
+
+
       setUser(currentUser);
 
       const { data: profileData } = await supabase
@@ -231,7 +234,7 @@ export default function ProfilePage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (!session) router.push("/");
+        if (!session) router.push(`/${locale}/`);
       }
     );
 
@@ -454,7 +457,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-surface-container-lowest pb-32">
         <header className="bg-[#0e0e0e] text-primary docked full-width top-0 flex justify-between items-end w-full px-6 pt-12 pb-4">
           <div className="flex items-center gap-3">
-            <Link href="/profilo" className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20">
+            <Link href={`/${locale}/profilo`} className="w-10 h-10 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/20">
               {getUserAvatar() ? (
                 <img src={getUserAvatar()!} alt="Profile" className="w-full h-full object-cover" />
               ) : (
@@ -668,7 +671,7 @@ export default function ProfilePage() {
                   <div className="py-12 text-center">
                     <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">directions_car</span>
                     <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
-                    <Link href="/offri" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
+                    <Link href={`/${locale}/offri`} className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
                       Offri un passaggio
                     </Link>
                   </div>
@@ -711,7 +714,7 @@ export default function ProfilePage() {
                   <div className="py-12 text-center">
                     <span className="material-symbols-outlined text-5xl text-on-surface-variant/50">location_on</span>
                     <p className="mt-4 text-lg font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
-                    <Link href="/cerca" className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
+                    <Link href={`/${locale}/cerca`} className="mt-4 inline-block bg-primary text-on-primary px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider">
                       Cerca passaggio
                     </Link>
                   </div>
@@ -1075,7 +1078,7 @@ export default function ProfilePage() {
                       <div className="py-16 text-center bg-surface-container rounded-2xl">
                         <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">directions_car</span>
                         <p className="mt-4 text-xl font-bold text-on-surface">Non hai ancora offerto nessun passaggio</p>
-                        <Link href="/offri" className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
+                        <Link href={`/${locale}/offri`} className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
                           Offri un passaggio
                         </Link>
                       </div>
@@ -1120,7 +1123,7 @@ export default function ProfilePage() {
                       <div className="py-16 text-center bg-surface-container rounded-2xl">
                         <span className="material-symbols-outlined text-6xl text-on-surface-variant/50">location_on</span>
                         <p className="mt-4 text-xl font-bold text-on-surface">Non hai ancora prenotato nessun passaggio</p>
-                        <Link href="/cerca" className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
+                        <Link href={`/${locale}/cerca`} className="mt-6 inline-block bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider">
                           Cerca passaggio
                         </Link>
                       </div>

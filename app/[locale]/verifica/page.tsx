@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import toast from "react-hot-toast";
 import {
   Shield,
@@ -32,6 +33,7 @@ interface Verification {
 }
 
 export default function VerificationPage() {
+  const locale = useLocale();
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ export default function VerificationPage() {
     const loadData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
       setUser(user);
@@ -248,7 +250,7 @@ export default function VerificationPage() {
       <div className="bg-[#12121e] border-b border-white/10 px-4 py-4">
         <div className="mx-auto max-w-4xl">
           <Link
-            href="/profilo"
+            href={`/${locale}/profilo`}
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />

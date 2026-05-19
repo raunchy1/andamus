@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { 
   Users, 
@@ -91,6 +92,7 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
+  const locale = useLocale();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(true);
@@ -122,7 +124,7 @@ export default function AdminDashboard() {
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email || !ADMIN_EMAILS.includes(user.email)) {
-        router.push("/");
+        router.push(`/${locale}/`);
         return;
       }
       setIsAdmin(true);

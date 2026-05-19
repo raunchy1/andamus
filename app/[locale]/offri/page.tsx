@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Loader2, Check, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -804,6 +805,7 @@ function OfferDesktop({
 }
 
 export default function OfferPage() {
+  const locale = useLocale();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const router = useRouter();
@@ -1076,7 +1078,7 @@ export default function OfferPage() {
           </button>
           <div className="mt-6">
             <Link
-              href="/"
+              href={`/${locale}/`}
               className="inline-flex items-center gap-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
             >
               <span className="material-symbols-outlined text-sm">arrow_back</span>
@@ -1103,13 +1105,13 @@ export default function OfferPage() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/profilo"
+              href={`/${locale}/profilo`}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-extrabold text-on-primary transition-colors hover:opacity-90"
             >
               Vai al profilo
             </Link>
             <Link
-              href="/cerca"
+              href={`/${locale}/cerca`}
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-6 py-3 text-sm font-extrabold text-on-surface transition-colors hover:bg-surface-container-highest"
             >
               <span className="material-symbols-outlined text-sm">arrow_back</span>

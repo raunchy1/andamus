@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useViewMode } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
@@ -59,6 +60,7 @@ function HomeMobile({
   userAvatar,
   handleSearch,
 }: HomeUIProps) {
+  const locale = useLocale();
   return (
     <div className="min-h-screen bg-background text-[#e5e2e1] pb-32">
       {/* TopAppBar */}
@@ -71,12 +73,12 @@ function HomeMobile({
         </div>
         <div className="flex items-center gap-3">
           <Link
-            href="/cerca"
+            href={`/${locale}/cerca`}
             className="material-symbols-outlined text-[#e5e2e1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out"
           >
             tune
           </Link>
-          <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
+          <Link href={`/${locale}/profilo`} className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
             {userAvatar ? (
               <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
             ) : (
@@ -143,7 +145,7 @@ function HomeMobile({
         <section className="mb-12">
           <div className="px-6 flex justify-between items-end mb-6">
             <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-on-surface">Corse disponibili oggi</h3>
-            <Link href="/cerca" className="text-[11px] font-bold text-primary border-b border-primary/30 pb-0.5 hover:text-primary/80 transition-colors">
+            <Link href={`/${locale}/cerca`} className="text-[11px] font-bold text-primary border-b border-primary/30 pb-0.5 hover:text-primary/80 transition-colors">
               Vedi tutte
             </Link>
           </div>
@@ -159,7 +161,7 @@ function HomeMobile({
               {todayRides.map((ride, idx) => (
                 <Link
                   key={ride.id}
-                  href={`/corsa/${ride.id}`}
+                  href={`/${locale}/corsa/${ride.id}`}
                   className={`snap-start flex-shrink-0 w-[280px] bg-surface-container-high p-5 rounded-xl flex flex-col justify-between h-[180px] transition-transform active:scale-95 ${
                     idx === 0 ? "border-l-4 border-primary" : ""
                   }`}
@@ -205,7 +207,7 @@ function HomeMobile({
             <div className="px-6">
               <div className="bg-surface-container-high p-5 rounded-xl">
                 <p className="text-sm text-on-surface/60">Nessuna corsa disponibile oggi.</p>
-                <Link href="/cerca" className="text-primary text-sm font-bold mt-2 inline-block">Cerca altre date →</Link>
+                <Link href={`/${locale}/cerca`} className="text-primary text-sm font-bold mt-2 inline-block">Cerca altre date →</Link>
               </div>
             </div>
           )}
@@ -214,14 +216,14 @@ function HomeMobile({
         {/* Quick Actions Grid */}
         <section className="px-6 grid grid-cols-2 gap-4">
           <Link
-            href="/offri"
+            href={`/${locale}/offri`}
             className="aspect-square bg-primary-container/20 rounded-xl p-6 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95"
           >
             <span className="material-symbols-outlined text-primary text-3xl">add_circle</span>
             <span className="text-sm font-bold uppercase tracking-wider text-on-surface">Offri un passaggio</span>
           </Link>
           <Link
-            href="/profilo"
+            href={`/${locale}/profilo`}
             className="aspect-square bg-surface-container-highest rounded-xl p-6 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95"
           >
             <span className="material-symbols-outlined text-on-surface/60 text-3xl">history</span>
@@ -245,6 +247,7 @@ function HomeDesktop({
   todayDate,
   router,
 }: HomeUIProps) {
+  const locale = useLocale();
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [date, setDate] = useState(today);
 
@@ -254,7 +257,7 @@ function HomeDesktop({
     if (origin) params.set("from", origin);
     if (destination) params.set("to", destination);
     if (date && date !== today) params.set("date", date);
-    router.push(`/cerca?${params.toString()}`);
+    router.push(`/${locale}/cerca?${params.toString()}`);
   };
 
   return (
@@ -267,9 +270,9 @@ function HomeDesktop({
             <span className="hidden sm:inline-block h-1.5 w-1.5 rounded-full bg-[#ffb3b1]" />
           </div>
           <div className="flex items-center gap-8">
-            <Link href="/cerca" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors">Esplora</Link>
-            <Link href="/offri" className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors">Offri</Link>
-            <Link href="/profilo" className="flex items-center gap-3 pl-6 border-l border-white/10">
+            <Link href={`/${locale}/cerca`} className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors">Esplora</Link>
+            <Link href={`/${locale}/offri`} className="text-sm font-medium text-[#e5e2e1]/70 hover:text-[#e5e2e1] transition-colors">Offri</Link>
+            <Link href={`/${locale}/profilo`} className="flex items-center gap-3 pl-6 border-l border-white/10">
               <span className="text-sm font-medium">{userName ? userName.split(" ")[0] : "Profilo"}</span>
               <div className="w-10 h-10 rounded-full bg-white/5 overflow-hidden border border-white/10">
                 {userAvatar ? (
@@ -395,7 +398,7 @@ function HomeDesktop({
             <h3 className="text-3xl font-extrabold tracking-tight">Corse disponibili oggi</h3>
             <p className="text-[#e5e2e1]/50 mt-2">Partenze confermate per il {todayDate}</p>
           </div>
-          <Link href="/cerca" className="text-sm font-bold text-[#ffb3b1] hover:text-[#ffb3b1]/80 transition-colors">
+          <Link href={`/${locale}/cerca`} className="text-sm font-bold text-[#ffb3b1] hover:text-[#ffb3b1]/80 transition-colors">
             Vedi tutte →
           </Link>
         </div>
@@ -411,7 +414,7 @@ function HomeDesktop({
             {todayRides.map((ride, idx) => (
               <Link
                 key={ride.id}
-                href={`/corsa/${ride.id}`}
+                href={`/${locale}/corsa/${ride.id}`}
                 className={`group relative p-6 rounded-2xl border transition-all hover:-translate-y-1 ${
                   idx === 0
                     ? "bg-[#ffb3b1]/5 border-[#ffb3b1]/20"
@@ -459,7 +462,7 @@ function HomeDesktop({
         ) : (
           <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-10 text-center">
             <p className="text-[#e5e2e1]/60">Nessuna corsa disponibile oggi.</p>
-            <Link href="/cerca" className="inline-block mt-4 text-[#ffb3b1] font-bold hover:underline">Cerca altre date</Link>
+            <Link href={`/${locale}/cerca`} className="inline-block mt-4 text-[#ffb3b1] font-bold hover:underline">Cerca altre date</Link>
           </div>
         )}
       </section>
@@ -501,7 +504,7 @@ function HomeDesktop({
             <p className="text-[#e5e2e1]/50">Offri un passaggio e aiuta qualcuno a raggiungere la sua destinazione.</p>
           </div>
           <Link
-            href="/offri"
+            href={`/${locale}/offri`}
             className="bg-[#e63946] hover:bg-[#d32f3c] text-white px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors"
           >
             Offri un passaggio
@@ -514,6 +517,7 @@ function HomeDesktop({
 
 export default function HomePage() {
   const router = useRouter();
+  const locale = useLocale();
   const { viewMode } = useViewMode();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
@@ -557,7 +561,7 @@ export default function HomePage() {
     const params = new URLSearchParams();
     if (origin) params.set("from", origin);
     if (destination) params.set("to", destination);
-    router.push(`/cerca?${params.toString()}`);
+    router.push(`/${locale}/cerca?${params.toString()}`);
   };
 
   const props = {
