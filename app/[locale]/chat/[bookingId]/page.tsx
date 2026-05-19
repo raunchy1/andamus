@@ -182,7 +182,9 @@ export default function ChatPage() {
             .single();
 
           if (newMessage) {
-            setMessages((prev) => [...prev, newMessage]);
+            setMessages((prev) =>
+              prev.some((m) => m.id === newMessage.id) ? prev : [...prev, newMessage]
+            );
           }
         }
       )

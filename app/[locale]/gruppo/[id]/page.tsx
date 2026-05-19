@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { ArrowLeft, Users, MapPin, Loader2, AlertCircle, PlusCircle, Search, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -29,6 +30,7 @@ interface Member {
 export default function GroupDetailPage() {
   const params = useParams();
   const groupId = params.id as string;
+  const locale = useLocale();
   const supabase = useMemo(() => createClient(), []);
 
   const [group, setGroup] = useState<Group | null>(null);
@@ -67,15 +69,20 @@ export default function GroupDetailPage() {
       return;
     }
     setJoining(true);
-    const { error } = await supabase.from("group_memberships").insert({ group_id: groupId, user_id: user.id });
-    if (error) {
-      toast.error("Errore nell'unione al gruppo");
-    } else {
-      setIsMember(true);
-      setMembers((prev) => [...prev, { id: "temp", profiles: { name: user.user_metadata?.name || "Tu", avatar_url: null } }]);
-      toast.success("Ti sei unito al gruppo!");
+    try {
+      const { error } = await supabase.from("group_memberships").insert({ group_id: groupId, user_id: user.id });
+      if (error) {
+        toast.error("Errore nell'unione al gruppo");
+      } else {
+        setIsMember(true);
+        setMembers((prev) => [...prev, { id: `temp-${Date.now()}`, profiles: { name: user.user_metadata?.name || "Tu", avatar_url: null } }]);
+        toast.success("Ti sei unito al gruppo!");
+      }
+    } catch {
+      toast.error("Errore di rete. Riprova.");
+    } finally {
+      setJoining(false);
     }
-    setJoining(false);
   };
 
   if (loading) {
@@ -91,7 +98,7 @@ export default function GroupDetailPage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-destructive mb-4" />
         <h1 className="text-2xl font-bold text-foreground">Gruppo non trovato</h1>
-        <Link href="/gruppi" className="mt-6 flex items-center gap-2 text-accent">
+        <Link href={`/${locale}/gruppi`} className="mt-6 flex items-center gap-2 text-accent">
           <ArrowLeft className="h-4 w-4" /> Torna ai gruppi
         </Link>
       </div>
@@ -102,7 +109,7 @@ export default function GroupDetailPage() {
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-card px-4 py-6">
         <div className="mx-auto max-w-3xl">
-          <Link href="/gruppi" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+          <Link href={`/${locale}/gruppi`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
             <ArrowLeft className="h-4 w-4" />
             Torna ai gruppi
           </Link>
@@ -119,14 +126,14 @@ export default function GroupDetailPage() {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            href={`/cerca?to=${encodeURIComponent(group.city)}`}
+            href={`/${locale}/cerca?to=${encodeURIComponent(group.city)}`}
             className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-accent/90"
           >
             <Search className="h-4 w-4" />
             Cerca passaggi
           </Link>
           <Link
-            href={`/offri?to=${encodeURIComponent(group.city)}`}
+            href={`/${locale}/offri?to=${encodeURIComponent(group.city)}`}
             className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted"
           >
             <PlusCircle className="h-4 w-4" />

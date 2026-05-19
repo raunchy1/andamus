@@ -983,11 +983,13 @@ function SearchContent() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const fetchGenRef = useRef(0);
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const supabase = useMemo(() => createClient(), []);
 
   const fetchRides = useCallback(async () => {
+    const gen = ++fetchGenRef.current;
     setLoading(true);
     setFetchError(null);
 
@@ -1021,7 +1023,7 @@ function SearchContent() {
         .order("time", { ascending: true });
 
       if (supabaseError) {
-        return;
+        throw supabaseError;
       }
 
       let allRides: Ride[] = directData || [];
@@ -1087,11 +1089,13 @@ function SearchContent() {
         );
       }
 
+      if (gen !== fetchGenRef.current) return;
       setRides(allRides);
     } catch {
+      if (gen !== fetchGenRef.current) return;
       setFetchError("Impossibile caricare i passaggi. Riprova.");
     } finally {
-      setLoading(false);
+      if (gen === fetchGenRef.current) setLoading(false);
     }
   }, [activeFilter, date, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, supabase, today]);
 

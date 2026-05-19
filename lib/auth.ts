@@ -2,35 +2,42 @@
 
 import { createClient } from "@/lib/supabase/client";
 
+const VALID_LOCALES = ["it", "en", "de"] as const;
+
+function getCurrentLocale(): string {
+  if (typeof window === "undefined") return "it";
+  const seg = window.location.pathname.split("/")[1];
+  return VALID_LOCALES.includes(seg as "it" | "en" | "de") ? seg : "it";
+}
+
 export async function signInWithGoogle() {
   const supabase = createClient();
+  const locale = getCurrentLocale();
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: typeof window !== "undefined" 
-        ? window.location.origin + "/auth/callback"
-        : "/auth/callback",
+      redirectTo: typeof window !== "undefined"
+        ? `${window.location.origin}/${locale}/auth/callback`
+        : "/it/auth/callback",
     },
   });
-  
+
   if (error) {
-    // console.error("Error signing in with Google:", error);
     throw error;
   }
 }
 
 export async function signOut() {
   const supabase = createClient();
+  const locale = getCurrentLocale();
   const { error } = await supabase.auth.signOut();
-  
+
   if (error) {
-    // console.error("Error signing out:", error);
     throw error;
   }
-  
-  // Redirect to home
+
   if (typeof window !== "undefined") {
-    window.location.href = "/";
+    window.location.href = `/${locale}/`;
   }
 }
 

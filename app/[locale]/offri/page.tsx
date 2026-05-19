@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
@@ -836,6 +836,7 @@ export default function OfferPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const submittingRef = useRef(false);
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
@@ -913,13 +914,19 @@ export default function OfferPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitError("");
-    
-    if (!validateForm()) return;
+
+    if (!validateForm()) {
+      submittingRef.current = false;
+      return;
+    }
 
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (!currentUser) {
       setSubmitError("Devi essere autenticato per pubblicare un passaggio.");
+      submittingRef.current = false;
       return;
     }
 
@@ -956,7 +963,10 @@ export default function OfferPage() {
           return;
         }
 
-        await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
+        const { error: rpcError } = await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
+        if (rpcError) {
+          console.error("generate_rides_from_templates failed:", rpcError);
+        }
       } else {
         const { data: inserted, error } = await supabase
           .from("rides")
@@ -1031,6 +1041,7 @@ export default function OfferPage() {
     } catch {
       setSubmitError("Errore imprevisto. Riprova più tardi.");
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };

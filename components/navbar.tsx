@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { 
@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle, signOut } from "@/lib/auth";
+import toast from "react-hot-toast";
 
 const ADMIN_EMAILS = [
   'cristianermurache@gmail.com',
@@ -95,11 +96,19 @@ export function Navbar() {
     }
   };
 
+  const loggingOutRef = useRef(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const handleLogout = async () => {
+    if (loggingOutRef.current) return;
+    loggingOutRef.current = true;
+    setIsLoggingOut(true);
     try {
       await signOut();
     } catch {
-      // // console.error("Logout failed:", error);
+      toast.error("Errore durante il logout. Riprova.");
+      loggingOutRef.current = false;
+      setIsLoggingOut(false);
     }
   };
 
@@ -253,9 +262,10 @@ export function Navbar() {
 
                   <button
                     onClick={handleLogout}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                      isHome 
-                        ? "text-white/70 hover:bg-white/10 hover:text-white" 
+                    disabled={isLoggingOut}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors disabled:opacity-50 ${
+                      isHome
+                        ? "text-white/70 hover:bg-white/10 hover:text-white"
                         : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
                     }`}
                     title={t('logout')}
@@ -415,9 +425,10 @@ export function Navbar() {
                           handleLogout();
                           setMobileMenuOpen(false);
                         }}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left ${
-                          isHome 
-                            ? "text-white/70 hover:bg-white/10" 
+                        disabled={isLoggingOut}
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left disabled:opacity-50 ${
+                          isHome
+                            ? "text-white/70 hover:bg-white/10"
                             : "text-gray-600 hover:bg-gray-100"
                         }`}
                       >
