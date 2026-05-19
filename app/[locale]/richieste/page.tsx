@@ -108,12 +108,11 @@ export default function RequestsPage() {
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
       {/* Header — Premium Aurora */}
       <AuroraBackground className="border-b border-white/5 px-4 py-8 lg:py-12 relative" showRadialMask={false}>
-        <OrbGlow className="-top-20 -right-32" color="#e63946" size={400} opacity={0.30} />
-        <OrbGlow className="-bottom-20 -left-20" color="#ffb3b1" size={340} opacity={0.25} blur={140} />
+        <OrbGlow className="-top-20 -right-32" color="#e63946" size={300} opacity={0.30} />
         <div className="mx-auto max-w-5xl relative">
           <Reveal>
           <div className="mb-4 flex items-center gap-2">
-            <Link href="/cerca" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#e5e2e1]/60 hover:text-[#ffb3b1] transition-colors">
+            <Link href={`/${locale}/cerca`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#e5e2e1]/60 hover:text-[#ffb3b1] transition-colors">
               <ArrowLeft className="h-4 w-4" />
               {t("backToSearch")}
             </Link>

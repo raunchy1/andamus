@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield } from "lucide-react";
+import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -21,6 +21,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
+import { StripeConnectBanner } from "@/components/StripeConnectBanner";
 import { ShareApp } from "@/components/ShareApp";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
 import { Spotlight } from "@/components/ui/premium/spotlight";
@@ -96,6 +97,8 @@ interface BookingRequest {
   passenger_id: string;
   status: string;
   created_at: string;
+  payment_intent_id: string | null;
+  payment_status: string | null;
   passenger: {
     name: string;
     avatar_url: string | null;
@@ -105,6 +108,7 @@ interface BookingRequest {
     to_city: string;
     date: string;
     time: string;
+    price: number;
   };
 }
 
@@ -173,7 +177,7 @@ export default function ProfilePage() {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       
       if (!currentUser) {
-        router.push("/");
+        router.push(`/${locale}/join`);
         return;
       }
       
@@ -214,10 +218,11 @@ export default function ProfilePage() {
         .select(`
           *,
           passenger:profiles(name, avatar_url),
-          ride:rides(from_city, to_city, date, time)
+          ride:rides(from_city, to_city, date, time, price)
         `)
         .eq("status", "pending")
-        .in("ride_id", ridesData?.map(r => r.id) || []);
+        .or("payment_status.is.null,payment_status.eq.authorized")
+        .in("ride_id", ridesData?.map((r: { id: string }) => r.id) || []);
       
       setBookingRequests(requestsData || []);
 
@@ -248,7 +253,7 @@ export default function ProfilePage() {
     loadUserData();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: import("@supabase/supabase-js").AuthChangeEvent, session: import("@supabase/supabase-js").Session | null) => {
         if (!session) router.push("/");
       }
     );
@@ -262,8 +267,21 @@ export default function ProfilePage() {
       return;
     }
     setProcessingBooking(request.id);
-    
+
     try {
+      // For paid rides, capture the authorized payment first
+      if (request.payment_intent_id) {
+        const captureRes = await fetch("/api/stripe/connect/capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: request.id }),
+        });
+        const captureData = await captureRes.json();
+        if (!captureRes.ok) {
+          throw new Error(captureData.error || "Payment capture failed");
+        }
+      }
+
       const { error } = await supabase
         .from("bookings")
         .update({ status: "confirmed" })
@@ -285,8 +303,9 @@ export default function ProfilePage() {
 
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
       toast.success(t("bookingAccepted"));
-    } catch {
-      toast.error(t("errorAcceptingBooking"));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("errorAcceptingBooking");
+      toast.error(message);
     } finally {
       setProcessingBooking(null);
     }
@@ -298,8 +317,21 @@ export default function ProfilePage() {
       return;
     }
     setProcessingBooking(request.id);
-    
+
     try {
+      // For paid rides, cancel the authorized payment (no charge to passenger)
+      if (request.payment_intent_id) {
+        const cancelRes = await fetch("/api/stripe/connect/cancel-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: request.id }),
+        });
+        const cancelData = await cancelRes.json();
+        if (!cancelRes.ok) {
+          throw new Error(cancelData.error || "Payment cancellation failed");
+        }
+      }
+
       const { error } = await supabase
         .from("bookings")
         .update({ status: "rejected" })
@@ -316,8 +348,9 @@ export default function ProfilePage() {
 
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
       toast.success(t("bookingRejected"));
-    } catch {
-      toast.error(t("errorRejectingBooking"));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("errorRejectingBooking");
+      toast.error(message);
     } finally {
       setProcessingBooking(null);
     }
@@ -523,11 +556,10 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-surface-container-lowest">
         <AuroraBackground className="border-b border-white/5">
-          <OrbGlow className="-top-10 -right-20" color="#e63946" size={300} opacity={0.35} />
-          <OrbGlow className="-bottom-10 -left-10" color="#ffb3b1" size={200} opacity={0.25} blur={100} />
+          <OrbGlow className="-top-10 -right-20" color="#e63946" size={260} opacity={0.32} />
           <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
             <div className="flex items-center gap-3">
-              <Link href="/profilo" className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
+              <Link href={`/${locale}/profilo`} className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
                 {getUserAvatar() ? (
                   <Image
                     src={getUserAvatar()!}
@@ -680,12 +712,23 @@ export default function ProfilePage() {
                       .select("*")
                       .eq("id", user?.id)
                       .single()
-                      .then(({ data }) => {
-                        if (data) setProfile(data);
+                      .then(({ data }: { data: Record<string, unknown> | null }) => {
+                        if (data) setProfile(data as unknown as Profile);
                       });
                   }}
                 />
               </div>
+            </div>
+          </section>
+
+          {/* Stripe Connect */}
+          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
+            <div className="bg-surface-container p-4 rounded-xl">
+              <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                <CreditCard className="w-5 h-5 text-primary" />
+                {t("payments")}
+              </h3>
+              <StripeConnectBanner />
             </div>
           </section>
 
@@ -845,7 +888,7 @@ export default function ProfilePage() {
                   myRides.map((ride) => (
                     <Link
                       key={ride.id}
-                      href={`/corsa/${ride.id}`}
+                      href={`/${locale}/corsa/${ride.id}`}
                       className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-primary shadow-sm active:scale-[0.98] transition-transform"
                     >
                       <div className="flex justify-between items-start">
@@ -919,12 +962,12 @@ export default function ProfilePage() {
                               <>
                                 {booking.status !== "canceled" && (
                                   <>
-                                    <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
+                                    <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
                                       <MessageCircle className="h-3 w-3" />
                                       {t("chat")}
                                     </Link>
                                     <Link
-                                      href={`/cancella/${booking.id}`}
+                                      href={`/${locale}/cancella/${booking.id}`}
                                       className="flex items-center gap-1 rounded-full bg-error/20 px-3 py-1.5 text-sm font-bold text-error"
                                     >
                                       {t("cancel")}
@@ -1094,9 +1137,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-on-surface pb-16 relative">
         <AuroraBackground className="absolute inset-x-0 top-0 h-[520px] -z-10 pointer-events-none" showRadialMask={false}>
-          <Spotlight size={700} color="rgba(230,57,70,0.18)" />
-          <OrbGlow className="-top-20 -left-20" color="#e63946" size={450} opacity={0.30} />
-          <OrbGlow className="top-20 -right-32" color="#ffb3b1" size={380} opacity={0.22} blur={140} />
+          <OrbGlow className="-top-20 -left-20" color="#e63946" size={340} opacity={0.30} />
         </AuroraBackground>
         <div className="max-w-6xl mx-auto px-8 py-10 relative">
           <Reveal>
@@ -1283,7 +1324,7 @@ export default function ProfilePage() {
                         {myRides.map((ride) => (
                           <Link
                             key={ride.id}
-                            href={`/corsa/${ride.id}`}
+                            href={`/${locale}/corsa/${ride.id}`}
                             className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-primary shadow-sm hover:scale-[1.01] transition-transform"
                           >
                             <div className="flex justify-between items-start">
@@ -1359,12 +1400,12 @@ export default function ProfilePage() {
                                     <>
                                       {booking.status !== "canceled" && (
                                         <>
-                                          <Link href={`/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary">
+                                          <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary">
                                             <MessageCircle className="h-4 w-4" />
                                             {t("chat")}
                                           </Link>
                                           <Link
-                                            href={`/cancella/${booking.id}`}
+                                            href={`/${locale}/cancella/${booking.id}`}
                                             className="flex items-center gap-1 rounded-full bg-error/20 px-4 py-2 text-sm font-bold text-error"
                                           >
                                             {t("cancel")}
@@ -1493,12 +1534,21 @@ export default function ProfilePage() {
                         .select("*")
                         .eq("id", user?.id)
                         .single()
-                        .then(({ data }) => {
-                          if (data) setProfile(data);
+                        .then(({ data }: { data: Record<string, unknown> | null }) => {
+                          if (data) setProfile(data as unknown as Profile);
                         });
                     }}
                   />
                 </div>
+              </div>
+
+              {/* Stripe Connect - Desktop */}
+              <div className="bg-surface-container p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+                  <CreditCard className="w-5 h-5 text-primary" />
+                  {t("payments")}
+                </h3>
+                <StripeConnectBanner />
               </div>
 
               {/* Car Info - Desktop */}

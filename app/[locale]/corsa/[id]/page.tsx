@@ -124,8 +124,7 @@ function RideDetailMobile({
       <main className="overflow-y-auto overflow-x-hidden hide-scrollbar">
         {/* Full Bleed Map Header — Premium Aurora */}
         <AuroraBackground className="relative h-[400px] w-full" showRadialMask={false}>
-          <OrbGlow className="-top-10 -right-20" color="#e63946" size={360} opacity={0.4} />
-          <OrbGlow className="bottom-10 -left-20" color="#ffb3b1" size={300} opacity={0.3} blur={140} />
+          <OrbGlow className="-top-10 -right-20" color="#e63946" size={280} opacity={0.35} />
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a]/70 via-[#0e0e0e]/40 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
           {/* Weather Widget */}
@@ -491,9 +490,7 @@ function RideDetailDesktop({
             {/* Hero Map — Premium Aurora */}
             <Reveal>
             <AuroraBackground className="relative h-[420px] w-full rounded-3xl overflow-hidden border border-white/10" showRadialMask={false}>
-              <Spotlight size={600} color="rgba(230,57,70,0.20)" />
-              <OrbGlow className="-top-20 -right-20" color="#e63946" size={400} opacity={0.35} />
-              <OrbGlow className="bottom-0 -left-20" color="#ffb3b1" size={300} opacity={0.3} blur={140} />
+              <OrbGlow className="-top-20 -right-20" color="#e63946" size={320} opacity={0.32} />
               <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a]/70 via-[#0e0e0e]/40 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 flex items-center space-x-3 bg-white/[0.06] border border-white/10 backdrop-blur-xl px-4 py-2 rounded-xl">
@@ -830,7 +827,7 @@ export default function RideDetailPage() {
   const [existingBooking, setExistingBooking] = useState<Booking | null>(null);
   const [stops, setStops] = useState<{ city: string; order_index: number }[]>([]);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     const fetchRide = async () => {
@@ -946,14 +943,48 @@ export default function RideDetailPage() {
       return;
     }
     if (existingBooking) {
-      router.push(`/chat/${existingBooking.id}`);
+      router.push(`/${locale}/chat/${existingBooking.id}`);
       return;
     }
 
     setRequesting(true);
 
     try {
-      // Check available seats before booking to prevent race conditions
+      // Paid ride → redirect to Stripe Connect checkout
+      if (ride.price > 0) {
+        const res = await fetch("/api/stripe/connect/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rideId, locale }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (data.error === "Driver has not set up payments") {
+            toast.error(t('driverPaymentsNotSetup') || "Il guidatore non ha ancora configurato i pagamenti.");
+          } else {
+            throw new Error(data.error || "Checkout failed");
+          }
+          setRequesting(false);
+          return;
+        }
+
+        window.location.href = data.url;
+        return;
+      }
+
+      // Free ride — ensure profile exists before booking
+      await supabase.from("profiles").upsert({
+        id: user.id,
+        name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Utente",
+        email: user.email || "",
+        rating: 5.0,
+        rides_count: 0,
+        points: 0,
+        level: "Viaggiatore",
+      }, { onConflict: "id", ignoreDuplicates: true });
+
+      // Free ride — existing flow
       const { count: confirmedCount, error: countError } = await supabase
         .from("bookings")
         .select("*", { count: "exact", head: true })
@@ -961,7 +992,6 @@ export default function RideDetailPage() {
         .eq("status", "confirmed");
 
       if (countError) {
-        console.error('[booking] seat count error:', countError);
         throw new Error(`Seat count failed: ${countError.message}`);
       }
 
@@ -983,28 +1013,22 @@ export default function RideDetailPage() {
         .single();
 
       if (error) {
-        console.error('[booking] insert error:', error);
+        if (error.code === '23505') {
+          toast.error(t('alreadyBooked') || 'Hai già una prenotazione per questo viaggio');
+          setRequesting(false);
+          return;
+        }
         throw new Error(`Booking insert failed: ${error.message}`);
       }
+      if (!booking?.id) throw new Error('Booking insert returned no data');
 
-      if (!booking || !booking.id) {
-        console.error('[booking] insert returned no data');
-        throw new Error('Booking insert returned no data');
-      }
-
-      // Create initial chat message — non-fatal if it fails
-      const { error: msgError } = await supabase.from("messages").insert({
+      await supabase.from("messages").insert({
         booking_id: booking.id,
         sender_id: user.id,
         content: t('initialMessage', { from: ride.from_city, to: ride.to_city }),
         read: false,
       });
 
-      if (msgError) {
-        console.error('[booking] message insert error (non-fatal):', msgError);
-      }
-
-      // Notify driver — non-fatal if it fails
       try {
         await notifyBookingRequest(
           ride.driver_id,
@@ -1017,7 +1041,7 @@ export default function RideDetailPage() {
       }
 
       toast.success(t('bookingSuccess'));
-      router.push(`/chat/${booking.id}`);
+      router.push(`/${locale}/chat/${booking.id}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       console.error('[booking] error:', err);

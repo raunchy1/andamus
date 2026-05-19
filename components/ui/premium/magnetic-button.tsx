@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentPropsWithoutRef, ReactNode, useRef } from "react";
+import { ComponentPropsWithoutRef, ReactNode, useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -12,24 +12,33 @@ interface MagneticButtonProps extends Omit<ComponentPropsWithoutRef<typeof motio
 
 /**
  * Magnetic button that subtly follows the cursor when hovered.
- * Inspired by Aceternity UI's magnetic interactions, plus an optional shimmer overlay.
+ * Magnetic effect is disabled on touch/coarse pointers and reduced-motion devices.
  */
 export function MagneticButton({
   children,
   className,
-  strength = 24,
-  shimmer = true,
+  strength = 14,
+  shimmer = false,
   ...props
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
+  const [enabled, setEnabled] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 220, damping: 18, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 220, damping: 18, mass: 0.4 });
-  const rotateX = useTransform(sy, (v) => -v / 6);
-  const rotateY = useTransform(sx, (v) => v / 6);
+  const sx = useSpring(x, { stiffness: 180, damping: 24, mass: 0.5 });
+  const sy = useSpring(y, { stiffness: 180, damping: 24, mass: 0.5 });
+  const rotateX = useTransform(sy, (v) => -v / 8);
+  const rotateY = useTransform(sx, (v) => v / 8);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setEnabled(fine && !reduced);
+  }, []);
 
   const onMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!enabled) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();

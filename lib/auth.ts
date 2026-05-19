@@ -89,14 +89,21 @@ export async function getUser() {
   return user;
 }
 
+/**
+ * @deprecated getSession() returns locally-cached, unverified data.
+ * Use getUser() instead, which validates the token server-side.
+ * This wrapper first calls getUser() to re-validate the JWT, then returns
+ * the locally-cached session — so it is safe to call for session metadata.
+ */
 export async function getSession() {
   const supabase = createClient();
-  const { data: { session }, error } = await supabase.auth.getSession();
-  
-  if (error) {
+  // Validate the JWT first — this is the secure check
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     return null;
   }
-  
+  // JWT is valid; locally-cached session data is now trustworthy
+  const { data: { session } } = await supabase.auth.getSession();
   return session;
 }
 

@@ -20,7 +20,7 @@ export function BottomNav() {
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-nav flex justify-around items-center h-16 px-4 bg-[#0f0f0f] border-t border-[#2a2a2a] md:hidden safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-nav flex justify-around items-center min-h-[4rem] h-auto px-4 pt-2 pb-[env(safe-area-inset-bottom,0px)] bg-[#0f0f0f] border-t border-[#2a2a2a] md:hidden">
       {navItems.map((item) => {
         const fullHref = `/${locale}${item.href}`;
         const isActive =
@@ -33,7 +33,7 @@ export function BottomNav() {
           <Link
             key={item.href}
             href={fullHref}
-            className={`flex flex-col items-center justify-center group ${
+            className={`flex flex-col items-center justify-center min-h-[44px] min-w-[44px] px-2 group ${
               isActive
                 ? "text-[#ffb3b1] font-bold"
                 : "text-[#77706f] hover:text-[#e5e2e1]"

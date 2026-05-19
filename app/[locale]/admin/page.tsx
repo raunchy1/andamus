@@ -56,10 +56,13 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Partial<Stats>>({});
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(new Date());
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "rides" | "revenue" | "realtime">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "rides" | "revenue" | "realtime" | "waitinglist">("overview");
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
+  const locale = typeof window !== "undefined"
+    ? window.location.pathname.split("/")[1] || "it"
+    : "it";
 
   const loadStats = useCallback(async () => {
     setLoading(true);
@@ -136,7 +139,7 @@ export default function AdminPage() {
         .limit(500);
 
       const routeMap: Record<string, number> = {};
-      routesRaw?.forEach((r) => {
+      routesRaw?.forEach((r: { from_city: string; to_city: string }) => {
         const key = `${r.from_city} → ${r.to_city}`;
         routeMap[key] = (routeMap[key] || 0) + 1;
       });
@@ -152,7 +155,7 @@ export default function AdminPage() {
       const { data: citiesRaw } = await supabase.from("rides").select("from_city");
 
       const cityMap: Record<string, number> = {};
-      citiesRaw?.forEach((r) => {
+      citiesRaw?.forEach((r: { from_city: string }) => {
         cityMap[r.from_city] = (cityMap[r.from_city] || 0) + 1;
       });
       const citiesStats = Object.entries(cityMap)
@@ -190,7 +193,7 @@ export default function AdminPage() {
       const allowed = await checkAdminAccess();
       if (cancelled) return;
       if (!allowed) {
-        router.replace("/");
+        router.replace(`/${locale}/join`);
         return;
       }
       setAuthorized(true);
@@ -249,6 +252,7 @@ export default function AdminPage() {
           { id: "rides", label: "Corse" },
           { id: "revenue", label: "Revenue" },
           { id: "realtime", label: "🔴 Live" },
+          { id: "waitinglist", label: "⏳ Lista d'attesa" },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -276,6 +280,7 @@ export default function AdminPage() {
             {activeTab === "rides" && <RidesList supabase={supabase} />}
             {activeTab === "revenue" && <RevenueTab />}
             {activeTab === "realtime" && <RealtimePanel supabase={supabase} />}
+            {activeTab === "waitinglist" && <WaitingListTab supabase={supabase} />}
           </>
         )}
       </div>
@@ -618,6 +623,157 @@ interface RealtimeEvent {
 
 interface RidePayload {
   new: { from_city?: string; to_city?: string };
+}
+
+interface WaitingListRow {
+  id: string;
+  email: string;
+  phone: string | null;
+  zona: string | null;
+  referral_code: string;
+  referred_by: string | null;
+  position: number;
+  created_at: string;
+}
+
+function WaitingListTab({ supabase }: { supabase: AdminSupabase }) {
+  const [rows, setRows] = useState<WaitingListRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [total, setTotal] = useState(0);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data, count } = await supabase
+      .from("waiting_list")
+      .select("*", { count: "exact" })
+      .order("position", { ascending: true })
+      .limit(200);
+    setRows((data ?? []) as WaitingListRow[]);
+    setTotal(count ?? 0);
+    setLoading(false);
+  }, [supabase]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = rows.filter(
+    (r) =>
+      r.email.toLowerCase().includes(search.toLowerCase()) ||
+      (r.zona ?? "").toLowerCase().includes(search.toLowerCase()) ||
+      r.referral_code.includes(search)
+  );
+
+  const zonaCount = rows.reduce<Record<string, number>>((acc, r) => {
+    const z = r.zona ?? "—";
+    acc[z] = (acc[z] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const referralCount = rows.filter((r) => r.referred_by).length;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* KPI */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Iscritti totali", value: total, color: "#3b82f6" },
+          { label: "Invitati da altri", value: referralCount, color: "#10b981" },
+          { label: "Zone diverse", value: Object.keys(zonaCount).length, color: "#f59e0b" },
+          { label: "Tasso referral", value: `${total > 0 ? Math.round((referralCount / total) * 100) : 0}%`, color: "#8b5cf6" },
+        ].map((kpi, i) => (
+          <div key={i} className="bg-[#111] border border-white/10 rounded-2xl p-4">
+            <p className="text-3xl font-bold" style={{ color: kpi.color }}>{kpi.value}</p>
+            <p className="text-white/50 text-xs mt-1">{kpi.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Zone breakdown */}
+      {Object.keys(zonaCount).length > 0 && (
+        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
+          <h3 className="font-semibold text-white mb-4">Distribuzione per zona</h3>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(zonaCount)
+              .sort((a, b) => b[1] - a[1])
+              .map(([zona, count]) => (
+                <span key={zona} className="flex items-center gap-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm px-3 py-1.5 rounded-xl">
+                  {zona} <span className="font-bold text-white">{count}</span>
+                </span>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Search + table */}
+      <div className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden">
+        <div className="p-4 border-b border-white/10 flex items-center justify-between gap-3">
+          <input
+            type="text"
+            placeholder="Cerca per email, zona o codice..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500"
+          />
+          <button onClick={load} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+            <RefreshCw size={16} className="text-white/60" />
+          </button>
+          <span className="text-white/40 text-sm whitespace-nowrap">{filtered.length} risultati</span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="px-4 py-3 text-left text-white/40 font-medium">#</th>
+                <th className="px-4 py-3 text-left text-white/40 font-medium">Email</th>
+                <th className="px-4 py-3 text-left text-white/40 font-medium">Telefono</th>
+                <th className="px-4 py-3 text-left text-white/40 font-medium">Zona</th>
+                <th className="px-4 py-3 text-left text-white/40 font-medium">Ref. code</th>
+                <th className="px-4 py-3 text-left text-white/40 font-medium">Invitato da</th>
+                <th className="px-4 py-3 text-left text-white/40 font-medium">Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((row) => (
+                <tr key={row.id} className="border-b border-white/5 hover:bg-white/3 transition-colors">
+                  <td className="px-4 py-3 font-bold text-blue-400">#{row.position}</td>
+                  <td className="px-4 py-3 text-white">{row.email}</td>
+                  <td className="px-4 py-3 text-white/50">{row.phone ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    {row.zona ? (
+                      <span className="bg-blue-500/10 text-blue-300 text-xs px-2 py-1 rounded-lg">{row.zona}</span>
+                    ) : <span className="text-white/30">—</span>}
+                  </td>
+                  <td className="px-4 py-3 font-mono text-white/60 text-xs">{row.referral_code}</td>
+                  <td className="px-4 py-3 font-mono text-xs">
+                    {row.referred_by
+                      ? <span className="text-green-400">{row.referred_by}</span>
+                      : <span className="text-white/20">—</span>}
+                  </td>
+                  <td className="px-4 py-3 text-white/40 text-xs whitespace-nowrap">
+                    {new Date(row.created_at).toLocaleString("it", { dateStyle: "short", timeStyle: "short" })}
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-white/30">Nessun risultato</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function RealtimePanel({ supabase }: { supabase: AdminSupabase }) {

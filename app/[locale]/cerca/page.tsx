@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense, useCallback, useRef } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -19,7 +19,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
 import { AlertModal } from "@/components/cerca/AlertModal";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
-import { Spotlight } from "@/components/ui/premium/spotlight";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
 import { GradientText } from "@/components/ui/premium/gradient-text";
 import { MagneticButton } from "@/components/ui/premium/magnetic-button";
@@ -110,6 +109,7 @@ interface SearchViewProps {
   setPullDistance: (v: number) => void;
   rides: Ride[];
   loading: boolean;
+  hasError: boolean;
   today: string;
   resultsRef: React.RefObject<HTMLDivElement | null>;
   fetchRides: () => Promise<void>;
@@ -127,6 +127,7 @@ interface SearchViewProps {
 
 function SearchMobile(props: SearchViewProps) {
   const t = useTranslations('search');
+  const locale = useLocale();
   const {
     activeFilter, setActiveFilter,
     origin, setOrigin,
@@ -148,7 +149,7 @@ function SearchMobile(props: SearchViewProps) {
     showAlertModal, setShowAlertModal,
     alertSaving, setAlertSaving,
     pullDistance,
-    rides, loading,
+    rides, loading, hasError,
     today,
     resultsRef,
     handleTouchStart, handleTouchMove, handleTouchEnd,
@@ -167,7 +168,7 @@ function SearchMobile(props: SearchViewProps) {
         <OrbGlow className="-top-10 -right-10" color="#e63946" size={220} opacity={0.28} />
         <header className="relative flex justify-between items-end px-4 sm:px-6 pt-4 pb-4">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href="/profilo" className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-md">
+            <Link href={`/${locale}/profilo`} className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-md">
               <User className="w-5 h-5 text-[#e5e2e1]" />
             </Link>
             <div className="flex flex-col min-w-0">
@@ -214,7 +215,7 @@ function SearchMobile(props: SearchViewProps) {
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               {/* Search Icon - hidden on mobile, shown on sm+ */}
               <Search className="hidden sm:block w-5 h-5 text-primary flex-shrink-0" />
-              
+
               {/* From/To Grid */}
               <div className="grid grid-cols-2 gap-2 sm:gap-3 flex-1 min-w-0">
                 {/* Partenza */}
@@ -230,7 +231,7 @@ function SearchMobile(props: SearchViewProps) {
                     />
                   </div>
                 </div>
-                
+
                 {/* Destinazione */}
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('toLabel')}</span>
@@ -412,17 +413,30 @@ function SearchMobile(props: SearchViewProps) {
             </>
           )}
 
-          {!loading && rides.length === 0 && (
+          {!loading && hasError && (
+            <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+              <p className="text-[#e5e2e1]/60 text-sm">{t('searchError')}</p>
+              <button
+                type="button"
+                onClick={handleRefresh}
+                className="px-4 py-2 bg-[#e63946] text-white rounded-xl text-sm font-semibold hover:bg-[#c92a37] transition-colors"
+              >
+                {t('retry')}
+              </button>
+            </div>
+          )}
+
+          {!loading && !hasError && rides.length === 0 && (
             <EmptyStateSearch
               hasFilters={activeFiltersCount > 0}
               onClearFilters={clearFilters}
             />
           )}
 
-          {!loading && rides.map((ride, idx) => (
+          {!loading && !hasError && rides.map((ride, idx) => (
             <RevealItem key={ride.id}>
             <Link
-              href={`/corsa/${ride.id}`}
+              href={`/${locale}/corsa/${ride.id}`}
               className={`group relative block overflow-hidden rounded-2xl p-4 sm:p-6 transition-all duration-300 active:scale-[0.98] cursor-pointer border ${
                 idx === 0
                   ? "border-[#ffb3b1]/25 bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent"
@@ -517,6 +531,7 @@ function SearchMobile(props: SearchViewProps) {
 
 function SearchDesktop(props: SearchViewProps) {
   const t = useTranslations('search');
+  const locale = useLocale();
   const {
     activeFilter, setActiveFilter,
     origin, setOrigin,
@@ -537,7 +552,7 @@ function SearchDesktop(props: SearchViewProps) {
     isRefreshing,
     showAlertModal, setShowAlertModal,
     alertSaving, setAlertSaving,
-    rides, loading,
+    rides, loading, hasError,
     today,
     handleRefresh,
     handleSearch,
@@ -550,9 +565,7 @@ function SearchDesktop(props: SearchViewProps) {
   return (
     <div className="text-[#e5e2e1] max-w-7xl mx-auto w-full relative">
       <AuroraBackground className="absolute inset-x-0 -top-10 h-[400px] -z-10" showRadialMask={false}>
-        <Spotlight size={700} color="rgba(230,57,70,0.18)" />
-        <OrbGlow className="-top-20 -left-20" color="#e63946" size={420} opacity={0.30} />
-        <OrbGlow className="top-20 -right-32" color="#ffb3b1" size={360} opacity={0.25} blur={140} />
+        <OrbGlow className="-top-20 -left-20" color="#e63946" size={320} opacity={0.30} />
       </AuroraBackground>
 
       {/* Section title */}
@@ -801,7 +814,20 @@ function SearchDesktop(props: SearchViewProps) {
           </>
         )}
 
-        {!loading && rides.length === 0 && (
+        {!loading && hasError && (
+          <div className="col-span-full flex flex-col items-center justify-center py-12 text-center gap-4">
+            <p className="text-[#e5e2e1]/60">{t('searchError')}</p>
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="px-4 py-2 bg-[#e63946] text-white rounded-xl text-sm font-semibold hover:bg-[#c92a37] transition-colors"
+            >
+              {t('retry')}
+            </button>
+          </div>
+        )}
+
+        {!loading && !hasError && rides.length === 0 && (
           <div className="col-span-full">
             <EmptyStateSearch
               hasFilters={activeFiltersCount > 0}
@@ -810,7 +836,7 @@ function SearchDesktop(props: SearchViewProps) {
           </div>
         )}
 
-        {!loading && rides.map((ride, idx) => (
+        {!loading && !hasError && rides.map((ride, idx) => (
           <RevealItem key={ride.id}>
           <TiltCard
             tiltStrength={6}
@@ -821,7 +847,7 @@ function SearchDesktop(props: SearchViewProps) {
             } backdrop-blur-sm`}
           >
           <Link
-            href={`/corsa/${ride.id}`}
+            href={`/${locale}/corsa/${ride.id}`}
             className="group block p-6 touch-manipulation"
           >
             <div className="flex justify-between items-start mb-4">
@@ -916,6 +942,7 @@ function SearchDesktop(props: SearchViewProps) {
 function SearchContent() {
   const t = useTranslations('search');
   const locale = useLocale();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const deviceType = useDeviceType();
 
@@ -943,15 +970,32 @@ function SearchContent() {
 
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
+  // Fix #4: track error state so the error UI is shown instead of empty state
+  const [hasError, setHasError] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toISOString().split("T")[0];
   const supabase = createClient();
 
+  // Fix #1: sync filter state back into the URL so browser Back restores them.
+  // We use replace (not push) to avoid polluting the history stack on every
+  // keystroke — only the current entry is updated.
+  const syncUrlParams = useCallback(() => {
+    const params = new URLSearchParams();
+    if (origin) params.set("from", origin);
+    if (destination) params.set("to", destination);
+    if (dateFrom) params.set("date", dateFrom);
+    if (activeFilter !== "all") params.set("filter", activeFilter);
+    const qs = params.toString();
+    router.replace(`/${locale}/cerca${qs ? `?${qs}` : ""}`, { scroll: false });
+  }, [origin, destination, dateFrom, activeFilter, locale, router]);
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchRides = useCallback(async () => {
     setLoading(true);
+    // Fix #4: reset error flag before each attempt
+    setHasError(false);
     try {
       const results = await searchRides({
         origin: origin || undefined,
@@ -976,13 +1020,17 @@ function SearchContent() {
         Analytics.searchPerformed(origin, destination);
       }
     } catch (err: unknown) {
+      // Fix #4: surface error to the UI instead of silently showing empty state
+      setHasError(true);
       toast.error(err instanceof Error ? err.message : t('searchError'));
     } finally {
       setLoading(false);
     }
   }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, t]);
 
-  // Debounced fetch
+  // Fix #2: single debounced effect — removed the redundant immediate useEffect
+  // that was causing a double fetch on every mount. fetchRides fires once after
+  // 400 ms on the initial render, and again whenever its deps change.
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -993,12 +1041,10 @@ function SearchContent() {
     };
   }, [fetchRides]);
 
-  // Initial load — intentionally omitting fetchRides from deps
-  // to avoid double-fetch on mount. fetchRides is stable via useCallback.
+  // Fix #1: keep the URL in sync whenever key filter state changes.
   useEffect(() => {
-    fetchRides();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    syncUrlParams();
+  }, [syncUrlParams]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (resultsRef.current && resultsRef.current.scrollTop === 0) {
@@ -1108,7 +1154,7 @@ function SearchContent() {
     alertSaving, setAlertSaving,
     pullStartY, setPullStartY,
     pullDistance, setPullDistance,
-    rides, loading,
+    rides, loading, hasError,
     today,
     resultsRef,
     fetchRides,
@@ -1127,6 +1173,8 @@ function SearchContent() {
   return <SearchDesktop {...sharedProps} />;
 }
 
+// Fix #9: SearchContent uses useSearchParams and useRouter which require a
+// Suspense boundary in Next.js 16. SearchPage provides that boundary.
 export default function SearchPage() {
   return (
     <div className="min-h-screen bg-[#0e0e0e]">

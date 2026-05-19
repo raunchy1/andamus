@@ -1,63 +1,75 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Fix #5: skeleton layout now mirrors the actual RideCardSkeleton editorial
+// card layout (time + price on top row, route path in the middle, driver info
+// at the bottom) instead of the old avatar-name-on-top layout.
 export default function SearchLoading() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-24">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Skeleton */}
-        <div className="mb-6">
-          <Skeleton className="h-8 w-48 mb-2" />
-          <Skeleton className="h-4 w-72" />
+    <div className="min-h-screen bg-[#0e0e0e] pt-16 pb-24">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        {/* Header area */}
+        <div className="mb-8">
+          <Skeleton className="h-5 w-32 mb-2 bg-white/[0.06]" />
+          <Skeleton className="h-9 w-24 bg-white/[0.08]" />
         </div>
 
-        {/* Search Form Skeleton */}
-        <div className="bg-[#1c1b1b] rounded-2xl p-4 sm:p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ))}
-            <div className="flex items-end">
-              <Skeleton className="h-12 w-full bg-[#e63946]/20" />
-            </div>
+        {/* Search bar skeleton */}
+        <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3 mb-6">
+          <div className="grid grid-cols-2 gap-2">
+            <Skeleton className="h-10 w-full bg-white/[0.05]" />
+            <Skeleton className="h-10 w-full bg-white/[0.05]" />
           </div>
         </div>
 
-        {/* Results Header Skeleton */}
-        <div className="flex items-center justify-between mb-4">
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="h-10 w-32" />
+        {/* Filter pills skeleton */}
+        <div className="flex gap-2 mb-8 overflow-hidden">
+          {(["w-20", "w-16", "w-[72px]", "w-16", "w-14"] as const).map((w, i) => (
+            <Skeleton key={i} className={`h-8 rounded-full flex-shrink-0 bg-white/[0.05] ${w}`} />
+          ))}
         </div>
 
-        {/* 5 Ride Card Skeletons */}
-        <div className="grid gap-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="rounded-2xl bg-[#1c1b1b] p-4 sm:p-5 border border-white/5">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="w-10 h-10 rounded-full" />
-                  <div>
-                    <Skeleton className="h-4 w-32 mb-2" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
+        {/* 3 ride card skeletons matching RideCardSkeleton layout */}
+        <div className="space-y-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="bg-white/[0.025] border border-white/[0.06] rounded-2xl p-4 sm:p-6 animate-pulse">
+              {/* Top row: date label + price */}
+              <div className="flex justify-between items-start mb-4 gap-4">
+                <div className="space-y-1.5 min-w-0">
+                  <Skeleton className="h-3 w-20 rounded bg-white/[0.06]" />
+                  <Skeleton className="h-8 w-16 rounded bg-white/[0.08]" />
                 </div>
-                <Skeleton className="h-6 w-16 rounded-full" />
+                <div className="text-right flex-shrink-0 space-y-1.5">
+                  <Skeleton className="h-6 w-16 rounded ml-auto bg-white/[0.08]" />
+                  <Skeleton className="h-2.5 w-12 rounded ml-auto bg-white/[0.06]" />
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="text-center">
-                    <Skeleton className="h-5 w-20 mb-1" />
-                    <Skeleton className="h-3 w-16" />
-                  </div>
-                  <div className="w-8 h-[2px] bg-white/10" />
-                  <div className="text-center">
-                    <Skeleton className="h-5 w-20 mb-1" />
-                    <Skeleton className="h-3 w-16" />
+
+              {/* Route path indicator */}
+              <div className="relative py-6 flex items-center justify-between">
+                <Skeleton className="absolute left-0 right-0 h-[2px] bg-white/[0.06]" />
+                <div className="relative z-10 flex flex-col items-start pr-3 max-w-[40%]">
+                  <Skeleton className="h-3 w-16 rounded mb-1 bg-white/[0.06]" />
+                  <Skeleton className="w-3 h-3 rounded-full bg-white/[0.08]" />
+                </div>
+                <div className="relative z-10 px-3 flex-shrink-0">
+                  <Skeleton className="w-5 h-5 rounded bg-white/[0.06]" />
+                </div>
+                <div className="relative z-10 flex flex-col items-end pl-3 max-w-[40%]">
+                  <Skeleton className="h-3 w-16 rounded mb-1 bg-white/[0.06]" />
+                  <Skeleton className="w-3 h-3 rounded-full bg-white/[0.08]" />
+                </div>
+              </div>
+
+              {/* Driver info */}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/[0.04]">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Skeleton className="w-10 h-10 rounded-full flex-shrink-0 bg-white/[0.08]" />
+                  <div className="min-w-0 space-y-1.5">
+                    <Skeleton className="h-4 w-24 rounded bg-white/[0.07]" />
+                    <Skeleton className="h-3 w-12 rounded bg-white/[0.05]" />
                   </div>
                 </div>
-                <Skeleton className="h-8 w-24 rounded-lg" />
+                <Skeleton className="w-5 h-5 rounded flex-shrink-0 bg-white/[0.06]" />
               </div>
             </div>
           ))}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { 
   Bell, 
   Check, 
@@ -73,6 +73,7 @@ function timeAgo(date: string, t: (key: string, values?: Record<string, string |
 
 export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const t = useTranslations("notifications");
+  const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +95,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
     if (data) {
       setNotifications(data);
-      setUnreadCount(data.filter((n) => !n.read).length);
+      setUnreadCount(data.filter((n: { read: boolean }) => !n.read).length);
     }
   }, [supabase]);
 
@@ -121,8 +122,8 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
             table: "notifications",
             filter: `user_id=eq.${user.id}`,
           },
-          (payload) => {
-            setNotifications((prev) => [payload.new as Notification, ...prev].slice(0, 10));
+          (payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<Record<string, unknown>>) => {
+            setNotifications((prev) => [payload.new as unknown as Notification, ...prev].slice(0, 10));
             setUnreadCount((prev) => prev + 1);
           }
         )
@@ -192,15 +193,19 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
   const getNotificationLink = (notification: Notification) => {
     if (notification.booking_id) {
-      if (notification.type === 'new_message') {
-        return `/chat/${notification.booking_id}`;
+      if (
+        notification.type === 'new_message' ||
+        notification.type === 'booking_accepted' ||
+        notification.type === 'booking_rejected'
+      ) {
+        return `/${locale}/chat/${notification.booking_id}`;
       }
-      return `/profilo`;
+      return `/${locale}/profilo`;
     }
     if (notification.ride_id) {
-      return `/corsa/${notification.ride_id}`;
+      return `/${locale}/corsa/${notification.ride_id}`;
     }
-    return '/profilo';
+    return `/${locale}/profilo`;
   };
 
   return (
@@ -285,7 +290,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
           {notifications.length > 0 && (
             <div className="border-t border-white/10 px-4 py-2 text-center">
               <Link
-                href="/profilo"
+                href={`/${locale}/profilo`}
                 onClick={() => setIsOpen(false)}
                 className="text-xs text-white/50 hover:text-white transition-colors"
               >

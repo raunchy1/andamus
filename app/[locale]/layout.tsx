@@ -15,6 +15,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#e63946",
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export async function generateMetadata({ 

@@ -220,7 +220,7 @@ export default function ChatWindow({
           table: "messages",
           filter: `booking_id=eq.${bookingId}`,
         },
-        async (payload) => {
+        async (payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<Record<string, unknown>>) => {
           const { data: newMessage } = await supabase
             .from("messages")
             .select(
@@ -1011,7 +1011,7 @@ export default function ChatWindow({
 
         {/* Input */}
         <footer className="bg-[#131313] px-4 sm:px-6 pb-10 pt-6 shrink-0 safe-area-pb">
-          <ChatInput mobile />
+          {ChatInput({ mobile: true })}
         </footer>
       </div>
     );
@@ -1112,7 +1112,7 @@ export default function ChatWindow({
 
           {/* Input */}
           <footer className="bg-[#131313] px-8 pb-8 pt-6 shrink-0">
-            <ChatInput />
+            {ChatInput({ mobile: false })}
           </footer>
         </div>
       </div>
@@ -1121,7 +1121,7 @@ export default function ChatWindow({
 
   return (
     <ErrorBoundary>
-      {deviceType === "desktop" ? <ChatDesktop /> : <ChatMobile />}
+      {deviceType === "desktop" ? ChatDesktop() : ChatMobile()}
 
       {/* Image Preview Modal */}
       {imagePreview && (

@@ -197,14 +197,32 @@ self.addEventListener("push", (event) => {
 });
 
 // Handle notification clicks
+// event.action === "" (empty string) = user clicked notification body
+// event.action === "open" = user clicked explicit action button
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  
-  if (event.action === "open" || event.action === "default") {
-    event.waitUntil(
-      self.clients.openWindow(event.notification.data?.url || "/")
-    );
-  }
+
+  if (event.action === "close") return;
+
+  const targetUrl = (event.notification.data as { url?: string } | null)?.url || "/";
+
+  event.waitUntil(
+    (async () => {
+      const allClients = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      // Focus an existing window if available (avoids duplicate windows in standalone mode)
+      for (const client of allClients) {
+        if ("focus" in client) {
+          await (client as WindowClient).navigate(targetUrl);
+          await (client as WindowClient).focus();
+          return;
+        }
+      }
+      await self.clients.openWindow(targetUrl);
+    })()
+  );
 });
 
 // Install and activate

@@ -16,7 +16,10 @@ if (typeof window === "undefined" && !globalThis.__andamusEnvChecked) {
   globalThis.__andamusEnvChecked = true;
   const missing = requiredEnvVars.filter((k) => !process.env[k]);
   if (missing.length > 0) {
-    console.warn(`[env] Missing environment variables: ${missing.join(", ")}`);
+    throw new Error(
+      `[env] Missing required environment variables: ${missing.join(", ")}. ` +
+      `Check your .env.local file or Vercel environment settings.`
+    );
   }
 }
 

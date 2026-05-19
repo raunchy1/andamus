@@ -70,8 +70,12 @@ export async function POST(req: NextRequest) {
             payload
           );
           sent++;
-        } catch {
-          // Ignore individual send failures
+        } catch (err) {
+          // Remove permanently invalid subscriptions (410 Gone or 404)
+          const statusCode = (err as { statusCode?: number }).statusCode;
+          if (statusCode === 410 || statusCode === 404) {
+            await supabase.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+          }
         }
       })
     );

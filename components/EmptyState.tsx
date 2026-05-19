@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface EmptyStateProps {
   title: string;
@@ -91,7 +91,9 @@ export function EmptyState({
   );
 }
 
-// Pre-built empty states for common scenarios
+// Fix #3: EmptyStateSearch "offer ride" action href was hardcoded to "/offri",
+// which 404s because all routes are under /[locale]/. Now builds the href with
+// the current locale prefix.
 export function EmptyStateSearch({
   hasFilters,
   onClearFilters,
@@ -100,6 +102,7 @@ export function EmptyStateSearch({
   onClearFilters: () => void;
 }) {
   const t = useTranslations("emptyState");
+  const locale = useLocale();
   return (
     <EmptyState
       title={t("noRidesFound")}
@@ -110,12 +113,12 @@ export function EmptyStateSearch({
       }
       icon={
         <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7m0 0L9.553 4.553A1 1 0 009 4.118v11.264c0 .415.255.788.647.927L15 16.5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7m0 0L9.553 4.553A1 1 0 009 4.118v11.264c0 .415.255.788.647.927L15 16.5z" />
         </svg>
       }
       action={{
         label: t("offerRide"),
-        href: "/offri",
+        href: `/${locale}/offri`,
         variant: "default",
       }}
       secondaryAction={
@@ -132,21 +135,22 @@ export function EmptyStateSearch({
 
 export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requests" }) {
   const t = useTranslations("emptyState");
+  const locale = useLocale();
   const configs = {
     rides: {
       title: t("noRidesPublished"),
       description: t("startSharing"),
-      action: { label: t("publishRide"), href: "/offri", variant: "default" as const },
+      action: { label: t("publishRide"), href: `/${locale}/offri`, variant: "default" as const },
     },
     bookings: {
       title: t("noBookings"),
       description: t("findRide"),
-      action: { label: t("searchRides"), href: "/cerca", variant: "default" as const },
+      action: { label: t("searchRides"), href: `/${locale}/cerca`, variant: "default" as const },
     },
     requests: {
       title: t("noRequests"),
       description: t("requestsAppearHere"),
-      action: { label: t("viewRides"), href: "/cerca", variant: "outline" as const },
+      action: { label: t("viewRides"), href: `/${locale}/cerca`, variant: "outline" as const },
     },
   };
 
@@ -168,6 +172,7 @@ export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requ
 
 export function EmptyStateChat() {
   const t = useTranslations("emptyState");
+  const locale = useLocale();
   return (
     <EmptyState
       title={t("noMessages")}
@@ -179,7 +184,7 @@ export function EmptyStateChat() {
       }
       action={{
         label: t("searchRidesBtn"),
-        href: "/cerca",
+        href: `/${locale}/cerca`,
         variant: "default",
       }}
     />

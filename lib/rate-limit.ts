@@ -25,8 +25,9 @@ export async function checkServerRateLimit(
     .gte("created_at", windowStart.toISOString());
 
   if (error) {
-    // Allow on error to not block users
-    return { allowed: true, remaining: maxAttempts };
+    // Fail closed: DB errors should not silently bypass rate limiting
+    console.error("[rate-limit] DB error, denying request:", error.message);
+    return { allowed: false, remaining: 0 };
   }
 
   const currentCount = count || 0;

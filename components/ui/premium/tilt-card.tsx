@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentPropsWithoutRef, ReactNode, useRef } from "react";
+import { ComponentPropsWithoutRef, ReactNode, useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -11,23 +11,25 @@ interface TiltCardProps extends Omit<ComponentPropsWithoutRef<typeof motion.div>
 }
 
 /**
- * 3D-tilt interactive card — inspired by Aceternity UI.
- * Slight perspective tilt + optional cursor glare on hover.
+ * 3D-tilt interactive card.
+ * Disabled on touch/coarse-pointer devices and when prefers-reduced-motion is set
+ * (the springs + perspective do nothing useful there but still cost paint work).
  */
 export function TiltCard({
   children,
   className,
-  tiltStrength = 8,
-  glare = true,
+  tiltStrength = 6,
+  glare = false,
   ...props
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [enabled, setEnabled] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const glareX = useMotionValue(50);
   const glareY = useMotionValue(50);
-  const sx = useSpring(x, { stiffness: 220, damping: 22 });
-  const sy = useSpring(y, { stiffness: 220, damping: 22 });
+  const sx = useSpring(x, { stiffness: 180, damping: 26, mass: 0.6 });
+  const sy = useSpring(y, { stiffness: 180, damping: 26, mass: 0.6 });
   const rotateX = useTransform(sy, [-0.5, 0.5], [tiltStrength, -tiltStrength]);
   const rotateY = useTransform(sx, [-0.5, 0.5], [-tiltStrength, tiltStrength]);
   const glareBg = useTransform(
@@ -36,7 +38,15 @@ export function TiltCard({
       `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.12), transparent 55%)`
   );
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setEnabled(fine && !reduced);
+  }, []);
+
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!enabled) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -44,14 +54,29 @@ export function TiltCard({
     const py = (e.clientY - rect.top) / rect.height;
     x.set(px - 0.5);
     y.set(py - 0.5);
-    glareX.set(px * 100);
-    glareY.set(py * 100);
+    if (glare) {
+      glareX.set(px * 100);
+      glareY.set(py * 100);
+    }
   };
 
   const onLeave = () => {
     x.set(0);
     y.set(0);
   };
+
+  if (!enabled) {
+    return (
+      <div
+        className={cn(
+          "group relative isolate overflow-hidden rounded-2xl",
+          className
+        )}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -71,9 +96,7 @@ export function TiltCard({
       )}
       {...props}
     >
-      <div style={{ transform: "translateZ(40px)" }} className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
       {glare && (
         <motion.div
           aria-hidden

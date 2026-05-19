@@ -8,10 +8,11 @@ const XSS_PATTERNS = [
   /<embed[^>]*>.*?<\/embed>/gi,
 ];
 
+// No /g flag — stateful regex with /g causes false negatives on repeated calls
 const SQL_INJECTION_PATTERNS = [
-  /(--|#|\/\*|\*\/)/g,
-  /(\b(OR|AND)\b\s*\d+\s*=\s*\d+)/gi,
-  /(\b(DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|EXEC\s*\()\b)/gi,
+  /(--|#|\/\*|\*\/)/,
+  /(\b(OR|AND)\b\s*\d+\s*=\s*\d+)/i,
+  /(\b(DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|EXEC\s*\()\b)/i,
 ];
 
 /** Sanitize user input to prevent XSS */

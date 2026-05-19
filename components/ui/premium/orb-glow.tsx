@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 export function OrbGlow({
   className,
   color = "#e63946",
-  size = 480,
-  blur = 120,
+  size = 360,
+  blur = 60,
   opacity = 0.45,
 }: {
   className?: string;
@@ -19,11 +19,13 @@ export function OrbGlow({
   blur?: number;
   opacity?: number;
 }) {
+  // Cap blur to keep GPU cost bounded; blur cost scales quadratically with radius.
+  const cappedBlur = Math.min(blur, 80);
   return (
     <div
       aria-hidden
       className={cn(
-        "pointer-events-none absolute rounded-full will-change-transform",
+        "pointer-events-none absolute rounded-full will-change-transform motion-reduce:animate-none",
         "animate-[orbFloat_14s_ease-in-out_infinite]",
         className
       )}
@@ -31,8 +33,9 @@ export function OrbGlow({
         width: size,
         height: size,
         background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
-        filter: `blur(${blur}px)`,
+        filter: `blur(${cappedBlur}px)`,
         opacity,
+        contain: "layout paint",
       }}
     />
   );

@@ -23,7 +23,7 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile container - full width on actual mobile devices */}
       <div className="relative w-full min-h-screen bg-[#0a0a0a] overflow-x-hidden">
         {/* Content wrapper with EXPLICIT padding for fixed navbars */}
-        <main className="flex-1 w-full pt-[72px] pb-[100px] min-h-screen overflow-x-hidden">
+        <main className="flex-1 w-full pt-[72px] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] min-h-[100dvh] overflow-x-hidden">
           {children}
         </main>
         <BottomNav />

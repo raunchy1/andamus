@@ -104,6 +104,7 @@ function HomeMobile({
   userName,
   userAvatar,
   handleSearch,
+  locale,
   translations,
 }: HomeViewProps) {
 	const t = translations;
@@ -119,12 +120,12 @@ function HomeMobile({
         </div>
         <div className="flex items-center gap-3">
           <Link
-            href="/cerca"
+            href={`/${locale}/cerca`}
             className="text-[#e5e2e1] hover:opacity-80 transition-opacity active:scale-95 duration-200 ease-out"
           >
             <SlidersHorizontal className="w-6 h-6" />
           </Link>
-          <Link href="/profilo" className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
+          <Link href={`/${locale}/profilo`} className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
             {userAvatar ? (
               <Image src={userAvatar} alt="Profile" width={40} height={40} sizes="40px" className="w-full h-full object-cover" />
             ) : (
@@ -204,7 +205,7 @@ function HomeMobile({
                 {t.todayRides}
               </h3>
             </div>
-            <Link href={`/cerca`} className="inline-flex items-center gap-1 text-[11px] font-bold text-[#ffb3b1] hover:text-white transition-colors">
+            <Link href={`/${locale}/cerca`} className="inline-flex items-center gap-1 text-[11px] font-bold text-[#ffb3b1] hover:text-white transition-colors">
               {t.seeAll}
               <ArrowRight className="h-3 w-3" />
             </Link>
@@ -221,7 +222,7 @@ function HomeMobile({
               {todayRides.map((ride, idx) => (
                 <Link
                   key={ride.id}
-                  href={`/corsa/${ride.id}`}
+                  href={`/${locale}/corsa/${ride.id}`}
                   className={`snap-start flex-shrink-0 w-[260px] sm:w-[280px] p-4 sm:p-5 rounded-2xl border flex flex-col justify-between h-[170px] sm:h-[180px] transition-all active:scale-95 ${
                     idx === 0
                       ? "border-[#ffb3b1]/25 bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent"
@@ -267,7 +268,7 @@ function HomeMobile({
             <div className="px-4 sm:px-6">
               <div className="bg-white/[0.025] border border-white/8 p-5 rounded-2xl">
                 <p className="text-sm text-on-surface/60">{t.noRidesToday}</p>
-                <Link href={`/cerca`} className="text-[#ffb3b1] text-sm font-bold mt-2 inline-flex items-center gap-1">
+                <Link href={`/${locale}/cerca`} className="text-[#ffb3b1] text-sm font-bold mt-2 inline-flex items-center gap-1">
                   {t.searchOtherDates} <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
@@ -294,14 +295,14 @@ function HomeMobile({
         <section className="px-4 sm:px-6 pb-6">
           <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
             <Link
-              href="/offri"
+              href={`/${locale}/offri`}
               className="bg-primary-container/20 rounded-xl p-4 sm:p-5 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95 min-h-[120px]"
             >
               <PlusCircle className="w-7 h-7 flex-shrink-0 text-primary" />
               <span className="text-xs font-bold uppercase tracking-wider text-on-surface leading-tight mt-2">{t.offerRide}</span>
             </Link>
             <Link
-              href="/profilo"
+              href={`/${locale}/profilo`}
               className="bg-surface-container-highest rounded-xl p-4 sm:p-5 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95 min-h-[120px]"
             >
               <History className="w-7 h-7 flex-shrink-0 text-on-surface/60" />
@@ -336,7 +337,7 @@ function HomeDesktop({
     if (origin) params.set("from", origin);
     if (destination) params.set("to", destination);
     if (date && date !== today) params.set("date", date);
-    router.push(`/cerca?${params.toString()}`);
+    router.push(`/${locale}/cerca?${params.toString()}`);
   };
 
   // Top 12 most popular Sardinian routes — used for the marquee
@@ -359,9 +360,7 @@ function HomeDesktop({
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1] overflow-x-hidden">
       {/* ─── HERO ─── */}
       <AuroraBackground className="relative pt-20 pb-24 lg:pt-28 lg:pb-32">
-        <Spotlight size={800} color="rgba(230,57,70,0.20)" />
-        <OrbGlow className="-top-32 -left-32" color="#e63946" size={520} opacity={0.35} />
-        <OrbGlow className="top-40 -right-40" color="#ffb3b1" size={460} opacity={0.30} blur={140} />
+        <OrbGlow className="-top-32 -left-32" color="#e63946" size={400} opacity={0.30} />
 
         <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
           <div className="flex flex-col lg:flex-row items-center gap-16">
@@ -663,7 +662,7 @@ function HomeDesktop({
 
       {/* ─── BENTO GRID: Why Andamus ─── */}
       <section className="relative border-t border-white/5 overflow-hidden">
-        <OrbGlow className="-bottom-40 left-1/3" color="#e63946" size={600} opacity={0.18} blur={160} />
+        <OrbGlow className="-bottom-40 left-1/3" color="#e63946" size={420} opacity={0.18} />
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-20 lg:py-28 relative">
           <Reveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -868,7 +867,7 @@ export default function HomePageClient({
     const params = new URLSearchParams();
     if (origin) params.set("from", origin);
     if (destination) params.set("to", destination);
-    router.push(`/cerca?${params.toString()}`);
+    router.push(`/${locale}/cerca?${params.toString()}`);
   };
 
   const props = {

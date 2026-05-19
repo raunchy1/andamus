@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    const res = NextResponse.json(data);
+    res.headers.set("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=3600");
+    return res;
   } catch {
     // Error logged to Sentry in production
     return NextResponse.json(

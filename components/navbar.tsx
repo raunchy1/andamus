@@ -56,6 +56,11 @@ export function Navbar() {
   const [authModalTab, setAuthModalTab] = useState<"login" | "register">("login");
   const pathname = usePathname();
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
   const supabase = createClient();
   
   const navLinks = [
@@ -84,7 +89,7 @@ export function Navbar() {
     getInitialUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: import("@supabase/supabase-js").AuthChangeEvent, session: import("@supabase/supabase-js").Session | null) => {
         setUser(session?.user ?? null);
         setAvatarError(false);
         setAvatarKey(prev => prev + 1);

@@ -37,7 +37,7 @@ export async function searchRides(filters: SearchFilters) {
     .select(
       `
       *,
-      profiles!inner(name, avatar_url, rating, phone_verified, id_verified)
+      profiles!inner(name, avatar_url, rating)
     `
     )
     .eq("status", "active")
@@ -91,7 +91,7 @@ export async function searchRides(filters: SearchFilters) {
     .limit(200);
 
   if (error) {
-    // Error logged to Sentry in production
+    console.error("[searchRides] Supabase error:", error);
     return [];
   }
 

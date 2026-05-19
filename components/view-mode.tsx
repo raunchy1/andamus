@@ -1,29 +1,24 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export type DeviceType = "mobile" | "desktop";
 
-function getDeviceType(): DeviceType {
-  if (typeof window === "undefined") return "mobile";
+function getDeviceTypeSnapshot(): DeviceType {
   return window.innerWidth < 768 ? "mobile" : "desktop";
 }
 
+function getServerSnapshot(): DeviceType {
+  return "mobile"; // SSR always renders mobile-first
+}
+
+function subscribe(callback: () => void): () => void {
+  window.addEventListener("resize", callback);
+  return () => window.removeEventListener("resize", callback);
+}
+
 export function useDeviceType(): DeviceType {
-  const [deviceType, setDeviceType] = useState<DeviceType>(getDeviceType);
-
-  useLayoutEffect(() => {
-    const checkDevice = () => {
-      setDeviceType(getDeviceType());
-    };
-
-    checkDevice();
-
-    window.addEventListener("resize", checkDevice);
-    return () => window.removeEventListener("resize", checkDevice);
-  }, []);
-
-  return deviceType;
+  return useSyncExternalStore(subscribe, getDeviceTypeSnapshot, getServerSnapshot);
 }
 
 // Hook for responsive value based on device type

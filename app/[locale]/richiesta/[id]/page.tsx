@@ -13,7 +13,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface RideRequest {
@@ -35,6 +35,7 @@ interface RideRequest {
 
 export default function RequestDetailPage() {
   const t = useTranslations("requests");
+  const locale = useLocale();
   const params = useParams();
   const requestId = params.id as string;
   const supabase = createClient();
@@ -104,7 +105,7 @@ export default function RequestDetailPage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-destructive mb-4" />
         <h1 className="text-2xl font-bold text-foreground">{t("notFound")}</h1>
-        <Link href="/richieste" className="mt-6 flex items-center gap-2 text-accent">
+        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-accent">
           <ArrowLeft className="h-4 w-4" /> {t("backToRequests")}
         </Link>
       </div>
@@ -117,7 +118,7 @@ export default function RequestDetailPage() {
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-card px-4 py-4">
         <div className="mx-auto max-w-3xl flex items-center justify-between">
-          <Link href="/richieste" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+          <Link href={`/${locale}/richieste`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-5 w-5" />
             <span className="hidden sm:inline">{t("back")}</span>
           </Link>

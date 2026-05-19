@@ -29,6 +29,13 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Sync mode with defaultTab when the modal is re-opened
+  useEffect(() => {
+    if (isOpen) {
+      setMode(defaultTab);
+    }
+  }, [isOpen, defaultTab]);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -123,7 +130,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
   const handleGoogle = async () => {
     const redirectTo = `${window.location.origin}/${locale}/auth/callback`;
-    await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
+    const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
+    if (error) {
+      toast.error(error.message);
+    }
+    // On success the browser is redirected by Supabase; no further action needed.
   };
 
   if (!isOpen) return null;

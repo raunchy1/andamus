@@ -83,7 +83,7 @@ export default function GruppiPage() {
           .select("group_id")
           .eq("user_id", user.id);
 
-        setMyGroupIds(new Set((memberships ?? []).map((m) => m.group_id as string)));
+        setMyGroupIds(new Set((memberships ?? []).map((m: { group_id: string }) => m.group_id)));
       }
     } catch (err) {
       console.error("[gruppi] load error:", err);

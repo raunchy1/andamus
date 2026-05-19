@@ -443,8 +443,7 @@ function OfferDesktop({
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative">
       <AuroraBackground className="absolute inset-x-0 top-0 h-[480px] -z-10 pointer-events-none" showRadialMask={false}>
-        <OrbGlow className="-top-20 -left-20" color="#e63946" size={420} opacity={0.30} />
-        <OrbGlow className="top-20 -right-32" color="#ffb3b1" size={360} opacity={0.22} blur={140} />
+        <OrbGlow className="-top-20 -left-20" color="#e63946" size={320} opacity={0.30} />
       </AuroraBackground>
 
       {/* Top Navigation */}
@@ -833,7 +832,7 @@ export default function OfferPage() {
   }, [formData.price, formData.isFree]);
 
   const today = new Date().toISOString().split("T")[0];
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   // Intelligent Price Calculator using Google Maps Distance Matrix API
   useEffect(() => {
@@ -926,7 +925,7 @@ export default function OfferPage() {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: import("@supabase/supabase-js").AuthChangeEvent, session: import("@supabase/supabase-js").Session | null) => {
         setUser(session?.user ?? null);
       }
     );
@@ -954,9 +953,20 @@ export default function OfferPage() {
     if (formData.origin && formData.destination && formData.origin === formData.destination) {
       newErrors.sameCity = t('errors.sameCity');
     }
-    if (!formData.date) newErrors.date = t('errorDateRequired');
+    if (!formData.date) {
+      newErrors.date = t('errorDateRequired');
+    } else if (formData.date < today) {
+      newErrors.date = t('errorDatePast') || 'La data non può essere nel passato';
+    }
     if (!formData.time) newErrors.time = t('errorTimeRequired');
-    if (!formData.seats) newErrors.seats = t('errorSeatsRequired');
+    if (!formData.seats) {
+      newErrors.seats = t('errorSeatsRequired');
+    } else {
+      const seatsNum = parseInt(formData.seats, 10);
+      if (isNaN(seatsNum) || seatsNum < 1 || seatsNum > 8) {
+        newErrors.seats = t('errorSeatsRange') || 'Il numero di posti deve essere tra 1 e 8';
+      }
+    }
     if (!formData.isFree && !formData.price) newErrors.price = t('errorPriceRequired');
     if (formData.musicPreference && !['quiet','music','talk'].includes(formData.musicPreference)) {
       newErrors.musicPreference = t('errorMusicPreference');
@@ -974,6 +984,7 @@ export default function OfferPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setSubmitError("");
     
     // Validate form with toast feedback
@@ -1004,7 +1015,8 @@ export default function OfferPage() {
         .from('rides')
         .select('*', { count: 'exact', head: true })
         .eq('driver_id', currentUser.id);
-      setIsFirstRide((rideCount || 0) === 0);
+      const firstRide = (rideCount || 0) === 0;
+      setIsFirstRide(firstRide);
 
       let rideId: string | null = null;
 
@@ -1043,9 +1055,11 @@ export default function OfferPage() {
         const { error: rpcError } = await supabase.rpc("generate_rides_from_templates", { p_days_ahead: 30 });
         
         if (rpcError) {
-          // RPC error logged silently
           toast.dismiss(toastId);
           toast.error(t('errorGeneratingRides', { message: rpcError.message }));
+          setSubmitError(t('errorPublishing', { message: rpcError.message }));
+          setIsSubmitting(false);
+          return;
         }
       } else {
         const { data: inserted, error } = await supabase
@@ -1114,7 +1128,7 @@ export default function OfferPage() {
         const result = await completeGamificationAction(
           currentUser.id,
           'ride_published',
-          isFirstRide
+          firstRide
         );
         
         if (result.pointsAdded > 0) {
@@ -1204,8 +1218,7 @@ export default function OfferPage() {
 
     return (
       <AuroraBackground className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4" showRadialMask={false}>
-        <OrbGlow className="-top-20 -left-20" color="#e63946" size={500} opacity={0.35} />
-        <OrbGlow className="-bottom-20 -right-20" color="#ffb3b1" size={400} opacity={0.3} blur={140} />
+        <OrbGlow className="-top-20 -left-20" color="#e63946" size={360} opacity={0.32} />
         <Reveal>
         <div className="relative mx-auto max-w-md text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-400/15 ring-2 ring-emerald-400/30">

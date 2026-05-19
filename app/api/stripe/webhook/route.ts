@@ -8,7 +8,11 @@ const getStripe = () => {
   return new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
 };
 
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+function getEndpointSecret(): string {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET is not set");
+  return secret;
+}
 
 export async function POST(req: NextRequest) {
   const payload = await req.text();
@@ -17,7 +21,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = getStripe().webhooks.constructEvent(payload, sig, endpointSecret);
+    event = getStripe().webhooks.constructEvent(payload, sig, getEndpointSecret());
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 400 });
@@ -28,6 +32,26 @@ export async function POST(req: NextRequest) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
+
+      // ── Connect marketplace booking payment ──
+      const bookingId = session.metadata?.booking_id;
+      if (bookingId && session.payment_intent) {
+        const { error: bookingUpdateError } = await supabase
+          .from("bookings")
+          .update({
+            payment_intent_id: session.payment_intent as string,
+            payment_status: "authorized",
+          })
+          .eq("id", bookingId);
+
+        if (bookingUpdateError) {
+          console.error("[stripe/webhook] Failed to update booking payment:", bookingUpdateError);
+          return NextResponse.json({ error: "Database error" }, { status: 500 });
+        }
+        break;
+      }
+
+      // ── Subscription checkout ──
       const userId = session.metadata?.user_id;
       const planId = session.metadata?.plan_id;
 
@@ -66,7 +90,26 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    case "invoice.payment_failed":
+    case "invoice.payment_failed": {
+      const invoice = event.data.object as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null };
+      const subscriptionId = typeof invoice.subscription === "string"
+        ? invoice.subscription
+        : (invoice.subscription as Stripe.Subscription | null)?.id;
+      if (!subscriptionId) break;
+      const { data: subRow } = await supabase
+        .from("subscriptions")
+        .select("user_id, plan_id")
+        .eq("stripe_subscription_id", subscriptionId)
+        .single();
+      if (subRow) {
+        await supabase.from("subscriptions").update({ status: "past_due" })
+          .eq("stripe_subscription_id", subscriptionId);
+        await supabase.from("profiles").update({ subscription_status: "past_due" })
+          .eq("id", subRow.user_id);
+      }
+      break;
+    }
+
     case "customer.subscription.updated":
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
@@ -108,6 +151,19 @@ export async function POST(req: NextRequest) {
           console.error("[stripe/webhook] Failed to update profile:", profileUpdateError);
           return NextResponse.json({ error: "Database error" }, { status: 500 });
         }
+      }
+      break;
+    }
+
+    case "account.updated": {
+      const account = event.data.object as Stripe.Account;
+      const onboarded = account.details_submitted && account.charges_enabled;
+
+      if (onboarded) {
+        await supabase
+          .from("profiles")
+          .update({ connect_onboarded: true })
+          .eq("stripe_connect_account_id", account.id);
       }
       break;
     }

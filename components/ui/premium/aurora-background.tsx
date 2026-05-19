@@ -18,18 +18,20 @@ export function AuroraBackground({
 }) {
   return (
     <div className={cn("relative isolate overflow-hidden", className)}>
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+        style={{ contain: "layout paint" }}
+      >
         <div
           className={cn(
-            "absolute -inset-[10%] opacity-60 blur-[80px] will-change-transform",
-            "animate-[aurora_18s_linear_infinite]"
+            "absolute -inset-[10%] opacity-55 blur-[40px] will-change-transform motion-reduce:animate-none",
+            "animate-[aurora_22s_linear_infinite]"
           )}
           style={{
             backgroundImage: [
-              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(230,57,70,0.55), transparent 60%)",
-              "radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,179,177,0.45), transparent 60%)",
-              "radial-gradient(ellipse 70% 60% at 60% 80%, rgba(111,216,204,0.35), transparent 60%)",
-              "radial-gradient(ellipse 40% 50% at 30% 70%, rgba(140,244,232,0.30), transparent 60%)",
+              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(230,57,70,0.50), transparent 60%)",
+              "radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,179,177,0.40), transparent 60%)",
+              "radial-gradient(ellipse 70% 60% at 60% 80%, rgba(111,216,204,0.30), transparent 60%)",
             ].join(","),
           }}
         />

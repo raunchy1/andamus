@@ -29,9 +29,13 @@ export async function POST(req: NextRequest) {
 
     const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:7001";
 
+    const body = await req.json().catch(() => ({})) as { locale?: string };
+    const ALLOWED_LOCALES = new Set(["it", "en", "de"]);
+    const locale = ALLOWED_LOCALES.has(body.locale ?? "") ? body.locale! : "it";
+
     const session = await getStripe().billingPortal.sessions.create({
       customer: profile.stripe_customer_id,
-      return_url: `${origin}/it/profilo`,
+      return_url: `${origin}/${locale}/profilo`,
     });
 
     return NextResponse.json({ url: session.url });

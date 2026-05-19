@@ -14,7 +14,7 @@ import { notifyBookingRequest } from "@/lib/notifications";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Booking {
   id: string;
@@ -48,6 +48,7 @@ export function BookingButton({
   variant = "mobile",
 }: BookingButtonProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('booking');
   const [bookingStatus, setBookingStatus] = useState<Booking["status"] | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
@@ -109,7 +110,7 @@ export function BookingButton({
 
     // If already has booking, go to chat
     if (bookingId && bookingStatus !== "rejected") {
-      router.push(`/chat/${bookingId}`);
+      router.push(`/${locale}/chat/${bookingId}`);
       return;
     }
 
@@ -154,7 +155,7 @@ export function BookingButton({
       
       // Redirect to chat after short delay
       setTimeout(() => {
-        router.push(`/chat/${booking.id}`);
+        router.push(`/${locale}/chat/${booking.id}`);
       }, 1500);
     } catch (err) {
       toast.dismiss(toastId);
@@ -205,7 +206,7 @@ export function BookingButton({
     case "pending":
       return (
         <Link
-          href={`/chat/${bookingId}`}
+          href={`/${locale}/chat/${bookingId}`}
           className="w-full h-14 bg-warning/10 text-warning border-2 border-warning/30 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-warning/20 transition-colors"
         >
           <Clock className="w-5 h-5" />
@@ -216,7 +217,7 @@ export function BookingButton({
     case "accepted":
       return (
         <Link
-          href={`/chat/${bookingId}`}
+          href={`/${locale}/chat/${bookingId}`}
           className="w-full h-14 bg-tertiary/10 text-tertiary border-2 border-tertiary/30 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-tertiary/20 transition-colors"
         >
           <CheckCircle2 className="w-5 h-5" />

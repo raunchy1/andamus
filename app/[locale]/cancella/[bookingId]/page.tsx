@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, AlertCircle, ArrowLeft, Calendar, MapPin, User, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 
 interface BookingDetails {
@@ -31,6 +31,7 @@ export default function CancelBookingPage() {
   const params = useParams();
   const router = useRouter();
   const bookingId = params.bookingId as string;
+  const locale = useLocale();
 
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,7 +83,7 @@ export default function CancelBookingPage() {
 
         if (!data) {
           toast.error(t("notFound"));
-          router.push("/profilo");
+          router.push(`/${locale}/profilo`);
           return;
         }
 
@@ -94,13 +95,13 @@ export default function CancelBookingPage() {
 
         if (!isPassenger && !isDriver) {
           toast.error(t("noAccess"));
-          router.push("/profilo");
+          router.push(`/${locale}/profilo`);
           return;
         }
 
         if (data.status === "cancelled") {
           toast.error(t("alreadyCancelled"));
-          router.push("/profilo");
+          router.push(`/${locale}/profilo`);
           return;
         }
 
@@ -154,7 +155,7 @@ export default function CancelBookingPage() {
       }
 
       toast.success(t("successMessage"));
-      router.push("/profilo");
+      router.push(`/${locale}/profilo`);
     } catch (_error) {
       toast.error(t("errorMessage"));
     } finally {
@@ -175,7 +176,7 @@ export default function CancelBookingPage() {
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-red-400 mb-4" />
         <h1 className="text-2xl font-bold text-white">{t("notFoundTitle")}</h1>
-        <Link href="/profilo" className="mt-6 text-[#e63946] flex items-center gap-2">
+        <Link href={`/${locale}/profilo`} className="mt-6 text-[#e63946] flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" /> {t("backToProfile")}
         </Link>
       </div>
@@ -189,7 +190,7 @@ export default function CancelBookingPage() {
       <div className="bg-[#12121e] border-b border-white/10 px-4 py-4">
         <div className="mx-auto max-w-2xl">
           <Link
-            href="/profilo"
+            href={`/${locale}/profilo`}
             className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -290,7 +291,7 @@ export default function CancelBookingPage() {
 
         <div className="flex gap-4">
           <Link
-            href="/profilo"
+            href={`/${locale}/profilo`}
             className="flex-1 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-semibold text-center hover:bg-white/10 transition-colors"
           >
             {t("cancel")}
