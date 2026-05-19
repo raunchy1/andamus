@@ -34,9 +34,9 @@ function hasSupabaseAuthCookie(request: NextRequest): boolean {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // /coming-soon lives outside [locale] — always skip intl to avoid redirect loops
+  // /coming-soon disabled — redirect to home
   if (pathname === "/coming-soon") {
-    return NextResponse.next();
+    return NextResponse.redirect(new URL("/it", request.url));
   }
 
   // Redirect to coming-soon when not yet launched
