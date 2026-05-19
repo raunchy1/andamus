@@ -8,7 +8,11 @@ const getStripe = () => {
   return new Stripe(key, { apiVersion: "2026-03-25.dahlia" });
 };
 
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+const getEndpointSecret = (): string => {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET is not set");
+  return secret;
+};
 
 export async function POST(req: NextRequest) {
   const payload = await req.text();
@@ -17,7 +21,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = getStripe().webhooks.constructEvent(payload, sig, endpointSecret);
+    event = getStripe().webhooks.constructEvent(payload, sig, getEndpointSecret());
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 400 });

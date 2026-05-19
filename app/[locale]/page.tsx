@@ -245,7 +245,7 @@ function HomeDesktop({
   todayDate,
   router,
 }: HomeUIProps) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [date, setDate] = useState(today);
 
   const onSubmit = (e: React.FormEvent) => {

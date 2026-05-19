@@ -836,7 +836,7 @@ export default function OfferPage() {
   const [submitError, setSubmitError] = useState("");
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {

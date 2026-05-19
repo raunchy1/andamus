@@ -27,11 +27,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No customer found" }, { status: 400 });
     }
 
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:7001";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:7001";
 
     const session = await getStripe().billingPortal.sessions.create({
       customer: profile.stripe_customer_id,
-      return_url: `${origin}/it/profilo`,
+      return_url: `${baseUrl}/it/profilo`,
     });
 
     return NextResponse.json({ url: session.url });

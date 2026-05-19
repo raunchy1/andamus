@@ -8,9 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "vapid:generate": "node scripts/generate-vapid-keys.js",
-    "db:push": "SUPABASE_ACCESS_TOKEN=sbp_af281b463a2737aa4653ca95d2f94ec61bfa2478 npx supabase db push",
-    "db:push:all": "SUPABASE_ACCESS_TOKEN=sbp_af281b463a2737aa4653ca95d2f94ec61bfa2478 npx supabase db push --include-all",
-    "db:status": "SUPABASE_ACCESS_TOKEN=sbp_af281b463a2737aa4653ca95d2f94ec61bfa2478 npx supabase migration list"
+    "db:push": "npx supabase db push",
+    "db:push:all": "npx supabase db push --include-all",
+    "db:status": "npx supabase migration list"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

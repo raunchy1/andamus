@@ -191,6 +191,19 @@ export default function ChatPage() {
     };
   }, [bookingId, supabase]);
 
+  useEffect(() => {
+    return () => {
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+      if (mediaRecorderRef.current?.stream) {
+        mediaRecorderRef.current.stream.getTracks().forEach((t) => t.stop());
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    };
+  }, []);
+
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!newMessage.trim() || !user || sending || !booking) return;
@@ -367,6 +380,7 @@ export default function ChatPage() {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
     } catch {
+      setIsRecording(false);
       toast.error("Impossibile accedere al microfono");
     }
   };
@@ -660,6 +674,7 @@ export default function ChatPage() {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              onFocus={() => requestAnimationFrame(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant", block: "end" }))}
               placeholder={isRecording ? "Registrazione..." : "Scrivi un messaggio..."}
               disabled={isRecording}
               className="flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-on-surface/30 text-on-surface disabled:opacity-50"
@@ -884,6 +899,7 @@ export default function ChatPage() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                onFocus={() => requestAnimationFrame(() => messagesEndRef.current?.scrollIntoView({ behavior: "instant", block: "end" }))}
                 placeholder={isRecording ? "Registrazione..." : "Scrivi un messaggio..."}
                 disabled={isRecording}
                 className="flex-1 bg-transparent border-none focus:ring-0 text-base placeholder:text-on-surface/30 text-on-surface disabled:opacity-50"

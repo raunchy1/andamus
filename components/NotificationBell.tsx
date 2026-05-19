@@ -95,11 +95,12 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
   // Real-time subscription
   useEffect(() => {
-    const setupSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
 
-      const channel = supabase
+      channel = supabase
         .channel(`notifications:${user.id}`)
         .on(
           "postgres_changes",
@@ -115,13 +116,11 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
           }
         )
         .subscribe();
+    });
 
-      return () => {
-        supabase.removeChannel(channel);
-      };
+    return () => {
+      if (channel) supabase.removeChannel(channel);
     };
-
-    setupSubscription();
   }, [supabase]);
 
   // Close dropdown when clicking outside

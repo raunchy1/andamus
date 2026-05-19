@@ -5,16 +5,23 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(req: NextRequest) {
   try {
     ensureVapidDetails();
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { endpoint, title, body, icon, url } = await req.json();
     if (!endpoint || !title) {
       return NextResponse.json({ error: "Missing endpoint or title" }, { status: 400 });
     }
 
-    const supabase = await createClient();
     const { data: sub } = await supabase
       .from("push_subscriptions")
       .select("p256dh, auth")
       .eq("endpoint", endpoint)
+      .eq("user_id", user.id)
       .single();
 
     if (!sub) {

@@ -22,7 +22,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { planId, locale = "it" } = await req.json();
+    const VALID_LOCALES = ["it", "en", "de"] as const;
+    const { planId, locale: rawLocale = "it" } = await req.json();
+    const locale = VALID_LOCALES.includes(rawLocale as "it" | "en" | "de") ? rawLocale : "it";
     const priceId = PRICE_MAP[planId];
 
     if (!priceId) {
@@ -50,14 +52,14 @@ export async function POST(req: NextRequest) {
         .eq("id", user.id);
     }
 
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:7001";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:7001";
 
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
-      success_url: `${origin}/${locale}/premium/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/${locale}/premium/cancel`,
+      success_url: `${baseUrl}/${locale}/premium/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/${locale}/premium/cancel`,
       metadata: { user_id: user.id, plan_id: planId },
     });
 

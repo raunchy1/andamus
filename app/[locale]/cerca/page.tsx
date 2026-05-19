@@ -87,6 +87,7 @@ interface SearchViewProps {
   setPullDistance: (v: number) => void;
   rides: Ride[];
   loading: boolean;
+  fetchError: string | null;
   today: string;
   resultsRef: React.RefObject<HTMLDivElement | null>;
   fetchRides: () => Promise<void>;
@@ -272,13 +273,14 @@ function SearchMobile(props: SearchViewProps) {
     showAlertModal, setShowAlertModal,
     alertSaving, setAlertSaving,
     pullDistance,
-    rides, loading,
+    rides, loading, fetchError,
     today,
     resultsRef,
     handleTouchStart, handleTouchMove, handleTouchEnd,
     handleRefresh,
     handleSearch,
     clearFilters,
+    fetchRides,
     formatDate,
     activeFiltersCount,
     supabase,
@@ -480,7 +482,19 @@ function SearchMobile(props: SearchViewProps) {
             </>
           )}
 
-          {!loading && rides.length === 0 && (
+          {!loading && fetchError && (
+            <div className="py-12 text-center">
+              <p className="text-sm text-destructive">{fetchError}</p>
+              <button
+                onClick={fetchRides}
+                className="mt-4 rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-white"
+              >
+                Riprova
+              </button>
+            </div>
+          )}
+
+          {!loading && !fetchError && rides.length === 0 && (
             <div className="py-20 text-center">
               <Route className="mx-auto h-12 w-12 text-on-surface-variant/50" />
               <p className="mt-4 text-lg font-medium text-on-surface">Nessun passaggio trovato</p>
@@ -611,11 +625,12 @@ function SearchDesktop(props: SearchViewProps) {
     isRefreshing,
     showAlertModal, setShowAlertModal,
     alertSaving, setAlertSaving,
-    rides, loading,
+    rides, loading, fetchError,
     today,
     handleRefresh,
     handleSearch,
     clearFilters,
+    fetchRides,
     formatDate,
     activeFiltersCount,
     supabase,
@@ -817,7 +832,19 @@ function SearchDesktop(props: SearchViewProps) {
           </>
         )}
 
-        {!loading && rides.length === 0 && (
+        {!loading && fetchError && (
+          <div className="col-span-full py-12 text-center bg-[#141414] border border-white/5 rounded-2xl">
+            <p className="text-sm text-destructive">{fetchError}</p>
+            <button
+              onClick={fetchRides}
+              className="mt-4 rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-white"
+            >
+              Riprova
+            </button>
+          </div>
+        )}
+
+        {!loading && !fetchError && rides.length === 0 && (
           <div className="col-span-full py-20 text-center bg-[#141414] border border-white/5 rounded-2xl">
             <Route className="mx-auto h-12 w-12 text-[#e5e2e1]/30" />
             <p className="mt-4 text-lg font-medium text-[#e5e2e1]">Nessun passaggio trovato</p>
@@ -954,13 +981,15 @@ function SearchContent() {
 
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
   const supabase = useMemo(() => createClient(), []);
 
   const fetchRides = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
 
     try {
       let query = supabase
@@ -1060,7 +1089,7 @@ function SearchContent() {
 
       setRides(allRides);
     } catch {
-      // ignore
+      setFetchError("Impossibile caricare i passaggi. Riprova.");
     } finally {
       setLoading(false);
     }
@@ -1172,7 +1201,7 @@ function SearchContent() {
     alertSaving, setAlertSaving,
     pullStartY, setPullStartY,
     pullDistance, setPullDistance,
-    rides, loading,
+    rides, loading, fetchError,
     today,
     resultsRef,
     fetchRides,
