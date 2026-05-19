@@ -16,10 +16,17 @@ if (typeof window === "undefined" && !globalThis.__andamusEnvChecked) {
   globalThis.__andamusEnvChecked = true;
   const missing = requiredEnvVars.filter((k) => !process.env[k]);
   if (missing.length > 0) {
-    throw new Error(
-      `[env] Missing required environment variables: ${missing.join(", ")}. ` +
-      `Check your .env.local file or Vercel environment settings.`
-    );
+    // During the Next.js build phase, env vars may not be available locally
+    // but will be injected by Vercel at deploy time — warn only.
+    // At runtime (actual requests), throw to fail fast.
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      console.warn(`[env] Missing environment variables at build time: ${missing.join(", ")}`);
+    } else {
+      throw new Error(
+        `[env] Missing required environment variables: ${missing.join(", ")}. ` +
+        `Check your .env.local file or Vercel environment settings.`
+      );
+    }
   }
 }
 

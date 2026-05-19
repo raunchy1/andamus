@@ -17,7 +17,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { locale = "it" } = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => ({})) as { locale?: string };
+    const ALLOWED_LOCALES = new Set(["it", "en", "de"]);
+    const locale = ALLOWED_LOCALES.has(body.locale ?? "") ? body.locale! : "it";
 
     const { data: profile } = await supabase
       .from("profiles")

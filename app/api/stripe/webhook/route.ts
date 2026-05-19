@@ -29,6 +29,22 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient();
 
+  // Idempotency: skip if this event was already processed
+  const { data: existing } = await supabase
+    .from("stripe_events")
+    .select("stripe_event_id")
+    .eq("stripe_event_id", event.id)
+    .maybeSingle();
+  if (existing) {
+    return NextResponse.json({ received: true, duplicate: true });
+  }
+  const { error: insertErr } = await supabase
+    .from("stripe_events")
+    .insert({ stripe_event_id: event.id, event_type: event.type });
+  if (insertErr && insertErr.code !== "23505") {
+    console.error("[stripe/webhook] idempotency insert failed:", insertErr);
+  }
+
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;

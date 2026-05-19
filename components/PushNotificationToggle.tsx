@@ -76,8 +76,12 @@ export function PushNotificationToggle() {
 
       setIsSubscribed(true);
       toast.success("Notifiche push attivate");
-    } catch {
-      toast.error("Errore nell'attivazione delle notifiche");
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "NotAllowedError") {
+        toast.error("Notifiche bloccate. Abilita i permessi nelle impostazioni del browser.");
+      } else {
+        toast.error("Errore nell'attivazione delle notifiche");
+      }
     } finally {
       setProcessing(false);
     }
@@ -116,6 +120,13 @@ export function PushNotificationToggle() {
   }
 
   if (!isSupported) {
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "denied") {
+      return (
+        <p className="text-sm text-muted-foreground">
+          Le notifiche sono bloccate nelle impostazioni del browser. Rimuovi il blocco per attivarle.
+        </p>
+      );
+    }
     return (
       <p className="text-sm text-muted-foreground">
         Il tuo browser non supporta le notifiche push.

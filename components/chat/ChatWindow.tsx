@@ -91,7 +91,7 @@ export default function ChatWindow({
   booking,
   user,
 }: ChatWindowProps) {
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const deviceType = useDeviceType();
   const t = useTranslations("chat");
 

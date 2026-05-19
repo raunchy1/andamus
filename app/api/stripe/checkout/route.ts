@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { planId, locale = "it" } = await req.json();
+    const body = await req.json() as { planId: string; locale?: string };
+    const { planId } = body;
+    const ALLOWED_LOCALES = new Set(["it", "en", "de"]);
+    const locale = ALLOWED_LOCALES.has(body.locale ?? "") ? body.locale! : "it";
     const priceId = PRICE_MAP[planId];
 
     if (!priceId) {
