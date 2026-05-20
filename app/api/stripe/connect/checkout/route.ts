@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     // Fetch ride and driver's Connect account
     const { data: ride, error: rideError } = await supabase
       .from("rides")
-      .select("id, from_city, to_city, date, price, driver_id, seats, status")
+      .select("id, from_city, to_city, date, time, price, driver_id, seats, status")
       .eq("id", rideId)
       .single();
 
@@ -49,6 +49,12 @@ export async function POST(req: NextRequest) {
 
     if (ride.status !== "active") {
       return NextResponse.json({ error: "Ride not available" }, { status: 400 });
+    }
+
+    // Reject expired rides (date + time already passed)
+    const { isRideExpired } = await import("@/lib/date-utils");
+    if (isRideExpired(ride.date, ride.time)) {
+      return NextResponse.json({ error: "Ride has already departed" }, { status: 400 });
     }
 
     if (ride.price <= 0) {

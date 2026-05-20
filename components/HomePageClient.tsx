@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
+import { getAppNow } from "@/lib/date-utils";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
 import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star, Sparkles, ArrowRight, Zap, Heart } from "lucide-react";
@@ -834,13 +835,14 @@ export default function HomePageClient({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const today = new Date().toISOString().split("T")[0];
+        const { date: today, time: nowTime } = getAppNow();
 
         const { data: ridesData } = await supabase
           .from("rides")
           .select("id, from_city, to_city, date, time, price, profiles!inner(name, avatar_url, rating)")
           .eq("date", today)
           .eq("status", "active")
+          .gte("time", nowTime)
           .order("time", { ascending: true })
           .limit(5);
 

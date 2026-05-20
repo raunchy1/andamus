@@ -1173,7 +1173,8 @@
     "rating5": "Excellent",
     "commentOptional": "Comment (optional)",
     "describeExperience": "Describe your experience...",
-    "sendReview": "Send review"
+    "sendReview": "Send review",
+    "thankYou": "Thank you for your feedback!"
   },
   "report": {
     "selectReason": "Select a reason",

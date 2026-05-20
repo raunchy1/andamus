@@ -1173,7 +1173,8 @@
     "rating5": "Hervorragend",
     "commentOptional": "Kommentar (optional)",
     "describeExperience": "Beschreibe deine Erfahrung...",
-    "sendReview": "Bewertung senden"
+    "sendReview": "Bewertung senden",
+    "thankYou": "Danke für dein Feedback!"
   },
   "report": {
     "selectReason": "Grund auswählen",

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getAppNow, buildNotExpiredOrFilter } from "@/lib/date-utils";
 
 export type SearchFilters = {
   origin?: string;
@@ -30,7 +31,7 @@ const TIME_RANGES = {
 
 export async function searchRides(filters: SearchFilters) {
   const supabase = await createClient();
-  const today = new Date().toISOString().split("T")[0];
+  const { date: today } = getAppNow();
 
   let query = supabase
     .from("rides")
@@ -41,7 +42,7 @@ export async function searchRides(filters: SearchFilters) {
     `
     )
     .eq("status", "active")
-    .gte("date", today);
+    .or(buildNotExpiredOrFilter());
 
   // ── City filters ──
   if (filters.origin) query = query.eq("from_city", filters.origin);
@@ -139,8 +140,8 @@ export async function searchRides(filters: SearchFilters) {
     prev.setDate(d.getDate() - 1);
     const next = new Date(d);
     next.setDate(d.getDate() + 1);
-    const prevStr = prev.toISOString().split("T")[0];
-    const nextStr = next.toISOString().split("T")[0];
+    const prevStr = prev.toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
+    const nextStr = next.toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
 
     let nearbyQuery = supabase
       .from("rides")
@@ -151,6 +152,7 @@ export async function searchRides(filters: SearchFilters) {
       `
       )
       .eq("status", "active")
+      .or(buildNotExpiredOrFilter())
       .gte("date", prevStr)
       .lte("date", nextStr);
 

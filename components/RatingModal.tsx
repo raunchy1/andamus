@@ -36,6 +36,7 @@ export function RatingModal({
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
+  const [reviewSaved, setReviewSaved] = useState(false);
   const supabase = createClient();
 
   const checkExistingReview = useCallback(async () => {
@@ -53,9 +54,13 @@ export function RatingModal({
 
   useEffect(() => {
     if (isOpen) {
+      setReviewSaved(false);
+      setRating(0);
+      setComment("");
+      setHoverRating(0);
       checkExistingReview();
     }
-  }, [isOpen, checkExistingReview]);
+  }, [isOpen, checkExistingReview, rideId]);
 
     const handleSubmit = async () => {
     if (rating === 0) {
@@ -115,11 +120,16 @@ export function RatingModal({
           }
         }
         
+        setReviewSaved(true);
         toast.success(t("reviewSent"));
         onSuccess?.();
-        onClose();
-        setRating(0);
-        setComment("");
+        // Keep modal open briefly so user sees confirmation, then auto-close
+        setTimeout(() => {
+          onClose();
+          setRating(0);
+          setComment("");
+          setReviewSaved(false);
+        }, 2000);
       }
     } catch {
       toast.error(t("sendError"));
@@ -144,7 +154,15 @@ export function RatingModal({
           </button>
         </div>
 
-        {alreadyReviewed ? (
+        {reviewSaved ? (
+          <div className="py-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
+              <Star className="h-8 w-8 text-green-400 fill-green-400" />
+            </div>
+            <p className="text-lg font-semibold text-white">{t("reviewSent")}</p>
+            <p className="mt-2 text-sm text-white/60">{t("thankYou")}</p>
+          </div>
+        ) : alreadyReviewed ? (
           <div className="py-8 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/20">
               <Star className="h-8 w-8 text-yellow-400 fill-yellow-400" />

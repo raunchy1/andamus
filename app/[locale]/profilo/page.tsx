@@ -155,6 +155,7 @@ export default function ProfilePage() {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingRideId, setRatingRideId] = useState<string>("");
   const [ratingUser, setRatingUser] = useState<{ id: string; name: string; avatar_url: string | null }>({ id: "", name: "", avatar_url: null });
+  const [reviewedRides, setReviewedRides] = useState<Set<string>>(new Set());
   const [cancelBookingId, setCancelBookingId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -948,7 +949,7 @@ export default function ProfilePage() {
                             <span className="text-[11px] font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            {completed ? (
+                            {completed && !reviewedRides.has(booking.rides.id) ? (
                               <button
                                 onClick={() => openRatingModal(booking.rides.id, {
                                   id: booking.rides.profiles.id,
@@ -1130,6 +1131,7 @@ export default function ProfilePage() {
             rideId={ratingRideId}
             reviewedUser={ratingUser}
             currentUserId={user.id}
+            onSuccess={() => setReviewedRides((prev) => new Set(prev).add(ratingRideId))}
           />
         )}
       </div>
@@ -1386,7 +1388,7 @@ export default function ProfilePage() {
                                   <span className="text-sm font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  {completed ? (
+                                  {completed && !reviewedRides.has(booking.rides.id) ? (
                                     <button
                                       onClick={() => openRatingModal(booking.rides.id, {
                                         id: booking.rides.profiles.id,
@@ -1688,6 +1690,7 @@ export default function ProfilePage() {
             rideId={ratingRideId}
             reviewedUser={ratingUser}
             currentUserId={user.id}
+            onSuccess={() => setReviewedRides((prev) => new Set(prev).add(ratingRideId))}
           />
         )}
       </div>
