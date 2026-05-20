@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
-import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notifications";
+import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notification-actions";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { PhoneVerification } from "@/components/PhoneVerification";

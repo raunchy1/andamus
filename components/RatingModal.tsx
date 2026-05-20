@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { notifyNewReview } from "@/lib/notifications";
+import { notifyNewReview } from "@/lib/notification-actions";
 import { completeGamificationAction } from "@/lib/gamification";
 import Image from "next/image";
 import { toast } from "sonner";

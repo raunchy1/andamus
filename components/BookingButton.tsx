@@ -10,7 +10,7 @@ import {
   Car
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { notifyBookingRequest } from "@/lib/notifications";
+import { notifyBookingRequest } from "@/lib/notification-actions";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import Link from "next/link";

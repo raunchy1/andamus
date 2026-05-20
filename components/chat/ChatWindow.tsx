@@ -22,7 +22,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
-import { notifyNewMessage } from "@/lib/notifications";
+import { notifyNewMessage } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type { User as SupabaseUser } from "@supabase/supabase-js";

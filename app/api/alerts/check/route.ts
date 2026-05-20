@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ensureVapidDetails, webPush } from "@/lib/web-push";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 export async function POST(req: NextRequest) {
   ensureVapidDetails();
@@ -45,7 +46,10 @@ export async function POST(req: NextRequest) {
 
     const userIds = [...new Set(alerts.map((a) => a.user_id))];
 
-    const { data: subscriptions } = await supabase
+    // Use service role to read push subscriptions for alert recipients
+    // (RLS SELECT policy restricts users to their own subscriptions)
+    const sr = createServiceRoleClient();
+    const { data: subscriptions } = await sr
       .from("push_subscriptions")
       .select("endpoint, p256dh, auth, user_id")
       .in("user_id", userIds);
@@ -74,7 +78,7 @@ export async function POST(req: NextRequest) {
           // Remove permanently invalid subscriptions (410 Gone or 404)
           const statusCode = (err as { statusCode?: number }).statusCode;
           if (statusCode === 410 || statusCode === 404) {
-            await supabase.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+            await sr.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
           }
         }
       })

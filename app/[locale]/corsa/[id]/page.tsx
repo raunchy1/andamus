@@ -10,7 +10,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { notifyBookingRequest } from "@/lib/notifications";
+import { notifyBookingRequest } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
 import { toast } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
