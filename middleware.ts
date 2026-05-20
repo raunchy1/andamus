@@ -14,8 +14,9 @@ const intlMiddleware = createMiddleware({
 // Matches /admin or /{locale}/admin (and nested), but NOT /admin-anything-else
 const ADMIN_PATH_REGEX = /^\/(?:it|en|de)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
 
-// Coming-soon disabled: page kept but redirect bypassed
-const LAUNCH_MODE = true;
+// WAITLIST_MODE controls whether the app is gated behind coming-soon.
+// When false (default), the full app is publicly accessible.
+const WAITLIST_MODE = process.env.NEXT_PUBLIC_WAITLIST_MODE === "true";
 // Matches /, /it, /it/, /en, /en/, /de, /de/
 const LOCALE_ROOT_REGEX = /^\/(?:it|en|de)?\/?$/;
 // Paths that bypass the coming-soon redirect (internal testing + auth access)
@@ -34,14 +35,14 @@ function hasSupabaseAuthCookie(request: NextRequest): boolean {
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // /coming-soon disabled — redirect to home
-  if (pathname === "/coming-soon") {
+  // When waitlist mode is OFF, redirect /coming-soon to home
+  if (!WAITLIST_MODE && pathname === "/coming-soon") {
     return NextResponse.redirect(new URL("/it", request.url));
   }
 
-  // Redirect to coming-soon when not yet launched
+  // When waitlist mode is ON, redirect anonymous visitors to /coming-soon
   // Logged-in users (have Supabase auth cookie) bypass the redirect entirely
-  if (!LAUNCH_MODE && !hasSupabaseAuthCookie(request)) {
+  if (WAITLIST_MODE && !hasSupabaseAuthCookie(request)) {
     const isBypass = COMING_SOON_BYPASS.some(
       (p) => pathname === p || pathname.startsWith(p + "/")
     );

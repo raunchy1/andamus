@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
+import { FEATURES } from "@/lib/features";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ADMIN_EMAIL = "cristiermurache@gmail.com";
@@ -252,6 +253,13 @@ async function sendConfirmation(to: string, position: number, referralCode: stri
 
 // ── POST handler ────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
+  if (!FEATURES.WAITLIST_MODE) {
+    return NextResponse.json(
+      { success: false, error: "waitlist_disabled" },
+      { status: 403 }
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();

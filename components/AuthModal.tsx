@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { FEATURES } from "@/lib/features";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -78,7 +79,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         if (user) {
           const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).single();
           handleClose();
-          router.push(profile ? `/${locale}/profilo` : `/${locale}/lansare`);
+          router.push(profile ? `/${locale}/profilo` : FEATURES.WAITLIST_MODE ? `/${locale}/lansare` : `/${locale}/profilo`);
           router.refresh();
         }
       }
@@ -114,7 +115,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         toast.success(t("welcomeToAndamus"));
         handleClose();
         setTimeout(() => {
-          router.push(`/${locale}/lansare`);
+          router.push(FEATURES.WAITLIST_MODE ? `/${locale}/lansare` : `/${locale}/profilo`);
           router.refresh();
         }, 300);
       } else {

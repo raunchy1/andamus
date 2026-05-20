@@ -28,6 +28,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import { openSOSModal } from "./SafetyButton";
+import { FEATURES } from "@/lib/features";
 import { ShareApp } from "./ShareApp";
 import { isAdmin } from "@/lib/admin-config";
 import { AuthModal } from "./AuthModal";
@@ -208,13 +209,15 @@ export function Navbar() {
                   </div>
 
                   {/* Invite Friends Link -->
-                  <Link
-                    href={`/${locale}/invita`}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                    title={t('invite')}
-                  >
-                    <Gift className="h-5 w-5" />
-                  </Link>
+                  {FEATURES.WAITLIST_MODE && (
+                    <Link
+                      href={`/${locale}/invita`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                      title={t('invite')}
+                    >
+                      <Gift className="h-5 w-5" />
+                    </Link>
+                  )}
 
                   {/* Statistics Link */}
                   <Link
@@ -345,14 +348,16 @@ export function Navbar() {
                 <>
                   {user ? (
                     <div className="space-y-2">
-                      <Link
-                        href={`/${locale}/invita`}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
-                      >
-                        <Gift className="h-5 w-5" />
-                        <span>{t('invite')}</span>
-                      </Link>
+                      {FEATURES.WAITLIST_MODE && (
+                        <Link
+                          href={`/${locale}/invita`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
+                        >
+                          <Gift className="h-5 w-5" />
+                          <span>{t('invite')}</span>
+                        </Link>
+                      )}
                       <Link
                         href={`/${locale}/statistiche`}
                         onClick={() => setMobileMenuOpen(false)}

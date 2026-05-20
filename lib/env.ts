@@ -5,7 +5,7 @@ const requiredEnvVars = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   "STRIPE_SECRET_KEY",
-  "GOOGLE_MAPS_API_KEY",
+  "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
 ] as const;
 
 declare global {

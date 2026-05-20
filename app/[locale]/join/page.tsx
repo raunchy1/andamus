@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Analytics } from "@/lib/analytics";
+import { FEATURES } from "@/lib/features";
 
 function JoinContent() {
   const t = useTranslations("auth");
@@ -67,7 +68,7 @@ function JoinContent() {
           router.push(`/${locale}/profilo`);
         } else {
           Analytics.userRegistered();
-          router.push(`/${locale}/lansare`);
+          router.push(FEATURES.WAITLIST_MODE ? `/${locale}/lansare` : `/${locale}/profilo`);
         }
         return;
       } else {

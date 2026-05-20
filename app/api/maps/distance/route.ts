@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
       { error: "Maps API not configured" },

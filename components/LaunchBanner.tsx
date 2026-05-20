@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, ChevronDown, MapPin, Shield, MessageCircle, Trophy, Zap } from "lucide-react";
+import { FEATURES } from "@/lib/features";
 
 const NEW_FEATURES = [
   { icon: MapPin, text: "50+ città sarde connesse", color: "text-blue-400" },
@@ -13,6 +14,8 @@ const NEW_FEATURES = [
 ];
 
 export function LaunchBanner() {
+  if (FEATURES.WAITLIST_MODE) return null;
+
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showDetails, setShowDetails] = useState(false);

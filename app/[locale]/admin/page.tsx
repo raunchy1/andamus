@@ -31,6 +31,7 @@ import {
   Cell,
 } from "recharts";
 import { checkAdminAccess } from "@/lib/admin";
+import { FEATURES } from "@/lib/features";
 
 const COLORS = ["#e63946", "#ff6b6b", "#ffa07a", "#ffcc99", "#fff3cd", "#4CAF50", "#2196F3", "#FF9800"];
 
@@ -252,7 +253,7 @@ export default function AdminPage() {
           { id: "rides", label: "Corse" },
           { id: "revenue", label: "Revenue" },
           { id: "realtime", label: "🔴 Live" },
-          { id: "waitinglist", label: "⏳ Lista d'attesa" },
+          ...(FEATURES.WAITLIST_MODE ? [{ id: "waitinglist", label: "⏳ Lista d'attesa" }] : []),
         ].map((tab) => (
           <button
             key={tab.id}
@@ -280,7 +281,7 @@ export default function AdminPage() {
             {activeTab === "rides" && <RidesList supabase={supabase} />}
             {activeTab === "revenue" && <RevenueTab />}
             {activeTab === "realtime" && <RealtimePanel supabase={supabase} />}
-            {activeTab === "waitinglist" && <WaitingListTab supabase={supabase} />}
+            {activeTab === "waitinglist" && FEATURES.WAITLIST_MODE && <WaitingListTab supabase={supabase} />}
           </>
         )}
       </div>
