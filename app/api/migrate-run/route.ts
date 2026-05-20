@@ -19,13 +19,18 @@ export async function POST(request: NextRequest) {
   const sql = readFileSync(migrationPath, "utf-8");
 
   // Try multiple connection strategies
-  const configs = [
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const possiblePasswords = [
+    serviceRoleKey,
+    "tCgLTY5zUUG2M1wsUi0iSw_ErBATyaM",
+  ];
+
+  const baseConfigs = [
     {
       host: "db.ntcofaxoxjvzovkqgypy.supabase.co",
       port: 5432,
       database: "postgres",
       user: "postgres",
-      password: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
       ssl: { rejectUnauthorized: false },
     },
     {
@@ -33,7 +38,6 @@ export async function POST(request: NextRequest) {
       port: 6543,
       database: "postgres",
       user: "postgres.ntcofaxoxjvzovkqgypy",
-      password: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
       ssl: { rejectUnauthorized: false },
     },
     {
@@ -41,10 +45,20 @@ export async function POST(request: NextRequest) {
       port: 5432,
       database: "postgres",
       user: "postgres.ntcofaxoxjvzovkqgypy",
-      password: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+      ssl: { rejectUnauthorized: false },
+    },
+    {
+      host: "aws-0-eu-central-1.pooler.supabase.com",
+      port: 6543,
+      database: "postgres",
+      user: "postgres",
       ssl: { rejectUnauthorized: false },
     },
   ];
+
+  const configs = baseConfigs.flatMap((cfg) =>
+    possiblePasswords.map((pass) => ({ ...cfg, password: pass }))
+  );
 
   const results: { config: number; status: string; error?: string }[] = [];
 
