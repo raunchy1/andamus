@@ -694,7 +694,9 @@
     "alreadyHaveAccount": "Already have an account?",
     "noAccount": "Don't have an account?",
     "min8chars": "min. 8 characters",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "authErrorTitle": "Authentication Error",
+    "authErrorDescription": "Something went wrong during sign in. Please try again or contact support if the problem persists."
   },
   "events": {
     "title": "Events in Sardinia",

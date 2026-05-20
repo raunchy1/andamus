@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FEATURES } from "@/lib/features";
+import { signInWithGoogle } from "@/lib/auth";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -130,12 +131,13 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   };
 
   const handleGoogle = async () => {
-    const redirectTo = `${window.location.origin}/${locale}/auth/callback`;
-    const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
-    if (error) {
-      toast.error(error.message);
+    try {
+      const redirectTo = `${window.location.origin}/${locale}/auth/callback`;
+      await signInWithGoogle(redirectTo);
+      // On success the browser is redirected by Supabase; no further action needed.
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("googleLoginError"));
     }
-    // On success the browser is redirected by Supabase; no further action needed.
   };
 
   if (!isOpen) return null;

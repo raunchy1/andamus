@@ -694,7 +694,9 @@
     "alreadyHaveAccount": "Hast du bereits ein Konto?",
     "noAccount": "Kein Konto?",
     "min8chars": "min. 8 Zeichen",
-    "signIn": "Anmelden"
+    "signIn": "Anmelden",
+    "authErrorTitle": "Authentifizierungsfehler",
+    "authErrorDescription": "Bei der Anmeldung ist ein Problem aufgetreten. Bitte versuche es erneut oder kontaktiere den Support, wenn das Problem weiterhin besteht."
   },
   "events": {
     "title": "Veranstaltungen in Sardinien",

@@ -694,7 +694,9 @@
     "alreadyHaveAccount": "Hai già un account?",
     "noAccount": "Non hai un account?",
     "min8chars": "min. 8 caratteri",
-    "signIn": "Accedi"
+    "signIn": "Accedi",
+    "authErrorTitle": "Errore di autenticazione",
+    "authErrorDescription": "Si è verificato un problema durante l'accesso. Riprova o contatta il supporto se il problema persiste."
   },
   "events": {
     "title": "Eventi in Sardegna",

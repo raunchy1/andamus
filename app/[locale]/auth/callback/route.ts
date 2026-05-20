@@ -1,83 +1,107 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { FEATURES } from "@/lib/features";
+import {
+  buildSafeRedirectUrl,
+  verifyOAuthState,
+  clearOAuthStateCookie,
+  extractLocaleFromPathname,
+} from "@/lib/auth-helpers";
 
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+/**
+ * Hardened OAuth callback handler.
+ *
+ * SECURITY FIXES APPLIED:
+ * - State parameter verified against httpOnly cookie (CSRF protection)
+ * - Redirects validated against whitelist (open redirect fix)
+ * - Fixed base URL from env vars — NEVER uses request.url or X-Forwarded-Host
+ * - Safe error handling — no internal error leakage
+ * - Automatic OAuth state cookie cleanup
+ */
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
+  const locale = extractLocaleFromPathname(request.nextUrl.pathname);
 
-  // Extract locale from URL path (e.g. /it/auth/callback -> it)
-  const pathSegments = new URL(request.url).pathname.split("/").filter(Boolean);
-  const locale = pathSegments[0] || "it";
-
-  // Handle OAuth provider errors — Supabase forwards error & error_description
-  // as query params when the user denies consent or the provider fails.
+  // ── 1. Handle OAuth provider errors ─────────────────────────────
   const oauthError = searchParams.get("error");
   if (oauthError) {
     const description = searchParams.get("error_description") ?? oauthError;
-    const errorUrl = new URL("/" + locale + "/auth/auth-code-error", origin);
-    errorUrl.searchParams.set("error", oauthError);
-    errorUrl.searchParams.set("error_description", description);
-    console.error("OAuth callback error:", oauthError, description);
-    return NextResponse.redirect(errorUrl.toString());
+    console.error("[auth/callback] OAuth provider error:", { oauthError, description });
+
+    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
+    const response = NextResponse.redirect(errorUrl);
+    clearOAuthStateCookie(response);
+    return response;
   }
 
-  if (code) {
-    const supabase = await createClient();
-    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error && user) {
-      // Check for pending referral code in cookie
-      const cookieHeader = request.headers.get("cookie");
-      const pendingRefMatch = cookieHeader?.match(/pending_referral_code=([^;]+)/);
-      const pendingRefCode = pendingRefMatch ? decodeURIComponent(pendingRefMatch[1]) : null;
-
-      if (pendingRefCode) {
-        await supabase.rpc("apply_referral_bonus", {
-          new_user_id: user.id,
-          referrer_code: pendingRefCode
-        });
-      }
-
-      // Check if user has a profile — new users go to onboarding, existing to profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("id", user.id)
-        .single();
-
-      const forwardedHost = request.headers.get("x-forwarded-host");
-      const isLocalEnv = process.env.NODE_ENV === "development";
-
-      const redirectPath = profile
-        ? "/" + locale + "/profilo"
-        : FEATURES.WAITLIST_MODE
-          ? "/" + locale + "/lansare"
-          : "/" + locale + "/profilo";
-
-      let response: NextResponse;
-      if (isLocalEnv) {
-        response = NextResponse.redirect(origin + redirectPath);
-      } else if (forwardedHost) {
-        response = NextResponse.redirect("https://" + forwardedHost + redirectPath);
-      } else {
-        response = NextResponse.redirect(origin + redirectPath);
-      }
-
-      // Clear the referral code cookie
-      response.cookies.delete("pending_referral_code");
-
-      return response;
-    }
-
-    console.error("Error exchanging code for session:", error);
-    const exchangeErrorUrl = new URL("/" + locale + "/auth/auth-code-error", origin);
-    if (error?.message) {
-      exchangeErrorUrl.searchParams.set("error_description", error.message);
-    }
-    return NextResponse.redirect(exchangeErrorUrl.toString());
+  // ── 2. Verify OAuth state (CSRF protection) ─────────────────────
+  if (!verifyOAuthState(request)) {
+    console.error("[auth/callback] OAuth state mismatch or missing — possible CSRF attack");
+    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
+    const response = NextResponse.redirect(errorUrl);
+    clearOAuthStateCookie(response);
+    return response;
   }
 
-  // No code and no error param — redirect to generic error page
-  return NextResponse.redirect(origin + "/" + locale + "/auth/auth-code-error");
+  // ── 3. Exchange code for session ────────────────────────────────
+  if (!code) {
+    console.error("[auth/callback] Missing authorization code");
+    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
+    const response = NextResponse.redirect(errorUrl);
+    clearOAuthStateCookie(response);
+    return response;
+  }
+
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error || !user) {
+    console.error("[auth/callback] Session exchange failed:", error?.message);
+    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
+    const response = NextResponse.redirect(errorUrl);
+    clearOAuthStateCookie(response);
+    return response;
+  }
+
+  // ── 4. Apply referral bonus if present ──────────────────────────
+  const cookieHeader = request.headers.get("cookie");
+  const pendingRefMatch = cookieHeader?.match(/pending_referral_code=([^;]+)/);
+  const pendingRefCode = pendingRefMatch ? decodeURIComponent(pendingRefMatch[1]) : null;
+
+  if (pendingRefCode) {
+    try {
+      await supabase.rpc("apply_referral_bonus", {
+        new_user_id: user.id,
+        referrer_code: pendingRefCode,
+      });
+    } catch (err) {
+      console.error("[auth/callback] Referral bonus failed:", err);
+      // Non-fatal — don't block login
+    }
+  }
+
+  // ── 5. Check if user has a profile ──────────────────────────────
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .single();
+
+  const nextPath = searchParams.get("next");
+  const fallbackPath = profile
+    ? `/${locale}/profilo`
+    : FEATURES.WAITLIST_MODE
+      ? `/${locale}/lansare`
+      : `/${locale}/profilo`;
+
+  const redirectUrl = buildSafeRedirectUrl(nextPath, locale, fallbackPath);
+
+  const response = NextResponse.redirect(redirectUrl);
+
+  // ── 6. Cleanup cookies ──────────────────────────────────────────
+  clearOAuthStateCookie(response);
+  response.cookies.delete("pending_referral_code");
+
+  return response;
 }
