@@ -19,7 +19,6 @@
 -- ============================================================
 DO $$
 BEGIN
-  -- Only proceed if messages table exists
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages' AND table_schema = 'public') THEN
     DROP POLICY IF EXISTS "Users can view messages in their bookings" ON messages;
 
