@@ -1,5 +1,5 @@
 // Admin configuration — SERVER ONLY. Never import from client components.
-// Configure additional admins via ADMIN_EMAILS env var (comma-separated, no NEXT_PUBLIC_ prefix).
+// Configure additional admins via NEXT_PUBLIC_ADMIN_EMAILS env var (comma-separated).
 
 const DEFAULT_ADMINS = ["cristiermurache@gmail.com"];
 
@@ -7,7 +7,7 @@ export const ADMIN_EMAILS = Array.from(
   new Set(
     [
       ...DEFAULT_ADMINS,
-      ...(process.env.ADMIN_EMAILS || "")
+      ...(process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
         .split(",")
         .map((email) => email.trim())
         .filter(Boolean),
