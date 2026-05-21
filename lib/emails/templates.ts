@@ -138,7 +138,10 @@ export function getBookingConfirmedEmailTemplate(data: {
   bookingId: string;
   baseUrl: string;
   unsubscribeToken?: string;
+  locale?: EmailLocale;
 }): { subject: string; html: string } {
+  const L = data.locale || "it";
+  const _ = (key: string) => tEmail(L, key);
   const phoneSection = data.driverPhone
     ? `<p style="margin: 8px 0 0 0; color: ${textMuted}; font-size: 14px;">📞 ${data.driverPhone}</p>`
     : "";
@@ -190,7 +193,7 @@ export function getBookingConfirmedEmailTemplate(data: {
   </tr>`;
 
   return {
-    subject: "✅ Passaggio confermato! - Andamus",
+    subject: _("bookingConfirmedSubject"),
     html: getBaseTemplate(content, data.unsubscribeToken),
   };
 }
@@ -287,12 +290,17 @@ export function getNewMessageEmailTemplate(data: {
 }
 
 // E) WELCOME EMAIL (to new user)
+import { tEmail, type EmailLocale } from "./i18n";
+
 export function getWelcomeEmailTemplate(data: {
   name: string;
   referralCode: string;
   baseUrl: string;
   unsubscribeToken?: string;
+  locale?: EmailLocale;
 }): { subject: string; html: string } {
+  const L = data.locale || "it";
+  const _ = (key: string) => tEmail(L, key);
   const content = `<tr>
     <td style="padding: 40px;">
       <h2 style="margin: 0 0 20px 0; color: ${textColor}; font-size: 28px; font-weight: 700;">Benvenuto su Andamus! 🚗</h2>
@@ -346,7 +354,7 @@ export function getWelcomeEmailTemplate(data: {
   </tr>`;
 
   return {
-    subject: "Benvenuto su Andamus! 🚗",
+    subject: _("welcomeSubject"),
     html: getBaseTemplate(content, data.unsubscribeToken),
   };
 }
@@ -363,7 +371,10 @@ export function getRideReminderEmailTemplate(data: {
   bookingId: string;
   baseUrl: string;
   unsubscribeToken?: string;
+  locale?: EmailLocale;
 }): { subject: string; html: string } {
+  const L = data.locale || "it";
+  const _ = (key: string) => tEmail(L, key);
   const roleText = data.isDriver ? "guidi" : "partecipi";
   const emoji = data.isDriver ? "🚗" : "🚶";
 
@@ -402,7 +413,7 @@ export function getRideReminderEmailTemplate(data: {
   </tr>`;
 
   return {
-    subject: "⏰ Domani parti! - Andamus",
+    subject: _("rideReminderSubject"),
     html: getBaseTemplate(content, data.unsubscribeToken),
   };
 }

@@ -142,6 +142,15 @@ export async function sendBookingConfirmedEmail(data: {
       return { success: true };
     }
 
+    // Fetch user locale
+    const supabase = await createClient();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("locale")
+      .eq("id", data.passengerId)
+      .single();
+    const locale = (profile?.locale as "it" | "en" | "de") || "it";
+
     const unsubscribeToken = await getUnsubscribeToken(data.passengerId);
     const { subject, html } = getBookingConfirmedEmailTemplate({
       passengerName: data.passengerName,
@@ -156,6 +165,7 @@ export async function sendBookingConfirmedEmail(data: {
       bookingId: data.bookingId,
       baseUrl: BASE_URL,
       unsubscribeToken,
+      locale,
     });
 
     const { error } = await resend.emails.send({
@@ -290,12 +300,22 @@ export async function sendWelcomeEmail(data: {
       return { success: true };
     }
 
+    // Fetch user locale
+    const supabase = await createClient();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("locale")
+      .eq("id", data.userId)
+      .single();
+    const locale = (profile?.locale as "it" | "en" | "de") || "it";
+
     const unsubscribeToken = await getUnsubscribeToken(data.userId);
     const { subject, html } = getWelcomeEmailTemplate({
       name: data.name,
       referralCode: data.referralCode,
       baseUrl: BASE_URL,
       unsubscribeToken,
+      locale,
     });
 
     const { error } = await resend.emails.send({
@@ -338,6 +358,15 @@ export async function sendRideReminderEmail(data: {
       return { success: true };
     }
 
+    // Fetch user locale
+    const supabase = await createClient();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("locale")
+      .eq("id", data.recipientId)
+      .single();
+    const locale = (profile?.locale as "it" | "en" | "de") || "it";
+
     const unsubscribeToken = await getUnsubscribeToken(data.recipientId);
     const { subject, html } = getRideReminderEmailTemplate({
       recipientName: data.recipientName,
@@ -350,6 +379,7 @@ export async function sendRideReminderEmail(data: {
       bookingId: data.bookingId,
       baseUrl: BASE_URL,
       unsubscribeToken,
+      locale,
     });
 
     const { error } = await resend.emails.send({
