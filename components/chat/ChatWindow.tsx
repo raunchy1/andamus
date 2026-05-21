@@ -343,6 +343,7 @@ const ChatInput = memo(function ChatInput({
   onStartRecording,
   onStopRecording,
   mobile = false,
+  isOnline = true,
 }: {
   isRecording: boolean;
   recordingTime: number;
@@ -356,6 +357,7 @@ const ChatInput = memo(function ChatInput({
   onStartRecording: () => void;
   onStopRecording: () => void;
   mobile?: boolean;
+  isOnline?: boolean;
 }) {
   const t = useTranslations("chat");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -535,10 +537,16 @@ export default function ChatWindow({
   const handleMarkAsRead = useCallback(async () => {
     try {
       await markMessagesAsRead(bookingId);
+      // Broadcast to other tabs
+      if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+        const bc = new BroadcastChannel(`chat-read:${bookingId}`);
+        bc.postMessage({ type: "mark-as-read", userId: user.id });
+        bc.close();
+      }
     } catch {
       /* silent fail */
     }
-  }, [bookingId]);
+  }, [bookingId, user.id]);
 
   const addLocalMessage = useCallback((msg: LocalMessage) => {
     setLocalMessages((prev) => [...prev, msg]);
@@ -713,6 +721,32 @@ export default function ChatWindow({
   useEffect(() => {
     scrollToBottom();
   }, [messages.length, localMessages.length, scrollToBottom]);
+
+  // Cross-tab unread sync via BroadcastChannel
+  useEffect(() => {
+    if (typeof window === "undefined" || !("BroadcastChannel" in window)) return;
+    const bc = new BroadcastChannel(`chat-read:${bookingId}`);
+    bc.onmessage = (ev) => {
+      if (ev.data?.type === "mark-as-read" && ev.data.userId === user.id) {
+        // Another tab marked messages as read — update local state
+        setMessages((prev) =>
+          prev.map((m) => (m.sender_id !== user.id ? { ...m, read: true } : m))
+        );
+      }
+    };
+    return () => bc.close();
+  }, [bookingId, user.id]);
+
+  // Mark as read when tab becomes visible
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        handleMarkAsRead();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [handleMarkAsRead]);
 
   // -- Retry Handler --
   const handleRetry = useCallback(
@@ -1257,6 +1291,7 @@ export default function ChatWindow({
         <footer className="bg-[#131313] px-4 sm:px-6 pb-10 pt-6 shrink-0 safe-area-pb">
           <ChatInput
             mobile
+            isOnline={isOnline}
             isRecording={isRecording}
             recordingTime={recordingTime}
             newMessage={newMessage}
@@ -1379,6 +1414,7 @@ export default function ChatWindow({
           {/* Input */}
           <footer className="bg-[#131313] px-8 pb-8 pt-6 shrink-0">
             <ChatInput
+              isOnline={isOnline}
               isRecording={isRecording}
               recordingTime={recordingTime}
               newMessage={newMessage}
