@@ -1,4 +1,5 @@
 {
+  "model": "claude-sonnet-4-6",
   "permissions": {
     "allow": [
       "Bash(xargs ls:*)",
@@ -23,7 +24,22 @@
       "Bash(git -C /mnt/data/Desktop/Andamusu/andamus status --short)",
       "Bash(git -C /mnt/data/Desktop/Andamusu/andamus remote -v)",
       "Bash(git -C /mnt/data/Desktop/Andamusu/andamus log -5 --oneline)",
-      "Bash(vercel --version)"
+      "Bash(vercel --version)",
+      "Bash(npm i *)",
+      "WebFetch(domain:andamus.vercel.app)",
+      "Bash(curl -sI https://andamus.vercel.app/)",
+      "Bash(curl -s https://andamus.vercel.app/ -o /tmp/andamus-home.html)",
+      "Bash(time curl -sI -L --max-time 30 https://andamus.vercel.app/)",
+      "Bash(time curl -sI --max-time 30 https://andamus.vercel.app/it)",
+      "Bash(curl -sL https://andamus.vercel.app/ -o /tmp/andamus-it.html -w \"TIME=%{time_total}s SIZE=%{size_download}b STATUS=%{http_code}\")",
+      "Bash(time curl -sI -L --max-time 30 https://andamus.vercel.app/ -o /dev/null -w \"HTTP=%{http_code} TIME=%{time_total}s\\\\n\")",
+      "Bash(curl -sI https://andamus.vercel.app/it)",
+      "Bash(curl -sL https://andamus.vercel.app/it)",
+      "Bash(echo \"EXIT_GREP=$?\")",
+      "Bash(curl -sI -L --max-time 30 https://andamus.vercel.app/ -o /dev/null -w \"HTTP=%{http_code} TIME=%{time_total}s\\\\n\")",
+      "Bash(echo \"TS_EXIT=$?\")",
+      "Bash(echo \"BUILD_EXIT=$?\")",
+      "Bash(curl -sL https://andamus.vercel.app/sw-register.js)"
     ]
   }
 }

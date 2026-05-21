@@ -3,23 +3,23 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-import { 
-  Bell, 
-  Check, 
-  Car, 
-  MessageCircle, 
-  Star, 
+import {
+  Bell,
+  Check,
+  Car,
+  MessageCircle,
+  Star,
   X,
   CheckCheck,
   Loader2,
-  BellRing
+  BellRing,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 interface Notification {
   id: string;
-  type: 'booking_request' | 'booking_accepted' | 'booking_rejected' | 'new_message' | 'new_review' | 'ride_alert';
+  type: "booking_request" | "booking_accepted" | "booking_rejected" | "new_message" | "new_review" | "ride_alert";
   title: string;
   body: string;
   read: boolean;
@@ -79,7 +79,8 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  const supabase = useRef(createClient()).current;
+  const processedIds = useRef<Set<string>>(new Set());
 
   // Fetch notifications
   const fetchNotifications = useCallback(async () => {
@@ -91,17 +92,19 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (data) {
       setNotifications(data);
       setUnreadCount(data.filter((n: { read: boolean }) => !n.read).length);
+      // Sync processed ids to avoid duplicates on realtime
+      processedIds.current = new Set(data.map((n: Notification) => n.id));
     }
   }, [supabase]);
 
   // Initial fetch
   useEffect(() => {
-    setTimeout(() => fetchNotifications(), 0);
+    fetchNotifications();
   }, [fetchNotifications]);
 
   // Real-time subscription
@@ -123,8 +126,30 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
             filter: `user_id=eq.${user.id}`,
           },
           (payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<Record<string, unknown>>) => {
-            setNotifications((prev) => [payload.new as unknown as Notification, ...prev].slice(0, 10));
+            const newNotif = payload.new as unknown as Notification;
+            // Deduplication: ignore if already processed
+            if (processedIds.current.has(newNotif.id)) return;
+            processedIds.current.add(newNotif.id);
+
+            setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
             setUnreadCount((prev) => prev + 1);
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload: import("@supabase/supabase-js").RealtimePostgresUpdatePayload<Record<string, unknown>>) => {
+            const updated = payload.new as unknown as Notification;
+            setNotifications((prev) => {
+              const updatedList = prev.map((n) => (n.id === updated.id ? updated : n));
+              setUnreadCount(updatedList.filter((n) => !n.read).length);
+              return updatedList;
+            });
           }
         )
         .subscribe();
@@ -168,7 +193,10 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const markAllAsRead = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     const { error } = await supabase
       .from("notifications")
@@ -194,9 +222,9 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const getNotificationLink = (notification: Notification) => {
     if (notification.booking_id) {
       if (
-        notification.type === 'new_message' ||
-        notification.type === 'booking_accepted' ||
-        notification.type === 'booking_rejected'
+        notification.type === "new_message" ||
+        notification.type === "booking_accepted" ||
+        notification.type === "booking_rejected"
       ) {
         return `/${locale}/chat/${notification.booking_id}`;
       }
@@ -214,16 +242,16 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-          isHome 
-            ? "text-white/70 hover:bg-white/10 hover:text-white" 
+          isHome
+            ? "text-white/70 hover:bg-white/10 hover:text-white"
             : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
         }`}
-        aria-label={t("notifications")} // a11y: icon-only button
+        aria-label={t("notifications")}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
