@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
-import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notification-actions";
+import { acceptBooking, rejectBooking } from "@/lib/booking-lifecycle";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { ProductAnalytics } from "@/lib/posthog";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
@@ -295,19 +295,10 @@ export default function ProfilePage() {
         }
       }
 
-      const { error } = await supabase
-        .from("bookings")
-        .update({ status: "confirmed" })
-        .eq("id", request.id);
-
-      if (error) throw error;
-
-      await notifyBookingAccepted(
-        request.passenger_id,
-        profile?.name || t("driver"),
-        request.ride_id,
-        request.id
-      );
+      const result = await acceptBooking(request.id, request.ride_id);
+      if (!result.success) {
+        throw new Error(result.error || t("errorAcceptingBooking"));
+      }
 
       await completeGamificationAction(
         request.passenger_id,
@@ -346,19 +337,10 @@ export default function ProfilePage() {
         }
       }
 
-      const { error } = await supabase
-        .from("bookings")
-        .update({ status: "rejected" })
-        .eq("id", request.id);
-
-      if (error) throw error;
-
-      await notifyBookingRejected(
-        request.passenger_id,
-        profile?.name || t("driver"),
-        request.ride_id,
-        request.id
-      );
+      const result = await rejectBooking(request.id, request.ride_id);
+      if (!result.success) {
+        throw new Error(result.error || t("errorRejectingBooking"));
+      }
 
       ProductAnalytics.bookingRejected(request.ride_id, request.id);
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));

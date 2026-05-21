@@ -15,6 +15,8 @@ export function computeRideStatus(
   rideTime: string
 ): ComputedRideStatus {
   if (storedStatus === "cancelled") return "cancelled";
+  // The cron job may set status to "expired"; treat same as "completed"
+  if (storedStatus === "expired") return "completed";
   if (isRideExpired(rideDate, rideTime)) return "completed";
   // A ride is "active" if it's today; "upcoming" if it's in the future
   const { date: today } = getAppNow();
