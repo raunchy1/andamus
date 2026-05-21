@@ -20,6 +20,7 @@ import { EmailPreferences } from "@/components/EmailPreferences";
 import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
+import { computeTrustScore, getTrustLevel, formatAccountAge } from "@/lib/reputation";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
 import { StripeConnectBanner } from "@/components/StripeConnectBanner";
@@ -40,7 +41,14 @@ interface Profile {
   points: number;
   level: string;
   rating: number;
+  review_count?: number | null;
+  rides_count?: number | null;
+  completed_rides_count?: number | null;
+  created_at?: string | null;
   phone_verified?: boolean;
+  email_verified?: boolean;
+  id_verified?: boolean;
+  driver_verified?: boolean;
   phone?: string | null;
   // Car info
   car_model?: string | null;
@@ -213,6 +221,15 @@ export default function ProfilePage() {
       setMyRides(ridesData);
       setMyBookings(bookingsRes.data || []);
       setRideAlerts(alertsRes.data || []);
+
+      // Pre-populate reviewed rides from DB
+      const { data: myReviews } = await supabase
+        .from("reviews")
+        .select("ride_id")
+        .eq("reviewer_id", currentUser.id);
+      if (myReviews) {
+        setReviewedRides(new Set(myReviews.map((r: { ride_id: string }) => r.ride_id)));
+      }
 
       // Requests depend on rides data — do sequentially
       if (ridesData.length > 0) {
@@ -531,7 +548,7 @@ export default function ProfilePage() {
     );
   }
 
-  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo } = useMemo(() => {
+  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel } = useMemo(() => {
     const cRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
     const cBookings = myBookings.filter(b => b.status === 'confirmed');
     let km = 0;
@@ -549,6 +566,9 @@ export default function ProfilePage() {
       const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
       if (dist) km += dist;
     });
+
+    const score = profile ? computeTrustScore(profile) : 0;
+    const label = getTrustLevel(score);
     
     return {
       completedRides: cRides,
@@ -556,6 +576,8 @@ export default function ProfilePage() {
       totalKm: km,
       co2Saved: calculateCO2Saved(km, passengers),
       levelInfo: profile ? getLevelInfo(profile.points) : null,
+      trustScore: score,
+      trustLabel: label,
     };
   }, [myRides, myBookings, profile]);
 
@@ -631,7 +653,7 @@ export default function ProfilePage() {
             <div className="mt-8 text-center">
               <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{userName}</h2>
               <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
-                {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
+                {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
             </div>
           </section>
@@ -674,20 +696,20 @@ export default function ProfilePage() {
                   <p className="text-2xl font-extrabold text-on-surface">
                     <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
                 </div>
               </TiltCard>
               </RevealItem>
               <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-gradient-to-br from-emerald-400/[0.07] to-transparent border border-emerald-400/15 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-400/10 ring-1 ring-emerald-400/20">
-                  <Leaf className="w-5 h-5 text-emerald-400" />
+              <TiltCard tiltStrength={5} className="bg-gradient-to-br from-primary/[0.07] to-transparent border border-primary/15 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                  <Shield className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-emerald-400">
-                    <AnimatedCounter value={Math.round(co2Saved)} suffix="kg" />
+                  <p className="text-2xl font-extrabold text-on-surface">
+                    <AnimatedCounter value={trustScore} suffix="%" />
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
+                  <p className={`text-[10px] font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -1179,7 +1201,7 @@ export default function ProfilePage() {
                 <GradientText>{userName}</GradientText>
               </h2>
               <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
-                {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
+                {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
             </div>
           </section>
@@ -1221,20 +1243,20 @@ export default function ProfilePage() {
                 <p className="text-4xl font-extrabold text-on-surface">
                   <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
               </div>
             </TiltCard>
             </RevealItem>
             <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-gradient-to-br from-emerald-400/[0.08] to-transparent border border-emerald-400/15 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-400/10 ring-1 ring-emerald-400/20">
-                <Leaf className="w-6 h-6 text-emerald-400" />
+            <TiltCard tiltStrength={6} className="bg-gradient-to-br from-primary/[0.08] to-transparent border border-primary/15 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 ring-1 ring-primary/20">
+                <Shield className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-emerald-400">
-                  <AnimatedCounter value={Math.round(co2Saved)} suffix="kg" />
+                <p className="text-4xl font-extrabold text-on-surface">
+                  <AnimatedCounter value={trustScore} suffix="%" />
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("co2Saved")}</p>
+                <p className={`text-xs font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
               </div>
             </TiltCard>
             </RevealItem>

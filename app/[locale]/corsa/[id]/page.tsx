@@ -70,6 +70,7 @@ interface Ride {
     avatar_url: string | null;
     rating: number;
     rides_count: number;
+    review_count?: number | null;
   };
 }
 
@@ -199,7 +200,7 @@ function RideDetailMobile({
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-primary fill-current" />
                     <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
-                    <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')}</span>
+                    <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')} · {ride.profiles.review_count || 0} {t('reviews')}</span>
                   </div>
                 </div>
               </div>
@@ -738,7 +739,7 @@ function RideDetailDesktop({
                       <div className="flex items-center space-x-2 mt-1">
                         <Star className="w-4 h-4 text-[#ffb3b1] fill-[#ffb3b1]" />
                         <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
-                        <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')}</span>
+                        <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')} · {ride.profiles.review_count || 0} {t('reviews')}</span>
                       </div>
                     </div>
                   </div>
@@ -881,7 +882,7 @@ export default function RideDetailPage() {
 
         const { data, error } = await supabase
           .from("rides")
-          .select(`*, profiles!inner(name, avatar_url, rating, rides_count)`)
+          .select(`*, profiles!inner(name, avatar_url, rating, rides_count, review_count)`)
           .eq("id", rideId)
           .single();
 
@@ -910,7 +911,7 @@ export default function RideDetailPage() {
             .limit(3),
           supabase
             .from("rides")
-            .select(`*, profiles!inner(name, avatar_url, rating)`)
+            .select(`*, profiles!inner(name, avatar_url, rating, review_count)`)
             .eq("from_city", data.from_city)
             .eq("status", "active")
             .neq("id", rideId)
