@@ -12,6 +12,8 @@ import {
   AlertTriangle,
   TrendingUp,
   Clock,
+  Shield,
+  Flag,
 } from "lucide-react";
 
 interface DiagnosticsData {
@@ -31,6 +33,21 @@ interface DiagnosticsData {
     status: string;
     created_at: string;
     rides: { from_city: string; to_city: string } | null;
+  }>;
+  recentReports: Array<{
+    id: string;
+    type: string;
+    description: string;
+    created_at: string;
+    reporter_id: string;
+    reported_id: string;
+  }>;
+  suspiciousActivity: Array<{
+    id: string;
+    user_id: string;
+    action: string;
+    metadata: Record<string, unknown> | null;
+    created_at: string;
   }>;
 }
 
@@ -63,7 +80,7 @@ export default function DiagnosticsPage() {
       setIsAdmin(true);
 
       // Fetch diagnostics data
-      const [usersRes, ridesRes, bookingsRes, pendingRes, feedbackRes] =
+      const [usersRes, ridesRes, bookingsRes, pendingRes, feedbackRes, reportsRes, suspiciousRes] =
         await Promise.all([
           supabase.from("profiles").select("*", { count: "exact", head: true }),
           supabase
@@ -81,6 +98,17 @@ export default function DiagnosticsPage() {
             .eq("status", "open")
             .order("created_at", { ascending: false })
             .limit(10),
+          supabase
+            .from("safety_reports")
+            .select("id, type, description, created_at, reporter_id, reported_id")
+            .order("created_at", { ascending: false })
+            .limit(10),
+          supabase
+            .from("user_actions")
+            .select("id, user_id, action, metadata, created_at")
+            .eq("action", "suspicious_ride")
+            .order("created_at", { ascending: false })
+            .limit(10),
         ]);
 
       const recentBookingsRes = await supabase
@@ -96,6 +124,8 @@ export default function DiagnosticsPage() {
         pendingBookings: pendingRes.count || 0,
         recentFeedback: feedbackRes.data || [],
         recentBookings: recentBookingsRes.data || [],
+        recentReports: reportsRes.data || [],
+        suspiciousActivity: suspiciousRes.data || [],
       });
       setLoading(false);
     };
@@ -231,6 +261,79 @@ export default function DiagnosticsPage() {
                     >
                       {b.status}
                     </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Safety & Moderation */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Safety Reports */}
+          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Flag className="w-5 h-5 text-red-400" />
+              <h2 className="font-bold text-lg">Segnalazioni di Sicurezza</h2>
+            </div>
+            {data?.recentReports.length === 0 ? (
+              <p className="text-white/40 text-sm">Nessuna segnalazione recente</p>
+            ) : (
+              <div className="space-y-3">
+                {data?.recentReports.map((r) => (
+                  <div
+                    key={r.id}
+                    className="bg-white/[0.03] rounded-xl p-3 text-sm"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 text-xs font-medium uppercase">
+                        {r.type}
+                      </span>
+                      <span className="text-white/30 text-xs">
+                        {new Date(r.created_at).toLocaleDateString("it-IT")}
+                      </span>
+                    </div>
+                    <p className="text-white/80 line-clamp-2">{r.description || "Nessuna descrizione"}</p>
+                    <p className="text-white/20 text-xs mt-1">
+                      Reporter: {r.reporter_id.slice(0, 8)}… · Segnalato: {r.reported_id.slice(0, 8)}…
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Suspicious Activity */}
+          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="w-5 h-5 text-yellow-400" />
+              <h2 className="font-bold text-lg">Attività Sospetta</h2>
+            </div>
+            {data?.suspiciousActivity.length === 0 ? (
+              <p className="text-white/40 text-sm">Nessuna attività sospetta rilevata</p>
+            ) : (
+              <div className="space-y-3">
+                {data?.suspiciousActivity.map((a) => (
+                  <div
+                    key={a.id}
+                    className="bg-white/[0.03] rounded-xl p-3 text-sm"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-medium uppercase">
+                        {a.action}
+                      </span>
+                      <span className="text-white/30 text-xs">
+                        {new Date(a.created_at).toLocaleDateString("it-IT")}
+                      </span>
+                    </div>
+                    <p className="text-white/80 text-xs font-mono">
+                      User: {a.user_id.slice(0, 8)}…
+                    </p>
+                    {a.metadata && (
+                      <p className="text-white/30 text-xs mt-1 font-mono line-clamp-2">
+                        {JSON.stringify(a.metadata)}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
