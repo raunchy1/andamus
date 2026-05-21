@@ -29,34 +29,18 @@ const TIME_RANGES = {
   night: { from: "22:00:00", to: "04:59:59" },
 };
 
-export async function searchRides(filters: SearchFilters) {
-  const supabase = await createClient();
-  const { date: today } = getAppNow();
-
-  let query = supabase
-    .from("rides")
-    .select(
-      `
-      *,
-      profiles!inner(name, avatar_url, rating)
-    `
-    )
-    .eq("status", "active")
-    .or(buildNotExpiredOrFilter());
-
+function applyFilters(
+  query: any,
+  filters: SearchFilters
+) {
   // ── City filters ──
   if (filters.origin) query = query.eq("from_city", filters.origin);
   if (filters.destination) query = query.eq("to_city", filters.destination);
-
-  // ── Date range ──
-  if (filters.dateFrom) query = query.gte("date", filters.dateFrom);
-  if (filters.dateTo) query = query.lte("date", filters.dateTo);
 
   // ── Time window ──
   if (filters.timeWindow && TIME_RANGES[filters.timeWindow]) {
     const range = TIME_RANGES[filters.timeWindow];
     if (filters.timeWindow === "night") {
-      // Night spans across midnight: 22:00 - 04:59
       query = query.or(
         `and(time.gte.${range.from},time.lte.23:59:59),and(time.gte.00:00:00,time.lte.${range.to})`
       );
@@ -84,11 +68,38 @@ export async function searchRides(filters: SearchFilters) {
 
   // ── Quick filters ──
   if (filters.freeOnly) query = query.eq("price", 0);
+
+  return query;
+}
+
+export async function searchRides(filters: SearchFilters) {
+  const supabase = await createClient();
+  const { date: today } = getAppNow();
+
+  // Base query: active rides that haven't expired
+  let query = supabase
+    .from("rides")
+    .select(
+      `
+      *,
+      profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)
+    `
+    )
+    .eq("status", "active")
+    .or(buildNotExpiredOrFilter());
+
+  // ── Date range ──
+  if (filters.dateFrom) query = query.gte("date", filters.dateFrom);
+  if (filters.dateTo) query = query.lte("date", filters.dateTo);
   if (filters.todayOnly) query = query.eq("date", today);
 
+  query = applyFilters(query, filters);
+
+  // Order: upcoming first, then by time, then by driver rating (better drivers first)
   const { data, error } = await query
     .order("date", { ascending: true })
     .order("time", { ascending: true })
+    .order("profiles(rating)", { ascending: false, nullsFirst: false })
     .limit(200);
 
   if (error) {
@@ -115,6 +126,8 @@ export async function searchRides(filters: SearchFilters) {
       name: string;
       avatar_url: string | null;
       rating: number;
+      review_count?: number | null;
+      rides_count?: number | null;
       phone_verified?: boolean;
       id_verified?: boolean;
     };
@@ -148,7 +161,7 @@ export async function searchRides(filters: SearchFilters) {
       .select(
         `
         *,
-        profiles!inner(name, avatar_url, rating, phone_verified, id_verified)
+        profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)
       `
       )
       .eq("status", "active")
@@ -156,24 +169,12 @@ export async function searchRides(filters: SearchFilters) {
       .gte("date", prevStr)
       .lte("date", nextStr);
 
-    if (filters.origin) nearbyQuery = nearbyQuery.eq("from_city", filters.origin);
-    if (filters.destination)
-      nearbyQuery = nearbyQuery.eq("to_city", filters.destination);
-    if (filters.maxPrice !== undefined && filters.maxPrice > 0)
-      nearbyQuery = nearbyQuery.lte("price", filters.maxPrice);
-    if (filters.minSeats !== undefined && filters.minSeats > 0)
-      nearbyQuery = nearbyQuery.gte("seats", filters.minSeats);
-    if (filters.smoking) nearbyQuery = nearbyQuery.eq("smoking_allowed", true);
-    if (filters.pets) nearbyQuery = nearbyQuery.eq("pets_allowed", true);
-    if (filters.luggage) nearbyQuery = nearbyQuery.eq("large_luggage", true);
-    if (filters.womenOnly) nearbyQuery = nearbyQuery.eq("women_only", true);
-    if (filters.studentsOnly) nearbyQuery = nearbyQuery.eq("students_only", true);
-    if (filters.musicPreference)
-      nearbyQuery = nearbyQuery.eq("music_preference", filters.musicPreference);
+    nearbyQuery = applyFilters(nearbyQuery, filters);
 
     const { data: nearbyData } = await nearbyQuery
       .order("date", { ascending: true })
       .order("time", { ascending: true })
+      .order("profiles(rating)", { ascending: false, nullsFirst: false })
       .limit(200);
 
     if (nearbyData && nearbyData.length > 0) {

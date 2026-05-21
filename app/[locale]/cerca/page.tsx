@@ -59,6 +59,8 @@ interface Ride {
     name: string;
     avatar_url: string | null;
     rating: number;
+    review_count?: number | null;
+    rides_count?: number | null;
     phone_verified?: boolean;
     id_verified?: boolean;
   };
@@ -501,6 +503,9 @@ function SearchMobile(props: SearchViewProps) {
                       <span className="text-[11px] font-bold text-[#e5e2e1]/60">
                         {ride.profiles.rating}
                       </span>
+                      <span className="text-[10px] text-[#e5e2e1]/30">
+                        ({ride.profiles.review_count || 0})
+                      </span>
                       {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
                         <BadgeCheck className="w-3.5 h-3.5 text-[#ffb3b1] ml-1" />
                       )}
@@ -908,6 +913,9 @@ function SearchDesktop(props: SearchViewProps) {
                     <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
                     <span className="text-[11px] font-bold text-[#e5e2e1]/60">
                       {ride.profiles.rating}
+                    </span>
+                    <span className="text-[10px] text-[#e5e2e1]/30">
+                      ({ride.profiles.review_count || 0})
                     </span>
                   </div>
                 </div>
