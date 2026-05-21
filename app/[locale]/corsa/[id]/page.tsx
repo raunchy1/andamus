@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Loader2, AlertCircle, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
 import { CarInfoCard } from "@/components/CarInfoCard";
 import { ShareRide } from "@/components/ShareRide";
+import { CelebrationModal } from "@/components/FirstRideCelebration";
+import { PostActionModal } from "@/components/PostActionModal";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -853,6 +855,9 @@ export default function RideDetailPage() {
 
   const [similarRides, setSimilarRides] = useState<Ride[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [showPostAction, setShowPostAction] = useState(false);
+  const [postActionBookingId, setPostActionBookingId] = useState<string | null>(null);
   const [existingBooking, setExistingBooking] = useState<Booking | null>(null);
   const [stops, setStops] = useState<{ city: string; order_index: number }[]>([]);
 
@@ -1049,6 +1054,13 @@ export default function RideDetailPage() {
         return;
       }
 
+      // Check if this is the first booking for celebration
+      const { count: priorBookings } = await supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("passenger_id", user.id);
+      const isFirstBooking = (priorBookings || 0) === 0;
+
       const { data: booking, error } = await supabase
         .from("bookings")
         .insert({
@@ -1088,7 +1100,17 @@ export default function RideDetailPage() {
       }
 
       toast.success(t('bookingSuccess'));
-      router.push(`/${locale}/chat/${booking.id}`);
+      if (isFirstBooking) {
+        setShowCelebration(true);
+        // Delay redirect to let celebration show
+        setTimeout(() => {
+          router.push(`/${locale}/chat/${booking.id}`);
+        }, 2500);
+      } else {
+        // Show post-action share modal for non-first bookings
+        setPostActionBookingId(booking.id);
+        setShowPostAction(true);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       console.error('[booking] error:', err);
@@ -1138,6 +1160,41 @@ export default function RideDetailPage() {
   return (
     <ErrorBoundary>
       {deviceType === "desktop" ? <RideDetailDesktop {...commonProps} /> : <RideDetailMobile {...commonProps} />}
+      {showCelebration && (
+        <CelebrationModal
+          type="first_booking"
+          onClose={() => {
+            setShowCelebration(false);
+            router.push(`/${locale}/chat/${existingBooking?.id || ""}`);
+          }}
+        />
+      )}
+      {showPostAction && ride && (
+        <PostActionModal
+          type="booking_confirmed"
+          open={showPostAction}
+          onClose={() => {
+            setShowPostAction(false);
+            if (postActionBookingId) {
+              router.push(`/${locale}/chat/${postActionBookingId}`);
+            }
+          }}
+          onPrimaryAction={() => {
+            if (postActionBookingId) {
+              router.push(`/${locale}/chat/${postActionBookingId}`);
+            }
+          }}
+          context={{
+            rideId: ride.id,
+            fromCity: ride.from_city,
+            toCity: ride.to_city,
+            date: ride.date,
+            time: ride.time,
+            price: ride.price,
+            driverName: ride.profiles?.name,
+          }}
+        />
+      )}
     </ErrorBoundary>
   );
 }

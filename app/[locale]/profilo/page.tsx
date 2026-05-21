@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
+import { PostActionModal } from "@/components/PostActionModal";
 import { acceptBooking, rejectBooking } from "@/lib/booking-lifecycle";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { ProductAnalytics } from "@/lib/posthog";
@@ -21,6 +22,14 @@ import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { computeTrustScore, getTrustLevel, formatAccountAge } from "@/lib/reputation";
+
+function getWeekKey(date: Date): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 1);
+  return d.toISOString().split("T")[0];
+}
 import { Haptic } from "@/lib/haptic";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
@@ -158,6 +167,8 @@ export default function ProfilePage() {
   const [rideTemplates, setRideTemplates] = useState<RideTemplate[]>([]);
 
   const [loading, setLoading] = useState(true);
+  const [streak, setStreak] = useState<{ current: number; longest: number } | null>(null);
+  const [streakCelebrated, setStreakCelebrated] = useState(false);
   const [activeTab, setActiveTab] = useState("rides");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [processingBooking, setProcessingBooking] = useState<string | null>(null);
@@ -169,6 +180,9 @@ export default function ProfilePage() {
   const [cancelBookingId, setCancelBookingId] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showPostAction, setShowPostAction] = useState(false);
+  const [postActionType, setPostActionType] = useState<"review_submitted" | "streak_milestone" | "referral">("review_submitted");
+  const [postActionContext, setPostActionContext] = useState<Record<string, unknown>>({});
   const [isCancelling, setIsCancelling] = useState(false);
   const [deletingAlertId, setDeletingAlertId] = useState<string | null>(null);
   const [togglingTemplateId, setTogglingTemplateId] = useState<string | null>(null);
@@ -229,6 +243,56 @@ export default function ProfilePage() {
       setMyBookings(bookingsRes.data || []);
       setRideAlerts(alertsRes.data || []);
 
+      // Fetch activity streak
+      try {
+        const { data: streakData } = await supabase
+          .from("user_activity_weeks")
+          .select("week_key")
+          .eq("user_id", currentUser.id)
+          .order("week_key", { ascending: false });
+
+        if (streakData && streakData.length > 0) {
+          const weeks = streakData.map((d: { week_key: string }) => d.week_key);
+          const nowWeek = getWeekKey(new Date());
+          const lastWeek = getWeekKey(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+
+          let currentStreak = 0;
+          const weekSet = new Set(weeks);
+
+          if (weekSet.has(nowWeek) || weekSet.has(lastWeek)) {
+            currentStreak = 1;
+            const startWeek = weekSet.has(nowWeek) ? nowWeek : lastWeek;
+            let checkWeek = startWeek;
+            while (true) {
+              const prev = new Date(new Date(checkWeek).getTime() - 7 * 24 * 60 * 60 * 1000);
+              const prevKey = prev.toISOString().split("T")[0];
+              if (weekSet.has(prevKey)) {
+                currentStreak++;
+                checkWeek = prevKey;
+              } else break;
+            }
+          }
+
+          let longestStreak = 1;
+          let tempStreak = 1;
+          const sorted = [...weeks].sort();
+          for (let i = 1; i < sorted.length; i++) {
+            const prev = new Date(new Date(sorted[i]).getTime() - 7 * 24 * 60 * 60 * 1000);
+            const prevKey = prev.toISOString().split("T")[0];
+            if (sorted[i - 1] === prevKey) {
+              tempStreak++;
+              longestStreak = Math.max(longestStreak, tempStreak);
+            } else {
+              tempStreak = 1;
+            }
+          }
+
+          setStreak({ current: currentStreak, longest: longestStreak });
+        }
+      } catch {
+        // Streak fetch is non-critical
+      }
+
       // Pre-populate reviewed rides from DB
       const { data: myReviews } = await supabase
         .from("reviews")
@@ -280,6 +344,22 @@ export default function ProfilePage() {
 
     return () => subscription.unsubscribe();
   }, [router, supabase, locale]);
+
+  // Streak milestone celebration — show once per session per milestone
+  useEffect(() => {
+    if (!streak || streakCelebrated) return;
+    if (streak.current >= 2) {
+      const milestoneKey = `streak_celebrated_${streak.current}`;
+      const alreadyCelebrated = localStorage.getItem(milestoneKey);
+      if (!alreadyCelebrated) {
+        localStorage.setItem(milestoneKey, "true");
+        setPostActionType("streak_milestone");
+        setPostActionContext({ streakCount: streak.current });
+        setShowPostAction(true);
+        setStreakCelebrated(true);
+      }
+    }
+  }, [streak, streakCelebrated]);
 
   const handleAcceptBooking = async (request: BookingRequest) => {
     Haptic.heavy();
@@ -405,6 +485,13 @@ export default function ProfilePage() {
     setRatingUser(userToRate);
     setShowRatingModal(true);
   };
+
+  const handleReviewSuccess = useCallback(() => {
+    setReviewedRides(prev => new Set(prev).add(ratingRideId));
+    setPostActionType("review_submitted");
+    setPostActionContext({ rideId: ratingRideId });
+    setShowPostAction(true);
+  }, [ratingRideId]);
 
   const handleCancelBooking = async () => {
     if (!cancelBookingId || !cancelReason.trim()) return;
@@ -699,6 +786,11 @@ export default function ProfilePage() {
               <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
                 {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
+              {streak && streak.current > 1 && (
+                <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
+                  {t("streakActive", { count: streak.current })}
+                </div>
+              )}
             </div>
           </section>
           </Reveal>
@@ -1201,7 +1293,15 @@ export default function ProfilePage() {
             rideId={ratingRideId}
             reviewedUser={ratingUser}
             currentUserId={user.id}
-            onSuccess={() => setReviewedRides((prev) => new Set(prev).add(ratingRideId))}
+            onSuccess={handleReviewSuccess}
+          />
+        )}
+        {showPostAction && (
+          <PostActionModal
+            type={postActionType}
+            open={showPostAction}
+            onClose={() => setShowPostAction(false)}
+            context={postActionContext}
           />
         )}
         </main>
@@ -1248,6 +1348,11 @@ export default function ProfilePage() {
               <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
                 {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
+              {streak && streak.current > 1 && (
+                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
+                  {t("streakActive", { count: streak.current })}
+                </div>
+              )}
             </div>
           </section>
           </Reveal>
@@ -1761,7 +1866,15 @@ export default function ProfilePage() {
             rideId={ratingRideId}
             reviewedUser={ratingUser}
             currentUserId={user.id}
-            onSuccess={() => setReviewedRides((prev) => new Set(prev).add(ratingRideId))}
+            onSuccess={handleReviewSuccess}
+          />
+        )}
+        {showPostAction && (
+          <PostActionModal
+            type={postActionType}
+            open={showPostAction}
+            onClose={() => setShowPostAction(false)}
+            context={postActionContext}
           />
         )}
       </div>

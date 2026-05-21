@@ -8,7 +8,8 @@ import {
   useState,
   memo,
 } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -481,6 +482,17 @@ export default function ChatWindow({
   const [supabase] = useState(() => createClient());
   const deviceType = useDeviceType();
   const t = useTranslations("chat");
+  const locale = useLocale();
+  const searchParams = useSearchParams();
+
+  // Show payment success toast on redirect from Stripe
+  useEffect(() => {
+    if (searchParams.get("payment") === "success") {
+      toast.success(t("paymentSuccess") || "Pagamento completato! La tua prenotazione è confermata.");
+      // Clean the URL
+      window.history.replaceState({}, "", `/${locale}/chat/${bookingId}`);
+    }
+  }, [searchParams, bookingId, locale, t]);
 
   // -- State --
   const [messages, setMessages] = useState<Message[]>([]);

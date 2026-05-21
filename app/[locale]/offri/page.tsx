@@ -13,7 +13,9 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
-import { ShareApp } from "@/components/ShareApp";
+import { ShareRide } from "@/components/ShareRide";
+import { CelebrationModal } from "@/components/FirstRideCelebration";
+import { PostActionModal } from "@/components/PostActionModal";
 import { Analytics } from "@/lib/analytics";
 import { CarInfoSection } from "@/components/offri/CarInfoSection";
 import { PreferencesSection } from "@/components/offri/PreferencesSection";
@@ -816,6 +818,16 @@ export default function OfferPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isFirstRide, setIsFirstRide] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [showPostAction, setShowPostAction] = useState(false);
+  const [publishedRideId, setPublishedRideId] = useState<string | null>(null);
+  const [publishedRideData, setPublishedRideData] = useState<{
+    from_city: string;
+    to_city: string;
+    date: string;
+    time: string;
+    price: number;
+  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
@@ -1119,7 +1131,20 @@ export default function OfferPage() {
         toast.success(formData.isRecurring ? t('recurringSuccess') : t('rideSuccess'));
       }
       
+      setPublishedRideId(rideId);
+      setPublishedRideData({
+        from_city: formData.origin,
+        to_city: formData.destination,
+        date: formData.date,
+        time: formData.time,
+        price: formData.isFree ? 0 : Number(formData.price) || 0,
+      });
       setIsSubmitted(true);
+      if (isFirstRide) {
+        setShowCelebration(true);
+      } else {
+        setShowPostAction(true);
+      }
       Analytics.rideCreated(formData.origin, formData.destination);
     } catch (err) {
       // Submit error logged silently
@@ -1214,7 +1239,20 @@ export default function OfferPage() {
             <p className="text-sm font-medium text-on-surface mb-3">
               {t('shareRidePrompt')}
             </p>
-            <ShareApp variant="button" className="w-full justify-center" />
+            {publishedRideId && publishedRideData && (
+              <ShareRide
+                ride={{
+                  id: publishedRideId,
+                  from_city: publishedRideData.from_city,
+                  to_city: publishedRideData.to_city,
+                  date: publishedRideData.date,
+                  time: publishedRideData.time,
+                  price: publishedRideData.price,
+                }}
+                variant="card"
+                className="w-full justify-center"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -1250,5 +1288,30 @@ export default function OfferPage() {
     savedCarInfo,
   };
 
-  return deviceType === "desktop" ? <OfferDesktop {...commonProps} /> : <OfferMobile {...commonProps} />;
+  return (
+    <>
+      {deviceType === "desktop" ? <OfferDesktop {...commonProps} /> : <OfferMobile {...commonProps} />}
+      {showCelebration && (
+        <CelebrationModal
+          type="first_ride"
+          onClose={() => setShowCelebration(false)}
+        />
+      )}
+      {showPostAction && publishedRideId && publishedRideData && (
+        <PostActionModal
+          type="ride_published"
+          open={showPostAction}
+          onClose={() => setShowPostAction(false)}
+          context={{
+            rideId: publishedRideId,
+            fromCity: publishedRideData.from_city,
+            toCity: publishedRideData.to_city,
+            date: publishedRideData.date,
+            time: publishedRideData.time,
+            price: publishedRideData.price,
+          }}
+        />
+      )}
+    </>
+  );
 }

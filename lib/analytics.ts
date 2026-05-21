@@ -92,6 +92,19 @@ export const Analytics = {
     track("first_booking_made");
     ProductAnalytics.activationEvent("first_booking_made");
   },
+
+  // Share & viral events
+  shareEvent: (event: string, params?: Record<string, unknown>) => {
+    track(event, params);
+  },
+
+  referralClicked: (source: string) => {
+    track("referral_clicked", { source });
+  },
+
+  inviteSent: (channel: string) => {
+    track("invite_sent", { channel });
+  },
 };
 
 export { identifyUser };

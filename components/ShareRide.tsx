@@ -4,17 +4,24 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Share2, Link2, MessageCircle, Send, X, Check } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { Analytics } from "@/lib/analytics";
+import { Haptic } from "@/lib/haptic";
+
+export interface ShareRideData {
+  id: string;
+  from_city: string;
+  to_city: string;
+  date: string;
+  time: string;
+  price: number;
+  driverName?: string;
+  trustScore?: number;
+  driverRides?: number;
+  driverRating?: number;
+}
 
 interface ShareRideProps {
-  ride: {
-    id: string;
-    from_city: string;
-    to_city: string;
-    date: string;
-    time: string;
-    price: number;
-    driverName?: string;
-  };
+  ride: ShareRideData;
   variant?: "button" | "icon" | "card";
   className?: string;
 }
@@ -22,66 +29,101 @@ interface ShareRideProps {
 export function ShareRide({ ride, variant = "button", className = "" }: ShareRideProps) {
   const locale = useLocale();
   const t = useTranslations("ride");
+  const ts = useTranslations("shareModal");
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const appUrl = typeof window !== "undefined" ? window.location.origin : "https://andamus.it";
   const rideUrl = `${appUrl}/${locale}/corsa/${ride.id}`;
 
+  const priceText = ride.price > 0 ? `€${ride.price}` : ts("free");
+
   const shareText = ride.driverName
-    ? `🚗 ${ride.driverName} offre un passaggio da ${ride.from_city} a ${ride.to_city} il ${ride.date} alle ${ride.time.slice(0, 5)}${ride.price > 0 ? ` — €${ride.price}` : " — Gratis!"} \n\nPrenota su Andamus: ${rideUrl}`
-    : `🚗 Passaggio da ${ride.from_city} a ${ride.to_city} il ${ride.date} alle ${ride.time.slice(0, 5)}${ride.price > 0 ? ` — €${ride.price}` : " — Gratis!"} \n\nPrenota su Andamus: ${rideUrl}`;
+    ? ts("driverShareText", {
+        driverName: ride.driverName,
+        from: ride.from_city,
+        to: ride.to_city,
+        date: ride.date,
+        time: ride.time.slice(0, 5),
+        price: priceText,
+      })
+    : ts("genericShareText", {
+        from: ride.from_city,
+        to: ride.to_city,
+        date: ride.date,
+        time: ride.time.slice(0, 5),
+        price: priceText,
+      });
 
   const handleShareNative = useCallback(async () => {
+    Haptic.light();
+    Analytics.shareEvent?.("share_native_attempted", { variant });
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Passaggio ${ride.from_city} → ${ride.to_city}`,
+          title: ts("shareTitle", { from: ride.from_city, to: ride.to_city }),
           text: shareText,
           url: rideUrl,
         });
+        Analytics.shareEvent?.("share_completed", { channel: "native", variant });
         setOpen(false);
         return;
       } catch {
-        // User cancelled or share failed
+        Analytics.shareEvent?.("share_cancelled", { channel: "native", variant });
       }
     }
+    Analytics.shareEvent?.("share_opened", { variant, fallback: true });
     setOpen(true);
-  }, [rideUrl, shareText, ride.from_city, ride.to_city]);
+  }, [rideUrl, shareText, ride.from_city, ride.to_city, variant, ts]);
 
   const handleCopy = useCallback(async () => {
+    Haptic.light();
+    const textToCopy = shareText + `\n${rideUrl}`;
     try {
-      await navigator.clipboard.writeText(shareText);
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
+      Analytics.shareEvent?.("share_completed", { channel: "copy", variant });
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback
       const ta = document.createElement("textarea");
-      ta.value = shareText;
+      ta.value = textToCopy;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
       setCopied(true);
+      Analytics.shareEvent?.("share_completed", { channel: "copy", variant });
       setTimeout(() => setCopied(false), 2000);
     }
-  }, [shareText]);
+  }, [shareText, rideUrl, variant]);
 
   const handleWhatsApp = useCallback(() => {
-    const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    Haptic.light();
+    const url = `https://wa.me/?text=${encodeURIComponent(shareText + ` ${rideUrl}`)}`;
     window.open(url, "_blank");
+    Analytics.shareEvent?.("share_completed", { channel: "whatsapp", variant });
     setOpen(false);
-  }, [shareText]);
+  }, [shareText, rideUrl, variant]);
 
   const handleTelegram = useCallback(() => {
+    Haptic.light();
     const url = `https://t.me/share/url?url=${encodeURIComponent(rideUrl)}&text=${encodeURIComponent(shareText)}`;
     window.open(url, "_blank");
+    Analytics.shareEvent?.("share_completed", { channel: "telegram", variant });
     setOpen(false);
-  }, [rideUrl, shareText]);
+  }, [rideUrl, shareText, variant]);
 
-  if (variant === "icon") {
-    return (
-      <>
+  const handleTwitter = useCallback(() => {
+    Haptic.light();
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(rideUrl)}`;
+    window.open(url, "_blank");
+    Analytics.shareEvent?.("share_completed", { channel: "twitter", variant });
+    setOpen(false);
+  }, [shareText, rideUrl, variant]);
+
+  const triggerButton = (() => {
+    if (variant === "icon") {
+      return (
         <button
           onClick={handleShareNative}
           className={`p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors ${className}`}
@@ -89,22 +131,10 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
         >
           <Share2 className="w-4 h-4 text-white/60" />
         </button>
-        <ShareModal
-          open={open}
-          onClose={() => setOpen(false)}
-          onCopy={handleCopy}
-          onWhatsApp={handleWhatsApp}
-          onTelegram={handleTelegram}
-          copied={copied}
-          ride={ride}
-        />
-      </>
-    );
-  }
-
-  if (variant === "card") {
-    return (
-      <>
+      );
+    }
+    if (variant === "card") {
+      return (
         <button
           onClick={handleShareNative}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-colors text-sm font-medium ${className}`}
@@ -112,21 +142,9 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
           <Share2 className="w-4 h-4 text-[#e63946]" />
           {t("share")}
         </button>
-        <ShareModal
-          open={open}
-          onClose={() => setOpen(false)}
-          onCopy={handleCopy}
-          onWhatsApp={handleWhatsApp}
-          onTelegram={handleTelegram}
-          copied={copied}
-          ride={ride}
-        />
-      </>
-    );
-  }
-
-  return (
-    <>
+      );
+    }
+    return (
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={handleShareNative}
@@ -135,12 +153,19 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
         <Share2 className="w-4 h-4" />
         {t("share")}
       </motion.button>
+    );
+  })();
+
+  return (
+    <>
+      {triggerButton}
       <ShareModal
         open={open}
         onClose={() => setOpen(false)}
         onCopy={handleCopy}
         onWhatsApp={handleWhatsApp}
         onTelegram={handleTelegram}
+        onTwitter={handleTwitter}
         copied={copied}
         ride={ride}
       />
@@ -154,6 +179,7 @@ function ShareModal({
   onCopy,
   onWhatsApp,
   onTelegram,
+  onTwitter,
   copied,
   ride,
 }: {
@@ -162,9 +188,20 @@ function ShareModal({
   onCopy: () => void;
   onWhatsApp: () => void;
   onTelegram: () => void;
+  onTwitter: () => void;
   copied: boolean;
-  ride: ShareRideProps["ride"];
+  ride: ShareRideData;
 }) {
+  const ts = useTranslations("shareModal");
+
+  const trustLabel = (() => {
+    if (!ride.trustScore) return null;
+    if (ride.trustScore >= 80) return "🛡️ " + ts("veryReliable");
+    if (ride.trustScore >= 60) return "✅ " + ts("reliable");
+    if (ride.trustScore >= 40) return "🌱 " + ts("newDriver");
+    return null;
+  })();
+
   return (
     <AnimatePresence>
       {open && (
@@ -181,10 +218,11 @@ function ShareModal({
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="relative w-full max-w-sm mx-4 mb-4 sm:mb-0"
+            style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
             <div className="bg-[#131313] border border-white/10 rounded-2xl p-5 shadow-2xl">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-white">Condividi passaggio</h3>
+                <h3 className="text-lg font-bold text-white">{ts("title")}</h3>
                 <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/5 transition-colors">
                   <X className="w-5 h-5 text-white/60" />
                 </button>
@@ -195,17 +233,24 @@ function ShareModal({
                   {ride.from_city} → {ride.to_city}
                 </p>
                 <p className="text-xs text-white/40 mt-0.5">
-                  {ride.date} · {ride.time.slice(0, 5)} {ride.price > 0 ? `· €${ride.price}` : "· Gratis"}
+                  {ride.date} · {ride.time.slice(0, 5)} {ride.price > 0 ? `· €${ride.price}` : `· ${ts("free")}`}
                 </p>
+                {trustLabel && (
+                  <p className="text-[10px] text-emerald-400/80 mt-1.5 font-medium">
+                    {trustLabel}
+                    {ride.driverRides ? ` · ${ride.driverRides} ${ts("ridesCompleted")}` : ""}
+                    {ride.driverRating ? ` · ⭐ ${ride.driverRating.toFixed(1)}` : ""}
+                  </p>
+                )}
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <button
                   onClick={onCopy}
                   className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
                 >
                   {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-white/60" />}
-                  <span className="text-[10px] text-white/60">{copied ? "Copiato" : "Copia"}</span>
+                  <span className="text-[10px] text-white/60">{copied ? ts("copied") : ts("copy")}</span>
                 </button>
                 <button
                   onClick={onWhatsApp}
@@ -220,6 +265,15 @@ function ShareModal({
                 >
                   <Send className="w-5 h-5 text-blue-400" />
                   <span className="text-[10px] text-white/60">Telegram</span>
+                </button>
+                <button
+                  onClick={onTwitter}
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                >
+                  <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                  <span className="text-[10px] text-white/60">X</span>
                 </button>
               </div>
             </div>
