@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
@@ -828,6 +828,12 @@ export default function RideDetailPage() {
   const [stops, setStops] = useState<{ city: string; order_index: number }[]>([]);
 
   const [supabase] = useState(() => createClient());
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   useEffect(() => {
     const fetchRide = async () => {
@@ -836,6 +842,7 @@ export default function RideDetailPage() {
 
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!isMountedRef.current) return;
         setUser(currentUser);
 
         const { data, error } = await supabase
@@ -843,6 +850,8 @@ export default function RideDetailPage() {
           .select(`*, profiles!inner(name, avatar_url, rating, rides_count)`)
           .eq("id", rideId)
           .single();
+
+        if (!isMountedRef.current) return;
 
         if (error || !data) {
           toast.error(t('notFound'));
@@ -852,32 +861,34 @@ export default function RideDetailPage() {
 
         setRide(data);
 
-        const { data: stopsData } = await supabase
-          .from("ride_stops")
-          .select("city, order_index")
-          .eq("ride_id", rideId)
-          .order("order_index", { ascending: true });
-        setStops(stopsData || []);
+        // Parallelize independent queries
+        const [stopsRes, reviewsRes, similarRes] = await Promise.all([
+          supabase
+            .from("ride_stops")
+            .select("city, order_index")
+            .eq("ride_id", rideId)
+            .order("order_index", { ascending: true }),
+          supabase
+            .from("reviews")
+            .select(`*, reviewer:profiles(name, avatar_url)`)
+            .eq("reviewed_id", data.driver_id)
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("rides")
+            .select(`*, profiles!inner(name, avatar_url, rating)`)
+            .eq("from_city", data.from_city)
+            .eq("status", "active")
+            .neq("id", rideId)
+            .gte("date", new Date().toISOString().split("T")[0])
+            .limit(3),
+        ]);
 
-        const { data: reviewsData } = await supabase
-          .from("reviews")
-          .select(`*, reviewer:profiles(name, avatar_url)`)
-          .eq("reviewed_id", data.driver_id)
-          .order("created_at", { ascending: false })
-          .limit(3);
-        
-        setReviews(reviewsData || []);
+        if (!isMountedRef.current) return;
 
-        const { data: similar } = await supabase
-          .from("rides")
-          .select(`*, profiles!inner(name, avatar_url, rating)`)
-          .eq("from_city", data.from_city)
-          .eq("status", "active")
-          .neq("id", rideId)
-          .gte("date", new Date().toISOString().split("T")[0])
-          .limit(3);
-
-        setSimilarRides(similar || []);
+        setStops(stopsRes.data || []);
+        setReviews(reviewsRes.data || []);
+        setSimilarRides(similarRes.data || []);
 
         if (currentUser) {
           const { data: bookingData } = await supabase
@@ -886,19 +897,19 @@ export default function RideDetailPage() {
             .eq("ride_id", rideId)
             .eq("passenger_id", currentUser.id)
             .single();
-          setExistingBooking(bookingData);
+          if (isMountedRef.current) setExistingBooking(bookingData);
         }
       } catch {
-        toast.error(t('loadingError'));
+        if (isMountedRef.current) toast.error(t('loadingError'));
       } finally {
-        setLoading(false);
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
     fetchRide();
   }, [rideId, supabase, t]);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = useCallback((dateStr: string) => {
     const date = new Date(dateStr);
     const today = new Date().toISOString().split("T")[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
@@ -912,14 +923,14 @@ export default function RideDetailPage() {
       day: "numeric", 
       month: "long",
     });
-  };
+  }, [locale, t]);
 
-  const formatReviewDate = (dateStr: string) => {
+  const formatReviewDate = useCallback((dateStr: string) => {
     return new Date(dateStr).toLocaleDateString(locale, {
       month: "short",
       year: "numeric"
     });
-  };
+  }, [locale]);
 
   const handleShare = async () => {
     const url = window.location.href;

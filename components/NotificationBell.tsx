@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -78,14 +78,17 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dropdownLoading, setDropdownLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = useRef(createClient()).current;
   const processedIds = useRef<Set<string>>(new Set());
+  const isMountedRef = useRef(true);
+  const markAllInFlight = useRef(false);
 
   // Fetch notifications
   const fetchNotifications = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user || !isMountedRef.current) return;
 
     const { data } = await supabase
       .from("notifications")
@@ -94,7 +97,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       .order("created_at", { ascending: false })
       .limit(20);
 
-    if (data) {
+    if (data && isMountedRef.current) {
       setNotifications(data);
       setUnreadCount(data.filter((n: { read: boolean }) => !n.read).length);
       // Sync processed ids to avoid duplicates on realtime
@@ -104,7 +107,9 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
   // Initial fetch
   useEffect(() => {
+    isMountedRef.current = true;
     fetchNotifications();
+    return () => { isMountedRef.current = false; };
   }, [fetchNotifications]);
 
   // Real-time subscription
@@ -161,6 +166,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       if (channel) {
         supabase.removeChannel(channel);
       }
+      isMountedRef.current = false;
     };
   }, [supabase]);
 
@@ -191,25 +197,28 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
   };
 
   const markAllAsRead = async () => {
+    if (markAllInFlight.current) return;
+    markAllInFlight.current = true;
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase
-      .from("notifications")
-      .update({ read: true })
-      .eq("user_id", user.id)
-      .eq("read", false);
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("user_id", user.id)
+        .eq("read", false);
 
-    if (!error) {
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      setUnreadCount(0);
-      toast.success(t("allNotificationsRead"));
+      if (!error && isMountedRef.current) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+        setUnreadCount(0);
+        toast.success(t("allNotificationsRead"));
+      }
+    } finally {
+      if (isMountedRef.current) setLoading(false);
+      markAllInFlight.current = false;
     }
-    setLoading(false);
   };
 
   const handleNotificationClick = async (notification: Notification) => {
@@ -240,7 +249,14 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
     <div className="relative" ref={dropdownRef}>
       {/* Bell Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          const willOpen = !isOpen;
+          setIsOpen(willOpen);
+          if (willOpen) {
+            setDropdownLoading(true);
+            fetchNotifications().finally(() => setDropdownLoading(false));
+          }
+        }}
         className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
           isHome
             ? "text-white/70 hover:bg-white/10 hover:text-white"
@@ -280,7 +296,12 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
           {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {dropdownLoading ? (
+              <div className="px-4 py-8 text-center">
+                <Loader2 className="mx-auto h-8 w-8 text-white/30 animate-spin" />
+                <p className="mt-2 text-sm text-white/50">{t("loading")}</p>
+              </div>
+            ) : notifications.length === 0 ? (
               <div className="px-4 py-8 text-center">
                 <Bell className="mx-auto h-12 w-12 text-white/20" />
                 <p className="mt-2 text-sm text-white/50">{t("noNotifications")}</p>

@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  memo,
+} from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,7 +91,383 @@ type LocalMessage = Message & {
 type DisplayMessage = Message | LocalMessage;
 
 // ============================================================
-// COMPONENT
+// UTILITIES
+// ============================================================
+function formatTime(dateStr: string) {
+  return new Date(dateStr).toLocaleTimeString("it-IT", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatDuration(seconds: number) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function isMyMessage(senderId: string, currentUserId: string) {
+  return senderId === currentUserId;
+}
+
+// ============================================================
+// SUB-COMPONENT: ReadIndicator
+// ============================================================
+const ReadIndicator = memo(function ReadIndicator({
+  message,
+  currentUserId,
+}: {
+  message: Message;
+  currentUserId: string;
+}) {
+  const t = useTranslations("chat");
+  if (!isMyMessage(message.sender_id, currentUserId)) return null;
+  return (
+    <span className="text-[9px] font-medium text-primary/60 flex items-center gap-0.5 mt-0.5">
+      {message.read ? (
+        <>
+          <CheckCheck className="w-3 h-3" />
+          {t("read")}
+        </>
+      ) : (
+        <>
+          <Check className="w-3 h-3" />
+          {t("sent")}
+        </>
+      )}
+    </span>
+  );
+});
+
+// ============================================================
+// SUB-COMPONENT: MessageBubble
+// ============================================================
+const MessageBubble = memo(function MessageBubble({
+  message,
+  currentUserId,
+  playingAudio,
+  onToggleAudio,
+  onZoomImage,
+  onRetry,
+  retryingId,
+}: {
+  message: DisplayMessage;
+  currentUserId: string;
+  playingAudio: string | null;
+  onToggleAudio: (url: string) => void;
+  onZoomImage: (url: string) => void;
+  onRetry: (tempId: string) => void;
+  retryingId: string | null;
+}) {
+  const t = useTranslations("chat");
+  const mine = isMyMessage(message.sender_id, currentUserId);
+  const isLocal = "status" in message;
+  const isPending = isLocal && message.status === "pending";
+  const isFailed = isLocal && message.status === "failed";
+
+  return (
+    <div
+      className={`flex flex-col ${
+        mine ? "items-end self-end" : "items-start"
+      } max-w-[85%] gap-1`}
+    >
+      <div
+        className={`relative ${
+          mine
+            ? "bg-primary/10 border border-primary/20 rounded-xl rounded-br-none"
+            : "bg-surface-container-low rounded-xl rounded-bl-none"
+        } p-4 text-sm leading-relaxed text-on-surface ${
+          isPending ? "opacity-70" : ""
+        } ${isFailed ? "border-error/30 bg-error/5" : ""}`}
+      >
+        {/* Pending overlay */}
+        {isPending && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 rounded-xl">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        )}
+
+        {/* Failed overlay */}
+        {isFailed && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 rounded-xl">
+            <button
+              onClick={() => onRetry(message.tempId)}
+              disabled={retryingId === message.tempId}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-error text-error-foreground text-xs font-bold hover:bg-error/90 transition-colors disabled:opacity-50"
+            >
+              {retryingId === message.tempId ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RotateCcw className="h-4 w-4" />
+              )}
+              {t("retry")}
+            </button>
+          </div>
+        )}
+
+        {message.type === "image" && message.media_url && (
+          <div className="mb-2">
+            <Image
+              src={message.media_url}
+              alt={t("sharedImageAlt")}
+              width={400}
+              height={300}
+              className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() =>
+                !isPending && !isFailed && onZoomImage(message.media_url!)
+              }
+            />
+          </div>
+        )}
+
+        {message.type === "location" &&
+          message.location_lat &&
+          message.location_lng && (
+            <div className="mb-2">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-xs uppercase tracking-tight text-primary">
+                    {t("sharedLocation")}
+                  </span>
+                  <span className="text-[10px] text-primary/70">
+                    Lat: {message.location_lat.toFixed(4)}
+                  </span>
+                </div>
+              </div>
+              <a
+                href={`https://maps.google.com/?q=${message.location_lat},${message.location_lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+                  <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
+                    <Image
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                      alt={t("locationMapAlt")}
+                      fill
+                      className="object-cover grayscale opacity-60"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
+                    <div className="text-center text-on-surface-variant">
+                      <MapPin className="w-8 h-8 mx-auto mb-2" />
+                      <span className="text-xs">{t("sharedLocation")}</span>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-2 text-sm text-primary">
+                  <MapPin className="w-4 h-4" />
+                  <span>{t("openInGoogleMaps")}</span>
+                </div>
+              </a>
+            </div>
+          )}
+
+        {message.type === "audio" && message.media_url && (
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => onToggleAudio(message.media_url!)}
+              disabled={isPending || isFailed}
+              className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary disabled:opacity-50"
+            >
+              {playingAudio === message.media_url ? (
+                <Pause className="w-5 h-5" />
+              ) : (
+                <Play className="w-5 h-5 ml-0.5" />
+              )}
+            </button>
+            <div className="flex items-end gap-[2px] h-8">
+              {[2, 4, 6, 3, 5, 8, 4, 6, 3, 5, 2, 7, 4, 5].map((h, i) => (
+                <div
+                  key={i}
+                  className="waveform-bar"
+                  style={{ height: `${h * 3}px` }}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] font-bold text-primary">
+              {formatDuration(message.duration || 0)}
+            </span>
+          </div>
+        )}
+
+        {message.content && message.type === "text" && (
+          <p className={mine ? "text-primary" : "text-on-surface"}>
+            {message.content}
+          </p>
+        )}
+        {message.content && message.type !== "text" && (
+          <p className="text-on-surface/60 text-xs mt-2">{message.content}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-1 px-1">
+        <span className="text-[10px] font-medium text-on-surface/40">
+          {formatTime(message.created_at)}
+        </span>
+        {!isLocal && <ReadIndicator message={message as Message} currentUserId={currentUserId} />}
+        {isPending && (
+          <span className="text-[9px] font-medium text-primary/60">
+            {t("sending")}
+          </span>
+        )}
+        {isFailed && (
+          <span className="text-[9px] font-medium text-error/80">
+            {t("failed")}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+});
+
+// ============================================================
+// SUB-COMPONENT: ChatInput
+// ============================================================
+const ChatInput = memo(function ChatInput({
+  isRecording,
+  recordingTime,
+  newMessage,
+  onNewMessageChange,
+  onSend,
+  sending,
+  uploadingImage,
+  onImageSelect,
+  onSendLocation,
+  onStartRecording,
+  onStopRecording,
+  mobile = false,
+}: {
+  isRecording: boolean;
+  recordingTime: number;
+  newMessage: string;
+  onNewMessageChange: (v: string) => void;
+  onSend: () => void;
+  sending: boolean;
+  uploadingImage: boolean;
+  onImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSendLocation: () => void;
+  onStartRecording: () => void;
+  onStopRecording: () => void;
+  mobile?: boolean;
+}) {
+  const t = useTranslations("chat");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const inputClasses = mobile
+    ? "flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-on-surface/30 text-on-surface disabled:opacity-50"
+    : "flex-1 bg-transparent border-none focus:ring-0 text-base placeholder:text-on-surface/30 text-on-surface disabled:opacity-50";
+
+  const containerClasses = mobile
+    ? "flex items-center gap-4 bg-surface-container-highest rounded-2xl px-4 py-3 border-b-2 border-primary"
+    : "flex items-center gap-4 bg-surface-container-highest rounded-3xl px-6 py-4 border-b-2 border-primary";
+
+  const sendBtnClasses = mobile
+    ? "w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50"
+    : "w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50";
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") onSend();
+    },
+    [onSend]
+  );
+
+  return (
+    <>
+      {isRecording && (
+        <div
+          className={`mb-3 flex items-center justify-between bg-error/10 border border-error/20 rounded-full px-4 py-2 text-sm truncate ${
+            mobile ? "" : "mb-4 px-5 py-3"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
+            <span className="text-error text-sm font-medium">
+              {t("recording")}
+            </span>
+          </div>
+          <span className="text-error font-mono text-sm">
+            {formatDuration(recordingTime)}
+          </span>
+        </div>
+      )}
+
+      <div className={containerClasses}>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={onImageSelect}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isRecording || uploadingImage}
+          className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
+        >
+          <Plus className="w-5 h-5" />
+        </button>
+
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => onNewMessageChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={
+            isRecording ? t("recording") : t("messagePlaceholder")
+          }
+          disabled={isRecording}
+          className={inputClasses}
+        />
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onSendLocation}
+            disabled={isRecording || sending}
+            className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
+          >
+            <MapPin className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onMouseDown={onStartRecording}
+            onMouseUp={onStopRecording}
+            onTouchStart={onStartRecording}
+            onTouchEnd={onStopRecording}
+            onMouseLeave={isRecording ? onStopRecording : undefined}
+            disabled={!!newMessage.trim() || sending}
+            className={`text-on-surface/60 hover:text-primary transition-colors disabled:opacity-0 ${
+              isRecording ? "text-error" : ""
+            }`}
+          >
+            <Mic className="w-5 h-5" />
+          </button>
+          <button
+            onClick={onSend}
+            disabled={sending || !newMessage.trim() || isRecording}
+            className={sendBtnClasses}
+          >
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+});
+
+// ============================================================
+// MAIN COMPONENT
 // ============================================================
 export default function ChatWindow({
   bookingId,
@@ -113,76 +496,76 @@ export default function ChatWindow({
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   // -- Refs --
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const retryFnsRef = useRef<Map<string, () => Promise<void>>>(new Map());
+  const isMountedRef = useRef(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // -- Helpers --
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const formatTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString("it-IT", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const isMyMessage = (senderId: string) => senderId === user?.id;
-
-  const getOtherParticipant = () => {
-    if (!booking || !user) return null;
-    const isDriver = booking.rides.driver_id === user.id;
-    return isDriver ? booking.passenger : booking.rides.profiles;
-  };
+  const scrollToBottom = useCallback(() => {
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  }, []);
 
   const senderName =
     user.user_metadata?.name || user.email?.split("@")[0] || t("user");
 
-  const notifyRecipient = async () => {
+  const notifyRecipient = useCallback(async () => {
     if (!user || !booking) return;
     const isDriver = user.id === booking.rides.driver_id;
     const recipientId = isDriver
       ? booking.passenger_id
       : booking.rides.driver_id;
     await notifyNewMessage(recipientId, senderName, booking.ride_id, booking.id);
-  };
+  }, [user, booking, senderName]);
 
   const handleMarkAsRead = useCallback(async () => {
     try {
       await markMessagesAsRead(bookingId);
     } catch {
-      /* silent fail – read receipts are not critical */
+      /* silent fail */
     }
   }, [bookingId]);
 
-  const addLocalMessage = (msg: LocalMessage) => {
+  const addLocalMessage = useCallback((msg: LocalMessage) => {
     setLocalMessages((prev) => [...prev, msg]);
-  };
+  }, []);
 
-  const updateLocalMessage = (tempId: string, updates: Partial<LocalMessage>) => {
-    setLocalMessages((prev) =>
-      prev.map((m) => (m.tempId === tempId ? { ...m, ...updates } : m))
-    );
-  };
+  const updateLocalMessage = useCallback(
+    (tempId: string, updates: Partial<LocalMessage>) => {
+      setLocalMessages((prev) =>
+        prev.map((m) => (m.tempId === tempId ? { ...m, ...updates } : m))
+      );
+    },
+    []
+  );
 
-  const removeLocalMessage = (tempId: string) => {
+  const removeLocalMessage = useCallback((tempId: string) => {
     setLocalMessages((prev) => prev.filter((m) => m.tempId !== tempId));
     retryFnsRef.current.delete(tempId);
-  };
+  }, []);
 
   // -- Effects --
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   // Load initial messages
   useEffect(() => {
@@ -198,6 +581,7 @@ export default function ChatWindow({
         .eq("booking_id", bookingId)
         .order("created_at", { ascending: true });
 
+      if (!isMountedRef.current) return;
       if (data) setMessages(data as Message[]);
       setLoading(false);
       handleMarkAsRead();
@@ -220,7 +604,15 @@ export default function ChatWindow({
           table: "messages",
           filter: `booking_id=eq.${bookingId}`,
         },
-        async (payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<Record<string, unknown>>) => {
+        async (
+          payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<
+            Record<string, unknown>
+          >
+        ) => {
+          // Quick dedup check before expensive fetch
+          const newId = payload.new.id as string;
+          if (messages.some((m) => m.id === newId)) return;
+
           const { data: newMessage } = await supabase
             .from("messages")
             .select(
@@ -229,30 +621,29 @@ export default function ChatWindow({
               sender:profiles(name, avatar_url)
             `
             )
-            .eq("id", payload.new.id)
+            .eq("id", newId)
             .single();
 
-          if (newMessage) {
-            setMessages((prev) => {
-              if (prev.some((m) => m.id === newMessage.id)) return prev;
-              return [...prev, newMessage as Message];
-            });
+          if (!newMessage || !isMountedRef.current) return;
 
-            // Remove any matching local message (avoid duplicates)
-            setLocalMessages((prev) =>
-              prev.filter(
-                (m) =>
-                  !(
-                    m.sender_id === newMessage.sender_id &&
-                    m.content === newMessage.content &&
-                    m.type === newMessage.type
-                  )
-              )
-            );
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === newMessage.id)) return prev;
+            return [...prev, newMessage as Message];
+          });
 
-            if (newMessage.sender_id !== user.id) {
-              handleMarkAsRead();
-            }
+          setLocalMessages((prev) =>
+            prev.filter(
+              (m) =>
+                !(
+                  m.sender_id === newMessage.sender_id &&
+                  m.content === newMessage.content &&
+                  m.type === newMessage.type
+                )
+            )
+          );
+
+          if (newMessage.sender_id !== user.id) {
+            handleMarkAsRead();
           }
         }
       )
@@ -261,111 +652,119 @@ export default function ChatWindow({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [bookingId, supabase, user.id, handleMarkAsRead]);
+  }, [bookingId, supabase, user.id, handleMarkAsRead, messages]);
 
-  // Auto-scroll
+  // Auto-scroll (debounced)
   useEffect(() => {
     scrollToBottom();
-  }, [messages, localMessages]);
-
-  // Cleanup recording timer
-  useEffect(() => {
-    return () => {
-      if (recordingTimerRef.current) {
-        clearInterval(recordingTimerRef.current);
-      }
-      audioRef.current?.pause();
-    };
-  }, []);
+  }, [messages.length, localMessages.length, scrollToBottom]);
 
   // -- Retry Handler --
+  const handleRetry = useCallback(
+    async (tempId: string) => {
+      const retryFn = retryFnsRef.current.get(tempId);
+      if (!retryFn) return;
 
-  const handleRetry = async (tempId: string) => {
-    const retryFn = retryFnsRef.current.get(tempId);
-    if (!retryFn) return;
+      setRetryingId(tempId);
+      updateLocalMessage(tempId, { status: "pending" });
 
-    setRetryingId(tempId);
-    updateLocalMessage(tempId, { status: "pending" });
-
-    try {
-      await retryFn();
-      removeLocalMessage(tempId);
-      await notifyRecipient();
-    } catch (err: unknown) {
-      updateLocalMessage(tempId, { status: "failed" });
-      const msg = err instanceof Error ? err.message : t("sendError");
-      toast.error(msg);
-      console.error("[Chat] Retry failed:", err);
-    } finally {
-      setRetryingId(null);
-    }
-  };
+      try {
+        await retryFn();
+        removeLocalMessage(tempId);
+        await notifyRecipient();
+      } catch (err: unknown) {
+        updateLocalMessage(tempId, { status: "failed" });
+        const msg = err instanceof Error ? err.message : t("sendError");
+        toast.error(msg);
+        console.error("[Chat] Retry failed:", err);
+      } finally {
+        setRetryingId(null);
+      }
+    },
+    [updateLocalMessage, removeLocalMessage, notifyRecipient, t]
+  );
 
   // -- Handlers: Text --
+  const handleSendText = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault();
+      if (!newMessage.trim() || sending || !booking) return;
 
-  const handleSendText = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!newMessage.trim() || sending || !booking) return;
+      const messageText = newMessage.trim();
+      setNewMessage("");
+      setSending(true);
 
-    const messageText = newMessage.trim();
-    setNewMessage("");
-    setSending(true);
-
-    const tempId = `local-${Date.now()}`;
-    addLocalMessage({
-      id: tempId,
-      tempId,
-      booking_id: bookingId,
-      sender_id: user.id,
-      content: messageText,
-      type: "text",
-      read: false,
-      created_at: new Date().toISOString(),
-      sender: { name: senderName, avatar_url: null },
-      status: "pending",
-    });
-
-    retryFnsRef.current.set(tempId, async () => {
-      await sendMessage({
+      const tempId = `local-${Date.now()}`;
+      addLocalMessage({
+        id: tempId,
+        tempId,
         booking_id: bookingId,
+        sender_id: user.id,
         content: messageText,
         type: "text",
+        read: false,
+        created_at: new Date().toISOString(),
+        sender: { name: senderName, avatar_url: null },
+        status: "pending",
       });
-    });
 
-    try {
-      await retryFnsRef.current.get(tempId)!();
-      removeLocalMessage(tempId);
-      await notifyRecipient();
-    } catch (err: unknown) {
-      updateLocalMessage(tempId, { status: "failed" });
-      const msg = err instanceof Error ? err.message : t("sendError");
-      toast.error(msg);
-      console.error("[Chat] Text send failed:", err);
-    } finally {
-      setSending(false);
-    }
-  };
+      retryFnsRef.current.set(tempId, async () => {
+        await sendMessage({
+          booking_id: bookingId,
+          content: messageText,
+          type: "text",
+        });
+      });
+
+      try {
+        await retryFnsRef.current.get(tempId)!();
+        removeLocalMessage(tempId);
+        await notifyRecipient();
+      } catch (err: unknown) {
+        updateLocalMessage(tempId, { status: "failed" });
+        const msg = err instanceof Error ? err.message : t("sendError");
+        toast.error(msg);
+        console.error("[Chat] Text send failed:", err);
+      } finally {
+        setSending(false);
+      }
+    },
+    [
+      newMessage,
+      sending,
+      booking,
+      bookingId,
+      user.id,
+      senderName,
+      addLocalMessage,
+      removeLocalMessage,
+      updateLocalMessage,
+      notifyRecipient,
+      t,
+    ]
+  );
 
   // -- Handlers: Image --
+  const handleImageSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(t("imageSizeError"));
+        return;
+      }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error(t("imageSizeError"));
-      return;
-    }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    },
+    [t]
+  );
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const sendImage = async () => {
+  const sendImage = useCallback(async () => {
     if (!imagePreview || !bookingId) return;
 
     setUploadingImage(true);
@@ -423,11 +822,21 @@ export default function ChatWindow({
     } finally {
       setUploadingImage(false);
     }
-  };
+  }, [
+    imagePreview,
+    bookingId,
+    user.id,
+    senderName,
+    addLocalMessage,
+    removeLocalMessage,
+    updateLocalMessage,
+    notifyRecipient,
+    t,
+    supabase,
+  ]);
 
   // -- Handlers: Location --
-
-  const sendLocation = () => {
+  const sendLocation = useCallback(() => {
     if (!navigator.geolocation) {
       toast.error(t("geolocationNotSupported"));
       return;
@@ -483,11 +892,19 @@ export default function ChatWindow({
         toast.error(t("locationFailed"));
       }
     );
-  };
+  }, [
+    bookingId,
+    user.id,
+    senderName,
+    addLocalMessage,
+    removeLocalMessage,
+    updateLocalMessage,
+    notifyRecipient,
+    t,
+  ]);
 
   // -- Handlers: Audio --
-
-  const startRecording = async () => {
+  const startRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -515,9 +932,9 @@ export default function ChatWindow({
     } catch {
       toast.error(t("microphoneAccessError"));
     }
-  };
+  }, [recordingTime, t]);
 
-  const stopRecording = () => {
+  const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream
@@ -527,76 +944,97 @@ export default function ChatWindow({
 
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
       }
     }
-  };
+  }, [isRecording]);
 
-  const processAudioSend = async (blob: Blob, duration: number) => {
-    if (!bookingId) return;
-    const tempId = `local-${Date.now()}`;
+  const processAudioSend = useCallback(
+    async (blob: Blob, duration: number) => {
+      if (!bookingId) return;
+      const tempId = `local-${Date.now()}`;
 
-    addLocalMessage({
-      id: tempId,
-      tempId,
-      booking_id: bookingId,
-      sender_id: user.id,
-      content: `🎵 ${t("voiceMessage")}`,
-      type: "audio",
-      duration,
-      read: false,
-      created_at: new Date().toISOString(),
-      sender: { name: senderName, avatar_url: null },
-      status: "pending",
-    });
-
-    retryFnsRef.current.set(tempId, async () => {
-      const fileName = `${bookingId}/${Date.now()}.webm`;
-      const { error: uploadError } = await supabase.storage
-        .from("chat-audio")
-        .upload(fileName, blob, { contentType: "audio/webm" });
-
-      if (uploadError) throw new Error(t("audioUploadError"));
-
-      const { data: publicUrlData } = supabase.storage
-        .from("chat-audio")
-        .getPublicUrl(fileName);
-
-      await sendMessage({
+      addLocalMessage({
+        id: tempId,
+        tempId,
         booking_id: bookingId,
+        sender_id: user.id,
         content: `🎵 ${t("voiceMessage")}`,
         type: "audio",
-        media_url: publicUrlData.publicUrl,
-        duration: duration,
+        duration,
+        read: false,
+        created_at: new Date().toISOString(),
+        sender: { name: senderName, avatar_url: null },
+        status: "pending",
       });
-    });
 
-    try {
-      await retryFnsRef.current.get(tempId)!();
-      removeLocalMessage(tempId);
-      await notifyRecipient();
-    } catch (err: unknown) {
-      updateLocalMessage(tempId, { status: "failed" });
-      const msg = err instanceof Error ? err.message : t("uploadError");
-      toast.error(msg);
-      console.error("[Chat] Audio send failed:", err);
-    }
-  };
+      retryFnsRef.current.set(tempId, async () => {
+        const fileName = `${bookingId}/${Date.now()}.webm`;
+        const { error: uploadError } = await supabase.storage
+          .from("chat-audio")
+          .upload(fileName, blob, { contentType: "audio/webm" });
 
-  const toggleAudio = (url: string) => {
-    if (playingAudio === url) {
-      audioRef.current?.pause();
-      setPlayingAudio(null);
-    } else {
-      audioRef.current?.pause();
-      audioRef.current = new Audio(url);
-      audioRef.current.onended = () => setPlayingAudio(null);
-      audioRef.current.play();
-      setPlayingAudio(url);
-    }
-  };
+        if (uploadError) throw new Error(t("audioUploadError"));
+
+        const { data: publicUrlData } = supabase.storage
+          .from("chat-audio")
+          .getPublicUrl(fileName);
+
+        await sendMessage({
+          booking_id: bookingId,
+          content: `🎵 ${t("voiceMessage")}`,
+          type: "audio",
+          media_url: publicUrlData.publicUrl,
+          duration: duration,
+        });
+      });
+
+      try {
+        await retryFnsRef.current.get(tempId)!();
+        removeLocalMessage(tempId);
+        await notifyRecipient();
+      } catch (err: unknown) {
+        updateLocalMessage(tempId, { status: "failed" });
+        const msg = err instanceof Error ? err.message : t("uploadError");
+        toast.error(msg);
+        console.error("[Chat] Audio send failed:", err);
+      }
+    },
+    [
+      bookingId,
+      user.id,
+      senderName,
+      addLocalMessage,
+      removeLocalMessage,
+      updateLocalMessage,
+      notifyRecipient,
+      t,
+      supabase,
+    ]
+  );
+
+  const toggleAudio = useCallback(
+    (url: string) => {
+      if (playingAudio === url) {
+        audioRef.current?.pause();
+        setPlayingAudio(null);
+      } else {
+        audioRef.current?.pause();
+        // Clean up previous audio
+        if (audioRef.current) {
+          audioRef.current.src = "";
+        }
+        audioRef.current = new Audio(url);
+        audioRef.current.onended = () => setPlayingAudio(null);
+        audioRef.current.onerror = () => setPlayingAudio(null);
+        audioRef.current.play().catch(() => setPlayingAudio(null));
+        setPlayingAudio(url);
+      }
+    },
+    [playingAudio]
+  );
 
   // -- Loading / Error states --
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
@@ -605,317 +1043,50 @@ export default function ChatWindow({
     );
   }
 
-  const otherParticipant = getOtherParticipant();
+  const otherParticipant = (() => {
+    if (!booking || !user) return null;
+    const isDriver = booking.rides.driver_id === user.id;
+    return isDriver ? booking.passenger : booking.rides.profiles;
+  })();
 
-  // Combine messages for display
-  const displayMessages: DisplayMessage[] = [
-    ...messages,
-    ...localMessages.filter(
-      (lm) =>
-        !messages.some(
-          (m) =>
-            m.sender_id === lm.sender_id &&
-            m.content === lm.content &&
-            m.type === lm.type
-        )
-    ),
-  ].sort(
-    (a, b) =>
-      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  // Memoize display messages to avoid re-sorting on every render
+  const displayMessages = useMemo<DisplayMessage[]>(() => {
+    const merged = [
+      ...messages,
+      ...localMessages.filter(
+        (lm) =>
+          !messages.some(
+            (m) =>
+              m.sender_id === lm.sender_id &&
+              m.content === lm.content &&
+              m.type === lm.type
+          )
+      ),
+    ];
+    merged.sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+    return merged;
+  }, [messages, localMessages]);
+
+  // -- Memoized callbacks for sub-components --
+  const handleToggleAudio = useCallback(
+    (url: string) => toggleAudio(url),
+    [toggleAudio]
+  );
+  const handleZoomImage = useCallback(
+    (url: string) => setZoomedImage(url),
+    []
+  );
+  const handleRetryWrapped = useCallback(
+    (tempId: string) => handleRetry(tempId),
+    [handleRetry]
   );
 
   // ============================================================
-  // SUB-COMPONENTS
+  // VIEWS
   // ============================================================
-
-  function ReadIndicator({ message }: { message: Message }) {
-    if (!isMyMessage(message.sender_id)) return null;
-    return (
-      <span className="text-[9px] font-medium text-primary/60 flex items-center gap-0.5 mt-0.5">
-        {message.read ? (
-          <>
-            <CheckCheck className="w-3 h-3" />
-            {t("read")}
-          </>
-        ) : (
-          <>
-            <Check className="w-3 h-3" />
-            {t("sent")}
-          </>
-        )}
-      </span>
-    );
-  }
-
-  function MessageBubble({ message }: { message: DisplayMessage }) {
-    const isMine = isMyMessage(message.sender_id);
-    const isLocal = "status" in message;
-    const isPending = isLocal && message.status === "pending";
-    const isFailed = isLocal && message.status === "failed";
-
-    return (
-      <div
-        className={`flex flex-col ${
-          isMine ? "items-end self-end" : "items-start"
-        } max-w-[85%] gap-1`}
-      >
-        <div
-          className={`relative ${
-            isMine
-              ? "bg-primary/10 border border-primary/20 rounded-xl rounded-br-none"
-              : "bg-surface-container-low rounded-xl rounded-bl-none"
-          } p-4 text-sm leading-relaxed text-on-surface ${
-            isPending ? "opacity-70" : ""
-          } ${isFailed ? "border-error/30 bg-error/5" : ""}`}
-        >
-          {/* Pending overlay */}
-          {isPending && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 rounded-xl">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            </div>
-          )}
-
-          {/* Failed overlay */}
-          {isFailed && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 rounded-xl">
-              <button
-                onClick={() => handleRetry(message.tempId)}
-                disabled={retryingId === message.tempId}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-error text-error-foreground text-xs font-bold hover:bg-error/90 transition-colors disabled:opacity-50"
-              >
-                {retryingId === message.tempId ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RotateCcw className="h-4 w-4" />
-                )}
-                {t("retry")}
-              </button>
-            </div>
-          )}
-
-          {message.type === "image" && message.media_url && (
-            <div className="mb-2">
-              <Image
-                src={message.media_url}
-                alt={t("sharedImageAlt")}
-                width={400}
-                height={300}
-                className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() =>
-                  !isPending && !isFailed && setZoomedImage(message.media_url!)
-                }
-              />
-            </div>
-          )}
-
-          {message.type === "location" &&
-            message.location_lat &&
-            message.location_lng && (
-              <div className="mb-2">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-xs uppercase tracking-tight text-primary">
-                      {t("sharedLocation")}
-                    </span>
-                    <span className="text-[10px] text-primary/70">
-                      Lat: {message.location_lat.toFixed(4)}
-                    </span>
-                  </div>
-                </div>
-                <a
-                  href={`https://maps.google.com/?q=${message.location_lat},${message.location_lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
-                    <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
-                      <Image
-                        src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
-                        alt={t("locationMapAlt")}
-                        fill
-                        className="object-cover grayscale opacity-60"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
-                      <div className="text-center text-on-surface-variant">
-                        <MapPin className="w-8 h-8 mx-auto mb-2" />
-                        <span className="text-xs">{t("sharedLocation")}</span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 mt-2 text-sm text-primary">
-                    <MapPin className="w-4 h-4" />
-                    <span>{t("openInGoogleMaps")}</span>
-                  </div>
-                </a>
-              </div>
-            )}
-
-          {message.type === "audio" && message.media_url && (
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => toggleAudio(message.media_url!)}
-                disabled={isPending || isFailed}
-                className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary disabled:opacity-50"
-              >
-                {playingAudio === message.media_url ? (
-                  <Pause className="w-5 h-5" />
-                ) : (
-                  <Play className="w-5 h-5 ml-0.5" />
-                )}
-              </button>
-              <div className="flex items-end gap-[2px] h-8">
-                {[2, 4, 6, 3, 5, 8, 4, 6, 3, 5, 2, 7, 4, 5].map((h, i) => (
-                  <div
-                    key={i}
-                    className="waveform-bar"
-                    style={{ height: `${h * 3}px` }}
-                  />
-                ))}
-              </div>
-              <span className="text-[10px] font-bold text-primary">
-                {formatDuration(message.duration || 0)}
-              </span>
-            </div>
-          )}
-
-          {message.content && message.type === "text" && (
-            <p className={isMine ? "text-primary" : "text-on-surface"}>
-              {message.content}
-            </p>
-          )}
-          {message.content && message.type !== "text" && (
-            <p className="text-on-surface/60 text-xs mt-2">
-              {message.content}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-1 px-1">
-          <span className="text-[10px] font-medium text-on-surface/40">
-            {formatTime(message.created_at)}
-          </span>
-          {!isLocal && <ReadIndicator message={message as Message} />}
-          {isPending && (
-            <span className="text-[9px] font-medium text-primary/60">
-              {t("sending")}
-            </span>
-          )}
-          {isFailed && (
-            <span className="text-[9px] font-medium text-error/80">
-              {t("failed")}
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  function ChatInput({ mobile = false }: { mobile?: boolean }) {
-    const inputClasses = mobile
-      ? "flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-on-surface/30 text-on-surface disabled:opacity-50"
-      : "flex-1 bg-transparent border-none focus:ring-0 text-base placeholder:text-on-surface/30 text-on-surface disabled:opacity-50";
-
-    const containerClasses = mobile
-      ? "flex items-center gap-4 bg-surface-container-highest rounded-2xl px-4 py-3 border-b-2 border-primary"
-      : "flex items-center gap-4 bg-surface-container-highest rounded-3xl px-6 py-4 border-b-2 border-primary";
-
-    const sendBtnClasses = mobile
-      ? "w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50"
-      : "w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50";
-
-    return (
-      <>
-        {isRecording && (
-          <div
-            className={`mb-3 flex items-center justify-between bg-error/10 border border-error/20 rounded-full px-4 py-2 text-sm truncate ${
-              mobile ? "" : "mb-4 px-5 py-3"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
-              <span className="text-error text-sm font-medium">
-                {t("recording")}
-              </span>
-            </div>
-            <span className="text-error font-mono text-sm">
-              {formatDuration(recordingTime)}
-            </span>
-          </div>
-        )}
-
-        <div className={containerClasses}>
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isRecording || uploadingImage}
-            className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendText()}
-            placeholder={
-              isRecording ? t("recording") : t("messagePlaceholder")
-            }
-            disabled={isRecording}
-            className={inputClasses}
-          />
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={sendLocation}
-              disabled={isRecording || sending}
-              className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
-            >
-              <MapPin className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
-              onMouseDown={startRecording}
-              onMouseUp={stopRecording}
-              onTouchStart={startRecording}
-              onTouchEnd={stopRecording}
-              onMouseLeave={isRecording ? stopRecording : undefined}
-              disabled={!!newMessage.trim() || sending}
-              className={`text-on-surface/60 hover:text-primary transition-colors disabled:opacity-0 ${
-                isRecording ? "text-error" : ""
-              }`}
-            >
-              <Mic className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => handleSendText()}
-              disabled={sending || !newMessage.trim() || isRecording}
-              className={sendBtnClasses}
-            >
-              {sending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
 
   function ChatMobile() {
     return (
@@ -1003,7 +1174,16 @@ export default function ChatWindow({
             </div>
           ) : (
             displayMessages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
+              <MessageBubble
+                key={message.id}
+                message={message}
+                currentUserId={user.id}
+                playingAudio={playingAudio}
+                onToggleAudio={handleToggleAudio}
+                onZoomImage={handleZoomImage}
+                onRetry={handleRetryWrapped}
+                retryingId={retryingId}
+              />
             ))
           )}
           <div ref={messagesEndRef} />
@@ -1011,7 +1191,20 @@ export default function ChatWindow({
 
         {/* Input */}
         <footer className="bg-[#131313] px-4 sm:px-6 pb-10 pt-6 shrink-0 safe-area-pb">
-          {ChatInput({ mobile: true })}
+          <ChatInput
+            mobile
+            isRecording={isRecording}
+            recordingTime={recordingTime}
+            newMessage={newMessage}
+            onNewMessageChange={setNewMessage}
+            onSend={handleSendText}
+            sending={sending}
+            uploadingImage={uploadingImage}
+            onImageSelect={handleImageSelect}
+            onSendLocation={sendLocation}
+            onStartRecording={startRecording}
+            onStopRecording={stopRecording}
+          />
         </footer>
       </div>
     );
@@ -1104,7 +1297,16 @@ export default function ChatWindow({
               </div>
             ) : (
               displayMessages.map((message) => (
-                <MessageBubble key={message.id} message={message} />
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  currentUserId={user.id}
+                  playingAudio={playingAudio}
+                  onToggleAudio={handleToggleAudio}
+                  onZoomImage={handleZoomImage}
+                  onRetry={handleRetryWrapped}
+                  retryingId={retryingId}
+                />
               ))
             )}
             <div ref={messagesEndRef} />
@@ -1112,7 +1314,19 @@ export default function ChatWindow({
 
           {/* Input */}
           <footer className="bg-[#131313] px-8 pb-8 pt-6 shrink-0">
-            {ChatInput({ mobile: false })}
+            <ChatInput
+              isRecording={isRecording}
+              recordingTime={recordingTime}
+              newMessage={newMessage}
+              onNewMessageChange={setNewMessage}
+              onSend={handleSendText}
+              sending={sending}
+              uploadingImage={uploadingImage}
+              onImageSelect={handleImageSelect}
+              onSendLocation={sendLocation}
+              onStartRecording={startRecording}
+              onStopRecording={stopRecording}
+            />
           </footer>
         </div>
       </div>
@@ -1121,7 +1335,7 @@ export default function ChatWindow({
 
   return (
     <ErrorBoundary>
-      {deviceType === "desktop" ? ChatDesktop() : ChatMobile()}
+      {deviceType === "desktop" ? <ChatDesktop /> : <ChatMobile />}
 
       {/* Image Preview Modal */}
       {imagePreview && (

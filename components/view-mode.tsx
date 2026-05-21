@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 
 export type DeviceType = "mobile" | "desktop";
 
@@ -18,7 +18,22 @@ function subscribe(callback: () => void): () => void {
 }
 
 export function useDeviceType(): DeviceType {
-  return useSyncExternalStore(subscribe, getDeviceTypeSnapshot, getServerSnapshot);
+  // Use a client-only state to avoid hydration mismatch
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const deviceType = useSyncExternalStore(
+    subscribe,
+    getDeviceTypeSnapshot,
+    getServerSnapshot
+  );
+
+  // During SSR and first client render, return "mobile" consistently
+  // After hydration, return the actual device type
+  return isClient ? deviceType : "mobile";
 }
 
 // Hook for responsive value based on device type

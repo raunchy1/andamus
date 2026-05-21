@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
@@ -164,12 +164,18 @@ export default function ProfilePage() {
   const [togglingTemplateId, setTogglingTemplateId] = useState<string | null>(null);
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
+  const isMountedRef = useRef(true);
 
   const deviceType = useDeviceType();
   const t = useTranslations("profile");
   const tl = useTranslations("levels");
   const locale = useLocale();
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -178,62 +184,51 @@ export default function ProfilePage() {
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       
       if (!currentUser) {
-        router.push(`/${locale}/join`);
+        if (isMountedRef.current) router.push(`/${locale}/join`);
         return;
       }
       
+      if (!isMountedRef.current) return;
       setUser(currentUser);
 
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", currentUser.id)
-        .single();
-      
-      setProfile(profileData);
-
-      const { data: ridesData } = await supabase
-        .from("rides")
-        .select(`*, bookings(count)`)
-        .eq("driver_id", currentUser.id)
-        .order("date", { ascending: false });
-      
-      setMyRides(ridesData || []);
-
-      const { data: bookingsData } = await supabase
-        .from("bookings")
-        .select(`
+      // Parallelize independent queries
+      const [profileRes, ridesRes, bookingsRes, alertsRes] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", currentUser.id).single(),
+        supabase.from("rides").select(`*, bookings(count)`).eq("driver_id", currentUser.id).order("date", { ascending: false }),
+        supabase.from("bookings").select(`
           *,
           rides(
             id, from_city, to_city, date, time, price, driver_id,
             profiles(id, name, avatar_url)
           )
-        `)
-        .eq("passenger_id", currentUser.id)
-        .order("created_at", { ascending: false });
-      
-      setMyBookings(bookingsData || []);
+        `).eq("passenger_id", currentUser.id).order("created_at", { ascending: false }),
+        supabase.from("ride_alerts").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false }),
+      ]);
 
-      const { data: requestsData } = await supabase
-        .from("bookings")
-        .select(`
-          *,
-          passenger:profiles(name, avatar_url),
-          ride:rides(from_city, to_city, date, time, price)
-        `)
-        .eq("status", "pending")
-        .or("payment_status.is.null,payment_status.eq.authorized")
-        .in("ride_id", ridesData?.map((r: { id: string }) => r.id) || []);
-      
-      setBookingRequests(requestsData || []);
+      if (!isMountedRef.current) return;
 
-      const { data: alertsData } = await supabase
-        .from("ride_alerts")
-        .select("*")
-        .eq("user_id", currentUser.id)
-        .order("created_at", { ascending: false });
-      
-      setRideAlerts(alertsData || []);
+      setProfile(profileRes.data);
+      const ridesData = ridesRes.data || [];
+      setMyRides(ridesData);
+      setMyBookings(bookingsRes.data || []);
+      setRideAlerts(alertsRes.data || []);
+
+      // Requests depend on rides data — do sequentially
+      if (ridesData.length > 0) {
+        const { data: requestsData } = await supabase
+          .from("bookings")
+          .select(`
+            *,
+            passenger:profiles(name, avatar_url),
+            ride:rides(from_city, to_city, date, time, price)
+          `)
+          .eq("status", "pending")
+          .or("payment_status.is.null,payment_status.eq.authorized")
+          .in("ride_id", ridesData.map((r: { id: string }) => r.id));
+        if (isMountedRef.current) setBookingRequests(requestsData || []);
+      } else {
+        setBookingRequests([]);
+      }
 
       // Silently handle missing ride_templates table (beta feature)
       try {
@@ -242,25 +237,24 @@ export default function ProfilePage() {
           .select("id, from_city, to_city, time, seats, price, recurrence_days, is_active, created_at")
           .eq("user_id", currentUser.id)
           .order("created_at", { ascending: false });
-        
-        setRideTemplates(templatesData || []);
+        if (isMountedRef.current) setRideTemplates(templatesData || []);
       } catch {
-        setRideTemplates([]);
+        if (isMountedRef.current) setRideTemplates([]);
       }
 
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     };
 
     loadUserData();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event: import("@supabase/supabase-js").AuthChangeEvent, session: import("@supabase/supabase-js").Session | null) => {
-        if (!session) router.push("/");
+        if (!session && isMountedRef.current) router.push("/");
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleAcceptBooking = async (request: BookingRequest) => {
     if (!user || !myRides.some(r => r.id === request.ride_id)) {
@@ -481,21 +475,21 @@ export default function ProfilePage() {
     }
   };
 
-  const getUserName = () => {
+  const userName = useMemo(() => {
     if (!user) return "";
     return profile?.name || user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || t("user");
-  };
+  }, [user, profile, t]);
 
-  const getUserAvatar = () => {
+  const userAvatar = useMemo(() => {
     if (!user) return null;
     return profile?.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
-  };
+  }, [user, profile]);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = useCallback((dateStr: string) => {
     return new Date(dateStr).toLocaleDateString(locale, { 
       weekday: "short", day: "numeric", month: "short" 
     });
-  };
+  }, [locale]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -534,26 +528,33 @@ export default function ProfilePage() {
     );
   }
 
-  const completedRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
-  const completedBookings = myBookings.filter(b => b.status === 'confirmed');
-  let totalKm = 0;
-  let passengersHelped = 0;
-  
-  completedRides.forEach(ride => {
-    const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
-    if (dist) {
-      totalKm += dist;
-      passengersHelped += (ride.bookings_count || 0);
-    }
-  });
-  
-  completedBookings.forEach(booking => {
-    const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
-    if (dist) totalKm += dist;
-  });
-  
-  const co2Saved = calculateCO2Saved(totalKm, passengersHelped);
-  const levelInfo = profile ? getLevelInfo(profile.points) : null;
+  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo } = useMemo(() => {
+    const cRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
+    const cBookings = myBookings.filter(b => b.status === 'confirmed');
+    let km = 0;
+    let passengers = 0;
+    
+    cRides.forEach(ride => {
+      const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
+      if (dist) {
+        km += dist;
+        passengers += (ride.bookings_count || 0);
+      }
+    });
+    
+    cBookings.forEach(booking => {
+      const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
+      if (dist) km += dist;
+    });
+    
+    return {
+      completedRides: cRides,
+      completedBookings: cBookings,
+      totalKm: km,
+      co2Saved: calculateCO2Saved(km, passengers),
+      levelInfo: profile ? getLevelInfo(profile.points) : null,
+    };
+  }, [myRides, myBookings, profile]);
 
   function ProfileMobile() {
     return (
@@ -563,9 +564,9 @@ export default function ProfilePage() {
           <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
             <div className="flex items-center gap-3">
               <Link href={`/${locale}/profilo`} className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
-                {getUserAvatar() ? (
+                {userAvatar ? (
                   <Image
-                    src={getUserAvatar()!}
+                    src={userAvatar!}
                     alt={t("profilePhotoAlt")}
                     width={40}
                     height={40}
@@ -577,7 +578,7 @@ export default function ProfilePage() {
                     }}
                   />
                 ) : null}
-                <div className={`w-full h-full items-center justify-center ${getUserAvatar() ? 'hidden' : 'flex'}`}>
+                <div className={`w-full h-full items-center justify-center ${userAvatar ? 'hidden' : 'flex'}`}>
                   <User className="w-5 h-5 text-on-surface-variant" />
                 </div>
               </Link>
@@ -625,7 +626,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="mt-8 text-center">
-              <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{getUserName()}</h2>
+              <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{userName}</h2>
               <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
                 {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
@@ -1172,7 +1173,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight mb-2 text-on-surface">
-                <GradientText>{getUserName()}</GradientText>
+                <GradientText>{userName}</GradientText>
               </h2>
               <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
                 {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}

@@ -116,6 +116,7 @@ interface SearchViewProps {
   handleTouchStart: (e: React.TouchEvent) => void;
   handleTouchMove: (e: React.TouchEvent) => void;
   handleTouchEnd: () => Promise<void>;
+  handleTouchCancel: () => void;
   handleRefresh: () => Promise<void>;
   handleSearch: (e: React.FormEvent) => void;
   clearFilters: () => void;
@@ -152,7 +153,7 @@ function SearchMobile(props: SearchViewProps) {
     rides, loading, hasError,
     today,
     resultsRef,
-    handleTouchStart, handleTouchMove, handleTouchEnd,
+    handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel,
     handleRefresh,
     handleSearch: _handleSearch,
     clearFilters,
@@ -196,6 +197,7 @@ function SearchMobile(props: SearchViewProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
       >
         {/* Pull to refresh indicator */}
         <div
@@ -975,7 +977,13 @@ function SearchContent() {
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toISOString().split("T")[0];
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   // Fix #1: sync filter state back into the URL so browser Back restores them.
   // We use replace (not push) to avoid polluting the history stack on every
@@ -994,7 +1002,6 @@ function SearchContent() {
 
   const fetchRides = useCallback(async () => {
     setLoading(true);
-    // Fix #4: reset error flag before each attempt
     setHasError(false);
     try {
       const results = await searchRides({
@@ -1015,16 +1022,17 @@ function SearchContent() {
         freeOnly: activeFilter === "free" || undefined,
         todayOnly: activeFilter === "today" || undefined,
       });
+      if (!isMountedRef.current) return;
       setRides(results as Ride[]);
       if (origin || destination) {
         Analytics.searchPerformed(origin, destination);
       }
     } catch (err: unknown) {
-      // Fix #4: surface error to the UI instead of silently showing empty state
+      if (!isMountedRef.current) return;
       setHasError(true);
       toast.error(err instanceof Error ? err.message : t('searchError'));
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
   }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, t]);
 
@@ -1065,10 +1073,19 @@ function SearchContent() {
     if (pullDistance > 60) {
       setIsRefreshing(true);
       await fetchRides();
-      setIsRefreshing(false);
+      if (isMountedRef.current) setIsRefreshing(false);
     }
-    setPullStartY(0);
-    setPullDistance(0);
+    if (isMountedRef.current) {
+      setPullStartY(0);
+      setPullDistance(0);
+    }
+  };
+
+  const handleTouchCancel = () => {
+    if (isMountedRef.current) {
+      setPullStartY(0);
+      setPullDistance(0);
+    }
   };
 
   const handleRefresh = async () => {
@@ -1158,7 +1175,7 @@ function SearchContent() {
     today,
     resultsRef,
     fetchRides,
-    handleTouchStart, handleTouchMove, handleTouchEnd,
+    handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel,
     handleRefresh,
     handleSearch,
     clearFilters,

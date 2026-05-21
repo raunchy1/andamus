@@ -90,21 +90,32 @@ const serwist = new Serwist({
       }),
     },
     
-    // Cache Supabase API GET requests (rides data for offline viewing)
+    // Supabase storage assets (images/audio) — short cache
     {
       matcher: ({ url, request }: { url: URL; request: Request }) =>
         url.hostname.includes("supabase.co") &&
+        url.pathname.includes("/storage/v1/object/public/") &&
         request.method === "GET",
-      handler: new NetworkFirst({
-        cacheName: "api-rides-cache",
+      handler: new StaleWhileRevalidate({
+        cacheName: "supabase-storage-cache",
         plugins: [
           new ExpirationPlugin({
-            maxEntries: 100,
-            maxAgeSeconds: 24 * 60 * 60, // 24 hours
+            maxEntries: 200,
+            maxAgeSeconds: 60 * 60, // 1 hour
           }),
         ],
-        networkTimeoutSeconds: 3,
       }),
+    },
+
+    // Supabase REST API — NEVER cache (prevents stale rides/notifications/chat)
+    {
+      matcher: ({ url, request }: { url: URL; request: Request }) =>
+        url.hostname.includes("supabase.co") &&
+        url.pathname.includes("/rest/v1/") &&
+        request.method === "GET",
+      handler: async ({ request }: { request: Request }) => {
+        return fetch(request);
+      },
     },
     
     // Cache internal API routes (GET only)
