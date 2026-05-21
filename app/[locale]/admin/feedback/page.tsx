@@ -2,7 +2,8 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { isAdmin } from "@/lib/admin-config";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Star, MessageSquare, ThumbsUp, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { Star, MessageSquare, ThumbsUp, AlertCircle } from "lucide-react";
+import { FeedbackList } from "@/components/admin/FeedbackList";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,17 @@ export default async function AdminFeedbackPage() {
     .order("created_at", { ascending: false })
     .limit(100);
 
-  const items = feedbackItems || [];
+  const items = (feedbackItems || []) as Array<{
+    id: string;
+    type: "praise" | "issue" | "idea";
+    rating: number;
+    message: string;
+    created_at: string;
+    resolved_at: string | null;
+    notes: string | null;
+    profiles: { name?: string; email?: string } | null;
+  }>;
+
   const unresolved = items.filter((i) => !i.resolved_at);
   const avgRating = items.length
     ? (items.reduce((sum, i) => sum + i.rating, 0) / items.length).toFixed(1)
@@ -112,85 +123,8 @@ export default async function AdminFeedbackPage() {
           })}
         </div>
 
-        {/* Feedback list */}
-        <div className="space-y-3">
-          {items.length === 0 && (
-            <div className="text-center py-16 text-white/40">
-              <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Nessun feedback ancora</p>
-            </div>
-          )}
-
-          {items.map((item: Record<string, unknown>) => {
-            const typeKey = ((item.type as string) || "idea") as keyof typeof typeIcons;
-            const Icon = typeIcons[typeKey] || MessageSquare;
-            const isResolved = !!item.resolved_at;
-            const rating = (item.rating as number) || 0;
-            const profile = item.profiles as { name?: string; email?: string } | null;
-
-            return (
-              <div
-                key={item.id as string}
-                className={`bg-white/[0.02] border rounded-2xl p-5 transition-colors ${
-                  isResolved ? "border-white/5 opacity-60" : "border-white/10"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${typeColors[typeKey].replace("text-", "bg-").replace("border-", "")}`}
-                  >
-                    <Icon className={`w-5 h-5 ${typeColors[typeKey].split(" ")[0]}`} />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm">{profile?.name || "Anonimo"}</span>
-                        <span className="text-[10px] text-white/30">{profile?.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-0.5">
-                          {[1, 2, 3, 4, 5].map((n) => (
-                            <Star
-                              key={n}
-                              className={`w-3 h-3 ${
-                                n <= rating ? "text-yellow-400 fill-yellow-400" : "text-white/10"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        {isResolved ? (
-                          <span className="flex items-center gap-1 text-[10px] text-emerald-400">
-                            <CheckCircle className="w-3 h-3" /> Risolto
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1 text-[10px] text-yellow-400">
-                            <Clock className="w-3 h-3" /> Aperto
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
-                      {item.message as string}
-                    </p>
-
-                    <div className="flex items-center gap-3 mt-3">
-                      <span className="text-[10px] text-white/30">
-                        {new Date(item.created_at as string).toLocaleString("it-IT")}
-                      </span>
-                      {(item.notes as string | null) && (
-                        <span className="text-[10px] text-white/30">
-                          Nota: {item.notes as string}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* Feedback list (client component) */}
+        <FeedbackList initialItems={items} />
       </div>
     </div>
   );

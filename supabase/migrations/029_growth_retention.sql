@@ -52,7 +52,7 @@ CREATE POLICY "Users can view own activity weeks"
   ON user_activity_weeks FOR SELECT
   USING (auth.uid() = user_id);
 
--- ── Add locale to profiles if missing ──
+-- ── Add locale + push preference to profiles if missing ──
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -60,6 +60,13 @@ BEGIN
     WHERE table_name = 'profiles' AND column_name = 'locale'
   ) THEN
     ALTER TABLE profiles ADD COLUMN locale TEXT DEFAULT 'it';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'profiles' AND column_name = 'push_notifications'
+  ) THEN
+    ALTER TABLE profiles ADD COLUMN push_notifications BOOLEAN DEFAULT true;
   END IF;
 END $$;
 

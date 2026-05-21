@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { updatePushPreference } from "@/lib/user-preferences";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -75,6 +76,7 @@ export function PushNotificationToggle() {
       if (!res.ok) throw new Error("Subscribe failed");
 
       setIsSubscribed(true);
+      await updatePushPreference(true);
       toast.success("Notifiche push attivate");
     } catch (err) {
       if (err instanceof DOMException && err.name === "NotAllowedError") {
@@ -102,6 +104,7 @@ export function PushNotificationToggle() {
         });
       }
       setIsSubscribed(false);
+      await updatePushPreference(false);
       toast.success("Notifiche push disattivate");
     } catch {
       toast.error("Errore nella disattivazione");
