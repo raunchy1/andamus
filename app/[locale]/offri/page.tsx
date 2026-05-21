@@ -7,6 +7,7 @@ import { Loader2, Check, AlertCircle, ArrowLeft, User, CircleDot, MapPin, ArrowD
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
+import { createRide } from "@/lib/ride-actions";
 import { Calculator, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -1062,59 +1063,31 @@ export default function OfferPage() {
           return;
         }
       } else {
-        const { data: inserted, error } = await supabase
-          .from("rides")
-          .insert({
-            driver_id: currentUser.id,
-            from_city: formData.origin,
-            to_city: formData.destination,
-            date: formData.date,
-            time: formData.time,
-            seats: parseInt(formData.seats),
-            price: formData.isFree ? 0 : parseFloat(formData.price),
-            meeting_point: formData.meetingPoint || null,
-            notes: formData.notes || null,
-            status: "active",
-            smoking_allowed: formData.smokingAllowed || null,
-            pets_allowed: formData.petsAllowed || null,
-            large_luggage: formData.largeLuggage || null,
-            music_preference: formData.musicPreference || null,
-            women_only: formData.womenOnly || null,
-            students_only: formData.studentsOnly || null,
-            // Car info
-            car_model: formData.carModel || savedCarInfo?.car_model || null,
-            car_color: formData.carColor || savedCarInfo?.car_color || null,
-            car_plate: formData.carPlate || savedCarInfo?.car_plate || null,
-            car_year: formData.carYear ? parseInt(formData.carYear) : savedCarInfo?.car_year || null,
-          })
-          .select();
+        const result = await createRide({
+          from_city: formData.origin,
+          to_city: formData.destination,
+          date: formData.date,
+          time: formData.time,
+          seats: parseInt(formData.seats),
+          price: formData.isFree ? 0 : parseFloat(formData.price),
+          meeting_point: formData.meetingPoint || null,
+          notes: formData.notes || null,
+          smoking_allowed: formData.smokingAllowed || null,
+          pets_allowed: formData.petsAllowed || null,
+          large_luggage: formData.largeLuggage || null,
+          music_preference: formData.musicPreference || null,
+          women_only: formData.womenOnly || null,
+          students_only: formData.studentsOnly || null,
+          car_model: formData.carModel || savedCarInfo?.car_model || null,
+          car_color: formData.carColor || savedCarInfo?.car_color || null,
+          car_plate: formData.carPlate || savedCarInfo?.car_plate || null,
+          car_year: formData.carYear ? parseInt(formData.carYear) : savedCarInfo?.car_year || null,
+          stops: formData.stops,
+        });
 
-        if (error) {
-          // Insert error logged silently
-          toast.dismiss(toastId);
-          toast.error(t('errorTemplate', { message: error.message }));
-          setSubmitError(t('errorPublishing', { message: error.message }));
-          setIsSubmitting(false);
-          return;
-        }
+        rideId = result.rideId;
 
-        rideId = inserted?.[0]?.id || null;
         if (rideId) {
-          if (formData.stops.length > 0) {
-            const { error: stopsError } = await supabase.from("ride_stops").insert(
-              formData.stops.map((city, index) => ({
-                ride_id: rideId,
-                city,
-                order_index: index,
-              }))
-            );
-            
-            if (stopsError) {
-              // Stops error logged silently
-              toast.error(t('errorStopsMsg', { message: stopsError.message }));
-            }
-          }
-
           fetch("/api/alerts/check", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

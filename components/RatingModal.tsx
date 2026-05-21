@@ -5,6 +5,7 @@ import { X, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewReview } from "@/lib/notification-actions";
 import { completeGamificationAction } from "@/lib/gamification";
+import { submitReview } from "@/lib/review-actions";
 import { ProductAnalytics } from "@/lib/posthog";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -72,69 +73,46 @@ export function RatingModal({
     setLoading(true);
 
     try {
-      // Verify the reviewer actually participated in the ride
-      const { data: participation, error: participationError } = await supabase
-        .from("bookings")
-        .select("id")
-        .eq("ride_id", rideId)
-        .eq("status", "confirmed")
-        .or(`passenger_id.eq.${currentUserId},passenger_id.eq.${reviewedUser.id}`)
-        .single();
-
-      if (participationError || !participation) {
-        toast.error(t("notAuthorizedToReview"));
-        setLoading(false);
-        return;
-      }
-
-      const { error } = await supabase.from("reviews").insert({
+      await submitReview({
         ride_id: rideId,
-        reviewer_id: currentUserId,
         reviewed_id: reviewedUser.id,
         rating,
         comment: comment.trim() || null,
       });
 
-      if (error) {
-        if (error.code === "23505") {
-          toast.error(t("alreadyReviewed"));
-        } else {
-          throw error;
+      // Get reviewer name for notification
+      const { data: { user } } = await supabase.auth.getUser();
+      const reviewerName = user?.user_metadata?.name || user?.email?.split("@")[0] || "Utente";
+      
+      // Notify reviewed user
+      await notifyNewReview(reviewedUser.id, reviewerName, rideId);
+      
+      // Add gamification points for 5-star review (to reviewed user)
+      if (rating === 5) {
+        const result = await completeGamificationAction(
+          reviewedUser.id,
+          'five_star_review'
+        );
+        
+        if (result.pointsAdded > 0) {
+          toast.success(t("fiveStarPoints", { points: result.pointsAdded }));
         }
-      } else {
-        // Get reviewer name for notification
-        const { data: { user } } = await supabase.auth.getUser();
-        const reviewerName = user?.user_metadata?.name || user?.email?.split("@")[0] || "Utente";
-        
-        // Notify reviewed user
-        await notifyNewReview(reviewedUser.id, reviewerName, rideId);
-        
-        // Add gamification points for 5-star review (to reviewed user)
-        if (rating === 5) {
-          const result = await completeGamificationAction(
-            reviewedUser.id,
-            'five_star_review'
-          );
-          
-          if (result.pointsAdded > 0) {
-            toast.success(t("fiveStarPoints", { points: result.pointsAdded }));
-          }
-        }
-        
-        setReviewSaved(true);
-        ProductAnalytics.reviewSubmitted(rideId, rating);
-        toast.success(t("reviewSent"));
-        onSuccess?.();
-        // Keep modal open briefly so user sees confirmation, then auto-close
-        setTimeout(() => {
-          onClose();
-          setRating(0);
-          setComment("");
-          setReviewSaved(false);
-        }, 2000);
       }
-    } catch {
-      toast.error(t("sendError"));
+      
+      setReviewSaved(true);
+      ProductAnalytics.reviewSubmitted(rideId, rating);
+      toast.success(t("reviewSent"));
+      onSuccess?.();
+      // Keep modal open briefly so user sees confirmation, then auto-close
+      setTimeout(() => {
+        onClose();
+        setRating(0);
+        setComment("");
+        setReviewSaved(false);
+      }, 2000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t("sendError");
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

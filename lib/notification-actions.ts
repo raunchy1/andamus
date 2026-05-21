@@ -46,8 +46,29 @@ export async function createNotification({
     throw new Error("Unauthorized: authentication required");
   }
 
-  // Use service role to insert notification for the target user
+  // ── Cooldown: prevent duplicate notifications within window ──
   const sr = createServiceRoleClient();
+  const cooldownMinutes = type === "new_message" ? 5 : type === "ride_alert" ? 60 : 15;
+  const cooldownWindow = new Date(Date.now() - cooldownMinutes * 60 * 1000).toISOString();
+
+  const { data: recent, error: recentError } = await sr
+    .from("notifications")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("type", type)
+    .eq("ride_id", rideId || "")
+    .gte("created_at", cooldownWindow)
+    .maybeSingle();
+
+  if (recentError) {
+    console.error("[notification-actions] cooldown check error:", recentError.message);
+  }
+  if (recent) {
+    // Duplicate notification within cooldown window — skip
+    return false;
+  }
+
+  // Use service role to insert notification for the target user
   const { error } = await sr.from("notifications").insert({
     user_id: userId,
     type,

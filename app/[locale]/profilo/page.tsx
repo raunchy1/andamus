@@ -404,7 +404,7 @@ export default function ProfilePage() {
     try {
       const { error } = await supabase
         .from("bookings")
-        .update({ status: "canceled" })
+        .update({ status: "cancelled" })
         .eq("id", cancelBookingId);
       if (error) {
         toast.error(t("errorCancelling"));
@@ -416,7 +416,7 @@ export default function ProfilePage() {
         reason: cancelReason.trim(),
       });
       setMyBookings((prev) =>
-        prev.map((b) => (b.id === cancelBookingId ? { ...b, status: "canceled" } : b))
+        prev.map((b) => (b.id === cancelBookingId ? { ...b, status: "cancelled" } : b))
       );
       toast.success(t("bookingCancelled"));
       setCancelBookingId(null);
@@ -499,7 +499,7 @@ export default function ProfilePage() {
       case "confirmed": return "text-tertiary";
       case "pending": return "text-primary";
       case "rejected": return "text-error";
-      case "canceled": return "text-error";
+      case "cancelled": return "text-error";
       default: return "text-on-surface-variant";
     }
   };
@@ -509,7 +509,7 @@ export default function ProfilePage() {
       case "confirmed": return t("statusConfirmed");
       case "pending": return t("statusPending");
       case "rejected": return t("statusRejected");
-      case "canceled": return t("statusCancelled");
+      case "cancelled": return t("statusCancelled");
       default: return status;
     }
   };
@@ -967,7 +967,7 @@ export default function ProfilePage() {
                               </button>
                             ) : (
                               <>
-                                {booking.status !== "canceled" && (
+                                {booking.status !== "cancelled" && (
                                   <>
                                     <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
                                       <MessageCircle className="h-3 w-3" />
@@ -1406,7 +1406,7 @@ export default function ProfilePage() {
                                     </button>
                                   ) : (
                                     <>
-                                      {booking.status !== "canceled" && (
+                                      {booking.status !== "cancelled" && (
                                         <>
                                           <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary">
                                             <MessageCircle className="h-4 w-4" />

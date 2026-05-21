@@ -89,6 +89,48 @@ export function isValidComment(comment: string): boolean {
   return comment.length <= 1000;
 }
 
+/**
+ * Detect suspicious patterns that may indicate spam or abuse.
+ * Returns an array of detected violation reasons (empty if clean).
+ */
+export function detectSuspiciousPatterns(data: {
+  from_city: string;
+  to_city: string;
+  notes?: string;
+  price: number;
+}): string[] {
+  const violations: string[] = [];
+  const text = `${data.from_city} ${data.to_city} ${data.notes || ""}`.toLowerCase();
+
+  // Repeated characters (e.g., "aaaaaa", "!!!!!!!!")
+  if (/(.)(\1{5,})/.test(text)) {
+    violations.push("repeated_chars");
+  }
+
+  // Excessive capitalization
+  const words = text.split(/\s+/).filter((w) => w.length > 2);
+  const allCapsWords = words.filter((w) => /^[A-Z]{3,}$/.test(w));
+  if (words.length > 0 && allCapsWords.length / words.length > 0.5) {
+    violations.push("excessive_caps");
+  }
+
+  // Suspiciously low price for long distance (heuristic)
+  if (data.price < 1 && data.price > 0) {
+    violations.push("suspicious_price");
+  }
+
+  // Common spam keywords in Italian/English
+  const spamKeywords = [
+    "spam", "scam", "truffa", "soldi", "cash", "pagamento esterno",
+    "whatsapp", "telegram", "contatto diretto", "paga qui",
+  ];
+  if (spamKeywords.some((k) => text.includes(k))) {
+    violations.push("spam_keywords");
+  }
+
+  return violations;
+}
+
 export function sanitizeRideData(data: {
   from_city: string;
   to_city: string;

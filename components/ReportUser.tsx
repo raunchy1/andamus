@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Flag, X, AlertTriangle, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { submitSafetyReport } from "@/lib/safety-actions";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -27,7 +27,6 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
 
   const handleSubmit = async () => {
     if (!reason) {
@@ -38,28 +37,20 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error(t("mustBeAuthenticated"));
-        return;
-      }
-
-      const { error } = await supabase.from("safety_reports").insert({
-        reporter_id: user.id,
+      await submitSafetyReport({
         reported_id: reportedId,
         ride_id: rideId || null,
         type: reason,
-        description: description.trim(),
+        description: description.trim() || null,
       });
-
-      if (error) throw error;
 
       toast.success(t("reportSent"));
       setIsOpen(false);
       setReason("");
       setDescription("");
-    } catch {
-      toast.error(t("reportError"));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t("reportError");
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
