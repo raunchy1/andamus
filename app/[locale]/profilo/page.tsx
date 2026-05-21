@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard } from "lucide-react";
+import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -21,6 +21,7 @@ import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { computeTrustScore, getTrustLevel, formatAccountAge } from "@/lib/reputation";
+import { Haptic } from "@/lib/haptic";
 import { useDeviceType } from "@/components/view-mode";
 import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
 import { StripeConnectBanner } from "@/components/StripeConnectBanner";
@@ -173,6 +174,12 @@ export default function ProfilePage() {
   const [togglingTemplateId, setTogglingTemplateId] = useState<string | null>(null);
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
 
+  // Pull-to-refresh state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullStartY, setPullStartY] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const mainRef = useRef<HTMLDivElement>(null);
+
   const [supabase] = useState(() => createClient());
   const isMountedRef = useRef(true);
 
@@ -275,6 +282,7 @@ export default function ProfilePage() {
   }, [router, supabase, locale]);
 
   const handleAcceptBooking = async (request: BookingRequest) => {
+    Haptic.heavy();
     if (!user || !myRides.some(r => r.id === request.ride_id)) {
       toast.error(t("errorAcceptingBooking"));
       return;
@@ -307,8 +315,10 @@ export default function ProfilePage() {
 
       ProductAnalytics.bookingAccepted(request.ride_id, request.id);
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
+      Haptic.success();
       toast.success(t("bookingAccepted"));
     } catch (err) {
+      Haptic.error();
       const message = err instanceof Error ? err.message : t("errorAcceptingBooking");
       toast.error(message);
     } finally {
@@ -317,6 +327,7 @@ export default function ProfilePage() {
   };
 
   const handleRejectBooking = async (request: BookingRequest) => {
+    Haptic.heavy();
     if (!user || !myRides.some(r => r.id === request.ride_id)) {
       toast.error(t("errorRejectingBooking"));
       return;
@@ -344,8 +355,10 @@ export default function ProfilePage() {
 
       ProductAnalytics.bookingRejected(request.ride_id, request.id);
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
+      Haptic.success();
       toast.success(t("bookingRejected"));
     } catch (err) {
+      Haptic.error();
       const message = err instanceof Error ? err.message : t("errorRejectingBooking");
       toast.error(message);
     } finally {
@@ -477,6 +490,37 @@ export default function ProfilePage() {
     }
   };
 
+  // Pull-to-refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (mainRef.current && mainRef.current.scrollTop === 0) {
+      setPullStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (pullStartY > 0 && mainRef.current && mainRef.current.scrollTop === 0) {
+      const diff = e.touches[0].clientY - pullStartY;
+      if (diff > 0) {
+        setPullDistance(Math.min(diff * 0.5, 80));
+      }
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > 60) {
+      setIsRefreshing(true);
+      Haptic.light();
+      window.location.reload();
+    }
+    setPullStartY(0);
+    setPullDistance(0);
+  };
+
+  const handleTouchCancel = () => {
+    setPullStartY(0);
+    setPullDistance(0);
+  };
+
   const userName = useMemo(() => {
     if (!user) return "";
     return profile?.name || user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || t("user");
@@ -566,6 +610,24 @@ export default function ProfilePage() {
   function ProfileMobile() {
     return (
       <div className="min-h-screen bg-surface-container-lowest">
+        {/* Pull to refresh indicator */}
+        <div
+          className="flex justify-center items-center h-0 overflow-visible transition-all duration-200 fixed top-0 left-0 right-0 z-50 pointer-events-none"
+          style={{ height: pullDistance > 0 ? pullDistance : 0, opacity: pullDistance > 0 ? 1 : 0 }}
+        >
+          <div className={`flex items-center gap-2 text-on-surface/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
+            <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 2}deg)` }} />
+            <span className="text-sm">{pullDistance > 60 ? t("releaseToRefresh") : t("pullToRefresh")}</span>
+          </div>
+        </div>
+        <main
+          ref={mainRef}
+          className="min-h-screen overflow-y-auto"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
+        >
         <AuroraBackground className="border-b border-white/5">
           <OrbGlow className="-top-10 -right-20" color="#e63946" size={260} opacity={0.32} />
           <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
@@ -1142,6 +1204,7 @@ export default function ProfilePage() {
             onSuccess={() => setReviewedRides((prev) => new Set(prev).add(ratingRideId))}
           />
         )}
+        </main>
       </div>
     );
   }
