@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { checkServerRateLimit } from "@/lib/rate-limit";
 import { sanitizeRideData, isValidCity, detectSuspiciousPatterns } from "@/lib/security";
 import { isRideExpired } from "@/lib/date-utils";
+import { checkRideLimit, recordActivity } from "@/lib/retention";
 import { revalidatePath } from "next/cache";
 
 export type CreateRideInput = {
@@ -54,6 +55,14 @@ export async function createRide(input: CreateRideInput) {
   if (!rateLimit.allowed) {
     throw new Error(
       "Hai pubblicato troppi passaggi. Riprova più tardi."
+    );
+  }
+
+  // ── Subscription ride limit check ──
+  const rideLimit = await checkRideLimit(user.id);
+  if (!rideLimit.allowed) {
+    throw new Error(
+      `Hai raggiunto il limite di ${rideLimit.limit} corse al mese con il piano gratuito. Passa a Premium per pubblicare senza limiti.`
     );
   }
 
@@ -187,6 +196,9 @@ export async function createRide(input: CreateRideInput) {
   }
 
   revalidatePath("/cerca");
+
+  // ── Record activity for streak tracking ──
+  await recordActivity(user.id, "ride_published");
 
   return { rideId: inserted.id, success: true };
 }

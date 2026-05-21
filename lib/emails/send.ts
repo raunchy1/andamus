@@ -390,3 +390,39 @@ export async function wasRecentlyOnline(userId: string): Promise<boolean> {
     return false;
   }
 }
+
+
+// G) Send weekly digest email
+export async function sendWeeklyDigestEmail(data: {
+  to: string;
+  name: string;
+  rides: Array<{ from: string; to: string; date: string; time: string; price: number; driver: string }>;
+  hasStreak: boolean;
+  streakWeeks: number;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { getWeeklyDigestEmailTemplate } = await import("./templates");
+    const { subject, html } = getWeeklyDigestEmailTemplate({
+      name: data.name,
+      rides: data.rides,
+      hasStreak: data.hasStreak,
+      streakWeeks: data.streakWeeks,
+      baseUrl: BASE_URL,
+    });
+
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: data.to,
+      subject,
+      html,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch {
+    return { success: false, error: "Internal error" };
+  }
+}

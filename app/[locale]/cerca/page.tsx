@@ -14,6 +14,7 @@ import { Slider } from "@/components/ui/slider";
 import { CityCombobox } from "@/components/CityCombobox";
 import municipalities from "@/scripts/sardinia-municipalities.json";
 import { EmptyStateSearch } from "@/components/EmptyState";
+import { TrustBadge } from "@/components/TrustBadge";
 import { Analytics } from "@/lib/analytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
@@ -61,6 +62,7 @@ interface Ride {
     rating: number;
     review_count?: number | null;
     rides_count?: number | null;
+    completed_rides_count?: number | null;
     phone_verified?: boolean;
     id_verified?: boolean;
   };
@@ -918,6 +920,19 @@ function SearchDesktop(props: SearchViewProps) {
                       ({ride.profiles.review_count || 0})
                     </span>
                   </div>
+                  <TrustBadge
+                    profile={{
+                      rating: ride.profiles.rating,
+                      review_count: ride.profiles.review_count || 0,
+                      rides_count: ride.profiles.rides_count || 0,
+                      completed_rides_count: ride.profiles.completed_rides_count || 0,
+                      phone_verified: ride.profiles.phone_verified,
+                      id_verified: ride.profiles.id_verified,
+                    }}
+                    size="sm"
+                    showLabel={false}
+                    showScore
+                  />
                 </div>
               </div>
               <div className="flex items-center gap-2">

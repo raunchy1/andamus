@@ -62,16 +62,17 @@ export function computeTrustScore(profile: Partial<ReputationProfile>): number {
 export function getTrustLevel(score: number): {
   label: string;
   color: string;
+  emoji: string;
 } {
   if (score >= 80)
-    return { label: "Molto affidabile", color: "text-emerald-400" };
+    return { label: "Molto affidabile", color: "text-emerald-400", emoji: "🛡️" };
   if (score >= 60)
-    return { label: "Affidabile", color: "text-green-400" };
+    return { label: "Affidabile", color: "text-green-400", emoji: "✅" };
   if (score >= 40)
-    return { label: "Nuovo", color: "text-yellow-400" };
+    return { label: "Nuovo", color: "text-yellow-400", emoji: "🌱" };
   if (score >= 20)
-    return { label: "Alle prime armi", color: "text-orange-400" };
-  return { label: "Appena arrivato", color: "text-white/50" };
+    return { label: "Alle prime armi", color: "text-orange-400", emoji: "👋" };
+  return { label: "Appena arrivato", color: "text-white/50", emoji: "👶" };
 }
 
 /**

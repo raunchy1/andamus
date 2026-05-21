@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isRideExpired } from "@/lib/date-utils";
 import { checkServerRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notification-actions";
+import { recordActivity } from "@/lib/retention";
 
 export interface BookingResult {
   success: boolean;
@@ -121,6 +122,9 @@ export async function bookFreeRide(
   } catch {
     // Notification failure is non-blocking
   }
+
+  // Record activity for streak tracking
+  await recordActivity(passengerId, "booking_made");
 
   return { success: true, bookingId: booking.id };
 }

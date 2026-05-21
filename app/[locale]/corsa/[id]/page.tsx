@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { Loader2, AlertCircle, ChevronRight, ArrowLeft, Share2, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
 import { CarInfoCard } from "@/components/CarInfoCard";
+import { ShareRide } from "@/components/ShareRide";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
@@ -122,9 +123,7 @@ function RideDetailMobile({
         <button onClick={() => router.back()} className="bg-surface-container-highest/90 backdrop-blur-xl p-3.5 rounded-2xl text-on-surface hover:bg-surface-container-highest transition-all active:scale-95 shadow-lg">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <button onClick={handleShare} className="bg-surface-container-highest/90 backdrop-blur-xl p-3.5 rounded-2xl text-on-surface hover:bg-surface-container-highest transition-all active:scale-95 shadow-lg">
-          <Share2 className="w-6 h-6" />
-        </button>
+        <ShareRide ride={{ id: ride.id, from_city: ride.from_city, to_city: ride.to_city, date: ride.date, time: ride.time, price: ride.price, driverName: ride.profiles.name }} variant="icon" className="bg-surface-container-highest/90 backdrop-blur-xl p-3.5 rounded-2xl shadow-lg" />
       </header>
 
       <main className="overflow-y-auto overflow-x-hidden hide-scrollbar">
@@ -495,9 +494,7 @@ function RideDetailDesktop({
             <span className="font-semibold text-on-surface">{t('details')}</span>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={handleShare} className="p-2 rounded-xl text-on-surface hover:bg-white/5 transition-all">
-              <Share2 className="w-6 h-6" />
-            </button>
+            <ShareRide ride={{ id: ride.id, from_city: ride.from_city, to_city: ride.to_city, date: ride.date, time: ride.time, price: ride.price, driverName: ride.profiles.name }} variant="icon" />
           </div>
         </div>
       </header>

@@ -406,3 +406,63 @@ export function getRideReminderEmailTemplate(data: {
     html: getBaseTemplate(content, data.unsubscribeToken),
   };
 }
+
+
+// G) WEEKLY DIGEST EMAIL
+export function getWeeklyDigestEmailTemplate(data: {
+  name: string;
+  rides: Array<{ from: string; to: string; date: string; time: string; price: number; driver: string }>;
+  hasStreak: boolean;
+  streakWeeks: number;
+  baseUrl: string;
+}): { subject: string; html: string } {
+  const rideItems = data.rides
+    .map(
+      (r) => `
+    <tr>
+      <td style="padding: 16px; background-color: ${bgColor}; border-radius: 8px; margin-bottom: 8px;">
+        <p style="margin: 0 0 4px 0; color: ${textColor}; font-size: 16px; font-weight: 700;">${r.from} → ${r.to}</p>
+        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📅 ${r.date} · 🕐 ${r.time} · 👤 ${r.driver}${r.price > 0 ? ` · €${r.price}` : ""}</p>
+      </td>
+    </tr>
+    <tr><td style="height: 8px;"></td></tr>
+  `
+    )
+    .join("");
+
+  const streakSection = data.hasStreak
+    ? `<div style="background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px; text-align: center;">
+        <p style="margin: 0; color: #10b981; font-size: 14px; font-weight: 600;">🔥 Streak attiva! Sei attivo da ${data.streakWeeks} settimane consecutive.</p>
+       </div>`
+    : "";
+
+  const content = `<tr>
+    <td style="padding: 40px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <div style="width: 64px; height: 64px; background-color: ${brandColor}; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 16px;">📬</div>
+        <h2 style="margin: 0; color: ${textColor}; font-size: 24px; font-weight: 700;">Il tuo riepilogo settimanale</h2>
+      </div>
+      
+      <p style="margin: 0 0 24px 0; color: ${textColor}; font-size: 16px; line-height: 1.6; text-align: center;">
+        Ciao ${data.name}, ecco i passaggi disponibili questa settimana in Sardegna 🚗
+      </p>
+      
+      ${streakSection}
+      
+      <h3 style="margin: 0 0 16px 0; color: ${textColor}; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Passaggi della settimana</h3>
+      
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        ${rideItems}
+      </table>
+      
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${data.baseUrl}/cerca" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">Cerca altri passaggi</a>
+      </div>
+    </td>
+  </tr>`;
+
+  return {
+    subject: "📬 Il tuo riepilogo settimanale — Andamus",
+    html: getBaseTemplate(content),
+  };
+}

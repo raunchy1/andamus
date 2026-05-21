@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { checkServerRateLimit } from "@/lib/rate-limit";
 import { isValidRating, isValidComment } from "@/lib/security";
 import { computeRideStatus } from "@/lib/ride-status";
+import { recordActivity } from "@/lib/retention";
 import { revalidatePath } from "next/cache";
 
 export type SubmitReviewInput = {
@@ -117,6 +118,9 @@ export async function submitReview(input: SubmitReviewInput) {
 
   revalidatePath(`/corsa/${input.ride_id}`);
   revalidatePath("/profilo");
+
+  // Record activity for streak tracking
+  await recordActivity(user.id, "review_submitted");
 
   return { review, success: true };
 }
