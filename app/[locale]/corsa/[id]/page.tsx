@@ -8,7 +8,9 @@ import { Loader2, AlertCircle, ChevronRight, ArrowLeft, Share2, Sun, User, Badge
 import { CarInfoCard } from "@/components/CarInfoCard";
 import { ShareRide } from "@/components/ShareRide";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
-import { PostActionModal } from "@/components/PostActionModal";
+import dynamic from "next/dynamic";
+
+const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";

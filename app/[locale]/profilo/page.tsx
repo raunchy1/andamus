@@ -11,7 +11,9 @@ import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
-import { PostActionModal } from "@/components/PostActionModal";
+import dynamic from "next/dynamic";
+
+const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
 import { acceptBooking, rejectBooking } from "@/lib/booking-lifecycle";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { ProductAnalytics } from "@/lib/posthog";

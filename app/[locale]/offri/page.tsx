@@ -15,7 +15,9 @@ import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
 import { ShareRide } from "@/components/ShareRide";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
-import { PostActionModal } from "@/components/PostActionModal";
+import dynamic from "next/dynamic";
+
+const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
 import { Analytics } from "@/lib/analytics";
 import { CarInfoSection } from "@/components/offri/CarInfoSection";
 import { PreferencesSection } from "@/components/offri/PreferencesSection";
