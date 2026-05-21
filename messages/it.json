@@ -590,7 +590,8 @@
     "andamusLive": "ANDAMUS LIVE",
     "chat": "Chat",
     "liveTracking": "LIVE TRACKING",
-    "preview": "Anteprima"
+    "preview": "Anteprima",
+    "offline": "Sei offline — i messaggi verranno inviati quando la connessione tornerà"
   },
   "common": {
     "cancel": "Annulla",

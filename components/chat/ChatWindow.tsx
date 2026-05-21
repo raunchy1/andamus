@@ -27,6 +27,7 @@ import {
   Check,
   CheckCheck,
   RotateCcw,
+  WifiOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { notifyNewMessage } from "@/lib/notification-actions";
@@ -495,6 +496,8 @@ export default function ChatWindow({
 
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
+  const [subStatus, setSubStatus] = useState<string>("SUBSCRIBING");
 
   // -- Refs --
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -505,6 +508,9 @@ export default function ChatWindow({
   const retryFnsRef = useRef<Map<string, () => Promise<void>>>(new Map());
   const isMountedRef = useRef(true);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Draft persistence
+  const draftKey = `chat-draft-${bookingId}`;
 
   // -- Helpers --
   const scrollToBottom = useCallback(() => {
@@ -557,6 +563,22 @@ export default function ChatWindow({
   useEffect(() => {
     isMountedRef.current = true;
     ProductAnalytics.chatOpened(bookingId);
+
+    // Restore draft
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) setNewMessage(saved);
+    } catch {
+      // localStorage may be unavailable
+    }
+
+    // Online/offline listeners
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    setIsOnline(navigator.onLine);
+
     return () => {
       isMountedRef.current = false;
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
@@ -566,8 +588,23 @@ export default function ChatWindow({
         audioRef.current.src = "";
         audioRef.current = null;
       }
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
-  }, [bookingId]);
+  }, [bookingId, draftKey]);
+
+  // Persist draft on change
+  useEffect(() => {
+    try {
+      if (newMessage.trim()) {
+        localStorage.setItem(draftKey, newMessage);
+      } else {
+        localStorage.removeItem(draftKey);
+      }
+    } catch {
+      // localStorage may be unavailable
+    }
+  }, [newMessage, draftKey]);
 
   // Load initial messages
   useEffect(() => {
@@ -592,69 +629,85 @@ export default function ChatWindow({
     loadMessages();
   }, [bookingId, supabase, handleMarkAsRead]);
 
-  // Realtime subscription
+  // Realtime subscription with reconnect
   useEffect(() => {
-    if (!bookingId) return;
+    if (!bookingId || !isOnline) return;
 
-    const channel = supabase
-      .channel(`messages:${bookingId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `booking_id=eq.${bookingId}`,
-        },
-        async (
-          payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<
-            Record<string, unknown>
-          >
-        ) => {
-          // Quick dedup check before expensive fetch
-          const newId = payload.new.id as string;
-          if (messages.some((m) => m.id === newId)) return;
+    let channel: ReturnType<typeof supabase.channel>;
 
-          const { data: newMessage } = await supabase
-            .from("messages")
-            .select(
+    const setup = () => {
+      channel = supabase
+        .channel(`messages:${bookingId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messages",
+            filter: `booking_id=eq.${bookingId}`,
+          },
+          async (
+            payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<
+              Record<string, unknown>
+            >
+          ) => {
+            // Quick dedup check before expensive fetch
+            const newId = payload.new.id as string;
+            if (messages.some((m) => m.id === newId)) return;
+
+            const { data: newMessage } = await supabase
+              .from("messages")
+              .select(
+                `
+                *,
+                sender:profiles(name, avatar_url)
               `
-              *,
-              sender:profiles(name, avatar_url)
-            `
-            )
-            .eq("id", newId)
-            .single();
+              )
+              .eq("id", newId)
+              .single();
 
-          if (!newMessage || !isMountedRef.current) return;
+            if (!newMessage || !isMountedRef.current) return;
 
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMessage.id)) return prev;
-            return [...prev, newMessage as Message];
-          });
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === newMessage.id)) return prev;
+              return [...prev, newMessage as Message];
+            });
 
-          setLocalMessages((prev) =>
-            prev.filter(
-              (m) =>
-                !(
-                  m.sender_id === newMessage.sender_id &&
-                  m.content === newMessage.content &&
-                  m.type === newMessage.type
-                )
-            )
-          );
+            setLocalMessages((prev) =>
+              prev.filter(
+                (m) =>
+                  !(
+                    m.sender_id === newMessage.sender_id &&
+                    m.content === newMessage.content &&
+                    m.type === newMessage.type
+                  )
+              )
+            );
 
-          if (newMessage.sender_id !== user.id) {
-            handleMarkAsRead();
+            if (newMessage.sender_id !== user.id) {
+              handleMarkAsRead();
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe((status: string) => {
+          setSubStatus(status);
+          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            setTimeout(() => {
+              if (isMountedRef.current) {
+                supabase.removeChannel(channel);
+                setup();
+              }
+            }, 3000);
+          }
+        });
+    };
+
+    setup();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
-  }, [bookingId, supabase, user.id, handleMarkAsRead, messages]);
+  }, [bookingId, supabase, user.id, handleMarkAsRead, messages, isOnline]);
 
   // Auto-scroll (debounced)
   useEffect(() => {
@@ -694,6 +747,7 @@ export default function ChatWindow({
 
       const messageText = newMessage.trim();
       setNewMessage("");
+      try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
       setSending(true);
 
       const tempId = `local-${Date.now()}`;
@@ -1122,6 +1176,14 @@ export default function ChatWindow({
             </div>
           </div>
         </header>
+
+        {/* Offline banner */}
+        {!isOnline && (
+          <div className="bg-error/10 px-4 py-2 flex items-center gap-2 shrink-0">
+            <WifiOff className="w-4 h-4 text-error" />
+            <span className="text-xs text-error font-medium">{t("offline")}</span>
+          </div>
+        )}
 
         {/* Route info */}
         <div className="bg-[#131313] px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">

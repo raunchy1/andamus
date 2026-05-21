@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
+import { checkServerRateLimit } from "@/lib/rate-limit";
 
 const PLATFORM_FEE_PERCENT = 0.10; // 10%
 
@@ -16,6 +17,12 @@ export async function POST(req: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit: 10 checkout attempts per hour
+  const rateLimit = await checkServerRateLimit(user.id, 'stripe_checkout', 10, 1)
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
   }
 
   // Ensure passenger profile exists (safety: trigger may have failed at signup)

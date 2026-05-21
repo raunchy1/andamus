@@ -14,6 +14,7 @@ import { notifyBookingRequest } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
 import { toast } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { computeRideStatus, isRideBookable, getRideStatusLabel, getRideStatusColor } from "@/lib/ride-status";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
 import { Spotlight } from "@/components/ui/premium/spotlight";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
@@ -86,6 +87,8 @@ interface RideDetailViewProps {
   handleRequestRide: () => void;
   formatDate: (dateStr: string) => string;
   formatReviewDate: (dateStr: string) => string;
+  rideStatus: import("@/lib/ride-status").ComputedRideStatus;
+  canBook: boolean;
 }
 
 function RideDetailMobile({
@@ -102,6 +105,8 @@ function RideDetailMobile({
   handleRequestRide,
   formatDate,
   formatReviewDate,
+  rideStatus,
+  canBook,
 }: RideDetailViewProps) {
   const router = useRouter();
   const locale = useLocale();
@@ -160,11 +165,14 @@ function RideDetailMobile({
                 <p className="font-label font-semibold text-[10px] uppercase tracking-wider text-on-surface/40 mt-1">{t('perPerson')}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <span className="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-[#e63946] animate-pulse" />
               <p className="font-label font-semibold text-sm uppercase tracking-wide text-[#ffb3b1]">
                 {t('departure')} • {formatDate(ride.date)} · {ride.time.slice(0,5)}
               </p>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getRideStatusColor(rideStatus)}`}>
+                {getRideStatusLabel(rideStatus)}
+              </span>
             </div>
           </div>
           </Reveal>
@@ -402,6 +410,14 @@ function RideDetailMobile({
               <span>{t('openChat')}</span>
               <ChevronRight className="w-5 h-5" />
             </MagneticButton>
+          ) : !canBook ? (
+            <MagneticButton
+              disabled
+              strength={16}
+              className="w-full py-5 text-base disabled:opacity-50"
+            >
+              <span>{rideStatus === 'completed' ? t('rideCompleted') : t('rideUnavailable')}</span>
+            </MagneticButton>
           ) : (
             <MagneticButton
               onClick={handleRequestRide}
@@ -457,6 +473,8 @@ function RideDetailDesktop({
   handleRequestRide,
   formatDate,
   formatReviewDate,
+  rideStatus,
+  canBook,
 }: RideDetailViewProps) {
   const router = useRouter();
   const locale = useLocale();
@@ -513,7 +531,12 @@ function RideDetailDesktop({
               <h1 className="font-headline font-extrabold text-6xl tracking-tighter text-on-surface mb-3">
                 {ride.from_city} <GradientText className="tracking-normal">→</GradientText> {ride.to_city}
               </h1>
-              <p className="font-label font-semibold text-sm uppercase tracking-[0.15em] text-[#ffb3b1]">{t('departure')} • {formatDate(ride.date)} · {ride.time.slice(0,5)}</p>
+              <div className="flex items-center gap-3">
+                <p className="font-label font-semibold text-sm uppercase tracking-[0.15em] text-[#ffb3b1]">{t('departure')} • {formatDate(ride.date)} · {ride.time.slice(0,5)}</p>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getRideStatusColor(rideStatus)}`}>
+                  {getRideStatusLabel(rideStatus)}
+                </span>
+              </div>
             </div>
             </Reveal>
 
@@ -746,6 +769,14 @@ function RideDetailDesktop({
                       <span>{t('openChat')}</span>
                       <ChevronRight className="w-5 h-5" />
                     </MagneticButton>
+                  ) : !canBook ? (
+                    <MagneticButton
+                      disabled
+                      strength={16}
+                      className="w-full py-5 text-base disabled:opacity-50"
+                    >
+                      <span>{rideStatus === 'completed' ? t('rideCompleted') : t('rideUnavailable')}</span>
+                    </MagneticButton>
                   ) : (
                     <MagneticButton
                       onClick={handleRequestRide}
@@ -829,6 +860,9 @@ export default function RideDetailPage() {
 
   const [supabase] = useState(() => createClient());
   const isMountedRef = useRef(true);
+
+  const rideStatus = ride ? computeRideStatus(ride.status, ride.date, ride.time) : "upcoming";
+  const canBook = ride ? isRideBookable(ride.status, ride.date, ride.time) : false;
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -955,6 +989,10 @@ export default function RideDetailPage() {
     }
     if (existingBooking) {
       router.push(`/${locale}/chat/${existingBooking.id}`);
+      return;
+    }
+    if (!canBook) {
+      toast.error(t('rideUnavailable'));
       return;
     }
 
@@ -1095,6 +1133,8 @@ export default function RideDetailPage() {
     handleRequestRide,
     formatDate,
     formatReviewDate,
+    rideStatus,
+    canBook,
   };
 
   return (

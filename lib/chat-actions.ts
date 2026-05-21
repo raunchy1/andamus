@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { checkServerRateLimit } from '@/lib/rate-limit'
 
 export type MessageInput = {
   booking_id: string;
@@ -47,6 +48,12 @@ export async function sendMessage(input: MessageInput) {
 
   if (authError || !user) {
     throw new Error("Devi essere autenticato per inviare messaggi.")
+  }
+
+  // ── Rate limit: 30 messages per 5 minutes ──
+  const rateLimit = await checkServerRateLimit(user.id, 'send_message', 30, 0.0833)
+  if (!rateLimit.allowed) {
+    throw new Error("Hai inviato troppi messaggi. Riprova tra qualche minuto.")
   }
 
   // ── Verify participant ──
