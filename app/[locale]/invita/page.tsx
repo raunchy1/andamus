@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { Analytics } from "@/lib/analytics";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface ReferralStats {
@@ -89,6 +90,7 @@ export default function InvitaPage() {
       setCopied(true);
       toast.success(t("copied"));
       setTimeout(() => setCopied(false), 2000);
+      Analytics.inviteSent?.("copy");
     } catch {
       toast.error(t("copyError"));
     }
@@ -98,17 +100,20 @@ export default function InvitaPage() {
     const message = t("shareMessage", { code: profile?.referral_code || "", link: referralLink });
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
+    Analytics.inviteSent?.("whatsapp");
   };
 
   const shareTelegram = () => {
     const message = t("shareMessage", { code: profile?.referral_code || "", link: "" });
     const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
+    Analytics.inviteSent?.("telegram");
   };
 
   const shareFacebook = () => {
     const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
     window.open(url, '_blank');
+    Analytics.inviteSent?.("facebook");
   };
 
   if (loading) {

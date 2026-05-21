@@ -59,6 +59,27 @@ export const BADGES = {
     icon: "🏆",
     color: "bg-red-500",
   },
+  REFERRER_1: {
+    type: "referrer_1",
+    name: "Porta Amici",
+    description: "Hai invitato il tuo primo amico",
+    icon: "🤝",
+    color: "bg-emerald-500",
+  },
+  REFERRER_5: {
+    type: "referrer_5",
+    name: "Influencer",
+    description: "5 amici si sono uniti grazie a te",
+    icon: "📢",
+    color: "bg-blue-500",
+  },
+  REFERRER_10: {
+    type: "referrer_10",
+    name: "Ambasciatore",
+    description: "10 amici si sono uniti alla community",
+    icon: "🌍",
+    color: "bg-purple-500",
+  },
 };
 
 export interface Badge {

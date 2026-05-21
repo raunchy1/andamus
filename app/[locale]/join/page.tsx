@@ -75,6 +75,7 @@ function JoinContent() {
       } else {
         if (referralCode) {
           localStorage.setItem("pending_referral_code", referralCode);
+          Analytics.referralClicked?.("join_page_view");
         }
       }
       
@@ -87,7 +88,8 @@ function JoinContent() {
   const handleLogin = async () => {
     if (referralCode) {
       localStorage.setItem("pending_referral_code", referralCode);
-      document.cookie = `pending_referral_code=${encodeURIComponent(referralCode)}; path=/; max-age=3600`;
+      document.cookie = `pending_referral_code=${encodeURIComponent(referralCode)}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+      Analytics.referralClicked?.("join_page_login");
     }
     
     try {

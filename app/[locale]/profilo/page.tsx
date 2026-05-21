@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard, RefreshCw } from "lucide-react";
+import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard, RefreshCw, Gift, Share2, Copy, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
+import { ReferralCard } from "@/components/ReferralCard";
 import dynamic from "next/dynamic";
 
 const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
@@ -62,6 +63,9 @@ interface Profile {
   id_verified?: boolean;
   driver_verified?: boolean;
   phone?: string | null;
+  referral_code?: string | null;
+  referrals_count?: number | null;
+  referral_points_earned?: number | null;
   // Car info
   car_model?: string | null;
   car_color?: string | null;
@@ -927,6 +931,8 @@ export default function ProfilePage() {
               <PushNotificationToggle />
             </div>
           </section>
+
+          <ReferralCard locale={locale} profile={profile} />
 
           {user && (
             <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">

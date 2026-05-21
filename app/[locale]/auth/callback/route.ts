@@ -81,7 +81,31 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // ── 5. Check if user has a profile ──────────────────────────────
+  // ── 5. Send welcome email for new users ─────────────────────────
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id, created_at")
+    .eq("id", user.id)
+    .single();
+
+  const isNewUser = !existingProfile || (
+    existingProfile.created_at &&
+    new Date(existingProfile.created_at).getTime() > Date.now() - 60000
+  );
+
+  if (isNewUser) {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "https://andamus.it"}/api/emails/welcome`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+    } catch (err) {
+      console.error("[auth/callback] welcome email failed (non-fatal):", err);
+    }
+  }
+
+  // ── 6. Check if user has a profile ──────────────────────────────
   const { data: profile } = await supabase
     .from("profiles")
     .select("id")

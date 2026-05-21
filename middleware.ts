@@ -108,10 +108,22 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // 3. Run next-intl middleware
+  // 3. Capture referral code from ANY page with ?ref=CODE — set 30-day cookie
+  const refCode = request.nextUrl.searchParams.get("ref");
+  if (refCode && /^[A-Z0-9-]+$/i.test(refCode)) {
+    const safeRef = encodeURIComponent(refCode.slice(0, 50));
+    supabaseResponse.cookies.set("pending_referral_code", safeRef, {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  // 4. Run next-intl middleware
   const intlResponse = intlMiddleware(request);
 
-  // 4. Copy any Supabase auth cookies from supabaseResponse into intlResponse
+  // 5. Copy any Supabase auth cookies from supabaseResponse into intlResponse
   supabaseResponse.cookies.getAll().forEach((cookie) => {
     intlResponse.cookies.set(cookie.name, cookie.value, {
       httpOnly: cookie.httpOnly,
