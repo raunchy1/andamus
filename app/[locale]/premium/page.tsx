@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { ProductAnalytics } from "@/lib/posthog";
 
 interface Plan {
   id: string;
@@ -135,6 +136,7 @@ export default function PremiumPage() {
 
     setLoading(true);
     try {
+      ProductAnalytics.premiumCheckoutStarted(planId);
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

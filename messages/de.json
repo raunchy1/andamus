@@ -1091,32 +1091,48 @@
           "title": "Fahrt suchen",
           "description": "Suche verfügbare Fahrten in ganz Sardinien. Filtere nach Datum, Preis und Stadt. Buche in wenigen Klicks und erhalte die Bestätigung direkt vom Fahrer!",
           "features": [
-            { "text": "50+ Städte abgedeckt" },
-            { "text": "Echte Bewertungen" }
+            {
+              "text": "50+ Städte abgedeckt"
+            },
+            {
+              "text": "Echte Bewertungen"
+            }
           ]
         },
         {
           "title": "Fahrt anbieten",
           "description": "Hast du freie Plätze im Auto? Veröffentliche eine Fahrt in weniger als einer Minute. Verdiene Erfahrungspunkte für jeden transportierten Passagier und steige in der Rangliste auf!",
           "features": [
-            { "text": "Punkte sammeln" },
-            { "text": "Verifizierte Nutzer" }
+            {
+              "text": "Punkte sammeln"
+            },
+            {
+              "text": "Verifizierte Nutzer"
+            }
           ]
         },
         {
           "title": "Chat & Sicherheit",
           "description": "Kommuniziere einfach mit Fahrern und Passagieren über den integrierten Chat. Im Notfall ist der SOS-Knopf immer griffbereit, um 112 anzurufen.",
           "features": [
-            { "text": "In-App-Chat" },
-            { "text": "SOS-Knopf" }
+            {
+              "text": "In-App-Chat"
+            },
+            {
+              "text": "SOS-Knopf"
+            }
           ]
         },
         {
           "title": "Community & Punkte",
           "description": "Sei Teil einer zuverlässigen Community. Schließe Aktionen ab, sammle Punkte, schalte Level frei und baue deinen Ruf mit authentischen Bewertungen auf.",
           "features": [
-            { "text": "Level und Abzeichen" },
-            { "text": "Sardische Community" }
+            {
+              "text": "Level und Abzeichen"
+            },
+            {
+              "text": "Sardische Community"
+            }
           ]
         },
         {
@@ -1220,7 +1236,9 @@
     "tip4": "Vertraue deinem Instinkt",
     "emergencyQuestion": "Notfall?",
     "emergencyDescription": "Bist du in Gefahr? Rufe sofort 112 an oder teile deinen Standort.",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "reportProblem": "Problem melden",
+    "reportDescription": "Hilf uns zu verbessern"
   },
   "footer": {
     "searchRides": "Fahrten suchen",
@@ -1262,5 +1280,15 @@
     "checkConnection": "Es scheint, dass du nicht mit dem Internet verbunden bist. Überprüfe deine Verbindung und versuche es erneut.",
     "backToHome": "Zur Startseite",
     "retry": "Erneut versuchen"
+  },
+  "feedback": {
+    "title": "Problem melden",
+    "description": "Beschreiben Sie, was passiert ist. Wir erhalten Route, Gerät und Browser, um das Problem zu verstehen.",
+    "placeholder": "Beschreiben Sie das Problem...",
+    "send": "Senden",
+    "sent": "Bericht gesendet",
+    "thankYou": "Vielen Dank für Ihr Feedback!",
+    "error": "Fehler beim Senden. Bitte versuchen Sie es erneut.",
+    "privacyNote": "Senden Sie keine sensiblen Daten, Passwörter oder persönliche Informationen."
   }
 }

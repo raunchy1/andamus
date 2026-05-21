@@ -13,6 +13,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { RatingModal } from "@/components/RatingModal";
 import { notifyBookingAccepted, notifyBookingRejected } from "@/lib/notification-actions";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
+import { ProductAnalytics } from "@/lib/posthog";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { PhoneVerification } from "@/components/PhoneVerification";
 import { EmailPreferences } from "@/components/EmailPreferences";
@@ -296,6 +297,7 @@ export default function ProfilePage() {
         'booking_confirmed'
       );
 
+      ProductAnalytics.bookingAccepted(request.ride_id, request.id);
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
       toast.success(t("bookingAccepted"));
     } catch (err) {
@@ -341,6 +343,7 @@ export default function ProfilePage() {
         request.id
       );
 
+      ProductAnalytics.bookingRejected(request.ride_id, request.id);
       setBookingRequests((prev) => prev.filter((r) => r.id !== request.id));
       toast.success(t("bookingRejected"));
     } catch (err) {

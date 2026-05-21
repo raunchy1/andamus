@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, Phone, MapPin, X, Shield, Siren } from "lucide-react";
+import { AlertTriangle, Phone, MapPin, X, Shield, Siren, Bug } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { ReportModal } from "./ReportModal";
 
 export function SafetyButton() {
   const t = useTranslations("safety");
   const [isOpen, setIsOpen] = useState(false);
   const [showSOS, setShowSOS] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Open via custom event (e.g. from other components)
   useEffect(() => {
@@ -204,6 +206,25 @@ export function SafetyButton() {
                   </div>
                 </a>
 
+                {/* Report a Problem */}
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setShowReport(true);
+                  }}
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition-all hover:bg-white/10 active:scale-[0.98]"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20">
+                      <Bug className="h-7 w-7 text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold text-white">{t("reportProblem")}</p>
+                      <p className="text-sm text-white/50">{t("reportDescription")}</p>
+                    </div>
+                  </div>
+                </button>
+
                 {/* Safety Tips */}
                 <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                   <p className="text-sm font-medium text-white">{t("safetyTips")}</p>
@@ -219,6 +240,9 @@ export function SafetyButton() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Report Modal */}
+      <ReportModal open={showReport} onClose={() => setShowReport(false)} />
 
       {/* SOS Confirm Modal */}
       <AnimatePresence>

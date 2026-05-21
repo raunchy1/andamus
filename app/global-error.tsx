@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, RefreshCw, Mail } from "lucide-react";
+import * as Sentry from "@sentry/nextjs";
 
 const messages: Record<string, Record<string, string>> = {
   it: {
@@ -38,9 +39,11 @@ export default function GlobalError({
   const m = messages[locale] ?? messages.it;
 
   useEffect(() => {
-    // Log to error monitoring service
-    console.error("Global application error:", error);
-  }, [error]);
+    Sentry.captureException(error, {
+      tags: { error_type: "global_error", locale },
+      extra: { digest: error.digest },
+    });
+  }, [error, locale]);
 
   return (
     <html lang={locale}>

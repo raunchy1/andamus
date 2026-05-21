@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { notifyNewMessage } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ProductAnalytics } from "@/lib/posthog";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 // ============================================================
@@ -555,6 +556,7 @@ export default function ChatWindow({
 
   useEffect(() => {
     isMountedRef.current = true;
+    ProductAnalytics.chatOpened(bookingId);
     return () => {
       isMountedRef.current = false;
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
@@ -565,7 +567,7 @@ export default function ChatWindow({
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [bookingId]);
 
   // Load initial messages
   useEffect(() => {

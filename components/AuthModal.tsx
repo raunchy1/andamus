@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FEATURES } from "@/lib/features";
 import { signInWithGoogle } from "@/lib/auth";
+import { ProductAnalytics } from "@/lib/posthog";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -133,6 +134,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const handleGoogle = async () => {
     try {
       const redirectTo = `${window.location.origin}/${locale}/auth/callback`;
+      ProductAnalytics.signupStarted("google");
       await signInWithGoogle(redirectTo);
       // On success the browser is redirected by Supabase; no further action needed.
     } catch (error) {

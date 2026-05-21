@@ -1091,32 +1091,48 @@
           "title": "Find a ride",
           "description": "Search for available rides throughout Sardinia. Filter by date, price and city. Book in a few clicks and receive confirmation directly from the driver!",
           "features": [
-            { "text": "50+ cities covered" },
-            { "text": "Real ratings" }
+            {
+              "text": "50+ cities covered"
+            },
+            {
+              "text": "Real ratings"
+            }
           ]
         },
         {
           "title": "Offer a ride",
           "description": "Have free seats in your car? Publish a ride in less than a minute. Earn experience points for every passenger transported and climb the rankings!",
           "features": [
-            { "text": "Earn points" },
-            { "text": "Verified users" }
+            {
+              "text": "Earn points"
+            },
+            {
+              "text": "Verified users"
+            }
           ]
         },
         {
           "title": "Chat & Safety",
           "description": "Communicate easily with drivers and passengers via the integrated chat. In case of emergency, the SOS button is always at hand to call 112.",
           "features": [
-            { "text": "In-app chat" },
-            { "text": "SOS button" }
+            {
+              "text": "In-app chat"
+            },
+            {
+              "text": "SOS button"
+            }
           ]
         },
         {
           "title": "Community & Points",
           "description": "Be part of a reliable community. Complete actions, earn points, unlock levels and build your reputation with authentic reviews.",
           "features": [
-            { "text": "Levels and badges" },
-            { "text": "Sardinian community" }
+            {
+              "text": "Levels and badges"
+            },
+            {
+              "text": "Sardinian community"
+            }
           ]
         },
         {
@@ -1220,7 +1236,9 @@
     "tip4": "Trust your instincts",
     "emergencyQuestion": "Emergency?",
     "emergencyDescription": "Are you in danger? Call 112 immediately or share your location.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "reportProblem": "Report a Problem",
+    "reportDescription": "Help us improve"
   },
   "footer": {
     "searchRides": "Search rides",
@@ -1262,5 +1280,15 @@
     "checkConnection": "It seems you are not connected to the internet. Check your connection and try again.",
     "backToHome": "Back to home",
     "retry": "Retry"
+  },
+  "feedback": {
+    "title": "Report a Problem",
+    "description": "Describe what happened. We will receive the route, device, and browser to help us understand the issue.",
+    "placeholder": "Describe the problem...",
+    "send": "Send",
+    "sent": "Report sent",
+    "thankYou": "Thank you for your feedback!",
+    "error": "Error sending. Please try again.",
+    "privacyNote": "Do not send sensitive data, passwords, or personal information."
   }
 }

@@ -1,3 +1,5 @@
+import { captureEvent, identifyUser, ProductAnalytics } from "./posthog";
+
 type GtagFn = (
   command: "event" | "config" | "js" | "set",
   eventName: string | Date,
@@ -11,10 +13,7 @@ declare global {
   }
 }
 
-export const trackEvent = (
-  eventName: string,
-  params?: Record<string, unknown>
-) => {
+function gtagEvent(eventName: string, params?: Record<string, unknown>) {
   try {
     if (typeof window !== "undefined" && window.gtag) {
       window.gtag("event", eventName, params);
@@ -22,28 +21,52 @@ export const trackEvent = (
   } catch {
     // Analytics failures must never crash the app
   }
-};
+}
 
-// Track key events throughout the app
+// Dual-track: GA4 + PostHog
+function track(eventName: string, params?: Record<string, unknown>) {
+  gtagEvent(eventName, params);
+  captureEvent(eventName, params);
+}
+
 export const Analytics = {
-  rideCreated: (origin: string, destination: string) =>
-    trackEvent("ride_created", { origin, destination }),
+  rideCreated: (origin: string, destination: string) => {
+    track("ride_created", { origin, destination });
+    ProductAnalytics.rideOfferCreated("", origin, destination);
+  },
 
-  rideBooked: (rideId: string, price: number) =>
-    trackEvent("ride_booked", { ride_id: rideId, value: price }),
+  rideBooked: (rideId: string, price: number) => {
+    track("ride_booked", { ride_id: rideId, value: price });
+    ProductAnalytics.bookingRequested(rideId, price);
+  },
 
-  userRegistered: () => trackEvent("sign_up", { method: "email" }),
+  userRegistered: () => {
+    track("sign_up", { method: "google" });
+    ProductAnalytics.signupCompleted("google");
+  },
 
-  googleLogin: () => trackEvent("login", { method: "google" }),
+  googleLogin: () => {
+    track("login", { method: "google" });
+  },
 
-  searchPerformed: (origin: string, destination: string) =>
-    trackEvent("search", { origin, destination }),
+  searchPerformed: (origin: string, destination: string) => {
+    track("search", { origin, destination });
+    ProductAnalytics.rideSearch({
+      origin,
+      destination,
+      hasFilters: !!(origin || destination),
+    });
+  },
 
-  premiumUpgrade: (plan: string, value: number) =>
-    trackEvent("purchase", {
+  premiumUpgrade: (plan: string, value: number) => {
+    track("purchase", {
       transaction_id: Date.now().toString(),
       value,
       currency: "EUR",
       items: [{ item_name: plan }],
-    }),
+    });
+    ProductAnalytics.premiumCheckoutCompleted(plan, value);
+  },
 };
+
+export { identifyUser };

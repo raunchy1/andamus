@@ -5,6 +5,7 @@ import { X, Star, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { notifyNewReview } from "@/lib/notification-actions";
 import { completeGamificationAction } from "@/lib/gamification";
+import { ProductAnalytics } from "@/lib/posthog";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -121,6 +122,7 @@ export function RatingModal({
         }
         
         setReviewSaved(true);
+        ProductAnalytics.reviewSubmitted(rideId, rating);
         toast.success(t("reviewSent"));
         onSuccess?.();
         // Keep modal open briefly so user sees confirmation, then auto-close

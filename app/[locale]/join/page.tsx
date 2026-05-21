@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Analytics } from "@/lib/analytics";
+import { ProductAnalytics } from "@/lib/posthog";
 import { FEATURES } from "@/lib/features";
 
 function JoinContent() {
@@ -90,6 +91,7 @@ function JoinContent() {
     }
     
     try {
+      ProductAnalytics.signupStarted("google");
       await signInWithGoogle();
     } catch {
       toast.error(t("loginError"));

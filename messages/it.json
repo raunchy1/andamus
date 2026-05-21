@@ -1091,32 +1091,48 @@
           "title": "Cerca un passaggio",
           "description": "Cerca corse disponibili in tutta la Sardegna. Filtra per data, prezzo e città. Prenota in pochi click e ricevi conferma direttamente dall'autista!",
           "features": [
-            { "text": "50+ città coperte" },
-            { "text": "Valutazioni reali" }
+            {
+              "text": "50+ città coperte"
+            },
+            {
+              "text": "Valutazioni reali"
+            }
           ]
         },
         {
           "title": "Pubblica un passaggio",
           "description": "Hai posti liberi in macchina? Pubblica una corsa in meno di un minuto. Guadagna punti esperienza per ogni passeggero trasportato e scala la classifica!",
           "features": [
-            { "text": "Guadagna punti" },
-            { "text": "Utenti verificati" }
+            {
+              "text": "Guadagna punti"
+            },
+            {
+              "text": "Utenti verificati"
+            }
           ]
         },
         {
           "title": "Chat e Sicurezza",
           "description": "Comunica facilmente con autisti e passeggeri tramite la chat integrata. In caso di emergenza, il pulsante SOS è sempre a portata di mano per chiamare il 112.",
           "features": [
-            { "text": "Chat in-app" },
-            { "text": "Pulsante SOS" }
+            {
+              "text": "Chat in-app"
+            },
+            {
+              "text": "Pulsante SOS"
+            }
           ]
         },
         {
           "title": "Community e Punti",
           "description": "Fai parte di una community affidabile. Completa azioni, guadagna punti, sblocca livelli e costruisci la tua reputazione con recensioni autentiche.",
           "features": [
-            { "text": "Livelli e badge" },
-            { "text": "Community sarda" }
+            {
+              "text": "Livelli e badge"
+            },
+            {
+              "text": "Community sarda"
+            }
           ]
         },
         {
@@ -1220,7 +1236,9 @@
     "tip4": "Fidati del tuo istinto",
     "emergencyQuestion": "Emergenza?",
     "emergencyDescription": "Sei in pericolo? Chiama immediatamente il 112 o condividi la tua posizione.",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "reportProblem": "Segnala un problema",
+    "reportDescription": "Aiutaci a migliorare"
   },
   "footer": {
     "searchRides": "Cerca passaggi",
@@ -1262,5 +1280,15 @@
     "checkConnection": "Sembra che tu non sia connesso a internet. Verifica la tua connessione e riprova.",
     "backToHome": "Torna alla home",
     "retry": "Riprova"
+  },
+  "feedback": {
+    "title": "Segnala un problema",
+    "description": "Descrivi cosa è successo. Riceveremo il percorso, il dispositivo e il browser per aiutarci a capire il problema.",
+    "placeholder": "Descrivi il problema...",
+    "send": "Invia",
+    "sent": "Segnalazione inviata",
+    "thankYou": "Grazie per il feedback!",
+    "error": "Errore nell'invio. Riprova.",
+    "privacyNote": "Non inviare dati sensibili, password o informazioni personali."
   }
 }

@@ -10,6 +10,8 @@ import { SafetyButton } from "@/components/SafetyButton";
 import { VersionBadge } from "@/components/VersionBadge";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { LangSetter } from "@/components/LangSetter";
+import { PostHogProvider } from "@/components/PostHogProvider";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -152,18 +154,21 @@ export default async function LocaleLayout({
   return (
     <>
       <NextIntlClientProvider messages={messages} locale={locale}>
-        <LangSetter locale={locale} />
-        <ThemeProvider>
-          <Navbar />
-          <ClientLayoutWrapper>
-            <div className="page-enter">
-              {children}
-            </div>
-          </ClientLayoutWrapper>
-          <SafetyButton />
-          <VersionBadge />
-          <Sonner richColors position="top-center" />
-        </ThemeProvider>
+        <PostHogProvider>
+          <LangSetter locale={locale} />
+          <ThemeProvider>
+            <AnalyticsTracker />
+            <Navbar />
+            <ClientLayoutWrapper>
+              <div className="page-enter">
+                {children}
+              </div>
+            </ClientLayoutWrapper>
+            <SafetyButton />
+            <VersionBadge />
+            <Sonner richColors position="top-center" />
+          </ThemeProvider>
+        </PostHogProvider>
       </NextIntlClientProvider>
       {process.env.NEXT_PUBLIC_GA_ID && (
         <>
