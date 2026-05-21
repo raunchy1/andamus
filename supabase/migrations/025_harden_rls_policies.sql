@@ -10,129 +10,115 @@
 -- 4. Added missing indexes on foreign key columns
 --
 -- SAFETY: All changes are idempotent (IF EXISTS / IF NOT EXISTS).
+-- Uses DO $$ blocks to skip tables that don't exist yet.
 -- No data is modified or deleted.
 -- ============================================================
 
 -- ============================================================
 -- 1. MESSAGES — Fix SELECT to include driver access
 -- ============================================================
+DO $$
+BEGIN
+  -- Only proceed if messages table exists
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "Users can view messages in their bookings" ON messages;
 
--- Drop the old policy if it exists
-DROP POLICY IF EXISTS "Users can view messages in their bookings" ON messages;
-
--- Create new policy: sender, passenger, OR driver of the ride can view messages
-CREATE POLICY "Users can view messages in their bookings"
-  ON messages FOR SELECT
-  USING (
-    auth.uid() = sender_id
-    OR auth.uid() = (SELECT passenger_id FROM bookings WHERE id = booking_id)
-    OR auth.uid() = (
-      SELECT driver_id FROM rides
-      WHERE id = (SELECT ride_id FROM bookings WHERE id = booking_id)
-    )
-  );
-
--- INSERT policy remains: authenticated users can send messages (sender_id must match)
--- This is already correct — no change needed.
+    CREATE POLICY "Users can view messages in their bookings"
+      ON messages FOR SELECT
+      USING (
+        auth.uid() = sender_id
+        OR auth.uid() = (SELECT passenger_id FROM bookings WHERE id = booking_id)
+        OR auth.uid() = (
+          SELECT driver_id FROM rides
+          WHERE id = (SELECT ride_id FROM bookings WHERE id = booking_id)
+        )
+      );
+  END IF;
+END $$;
 
 -- ============================================================
 -- 2. BOOKINGS — Add driver UPDATE policy
 -- ============================================================
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'bookings' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "Users can update their own bookings" ON bookings;
 
--- Rename/drop old passenger-only update policy
-DROP POLICY IF EXISTS "Users can update their own bookings" ON bookings;
+    CREATE POLICY "Passengers can update their own bookings"
+      ON bookings FOR UPDATE
+      USING (auth.uid() = passenger_id);
 
--- Passenger can update their own booking (e.g. cancel)
-CREATE POLICY "Passengers can update their own bookings"
-  ON bookings FOR UPDATE
-  USING (auth.uid() = passenger_id);
-
--- Driver can update bookings for their rides (e.g. accept/reject)
-CREATE POLICY "Drivers can update bookings for their rides"
-  ON bookings FOR UPDATE
-  USING (auth.uid() = (SELECT driver_id FROM rides WHERE id = ride_id));
-
--- SELECT policies already exist for both passenger and driver — no change needed.
--- INSERT policy already restricts to passenger — no change needed.
+    CREATE POLICY "Drivers can update bookings for their rides"
+      ON bookings FOR UPDATE
+      USING (auth.uid() = (SELECT driver_id FROM rides WHERE id = ride_id));
+  END IF;
+END $$;
 
 -- ============================================================
 -- 3. NOTIFICATIONS — Tighten INSERT to self-only
 -- ============================================================
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "System can insert notifications" ON notifications;
 
--- Remove wide-open insert policy
-DROP POLICY IF EXISTS "System can insert notifications" ON notifications;
-
--- Users can only insert notifications for themselves.
--- Cross-user notifications (e.g. driver → passenger) must use server-side
--- service role via the notification-actions.ts server actions.
-CREATE POLICY "Users can insert their own notifications"
-  ON notifications FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- SELECT and UPDATE policies are already correct (user_id = auth.uid())
+    CREATE POLICY "Users can insert their own notifications"
+      ON notifications FOR INSERT
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 4. BADGES — Remove direct INSERT (award only via RPC / triggers)
 -- ============================================================
-
--- Remove wide-open insert policy
-DROP POLICY IF EXISTS "System can insert badges" ON badges;
-
--- Badges are awarded exclusively via SECURITY DEFINER RPC functions
--- (check_and_award_badge, add_user_points) which bypass RLS.
--- No direct INSERT policy means only the table owner can insert,
--- which is exactly what we want.
-
--- SELECT policy remains viewable by everyone — no change needed.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'badges' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "System can insert badges" ON badges;
+  END IF;
+END $$;
 
 -- ============================================================
 -- 5. REFERRALS — Remove direct INSERT (managed by RPC function)
 -- ============================================================
-
--- Remove wide-open insert policy
-DROP POLICY IF EXISTS "System can insert referrals" ON referrals;
-
--- Referrals are created exclusively via the apply_referral_bonus()
--- SECURITY DEFINER RPC function. No direct client inserts.
-
--- SELECT policy already restricts to referrer — no change needed.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'referrals' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "System can insert referrals" ON referrals;
+  END IF;
+END $$;
 
 -- ============================================================
 -- 6. USER_ACTIONS — Tighten INSERT to self-only
 -- ============================================================
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_actions' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "System can insert actions" ON user_actions;
 
--- Remove wide-open insert policy
-DROP POLICY IF EXISTS "System can insert actions" ON user_actions;
-
--- Users can only insert their own actions.
--- Server-side rate limiting (checkServerRateLimit) already runs as the
--- authenticated user via the server client, so this policy works correctly.
-CREATE POLICY "Users can insert their own actions"
-  ON user_actions FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- SELECT policy already restricts to self — no change needed.
+    CREATE POLICY "Users can insert their own actions"
+      ON user_actions FOR INSERT
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 7. PUSH_SUBSCRIPTIONS — Tighten INSERT to self-only
 -- ============================================================
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'push_subscriptions' AND table_schema = 'public') THEN
+    DROP POLICY IF EXISTS "System can insert push subscriptions" ON push_subscriptions;
 
--- Remove wide-open insert policy
-DROP POLICY IF EXISTS "System can insert push subscriptions" ON push_subscriptions;
-
--- Users can only manage their own push subscriptions.
--- API routes (/api/push/subscribe, /api/push/unsubscribe) already
--- authenticate and set user_id = user.id before inserting.
-CREATE POLICY "Users can insert their own push subscriptions"
-  ON push_subscriptions FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- SELECT and DELETE policies already restrict to self — no change needed.
+    CREATE POLICY "Users can insert their own push subscriptions"
+      ON push_subscriptions FOR INSERT
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 8. ADD MISSING INDEXES ON FOREIGN KEY COLUMNS
 -- ============================================================
-
 CREATE INDEX IF NOT EXISTS idx_bookings_ride_id ON bookings(ride_id);
 CREATE INDEX IF NOT EXISTS idx_messages_booking_id ON messages(booking_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
