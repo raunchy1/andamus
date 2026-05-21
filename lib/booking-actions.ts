@@ -5,6 +5,7 @@ import { isRideExpired } from "@/lib/date-utils";
 import { checkServerRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notification-actions";
 import { recordActivity } from "@/lib/retention";
+import { Analytics } from "@/lib/analytics";
 
 export interface BookingResult {
   success: boolean;
@@ -125,6 +126,16 @@ export async function bookFreeRide(
 
   // Record activity for streak tracking
   await recordActivity(passengerId, "booking_made");
+
+  // ── First booking analytics ──
+  const { count: bookingCount } = await supabase
+    .from("bookings")
+    .select("id", { count: "exact", head: true })
+    .eq("passenger_id", passengerId);
+
+  if (bookingCount === 1) {
+    Analytics.firstBookingMade();
+  }
 
   return { success: true, bookingId: booking.id };
 }

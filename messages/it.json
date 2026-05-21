@@ -1291,5 +1291,38 @@
     "thankYou": "Grazie per il feedback!",
     "error": "Errore nell'invio. Riprova.",
     "privacyNote": "Non inviare dati sensibili, password o informazioni personali."
+  },
+  "betaFeedback": {
+    "buttonTitle": "Feedback Beta",
+    "subtitle": "Aiutaci a migliorare Andamus",
+    "thankYouTitle": "Grazie!",
+    "thankYouMessage": "Il tuo feedback ci aiuta a costruire un servizio migliore.",
+    "close": "Chiudi",
+    "typePraise": "Mi piace",
+    "typeIssue": "Problema",
+    "typeIdea": "Idea",
+    "ratingLabel": "Come valuti l'esperienza?",
+    "placeholder": "Descrivi la tua esperienza...",
+    "send": "Invia feedback",
+    "errorFillAll": "Compila tutti i campi",
+    "errorSend": "Errore nell'invio. Riprova più tardi.",
+    "successSend": "Grazie per il tuo feedback! 🙏"
+  },
+  "pwa": {
+    "installTitle": "Installa Andamus",
+    "installDescription": "Aggiungi alla home per un accesso più rapido e notifiche push.",
+    "installButton": "Installa",
+    "dismissButton": "Chiudi"
+  },
+  "celebration": {
+    "firstRideTitle": "Prima corsa pubblicata! 🎉",
+    "firstRideSubtitle": "Hai guadagnato 50 punti. Continua così!",
+    "firstBookingTitle": "Prenotazione confermata! 🎉",
+    "firstBookingSubtitle": "Il tuo viaggio inizia qui. Buon viaggio!",
+    "levelUpTitle": "Livello superato! 🚀",
+    "levelUpSubtitle": "Sei più vicino alla Leggenda Sarda.",
+    "badgeTitle": "Nuovo badge sbloccato! 🏅",
+    "badgeSubtitle": "Continua a esplorare per sbloccarne altri.",
+    "ctaButton": "Fantastico!"
   }
 }

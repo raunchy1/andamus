@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { sendPushToUser } from "@/lib/push-notifications";
 
 export type NotificationType =
   | "booking_request"
@@ -93,7 +94,7 @@ export async function notifyBookingRequest(
   rideId: string,
   bookingId: string
 ) {
-  return createNotification({
+  const result = await createNotification({
     userId: driverId,
     type: "booking_request",
     title: "Nuova richiesta di passaggio",
@@ -101,6 +102,14 @@ export async function notifyBookingRequest(
     rideId,
     bookingId,
   });
+  // Non-blocking push
+  sendPushToUser({
+    userId: driverId,
+    title: "Nuova richiesta di passaggio",
+    body: `${passengerName} ha richiesto di unirsi al tuo passaggio`,
+    url: `/chat/${bookingId}`,
+  }).catch(() => {});
+  return result;
 }
 
 export async function notifyBookingAccepted(
@@ -109,7 +118,7 @@ export async function notifyBookingAccepted(
   rideId: string,
   bookingId: string
 ) {
-  return createNotification({
+  const result = await createNotification({
     userId: passengerId,
     type: "booking_accepted",
     title: "Passaggio confermato!",
@@ -117,6 +126,13 @@ export async function notifyBookingAccepted(
     rideId,
     bookingId,
   });
+  sendPushToUser({
+    userId: passengerId,
+    title: "Passaggio confermato!",
+    body: `${driverName} ha accettato la tua richiesta`,
+    url: `/chat/${bookingId}`,
+  }).catch(() => {});
+  return result;
 }
 
 export async function notifyBookingRejected(
@@ -125,7 +141,7 @@ export async function notifyBookingRejected(
   rideId: string,
   bookingId: string
 ) {
-  return createNotification({
+  const result = await createNotification({
     userId: passengerId,
     type: "booking_rejected",
     title: "Richiesta non accettata",
@@ -133,6 +149,13 @@ export async function notifyBookingRejected(
     rideId,
     bookingId,
   });
+  sendPushToUser({
+    userId: passengerId,
+    title: "Richiesta non accettata",
+    body: `${driverName} non può offrirti il passaggio`,
+    url: `/profilo`,
+  }).catch(() => {});
+  return result;
 }
 
 export async function notifyNewMessage(
@@ -141,7 +164,7 @@ export async function notifyNewMessage(
   rideId: string,
   bookingId: string
 ) {
-  return createNotification({
+  const result = await createNotification({
     userId,
     type: "new_message",
     title: "Nuovo messaggio",
@@ -149,6 +172,13 @@ export async function notifyNewMessage(
     rideId,
     bookingId,
   });
+  sendPushToUser({
+    userId,
+    title: "Nuovo messaggio",
+    body: `Da ${senderName}`,
+    url: `/chat/${bookingId}`,
+  }).catch(() => {});
+  return result;
 }
 
 export async function notifyNewReview(
@@ -156,13 +186,20 @@ export async function notifyNewReview(
   reviewerName: string,
   rideId: string
 ) {
-  return createNotification({
+  const result = await createNotification({
     userId: reviewedId,
     type: "new_review",
     title: "Hai ricevuto una recensione",
     body: `${reviewerName} ha lasciato una recensione sul tuo passaggio`,
     rideId,
   });
+  sendPushToUser({
+    userId: reviewedId,
+    title: "Nuova recensione",
+    body: `${reviewerName} ha lasciato una recensione`,
+    url: `/corsa/${rideId}`,
+  }).catch(() => {});
+  return result;
 }
 
 export async function notifyRideAlert(
@@ -171,11 +208,18 @@ export async function notifyRideAlert(
   toCity: string,
   rideId: string
 ) {
-  return createNotification({
+  const result = await createNotification({
     userId,
     type: "ride_alert",
     title: "Nuovo passaggio disponibile!",
     body: `Trovato un passaggio da ${fromCity} a ${toCity}`,
     rideId,
   });
+  sendPushToUser({
+    userId,
+    title: "Nuovo passaggio disponibile!",
+    body: `${fromCity} → ${toCity}`,
+    url: `/corsa/${rideId}`,
+  }).catch(() => {});
+  return result;
 }

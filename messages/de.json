@@ -1291,5 +1291,38 @@
     "thankYou": "Vielen Dank für Ihr Feedback!",
     "error": "Fehler beim Senden. Bitte versuchen Sie es erneut.",
     "privacyNote": "Senden Sie keine sensiblen Daten, Passwörter oder persönliche Informationen."
+  },
+  "betaFeedback": {
+    "buttonTitle": "Beta-Feedback",
+    "subtitle": "Helfen Sie uns, Andamus zu verbessern",
+    "thankYouTitle": "Vielen Dank!",
+    "thankYouMessage": "Ihr Feedback hilft uns, einen besseren Service aufzubauen.",
+    "close": "Schließen",
+    "typePraise": "Gefällt mir",
+    "typeIssue": "Problem",
+    "typeIdea": "Idee",
+    "ratingLabel": "Wie bewerten Sie die Erfahrung?",
+    "placeholder": "Beschreiben Sie Ihre Erfahrung...",
+    "send": "Feedback senden",
+    "errorFillAll": "Bitte füllen Sie alle Felder aus",
+    "errorSend": "Fehler beim Senden. Bitte versuchen Sie es später erneut.",
+    "successSend": "Vielen Dank für Ihr Feedback! 🙏"
+  },
+  "pwa": {
+    "installTitle": "Andamus installieren",
+    "installDescription": "Zum Startbildschirm hinzufügen für schnelleren Zugriff und Push-Benachrichtigungen.",
+    "installButton": "Installieren",
+    "dismissButton": "Schließen"
+  },
+  "celebration": {
+    "firstRideTitle": "Erste Fahrt veröffentlicht! 🎉",
+    "firstRideSubtitle": "Sie haben 50 Punkte verdient. Weiter so!",
+    "firstBookingTitle": "Buchung bestätigt! 🎉",
+    "firstBookingSubtitle": "Ihre Reise beginnt hier. Gute Fahrt!",
+    "levelUpTitle": "Level aufgestiegen! 🚀",
+    "levelUpSubtitle": "Sie sind der sardischen Legende näher.",
+    "badgeTitle": "Neues Abzeichen freigeschaltet! 🏅",
+    "badgeSubtitle": "Entdecken Sie weiter, um mehr freizuschalten.",
+    "ctaButton": "Toll!"
   }
 }

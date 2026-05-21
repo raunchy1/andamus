@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Analytics } from "@/lib/analytics";
 
 interface OnboardingModalProps {
   onComplete?: () => void;
@@ -59,6 +60,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       const timer = setTimeout(() => {
         setIsOpen(true);
         setHasChecked(true);
+        Analytics.onboardingStarted();
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -86,6 +88,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   };
 
   const handleSkip = () => {
+    Analytics.onboardingSkipped();
     handleComplete();
   };
 
@@ -93,6 +96,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     localStorage.setItem("onboarding_done_v2", "true");
     setIsOpen(false);
     onComplete?.();
+    Analytics.onboardingCompleted();
     router.push(`/${locale}/cerca`);
     setTimeout(() => {
       toast.success(t("welcomeToast"));

@@ -4,10 +4,12 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X, Send, Star, ThumbsUp, ThumbsDown, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type FeedbackType = "praise" | "issue" | "idea";
 
 export function BetaFeedback() {
+  const t = useTranslations("betaFeedback");
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [type, setType] = useState<FeedbackType | null>(null);
@@ -17,7 +19,7 @@ export function BetaFeedback() {
 
   const handleSubmit = useCallback(async () => {
     if (!type || !message.trim() || rating === 0) {
-      toast.error("Compila tutti i campi");
+      toast.error(t("errorFillAll"));
       return;
     }
 
@@ -32,13 +34,13 @@ export function BetaFeedback() {
       if (!res.ok) throw new Error("Failed to send");
 
       setSubmitted(true);
-      toast.success("Grazie per il tuo feedback! 🙏");
+      toast.success(t("successSend"));
     } catch {
-      toast.error("Errore nell'invio. Riprova più tardi.");
+      toast.error(t("errorSend"));
     } finally {
       setSending(false);
     }
-  }, [type, message, rating]);
+  }, [type, message, rating, t]);
 
   const reset = useCallback(() => {
     setOpen(false);
@@ -57,7 +59,7 @@ export function BetaFeedback() {
         transition={{ delay: 2, type: "spring" }}
         onClick={() => setOpen(true)}
         className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 rounded-full bg-[#e63946] text-white shadow-lg shadow-[#e63946]/30 flex items-center justify-center hover:bg-[#c92a37] transition-colors"
-        title="Feedback beta"
+        title={t("buttonTitle")}
       >
         <MessageSquare className="w-5 h-5" />
       </motion.button>
@@ -82,8 +84,8 @@ export function BetaFeedback() {
               <div className="bg-[#131313] border border-white/10 rounded-2xl p-5 shadow-2xl">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-white">Feedback Beta</h3>
-                    <p className="text-xs text-white/40">Aiutaci a migliorare Andamus</p>
+                    <h3 className="text-lg font-bold text-white">{t("buttonTitle")}</h3>
+                    <p className="text-xs text-white/40">{t("subtitle")}</p>
                   </div>
                   <button onClick={reset} className="p-1 rounded-lg hover:bg-white/5 transition-colors">
                     <X className="w-5 h-5 text-white/60" />
@@ -97,13 +99,13 @@ export function BetaFeedback() {
                     className="text-center py-8"
                   >
                     <ThumbsUp className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-                    <h4 className="text-xl font-bold text-white mb-1">Grazie!</h4>
-                    <p className="text-white/60 text-sm">Il tuo feedback ci aiuta a costruire un servizio migliore.</p>
+                    <h4 className="text-xl font-bold text-white mb-1">{t("thankYouTitle")}</h4>
+                    <p className="text-white/60 text-sm">{t("thankYouMessage")}</p>
                     <button
                       onClick={reset}
                       className="mt-4 px-4 py-2 rounded-lg bg-white/5 text-white/60 hover:bg-white/10 transition-colors text-sm"
                     >
-                      Chiudi
+                      {t("close")}
                     </button>
                   </motion.div>
                 ) : (
@@ -111,9 +113,9 @@ export function BetaFeedback() {
                     {/* Type selector */}
                     <div className="grid grid-cols-3 gap-2 mb-4">
                       {[
-                        { id: "praise" as FeedbackType, label: "Mi piace", icon: ThumbsUp },
-                        { id: "issue" as FeedbackType, label: "Problema", icon: AlertCircle },
-                        { id: "idea" as FeedbackType, label: "Idea", icon: MessageSquare },
+                        { id: "praise" as FeedbackType, label: t("typePraise"), icon: ThumbsUp },
+                        { id: "issue" as FeedbackType, label: t("typeIssue"), icon: AlertCircle },
+                        { id: "idea" as FeedbackType, label: t("typeIdea"), icon: MessageSquare },
                       ].map((item) => (
                         <button
                           key={item.id}
@@ -132,7 +134,7 @@ export function BetaFeedback() {
 
                     {/* Rating */}
                     <div className="mb-4">
-                      <label className="text-xs text-white/40 mb-2 block">Come valuti l'esperienza?</label>
+                      <label className="text-xs text-white/40 mb-2 block">{t("ratingLabel")}</label>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <button
@@ -154,7 +156,7 @@ export function BetaFeedback() {
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Descrivi la tua esperienza..."
+                      placeholder={t("placeholder")}
                       rows={3}
                       className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/30 resize-none mb-4"
                     />
@@ -173,7 +175,7 @@ export function BetaFeedback() {
                       ) : (
                         <>
                           <Send className="w-4 h-4" />
-                          Invia feedback
+                          {t("send")}
                         </>
                       )}
                     </button>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, X, Smartphone } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PWAInstallPrompt() {
+  const t = useTranslations("pwa");
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -70,9 +72,9 @@ export function PWAInstallPrompt() {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-white">Installa Andamus</h4>
+            <h4 className="text-sm font-bold text-white">{t("installTitle")}</h4>
             <p className="text-xs text-white/50 mt-0.5">
-              Aggiungi alla home per un accesso più rapido e notifiche push.
+              {t("installDescription")}
             </p>
           </div>
 
@@ -88,7 +90,7 @@ export function PWAInstallPrompt() {
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#e63946] text-white text-sm font-semibold hover:bg-[#c92a37] transition-colors"
             >
               <Download className="w-4 h-4" />
-              Installa
+              {t("installButton")}
             </button>
           </div>
         </div>

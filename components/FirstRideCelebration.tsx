@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Trophy, Sparkles, X } from "lucide-react";
 import { Haptic } from "@/lib/haptic";
+import { useTranslations } from "next-intl";
 
 interface ConfettiPiece {
   id: number;
@@ -34,6 +35,7 @@ interface CelebrationModalProps {
 }
 
 export function CelebrationModal({ type, title, subtitle, onClose }: CelebrationModalProps) {
+  const t = useTranslations("celebration");
   const [confetti] = useState(() => generateConfetti(40));
   const [visible, setVisible] = useState(true);
 
@@ -48,23 +50,23 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
 
   const defaults: Record<string, { title: string; subtitle: string; icon: React.ReactNode }> = {
     first_ride: {
-      title: "Prima corsa pubblicata! 🎉",
-      subtitle: "Hai guadagnato 50 punti. Continua così!",
+      title: t("firstRideTitle"),
+      subtitle: t("firstRideSubtitle"),
       icon: <Trophy className="w-12 h-12 text-yellow-400" />,
     },
     first_booking: {
-      title: "Prenotazione confermata! 🎉",
-      subtitle: "Il tuo viaggio inizia qui. Buon viaggio!",
+      title: t("firstBookingTitle"),
+      subtitle: t("firstBookingSubtitle"),
       icon: <Sparkles className="w-12 h-12 text-[#e63946]" />,
     },
     level_up: {
-      title: title || "Livello superato! 🚀",
-      subtitle: subtitle || "Sei più vicino alla Leggenda Sarda.",
+      title: title || t("levelUpTitle"),
+      subtitle: subtitle || t("levelUpSubtitle"),
       icon: <Star className="w-12 h-12 text-yellow-400 fill-yellow-400" />,
     },
     badge_earned: {
-      title: title || "Nuovo badge sbloccato! 🏅",
-      subtitle: subtitle || "Continua a esplorare per sbloccarne altri.",
+      title: title || t("badgeTitle"),
+      subtitle: subtitle || t("badgeSubtitle"),
       icon: <Trophy className="w-12 h-12 text-[#e63946]" />,
     },
   };
@@ -160,7 +162,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                 onClick={handleClose}
                 className="relative w-full py-3 rounded-xl bg-[#e63946] text-white font-semibold hover:bg-[#c92a37] transition-colors"
               >
-                Fantastico!
+                {t("ctaButton")}
               </motion.button>
             </div>
           </motion.div>

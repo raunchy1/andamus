@@ -5,6 +5,7 @@ import { checkServerRateLimit } from "@/lib/rate-limit";
 import { sanitizeRideData, isValidCity, detectSuspiciousPatterns } from "@/lib/security";
 import { isRideExpired } from "@/lib/date-utils";
 import { checkRideLimit, recordActivity } from "@/lib/retention";
+import { Analytics } from "@/lib/analytics";
 import { revalidatePath } from "next/cache";
 
 export type CreateRideInput = {
@@ -199,6 +200,16 @@ export async function createRide(input: CreateRideInput) {
 
   // ── Record activity for streak tracking ──
   await recordActivity(user.id, "ride_published");
+
+  // ── First ride analytics ──
+  const { count: rideCount } = await supabase
+    .from("rides")
+    .select("id", { count: "exact", head: true })
+    .eq("driver_id", user.id);
+
+  if (rideCount === 1) {
+    Analytics.firstRidePublished();
+  }
 
   return { rideId: inserted.id, success: true };
 }

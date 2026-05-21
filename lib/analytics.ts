@@ -67,6 +67,31 @@ export const Analytics = {
     });
     ProductAnalytics.premiumCheckoutCompleted(plan, value);
   },
+
+  // Onboarding funnel events
+  onboardingStarted: () => {
+    track("onboarding_started");
+    ProductAnalytics.onboardingStepCompleted("started");
+  },
+
+  onboardingCompleted: () => {
+    track("onboarding_completed");
+    ProductAnalytics.onboardingStepCompleted("completed");
+  },
+
+  onboardingSkipped: () => {
+    track("onboarding_skipped");
+  },
+
+  firstRidePublished: () => {
+    track("first_ride_published");
+    ProductAnalytics.activationEvent("first_ride_published");
+  },
+
+  firstBookingMade: () => {
+    track("first_booking_made");
+    ProductAnalytics.activationEvent("first_booking_made");
+  },
 };
 
 export { identifyUser };

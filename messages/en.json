@@ -1291,5 +1291,38 @@
     "thankYou": "Thank you for your feedback!",
     "error": "Error sending. Please try again.",
     "privacyNote": "Do not send sensitive data, passwords, or personal information."
+  },
+  "betaFeedback": {
+    "buttonTitle": "Beta Feedback",
+    "subtitle": "Help us improve Andamus",
+    "thankYouTitle": "Thank you!",
+    "thankYouMessage": "Your feedback helps us build a better service.",
+    "close": "Close",
+    "typePraise": "I like it",
+    "typeIssue": "Issue",
+    "typeIdea": "Idea",
+    "ratingLabel": "How would you rate the experience?",
+    "placeholder": "Describe your experience...",
+    "send": "Send feedback",
+    "errorFillAll": "Please fill in all fields",
+    "errorSend": "Error sending. Please try again later.",
+    "successSend": "Thank you for your feedback! 🙏"
+  },
+  "pwa": {
+    "installTitle": "Install Andamus",
+    "installDescription": "Add to home screen for faster access and push notifications.",
+    "installButton": "Install",
+    "dismissButton": "Dismiss"
+  },
+  "celebration": {
+    "firstRideTitle": "First ride published! 🎉",
+    "firstRideSubtitle": "You earned 50 points. Keep it up!",
+    "firstBookingTitle": "Booking confirmed! 🎉",
+    "firstBookingSubtitle": "Your journey starts here. Have a great trip!",
+    "levelUpTitle": "Level up! 🚀",
+    "levelUpSubtitle": "You're closer to Sardinian Legend.",
+    "badgeTitle": "New badge unlocked! 🏅",
+    "badgeSubtitle": "Keep exploring to unlock more.",
+    "ctaButton": "Awesome!"
   }
 }

@@ -74,6 +74,14 @@ export const ProductAnalytics = {
   premiumCheckoutCompleted: (plan: string, value: number) =>
     captureEvent("premium_checkout_completed", { plan, value, currency: "EUR" }),
 
+  // Onboarding funnel
+  onboardingStepCompleted: (step: string) =>
+    captureEvent("onboarding_step_completed", { step }),
+
+  // Activation events
+  activationEvent: (event: string) =>
+    captureEvent("user_activated", { event }),
+
   // Device / context
   setDeviceContext: (deviceType: string, locale: string) =>
     captureEvent("$set", {
