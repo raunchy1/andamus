@@ -1377,5 +1377,31 @@
     "reliable": "Reliable",
     "newDriver": "New driver",
     "ridesCompleted": "rides"
+  },
+  "publicProfile": {
+    "backToSearch": "Back to search",
+    "share": "Share",
+    "copied": "Copied",
+    "shareTitle": "{name}'s profile on Andamus",
+    "shareText": "Check out {name}'s profile on Andamus — {rating}★ with {rides} completed rides.",
+    "reviews": "reviews",
+    "ridesCompleted": "rides",
+    "memberSince": "Member for {age}",
+    "verification": "Verification",
+    "verified": "verified",
+    "verifiedEmail": "Email",
+    "verifiedPhone": "Phone",
+    "verifiedId": "ID",
+    "verifiedDriver": "License",
+    "level": "Level",
+    "rating": "Rating",
+    "points": "Points",
+    "vehicle": "Vehicle",
+    "activeRides": "Active rides",
+    "free": "Free",
+    "noPublicActivity": "No public activity yet.",
+    "total": "total",
+    "readMore": "Read more",
+    "showLess": "Show less"
   }
 }

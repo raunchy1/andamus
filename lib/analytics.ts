@@ -105,6 +105,15 @@ export const Analytics = {
   inviteSent: (channel: string) => {
     track("invite_sent", { channel });
   },
+
+  // Profile & trust events
+  publicProfileView: (userId: string) => {
+    track("public_profile_view", { user_id: userId });
+  },
+
+  trustBadgeClick: (userId: string, score: number) => {
+    track("trust_badge_click", { user_id: userId, trust_score: score });
+  },
 };
 
 export { identifyUser };

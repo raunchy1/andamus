@@ -1377,5 +1377,31 @@
     "reliable": "Zuverlässig",
     "newDriver": "Neuer Fahrer",
     "ridesCompleted": "Fahrten"
+  },
+  "publicProfile": {
+    "backToSearch": "Zurück zur Suche",
+    "share": "Teilen",
+    "copied": "Kopiert",
+    "shareTitle": "Profil von {name} auf Andamus",
+    "shareText": "Entdecken Sie das Profil von {name} auf Andamus — {rating}★ mit {rides} abgeschlossenen Fahrten.",
+    "reviews": "Bewertungen",
+    "ridesCompleted": "Fahrten",
+    "memberSince": "Mitglied seit {age}",
+    "verification": "Verifizierung",
+    "verified": "verifiziert",
+    "verifiedEmail": "E-Mail",
+    "verifiedPhone": "Telefon",
+    "verifiedId": "Ausweis",
+    "verifiedDriver": "Führerschein",
+    "level": "Level",
+    "rating": "Bewertung",
+    "points": "Punkte",
+    "vehicle": "Fahrzeug",
+    "activeRides": "Aktive Fahrten",
+    "free": "Kostenlos",
+    "noPublicActivity": "Noch keine öffentliche Aktivität.",
+    "total": "gesamt",
+    "readMore": "Mehr lesen",
+    "showLess": "Weniger anzeigen"
   }
 }

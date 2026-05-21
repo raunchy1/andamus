@@ -43,6 +43,7 @@ function getFilterOptions(t: (key: string) => string) {
 
 interface Ride {
   id: string;
+  driver_id: string;
   from_city: string;
   to_city: string;
   date: string;
@@ -483,7 +484,11 @@ function SearchMobile(props: SearchViewProps) {
 
               <div className="flex items-center justify-between mt-4 sm:mt-6 pt-4 border-t border-white/5">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden flex-shrink-0">
+                  <Link
+                    href={`/${locale}/u/${ride.driver_id}`}
+                    onClick={() => Analytics.shareEvent?.("profile_click", { source: "search", driver_id: ride.driver_id })}
+                    className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden flex-shrink-0 hover:ring-2 hover:ring-[#e63946]/50 transition-all"
+                  >
                     {ride.profiles.avatar_url ? (
                       <Image
                         src={ride.profiles.avatar_url}
@@ -497,9 +502,14 @@ function SearchMobile(props: SearchViewProps) {
                       </div>
                     )}
                     <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#0e0e0e]" />
-                  </div>
+                  </Link>
                   <div className="min-w-0">
-                    <p className="font-bold text-[#e5e2e1] truncate">{ride.profiles.name}</p>
+                    <Link
+                      href={`/${locale}/u/${ride.driver_id}`}
+                      onClick={() => Analytics.shareEvent?.("profile_click", { source: "search", driver_id: ride.driver_id })}
+                    >
+                      <p className="font-bold text-[#e5e2e1] truncate hover:text-[#e63946] transition-colors">{ride.profiles.name}</p>
+                    </Link>
                     <div className="flex items-center gap-1">
                       <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
                       <span className="text-[11px] font-bold text-[#e5e2e1]/60">
@@ -894,7 +904,11 @@ function SearchDesktop(props: SearchViewProps) {
 
             <div className="flex items-center justify-between pt-4 border-t border-white/5">
               <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden">
+                <Link
+                  href={`/${locale}/u/${ride.driver_id}`}
+                  onClick={() => Analytics.shareEvent?.("profile_click", { source: "search_desktop", driver_id: ride.driver_id })}
+                  className="relative w-12 h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden hover:ring-2 hover:ring-[#e63946]/50 transition-all"
+                >
                   {ride.profiles.avatar_url ? (
                     <Image
                       src={ride.profiles.avatar_url}
@@ -908,9 +922,14 @@ function SearchDesktop(props: SearchViewProps) {
                     </div>
                   )}
                   <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-2 border-[#0a0a0a]" />
-                </div>
+                </Link>
                 <div>
-                  <p className="font-bold text-[#e5e2e1]">{ride.profiles.name}</p>
+                  <Link
+                    href={`/${locale}/u/${ride.driver_id}`}
+                    onClick={() => Analytics.shareEvent?.("profile_click", { source: "search_desktop", driver_id: ride.driver_id })}
+                  >
+                    <p className="font-bold text-[#e5e2e1] hover:text-[#e63946] transition-colors">{ride.profiles.name}</p>
+                  </Link>
                   <div className="flex items-center gap-1.5">
                     <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
                     <span className="text-[11px] font-bold text-[#e5e2e1]/60">

@@ -1377,5 +1377,31 @@
     "reliable": "Affidabile",
     "newDriver": "Nuovo guidatore",
     "ridesCompleted": "corse"
+  },
+  "publicProfile": {
+    "backToSearch": "Torna alla ricerca",
+    "share": "Condividi",
+    "copied": "Copiato",
+    "shareTitle": "Profilo di {name} su Andamus",
+    "shareText": "Scopri il profilo di {name} su Andamus — {rating}★ con {rides} corse completate.",
+    "reviews": "recensioni",
+    "ridesCompleted": "corse",
+    "memberSince": "Membro da {age}",
+    "verification": "Verifica",
+    "verified": "verificati",
+    "verifiedEmail": "Email",
+    "verifiedPhone": "Telefono",
+    "verifiedId": "Documento",
+    "verifiedDriver": "Patente",
+    "level": "Livello",
+    "rating": "Rating",
+    "points": "Punti",
+    "vehicle": "Veicolo",
+    "activeRides": "Corse attive",
+    "free": "Gratis",
+    "noPublicActivity": "Nessuna attività pubblica ancora.",
+    "total": "totali",
+    "readMore": "Leggi tutto",
+    "showLess": "Mostra meno"
   }
 }

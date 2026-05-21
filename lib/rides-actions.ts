@@ -109,6 +109,7 @@ export async function searchRides(filters: SearchFilters) {
 
   let results = (data || []) as Array<{
     id: string;
+    driver_id: string;
     from_city: string;
     to_city: string;
     date: string;

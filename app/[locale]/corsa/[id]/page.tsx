@@ -20,6 +20,7 @@ import { useDeviceType } from "@/components/view-mode";
 import { toast } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { computeRideStatus, isRideBookable, getRideStatusLabel, getRideStatusColor } from "@/lib/ride-status";
+import { Analytics } from "@/lib/analytics";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
 import { Spotlight } from "@/components/ui/premium/spotlight";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
@@ -186,20 +187,29 @@ function RideDetailMobile({
           <TiltCard tiltStrength={4} className="bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent border border-[#ffb3b1]/20 rounded-3xl p-7 mb-10">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-5">
-                <div className="relative">
+                <Link
+                  href={`/${locale}/u/${ride.driver_id}`}
+                  onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail", driver_id: ride.driver_id })}
+                  className="relative shrink-0"
+                >
                   {ride.profiles.avatar_url ? (
-                    <Image src={ride.profiles.avatar_url} alt="" width={80} height={80} className="w-20 h-20 rounded-full object-cover border-2 border-surface-container-high shadow-sm" />
+                    <Image src={ride.profiles.avatar_url} alt="" width={80} height={80} className="w-20 h-20 rounded-full object-cover border-2 border-surface-container-high shadow-sm hover:ring-2 hover:ring-[#e63946]/50 transition-all" />
                   ) : (
-                    <div className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center border-2 border-surface shadow-sm">
+                    <div className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center border-2 border-surface shadow-sm hover:ring-2 hover:ring-[#e63946]/50 transition-all">
                       <User className="w-9 h-9 text-on-surface-variant" />
                     </div>
                   )}
                   <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1.5 border-4 border-surface-container-low shadow-sm">
                     <BadgeCheck className="w-4 h-4" />
                   </div>
-                </div>
+                </Link>
                 <div>
-                  <h3 className="font-headline font-bold text-xl text-on-surface mb-1">{ride.profiles.name}</h3>
+                  <Link
+                    href={`/${locale}/u/${ride.driver_id}`}
+                    onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail", driver_id: ride.driver_id })}
+                  >
+                    <h3 className="font-headline font-bold text-xl text-on-surface mb-1 hover:text-[#e63946] transition-colors">{ride.profiles.name}</h3>
+                  </Link>
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-primary fill-current" />
                     <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
@@ -723,20 +733,29 @@ function RideDetailDesktop({
                 {/* Driver */}
                 <div className="flex items-center justify-between pt-4 border-t border-white/5">
                   <div className="flex items-center space-x-4">
-                    <div className="relative">
+                    <Link
+                      href={`/${locale}/u/${ride.driver_id}`}
+                      onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail_desktop", driver_id: ride.driver_id })}
+                      className="relative shrink-0"
+                    >
                       {ride.profiles.avatar_url ? (
-                        <Image src={ride.profiles.avatar_url} alt="" width={64} height={64} className="w-16 h-16 rounded-full object-cover" />
+                        <Image src={ride.profiles.avatar_url} alt="" width={64} height={64} className="w-16 h-16 rounded-full object-cover hover:ring-2 hover:ring-[#e63946]/50 transition-all" />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:ring-2 hover:ring-[#e63946]/50 transition-all">
                           <User className="w-7 h-7 text-on-surface-variant" />
                         </div>
                       )}
                       <div className="absolute -bottom-1 -right-1 bg-[#e63946] text-white rounded-full p-1 border-4 border-[#0a0a0a]">
                         <BadgeCheck className="w-3.5 h-3.5" />
                       </div>
-                    </div>
+                    </Link>
                     <div>
-                      <h3 className="font-headline font-bold text-xl text-on-surface leading-tight">{ride.profiles.name}</h3>
+                      <Link
+                        href={`/${locale}/u/${ride.driver_id}`}
+                        onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail_desktop", driver_id: ride.driver_id })}
+                      >
+                        <h3 className="font-headline font-bold text-xl text-on-surface leading-tight hover:text-[#e63946] transition-colors">{ride.profiles.name}</h3>
+                      </Link>
                       <div className="flex items-center space-x-2 mt-1">
                         <Star className="w-4 h-4 text-[#ffb3b1] fill-[#ffb3b1]" />
                         <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
