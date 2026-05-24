@@ -6,135 +6,74 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Image optimization
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "*.googleusercontent.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-        port: "",
-        pathname: "/**",
-      },
+      { protocol: "https", hostname: "*.googleusercontent.com", port: "", pathname: "/**" },
+      { protocol: "https", hostname: "*.supabase.co", port: "", pathname: "/**" },
     ],
   },
 
-  // Compression
   compress: true,
-
-  // Production source maps
   productionBrowserSourceMaps: false,
-
-  // React strict mode
   reactStrictMode: true,
 
-  // Experimental features
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts"],
   },
 
-  // Headers for security and PWA
   async headers() {
+    const isDev = process.env.NODE_ENV !== "production";
+
+    const csp = [
+      "default-src 'self'",
+      isDev
+        ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com"
+        : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.open-meteo.com wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
+      "frame-src 'self' https://accounts.google.com https://*.google.com",
+      "media-src 'self' https://*.supabase.co",
+      "worker-src 'self' blob:",
+    ].join("; ");
+
     return [
       {
         source: "/(.*)",
         headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains; preload",
-          },
-          {
-            key: "Permissions-Policy",
-            value:
-              "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
-              "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.open-meteo.com wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
-              "frame-src 'self' https://accounts.google.com https://*.google.com",
-              "media-src 'self' https://*.supabase.co",
-              "worker-src 'self' blob:",
-            ].join("; "),
-          },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self), payment=(self), interest-cohort=()" },
+          { key: "Content-Security-Policy", value: csp },
         ],
       },
       {
         source: "/manifest.json",
         headers: [
-          {
-            key: "Content-Type",
-            value: "application/manifest+json",
-          },
-          {
-            key: "Cache-Control",
-            value: "public, max-age=86400",
-          },
+          { key: "Content-Type", value: "application/manifest+json" },
+          { key: "Cache-Control", value: "public, max-age=86400" },
         ],
       },
       {
         source: "/sw.js",
         headers: [
-          {
-            key: "Service-Worker-Allowed",
-            value: "/",
-          },
-          {
-            key: "Cache-Control",
-            value: "public, max-age=0, must-revalidate",
-          },
+          { key: "Service-Worker-Allowed", value: "/" },
+          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
         ],
       },
     ];
   },
 
-  // Redirects handled by next-intl middleware (proxy.ts)
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: "/",
-  //       destination: "/it",
-  //       permanent: true,
-  //     },
-  //   ];
-  // },
-
-  // Turbopack config
-  turbopack: {
-    // Turbopack optimizations
-  },
+  turbopack: {},
 };
 
-// Initialize Serwist PWA
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
   swDest: "public/sw.js",
@@ -142,41 +81,15 @@ const withSerwist = withSerwistInit({
   reloadOnOnline: true,
 });
 
-// Compose plugins
 const composedConfig = withSerwist(withNextIntl(nextConfig));
 
-// Wrap with Sentry
 export default withSentryConfig(composedConfig, {
-  // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options
-
   org: "andamus",
   project: "andamus-nextjs",
-
-  // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
-
-  // For all available options, see:
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-  // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
-
-  // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  // This can increase your server load as well as your hosting bill.
-  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-  // side errors will fail.
   tunnelRoute: "/monitoring",
-
-  // Hides source maps from generated client bundles
   hideSourceMaps: true,
-
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
-
-  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-  // See the following for more information:
-  // https://docs.sentry.io/product/crons/
-  // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 });

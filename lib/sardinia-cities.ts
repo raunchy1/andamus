@@ -1,3 +1,11 @@
+// Popular Sardinian cities list (UI dropdowns / filters)
+export const SARDINIAN_CITIES = [
+  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
+  "Iglesias", "Alghero",
+  "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer",
+  "Bosa", "Castelsardo"
+];
+
 // Sardinian cities with coordinates for weather and navigation
 export const SARDINIA_CITIES: Record<string, { lat: number; lng: number }> = {
   'Cagliari': { lat: 39.2238, lng: 9.1217 },

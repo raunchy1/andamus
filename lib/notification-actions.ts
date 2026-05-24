@@ -1,225 +1,61 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { sendPushToUser } from "@/lib/push-notifications";
-
-export type NotificationType =
-  | "booking_request"
-  | "booking_accepted"
-  | "booking_rejected"
-  | "new_message"
-  | "new_review"
-  | "ride_alert";
-
-interface CreateNotificationParams {
-  userId: string;
-  type: NotificationType;
-  title: string;
-  body: string;
-  rideId?: string;
-  bookingId?: string;
-}
-
 /**
- * Create a notification for a user.
- *
- * SECURITY: This uses the service role client to bypass RLS,
- * but first verifies the caller is authenticated.
- * All notification creation must go through this server action.
+ * Notification server actions.
+ * @deprecated Import directly from `@/lib/server/actions/notifications`.
  */
-export async function createNotification({
-  userId,
-  type,
-  title,
-  body,
-  rideId,
-  bookingId,
-}: CreateNotificationParams) {
-  // Verify the caller is authenticated
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
 
-  if (authError || !user) {
-    throw new Error("Unauthorized: authentication required");
-  }
+import {
+  createNotification as _createNotification,
+  notifyBookingRequest as _notifyBookingRequest,
+  notifyBookingAccepted as _notifyBookingAccepted,
+  notifyBookingRejected as _notifyBookingRejected,
+  notifyNewMessage as _notifyNewMessage,
+  notifyNewReview as _notifyNewReview,
+  notifyRideAlert as _notifyRideAlert,
+  type NotificationType as _NotificationType,
+} from "@/lib/server/actions/notifications";
 
-  // ── Cooldown: prevent duplicate notifications within window ──
-  const sr = createServiceRoleClient();
-  const cooldownMinutes = type === "new_message" ? 5 : type === "ride_alert" ? 60 : 15;
-  const cooldownWindow = new Date(Date.now() - cooldownMinutes * 60 * 1000).toISOString();
+export type NotificationType = _NotificationType;
 
-  const { data: recent, error: recentError } = await sr
-    .from("notifications")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("type", type)
-    .eq("ride_id", rideId || "")
-    .gte("created_at", cooldownWindow)
-    .maybeSingle();
-
-  if (recentError) {
-    console.error("[notification-actions] cooldown check error:", recentError.message);
-  }
-  if (recent) {
-    // Duplicate notification within cooldown window — skip
-    return false;
-  }
-
-  // Use service role to insert notification for the target user
-  const { error } = await sr.from("notifications").insert({
-    user_id: userId,
-    type,
-    title,
-    body,
-    ride_id: rideId || null,
-    booking_id: bookingId || null,
-    read: false,
-  });
-
-  if (error) {
-    console.error("[notification-actions] insert error:", error.message);
-    return false;
-  }
-
-  return true;
+export async function createNotification(
+  ...args: Parameters<typeof _createNotification>
+) {
+  return _createNotification(...args);
 }
 
 export async function notifyBookingRequest(
-  driverId: string,
-  passengerName: string,
-  rideId: string,
-  bookingId: string
+  ...args: Parameters<typeof _notifyBookingRequest>
 ) {
-  const result = await createNotification({
-    userId: driverId,
-    type: "booking_request",
-    title: "Nuova richiesta di passaggio",
-    body: `${passengerName} ha richiesto di unirsi al tuo passaggio`,
-    rideId,
-    bookingId,
-  });
-  // Non-blocking push
-  sendPushToUser({
-    userId: driverId,
-    title: "Nuova richiesta di passaggio",
-    body: `${passengerName} ha richiesto di unirsi al tuo passaggio`,
-    url: `/chat/${bookingId}`,
-  }).catch(() => {});
-  return result;
+  return _notifyBookingRequest(...args);
 }
 
 export async function notifyBookingAccepted(
-  passengerId: string,
-  driverName: string,
-  rideId: string,
-  bookingId: string
+  ...args: Parameters<typeof _notifyBookingAccepted>
 ) {
-  const result = await createNotification({
-    userId: passengerId,
-    type: "booking_accepted",
-    title: "Passaggio confermato!",
-    body: `${driverName} ha accettato la tua richiesta`,
-    rideId,
-    bookingId,
-  });
-  sendPushToUser({
-    userId: passengerId,
-    title: "Passaggio confermato!",
-    body: `${driverName} ha accettato la tua richiesta`,
-    url: `/chat/${bookingId}`,
-  }).catch(() => {});
-  return result;
+  return _notifyBookingAccepted(...args);
 }
 
 export async function notifyBookingRejected(
-  passengerId: string,
-  driverName: string,
-  rideId: string,
-  bookingId: string
+  ...args: Parameters<typeof _notifyBookingRejected>
 ) {
-  const result = await createNotification({
-    userId: passengerId,
-    type: "booking_rejected",
-    title: "Richiesta non accettata",
-    body: `${driverName} non può offrirti il passaggio`,
-    rideId,
-    bookingId,
-  });
-  sendPushToUser({
-    userId: passengerId,
-    title: "Richiesta non accettata",
-    body: `${driverName} non può offrirti il passaggio`,
-    url: `/profilo`,
-  }).catch(() => {});
-  return result;
+  return _notifyBookingRejected(...args);
 }
 
 export async function notifyNewMessage(
-  userId: string,
-  senderName: string,
-  rideId: string,
-  bookingId: string
+  ...args: Parameters<typeof _notifyNewMessage>
 ) {
-  const result = await createNotification({
-    userId,
-    type: "new_message",
-    title: "Nuovo messaggio",
-    body: `Hai ricevuto un messaggio da ${senderName}`,
-    rideId,
-    bookingId,
-  });
-  sendPushToUser({
-    userId,
-    title: "Nuovo messaggio",
-    body: `Da ${senderName}`,
-    url: `/chat/${bookingId}`,
-  }).catch(() => {});
-  return result;
+  return _notifyNewMessage(...args);
 }
 
 export async function notifyNewReview(
-  reviewedId: string,
-  reviewerName: string,
-  rideId: string
+  ...args: Parameters<typeof _notifyNewReview>
 ) {
-  const result = await createNotification({
-    userId: reviewedId,
-    type: "new_review",
-    title: "Hai ricevuto una recensione",
-    body: `${reviewerName} ha lasciato una recensione sul tuo passaggio`,
-    rideId,
-  });
-  sendPushToUser({
-    userId: reviewedId,
-    title: "Nuova recensione",
-    body: `${reviewerName} ha lasciato una recensione`,
-    url: `/corsa/${rideId}`,
-  }).catch(() => {});
-  return result;
+  return _notifyNewReview(...args);
 }
 
 export async function notifyRideAlert(
-  userId: string,
-  fromCity: string,
-  toCity: string,
-  rideId: string
+  ...args: Parameters<typeof _notifyRideAlert>
 ) {
-  const result = await createNotification({
-    userId,
-    type: "ride_alert",
-    title: "Nuovo passaggio disponibile!",
-    body: `Trovato un passaggio da ${fromCity} a ${toCity}`,
-    rideId,
-  });
-  sendPushToUser({
-    userId,
-    title: "Nuovo passaggio disponibile!",
-    body: `${fromCity} → ${toCity}`,
-    url: `/corsa/${rideId}`,
-  }).catch(() => {});
-  return result;
+  return _notifyRideAlert(...args);
 }

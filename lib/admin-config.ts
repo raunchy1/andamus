@@ -1,25 +1,43 @@
-// Admin configuration — SERVER ONLY. Never import from client components.
-// Configure additional admins via NEXT_PUBLIC_ADMIN_EMAILS env var (comma-separated).
+/**
+ * Admin configuration — SERVER ONLY. Never import from client components.
+ *
+ * Admin authorization is now database-driven via `user_roles` table.
+ * Env-based emails (NEXT_PUBLIC_ADMIN_EMAILS) serve as a fallback
+ * for bootstrapping and legacy support only.
+ */
 
-const DEFAULT_ADMINS = ["cristiermurache@gmail.com"];
+import { env } from "@/lib/server/validators/env";
 
-export const ADMIN_EMAILS = Array.from(
-  new Set(
-    [
-      ...DEFAULT_ADMINS,
-      ...(process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
-        .split(",")
-        .map((email) => email.trim())
-        .filter(Boolean),
-    ].map((e) => e.toLowerCase())
-  )
-);
-
-export function isAdmin(email: string | undefined | null): boolean {
-  if (!email) return false;
-  return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+/**
+ * Get env-based admin emails (fallback only).
+ * @deprecated Use database `user_roles` table for production admin checks.
+ */
+export function getEnvAdminEmails(): string[] {
+  try {
+    const e = env();
+    return (e.NEXT_PUBLIC_ADMIN_EMAILS || "")
+      .split(",")
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
 }
 
-export function checkIsAdmin(user: { email?: string } | null): boolean {
-  return isAdmin(user?.email);
+/**
+ * Check if an email is in the env admin list.
+ * Safe for client-side use (checks env only, no DB round-trip).
+ * @deprecated Use server-side `requireAdmin()` for API routes.
+ */
+export function isAdmin(email: string | undefined | null): boolean {
+  if (!email) return false;
+  return getEnvAdminEmails().includes(email.toLowerCase().trim());
+}
+
+/**
+ * Check if an email is in the env admin list.
+ * @deprecated Use `checkIsAdmin()` from `@/lib/server/guards/admin` for unified checks.
+ */
+export function isAdminEmail(email: string | undefined | null): boolean {
+  return isAdmin(email);
 }

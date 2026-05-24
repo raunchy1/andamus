@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { createClient } from "@/lib/supabase/server";
+import { getTodayRides } from "@/lib/server/data/rides";
 import HomePageClient from '@/components/HomePageClient';
 
 export const dynamic = 'force-dynamic';
@@ -42,5 +44,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     welcomeBack: t('welcomeBack'),
   };
 
-  return <HomePageClient locale={locale} translations={translations} />;
+  const [todayRides, { data: { user } }] = await Promise.all([
+    getTodayRides(5),
+    createClient().then((s) => s.auth.getUser()),
+  ]);
+
+  const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
+  const userAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
+
+  return (
+    <HomePageClient
+      locale={locale}
+      translations={translations}
+      initialRides={todayRides}
+      initialUserName={userName}
+      initialUserAvatar={userAvatar}
+    />
+  );
 }

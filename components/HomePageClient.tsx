@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
-import { getAppNow } from "@/lib/date-utils";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
 import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star, Sparkles, ArrowRight, Zap, Heart } from "lucide-react";
 import Image from "next/image";
-import { DatePicker } from "@/components/ui/date-picker";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { CityCombobox } from "@/components/CityCombobox";
 import municipalities from "@/scripts/sardinia-municipalities.json";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
@@ -35,13 +34,6 @@ interface Ride {
     avatar_url: string | null;
     rating: number;
   };
-}
-
-function normalizeProfile(profiles: unknown): { name: string; avatar_url: string | null; rating: number } {
-  if (Array.isArray(profiles)) {
-    return profiles[0] || { name: "", avatar_url: null, rating: 5 };
-  }
-  return (profiles as { name: string; avatar_url: string | null; rating: number }) || { name: "", avatar_url: null, rating: 5 };
 }
 
 interface HomeUIProps {
@@ -221,55 +213,73 @@ function HomeMobile({
           ) : todayRides.length > 0 ? (
             <div className="flex gap-3 sm:gap-4 overflow-x-auto px-4 sm:px-6 pb-4 snap-x no-scrollbar">
               {todayRides.map((ride, idx) => (
-                <Link
+                <motion.div
                   key={ride.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                >
+                <Link
                   href={`/${locale}/corsa/${ride.id}`}
-                  className={`snap-start flex-shrink-0 w-[260px] sm:w-[280px] p-4 sm:p-5 rounded-2xl border flex flex-col justify-between h-[170px] sm:h-[180px] transition-all active:scale-95 ${
+                  className={`snap-start flex-shrink-0 w-[260px] sm:w-[280px] p-4 sm:p-5 rounded-2xl flex flex-col justify-between h-[170px] sm:h-[180px] transition-all active:scale-95 ${
                     idx === 0
-                      ? "border-[#ffb3b1]/25 bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent"
-                      : "border-white/8 bg-white/[0.025]"
+                      ? "border border-[#e63946]/20"
+                      : "border border-white/[0.06]"
                   }`}
+                  style={{
+                    background: idx === 0
+                      ? "linear-gradient(180deg, rgba(230,57,70,0.06) 0%, #111111 100%)"
+                      : "linear-gradient(180deg, #111111 0%, #0d0d0d 100%)",
+                    boxShadow: idx === 0
+                      ? "0 4px 24px rgba(230,57,70,0.08), inset 0 1px 0 rgba(255,255,255,0.03)"
+                      : "0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.02)",
+                  }}
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex flex-col min-w-0">
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${idx === 0 ? "text-[#ffb3b1]" : "text-on-surface/40"} uppercase tracking-widest`}>
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${idx === 0 ? "text-[#e63946]" : "text-[#6b6b6b]"} uppercase tracking-widest`}>
                         {idx === 0 && <Sparkles className="h-2.5 w-2.5" />}
                         {t.today} · {ride.time.slice(0, 5)}
                       </span>
-                      <h4 className="text-base sm:text-lg font-extrabold tracking-tight mt-1 text-on-surface truncate">{ride.from_city} → {ride.to_city}</h4>
+                      <h4 className="text-base sm:text-lg font-heading font-semibold tracking-tight mt-1 text-[#f8f8f8] truncate">{ride.from_city} → {ride.to_city}</h4>
                     </div>
-                    <div className="text-lg sm:text-xl font-extrabold tracking-tighter text-on-surface flex-shrink-0">
+                    <div className="text-lg sm:text-xl font-heading font-bold tracking-tighter text-[#f8f8f8] flex-shrink-0">
                       {ride.price === 0 ? <GradientText>{t.free}</GradientText> : `€${ride.price}`}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 pt-3 border-t border-white/5">
-                    <div className="relative w-8 h-8 rounded-full bg-white/5 overflow-hidden border border-white/10 flex-shrink-0">
+                  <div className="flex items-center gap-3 pt-3 border-t border-white/[0.04]">
+                    <div className="relative w-8 h-8 rounded-full bg-white/[0.03] overflow-hidden border border-white/[0.06] flex-shrink-0">
                       {ride.profiles.avatar_url ? (
                         <Image src={ride.profiles.avatar_url} alt={ride.profiles.name} width={32} height={32} sizes="32px" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <User className="w-3.5 h-3.5 text-on-surface-variant" />
+                          <User className="w-3.5 h-3.5 text-[#6b6b6b]" />
                         </div>
                       )}
-                      <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 border border-[#0a0a0a]" />
+                      <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#2dd4bf] border-2 border-[#0a0a0a]" />
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-on-surface truncate">{ride.profiles.name}</span>
+                      <span className="text-xs font-semibold text-[#f8f8f8] truncate">{ride.profiles.name}</span>
                       <div className="flex items-center gap-1">
-                        <Star className="w-2.5 h-2.5 text-[#ffb3b1] fill-[#ffb3b1]" />
-                        <span className="text-[10px] text-on-surface/60">{ride.profiles.rating}</span>
+                        <Star className="w-2.5 h-2.5 text-[#f4a261] fill-[#f4a261]" />
+                        <span className="text-[10px] text-[#6b6b6b]">{ride.profiles.rating}</span>
                       </div>
                     </div>
-                    <ArrowRight className="ml-auto h-3.5 w-3.5 text-on-surface/30" />
+                    <ArrowRight className="ml-auto h-3.5 w-3.5 text-[#444444]" />
                   </div>
                 </Link>
+                </motion.div>
               ))}
             </div>
           ) : (
             <div className="px-4 sm:px-6">
-              <div className="bg-white/[0.025] border border-white/8 p-5 rounded-2xl">
-                <p className="text-sm text-on-surface/60">{t.noRidesToday}</p>
-                <Link href={`/${locale}/cerca`} className="text-[#ffb3b1] text-sm font-bold mt-2 inline-flex items-center gap-1">
+              <div className="rounded-2xl p-5" style={{
+                background: "linear-gradient(180deg, #111111 0%, #0d0d0d 100%)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02)",
+              }}>
+                <p className="text-sm text-[#6b6b6b]">{t.noRidesToday}</p>
+                <Link href={`/${locale}/cerca`} className="text-[#e63946] text-sm font-bold mt-2 inline-flex items-center gap-1 hover:text-[#f4a261] transition-colors">
                   {t.searchOtherDates} <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
@@ -297,17 +307,27 @@ function HomeMobile({
           <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
             <Link
               href={`/${locale}/offri`}
-              className="bg-primary-container/20 rounded-xl p-4 sm:p-5 flex flex-col justify-between hover:bg-primary-container/30 transition-colors active:scale-95 min-h-[120px]"
+              className="rounded-2xl p-4 sm:p-5 flex flex-col justify-between active:scale-95 min-h-[120px] transition-all hover:translate-y-[-2px]"
+              style={{
+                background: "linear-gradient(135deg, rgba(230,57,70,0.1) 0%, rgba(244,162,97,0.05) 100%)",
+                border: "1px solid rgba(230,57,70,0.15)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)",
+              }}
             >
-              <PlusCircle className="w-7 h-7 flex-shrink-0 text-primary" />
-              <span className="text-xs font-bold uppercase tracking-wider text-on-surface leading-tight mt-2">{t.offerRide}</span>
+              <PlusCircle className="w-7 h-7 flex-shrink-0 text-[#e63946]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#f8f8f8] leading-tight mt-2">{t.offerRide}</span>
             </Link>
             <Link
               href={`/${locale}/profilo`}
-              className="bg-surface-container-highest rounded-xl p-4 sm:p-5 flex flex-col justify-between hover:bg-surface-container-high transition-colors active:scale-95 min-h-[120px]"
+              className="rounded-2xl p-4 sm:p-5 flex flex-col justify-between active:scale-95 min-h-[120px] transition-all hover:translate-y-[-2px]"
+              style={{
+                background: "linear-gradient(180deg, #1a1a1a 0%, #141414 100%)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02)",
+              }}
             >
-              <History className="w-7 h-7 flex-shrink-0 text-on-surface/60" />
-              <span className="text-xs font-bold uppercase tracking-wider text-on-surface leading-tight mt-2">{t.yourTrips}</span>
+              <History className="w-7 h-7 flex-shrink-0 text-[#6b6b6b]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#a0a0a0] leading-tight mt-2">{t.yourTrips}</span>
             </Link>
           </div>
         </section>
@@ -498,7 +518,7 @@ function HomeDesktop({
                 </div>
               </div>
 
-              <DatePicker
+              <PremiumDatePicker
                 date={date}
                 onSelect={(newDate) => setDate(newDate || today)}
                 onClear={() => setDate(today)}
@@ -818,51 +838,24 @@ function HomeDesktop({
 export default function HomePageClient({
   locale,
   translations,
+  initialRides,
+  initialUserName,
+  initialUserAvatar,
 }: {
   locale: string;
   translations: HomeTranslations;
+  initialRides: Ride[];
+  initialUserName: string;
+  initialUserAvatar: string | null;
 }) {
   const router = useRouter();
   const deviceType = useDeviceType();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [todayRides, setTodayRides] = useState<Ride[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("");
-  const [userAvatar, setUserAvatar] = useState<string | null>(null);
-  const supabase = createClient();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { date: today, time: nowTime } = getAppNow();
-
-        const { data: ridesData } = await supabase
-          .from("rides")
-          .select("id, from_city, to_city, date, time, price, profiles!inner(name, avatar_url, rating)")
-          .eq("date", today)
-          .eq("status", "active")
-          .gte("time", nowTime)
-          .order("time", { ascending: true })
-          .limit(5);
-
-        setTodayRides(((ridesData as unknown as Record<string, unknown>[]) || []).map(r => ({ ...r, profiles: normalizeProfile(r.profiles) })) as Ride[]);
-
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const name = user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split("@")[0] || "";
-          setUserName(name);
-          setUserAvatar(user.user_metadata?.avatar_url || user.user_metadata?.picture || null);
-        }
-      } catch {
-        // Error fetching data
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [supabase]);
+  const [todayRides] = useState<Ride[]>(initialRides);
+  const [loading] = useState(false);
+  const [userName] = useState(initialUserName);
+  const [userAvatar] = useState(initialUserAvatar);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,12 +1,28 @@
 "use server";
 
-import { createClient } from "./supabase/server";
-import { isAdmin } from "./admin-config";
-export { isAdmin };
+import {
+  isAdmin as checkIsAdmin,
+  requireAdmin as _requireAdmin,
+  isAdminInDatabase,
+  isAdminEmail,
+} from "@/lib/session";
 
+export async function isAdmin(userId: string, email?: string | null): Promise<boolean> {
+  return checkIsAdmin(userId, email);
+}
+
+export async function requireAdmin() {
+  return _requireAdmin();
+}
+
+export { isAdminInDatabase, isAdminEmail };
+
+/**
+ * @deprecated Use `requireAdmin()` directly.
+ */
 export async function checkAdminAccess(): Promise<boolean> {
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user?.email) return false;
-  return isAdmin(user.email);
+  const { getCurrentUser } = await import("@/lib/session");
+  const user = await getCurrentUser();
+  if (!user?.id) return false;
+  return checkIsAdmin(user.id, user.email);
 }

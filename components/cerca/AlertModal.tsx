@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
 interface AlertModalProps {
   showAlertModal: boolean;
@@ -32,6 +34,8 @@ export function AlertModal({
   cities,
 }: AlertModalProps) {
   const t = useTranslations("search");
+  const [startDate, setStartDate] = useState(date);
+  const [endDate, setEndDate] = useState("");
   if (!showAlertModal) return null;
 
   return (
@@ -93,11 +97,25 @@ export function AlertModal({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("fromDateShort")}</label>
-              <input type="date" name="alertStartDate" defaultValue={date} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
+              <PremiumDatePicker
+                date={startDate}
+                onSelect={setStartDate}
+                placeholder="Da"
+                label=""
+                className="w-full"
+              />
+              <input type="hidden" name="alertStartDate" value={startDate} />
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("toDateShort")}</label>
-              <input type="date" name="alertEndDate" className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
+              <PremiumDatePicker
+                date={endDate}
+                onSelect={setEndDate}
+                placeholder="A"
+                label=""
+                className="w-full"
+              />
+              <input type="hidden" name="alertEndDate" value={endDate} />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">

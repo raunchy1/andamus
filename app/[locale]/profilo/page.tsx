@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
@@ -1305,12 +1305,14 @@ export default function ProfilePage() {
           />
         )}
         {showPostAction && (
-          <PostActionModal
-            type={postActionType}
-            open={showPostAction}
-            onClose={() => setShowPostAction(false)}
-            context={postActionContext}
-          />
+          <Suspense fallback={null}>
+            <PostActionModal
+              type={postActionType}
+              open={showPostAction}
+              onClose={() => setShowPostAction(false)}
+              context={postActionContext}
+            />
+          </Suspense>
         )}
         </main>
       </div>
@@ -1878,12 +1880,14 @@ export default function ProfilePage() {
           />
         )}
         {showPostAction && (
-          <PostActionModal
-            type={postActionType}
-            open={showPostAction}
-            onClose={() => setShowPostAction(false)}
-            context={postActionContext}
-          />
+          <Suspense fallback={null}>
+            <PostActionModal
+              type={postActionType}
+              open={showPostAction}
+              onClose={() => setShowPostAction(false)}
+              context={postActionContext}
+            />
+          </Suspense>
         )}
       </div>
     );

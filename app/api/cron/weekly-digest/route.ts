@@ -1,96 +1,121 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { sendWeeklyDigestEmail } from "@/lib/emails/send";
+import { apiError, apiSuccess } from "@/lib/server/api-utils";
+import { checkRateLimit, rateLimitPresets } from "@/lib/server/rate-limit/redis";
+import { env } from "@/lib/server/validators/env";
 
-/**
- * Weekly digest cron job.
- * Sends a summary email to active users about:
- * - New rides on their favorite routes
- * - Their streak status
- * - Recommended actions
- *
- * Runs every Monday at 9 AM.
- */
+interface WeeklyRide {
+  from: string;
+  to: string;
+  date: string;
+  time: string;
+  price: number;
+  driver: string;
+}
 
-export async function GET(req: NextRequest) {
-  // Verify cron secret
-  const authHeader = req.headers.get("authorization");
-  const expected = `Bearer ${process.env.CRON_SECRET}`;
-  if (authHeader !== expected) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+interface WeeklyDigestUser {
+  id: string;
+  email: string;
+  name: string;
+  locale: string;
+  streak_weeks: number;
+}
+
+export async function GET(request: NextRequest) {
+  // ── Cron secret validation (fail closed) ──
+  const authHeader = request.headers.get("authorization");
+  const cronSecret = env().CRON_SECRET;
+
+  if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+    return apiError("Unauthorized", "UNAUTHORIZED", 401);
   }
 
-  const sr = createServiceRoleClient();
-
-  // Get users who opted into ride reminders and have been active in last 30 days
-  const { data: users, error: usersError } = await sr
-    .from("profiles")
-    .select("id, name, email, email_ride_reminders, last_active_at")
-    .eq("email_ride_reminders", true)
-    .not("email", "is", null);
-
-  if (usersError) {
-    console.error("[weekly-digest] users fetch error:", usersError.message);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  // ── Rate limit ──
+  const rl = await checkRateLimit({
+    identifier: "cron:weekly-digest",
+    ...rateLimitPresets.cron,
+  });
+  if (!rl.success) {
+    return apiError("Rate limit exceeded", "RATE_LIMITED", 429);
   }
 
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const activeUsers = (users || []).filter((u) => u.last_active_at && u.last_active_at > thirtyDaysAgo);
+  try {
+    const supabase = createServiceRoleClient();
 
-  const results = { sent: 0, failed: 0, skipped: 0 };
+    // Fetch users with active streaks
+    const { data: users, error: usersError } = await supabase
+      .from("profiles")
+      .select("id, email, full_name, locale, streak_weeks")
+      .gt("streak_weeks", 0)
+      .returns<WeeklyDigestUser[]>();
 
-  for (const user of activeUsers) {
-    try {
-      // Find rides this week matching user's recent search patterns
-      const { data: recentRides } = await sr
-        .from("rides")
-        .select("id, from_city, to_city, date, time, price, profiles(name)")
-        .eq("status", "active")
-        .gte("date", new Date().toISOString().split("T")[0])
-        .lte("date", new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0])
-        .order("date", { ascending: true })
-        .limit(5);
-
-      if (!recentRides || recentRides.length === 0) {
-        results.skipped++;
-        continue;
-      }
-
-      // Get streak info
-      const { data: streakData } = await sr
-        .from("user_activity_weeks")
-        .select("week_key")
-        .eq("user_id", user.id)
-        .order("week_key", { ascending: false })
-        .limit(4);
-
-      const hasStreak = (streakData || []).length >= 2;
-
-      const ridesFormatted = recentRides.map((r: Record<string, unknown>) => ({
-        from: (r as { from_city: string }).from_city,
-        to: (r as { to_city: string }).to_city,
-        date: (r as { date: string }).date,
-        time: (r as { time: string }).time.slice(0, 5),
-        price: (r as { price: number }).price,
-        driver: Array.isArray((r as { profiles: unknown[] }).profiles)
-          ? ((r as { profiles: { name: string }[] }).profiles[0]?.name || "Autista")
-          : (((r as { profiles: { name: string } }).profiles)?.name || "Autista"),
-      }));
-
-      await sendWeeklyDigestEmail({
-        to: user.email!,
-        name: user.name || "Utente",
-        rides: ridesFormatted,
-        hasStreak,
-        streakWeeks: streakData?.length || 0,
-      });
-
-      results.sent++;
-    } catch (err) {
-      console.error(`[weekly-digest] failed for ${user.id}:`, err);
-      results.failed++;
+    if (usersError) {
+      console.error("[weekly-digest] users error:", usersError);
+      return apiError("Database error", "DB_ERROR", 500);
     }
-  }
 
-  return NextResponse.json({ success: true, ...results });
+    if (!users || users.length === 0) {
+      const response = apiSuccess({ message: "No users with streaks", emailsSent: 0 });
+      response.headers.set("X-RateLimit-Limit", String(rl.limit));
+      response.headers.set("X-RateLimit-Remaining", String(rl.remaining));
+      return response;
+    }
+
+    let emailsSent = 0;
+    const errors: string[] = [];
+
+    for (const user of users) {
+      try {
+        // Fetch rides for this user in the past week
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const oneWeekAgoStr = oneWeekAgo.toISOString().split("T")[0];
+
+        const { data: rides, error: ridesError } = await supabase
+          .from("rides")
+          .select("from_city, to_city, date, time, price, profiles!inner(full_name)")
+          .or(`driver_id.eq.${user.id},bookings.passenger_id.eq.${user.id}`)
+          .gte("date", oneWeekAgoStr)
+          .eq("status", "completed")
+          .returns<WeeklyRide[]>();
+
+        if (ridesError) {
+          errors.push(`User ${user.id}: rides fetch error`);
+          continue;
+        }
+
+        const hasStreak = user.streak_weeks > 0;
+
+        const result = await sendWeeklyDigestEmail({
+          to: user.email,
+          name: user.name,
+          rides: rides || [],
+          hasStreak,
+          streakWeeks: user.streak_weeks,
+        });
+
+        if (result.success) emailsSent++;
+        else errors.push(`User ${user.id}: ${result.error}`);
+      } catch {
+        errors.push(`User ${user.id}: processing error`);
+      }
+    }
+
+    const response = apiSuccess({
+      emailsSent,
+      usersProcessed: users.length,
+      errors: errors.length > 0 ? errors : undefined,
+    });
+    response.headers.set("X-RateLimit-Limit", String(rl.limit));
+    response.headers.set("X-RateLimit-Remaining", String(rl.remaining));
+    return response;
+  } catch (err) {
+    console.error("[weekly-digest] unexpected error:", err);
+    return apiError("Internal server error", "INTERNAL_ERROR", 500);
+  }
+}
+
+export async function POST(request: NextRequest) {
+  return GET(request);
 }

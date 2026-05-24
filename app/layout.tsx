@@ -1,12 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "600", "800"],
+  weight: ["400", "500", "600"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -48,7 +54,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#131313",
+  themeColor: "#0a0a0a",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -63,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="it"
-      className={`${inter.variable} dark h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -72,7 +78,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="min-h-full flex flex-col font-sans bg-[#131313] text-[#e5e2e1]">
+      <body className="min-h-full flex flex-col font-sans bg-[#0a0a0a] text-[#e5e2e1]">
         {children}
         <Script src="/sw-register.js" strategy="afterInteractive" />
       </body>

@@ -29,13 +29,11 @@ import { GradientText } from "@/components/ui/premium/gradient-text";
 import { MagneticButton } from "@/components/ui/premium/magnetic-button";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
-const sardinianCities = [
-  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Alghero",
-  "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer",
-  "Bosa", "Castelsardo"
-];
+import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
+
+const sardinianCities = SARDINIAN_CITIES;
 
 interface OfferViewProps {
   user: SupabaseUser;
@@ -193,14 +191,13 @@ function OfferMobile({
 
             {/* Date & Time Grid */}
             <div className="grid grid-cols-2 gap-4">
-              <div className={`bg-surface-container-highest p-4 rounded-xl space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">{t('date')}</label>
-                <input
-                  type="date"
+              <div className={`space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent'}`}>
+                <PremiumDatePicker
+                  date={formData.date}
+                  onSelect={(d) => handleChange("date", d)}
                   min={today}
-                  value={formData.date}
-                  onChange={(e) => handleChange("date", e.target.value)}
-                  className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
+                  label={t('date')}
+                  className="w-full"
                 />
                 {errors.date && <p className="text-sm text-error">{errors.date}</p>}
               </div>
@@ -545,14 +542,13 @@ function OfferDesktop({
 
                 {/* Date, Time, Seats */}
                 <div className="grid grid-cols-3 gap-4">
-                  <div className={`bg-surface-container-highest p-5 rounded-2xl space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent focus-within:border-primary'}`}>
-                    <label className="font-semibold uppercase tracking-widest text-[11px] text-outline block">{t('date')}</label>
-                    <input
-                      type="date"
+                  <div className={`space-y-1 border-b-2 transition-all ${errors.date ? 'border-error' : 'border-transparent'}`}>
+                    <PremiumDatePicker
+                      date={formData.date}
+                      onSelect={(d) => handleChange("date", d)}
                       min={today}
-                      value={formData.date}
-                      onChange={(e) => handleChange("date", e.target.value)}
-                      className="bg-transparent border-none focus:ring-0 w-full p-0 text-on-surface font-bold"
+                      label={t('date')}
+                      className="w-full"
                     />
                     {errors.date && <p className="text-sm text-error">{errors.date}</p>}
                   </div>

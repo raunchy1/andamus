@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 import { Compass, Route, Car, User } from "lucide-react";
 
 const navItems = [
@@ -12,6 +13,8 @@ const navItems = [
   { href: "/profilo", icon: User, labelKey: "profile" },
 ];
 
+const easeSpring = { type: "spring" as const, stiffness: 400, damping: 30 };
+
 export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -19,37 +22,73 @@ export function BottomNav() {
 
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
 
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 z-nav flex justify-around items-center min-h-[4rem] h-auto px-4 pt-2 pb-[env(safe-area-inset-bottom,0px)] bg-[#0f0f0f] border-t border-[#2a2a2a] md:hidden">
-      {navItems.map((item) => {
-        const fullHref = `/${locale}${item.href}`;
-        const isActive =
-          item.href === "/"
-            ? currentPath === "/"
-            : currentPath.startsWith(item.href);
-        const Icon = item.icon;
+  const activeIndex = navItems.findIndex((item) =>
+    item.href === "/"
+      ? currentPath === "/"
+      : currentPath.startsWith(item.href)
+  );
 
-        return (
-          <Link
-            key={item.href}
-            href={fullHref}
-            className={`flex flex-col items-center justify-center min-h-[44px] min-w-[44px] px-2 group ${
-              isActive
-                ? "text-[#ffb3b1] font-bold"
-                : "text-[#77706f] hover:text-[#e5e2e1]"
-            } transition-colors active:scale-90 duration-300`}
-          >
-            <Icon
-              className={`w-6 h-6 group-active:scale-90 transition-all duration-300 ${
-                isActive ? "fill-current" : ""
-              }`}
-            />
-            <span className="font-bold uppercase tracking-[0.05em] text-[10px] mt-1">
-              {t(item.labelKey)}
-            </span>
-          </Link>
-        );
-      })}
+  return (
+    <nav
+      className="fixed bottom-4 left-4 right-4 z-nav md:hidden h-[68px] rounded-[28px]"
+      style={{
+        background: "rgba(17, 17, 17, 0.85)",
+        backdropFilter: "blur(20px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
+    >
+      <div className="flex items-center justify-around h-full px-2">
+        {navItems.map((item, index) => {
+          const fullHref = `/${locale}${item.href}`;
+          const isActive = activeIndex === index;
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.href}
+              href={fullHref}
+              className="relative flex flex-col items-center justify-center w-[25%] h-full select-none"
+            >
+              {/* Animated pill background */}
+              {isActive && (
+                <motion.div
+                  layoutId="bottom-nav-pill"
+                  className="absolute inset-x-1 inset-y-1.5 rounded-[20px]"
+                  style={{ backgroundColor: "rgba(230, 57, 70, 0.12)" }}
+                  transition={easeSpring}
+                />
+              )}
+
+              <motion.div
+                className="relative flex flex-col items-center justify-center gap-0.5"
+                whileTap={{ scale: 0.92 }}
+                transition={{ duration: 0.1 }}
+              >
+                <Icon
+                  size={22}
+                  strokeWidth={isActive ? 2.5 : 1.5}
+                  style={{
+                    color: isActive ? "#e63946" : "#6b6b6b",
+                    opacity: isActive ? 1 : 0.7,
+                  }}
+                />
+                <span
+                  className="font-caption leading-none"
+                  style={{
+                    color: isActive ? "#e63946" : "#6b6b6b",
+                    opacity: isActive ? 1 : 0.7,
+                    marginTop: "2px",
+                  }}
+                >
+                  {t(item.labelKey)}
+                </span>
+              </motion.div>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

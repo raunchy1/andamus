@@ -33,15 +33,26 @@ export function EmptyState({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex flex-col items-center justify-center py-16 px-4 text-center ${className}`}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className={`flex flex-col items-center justify-center py-20 px-4 text-center ${className}`}
     >
       {/* Icon Container */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 bg-[#e63946]/20 blur-2xl rounded-full" />
-        <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-white/10 shadow-2xl">
+      <div className="relative mb-8">
+        <div
+          className="absolute inset-0 blur-3xl rounded-full"
+          style={{ background: "rgba(230, 57, 70, 0.15)" }}
+        />
+        <div
+          className="relative flex h-28 w-28 items-center justify-center rounded-[28px]"
+          style={{
+            background: "linear-gradient(180deg, #1a1a1a 0%, #111111 100%)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)",
+          }}
+        >
           {icon || (
             <svg
-              className="w-12 h-12 text-[#e63946]/50"
+              className="w-12 h-12 text-[#e63946]/60"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -58,30 +69,40 @@ export function EmptyState({
       </div>
 
       {/* Text Content */}
-      <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-      <p className="text-white/60 max-w-md mb-6 leading-relaxed">{description}</p>
+      <h3 className="font-h4 text-[#f8f8f8] mb-3">{title}</h3>
+      <p className="text-[#6b6b6b] max-w-sm mb-8 leading-relaxed font-body-sm">{description}</p>
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3">
         {action && (
           <Link href={action.href}>
-            <Button
-              variant={action.variant || "default"}
-              className={
-                action.variant === "outline"
-                  ? "border-white/20 text-white hover:bg-white/10"
-                  : "bg-[#e63946] hover:bg-[#c92a37] text-white"
-              }
-            >
-              {action.label}
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                variant={action.variant || "default"}
+                className={
+                  action.variant === "outline"
+                    ? "border-white/[0.08] text-white hover:bg-white/[0.05] rounded-xl h-12 px-6"
+                    : "rounded-xl h-12 px-6 text-white font-semibold"
+                }
+                style={
+                  action.variant !== "outline"
+                    ? {
+                        background: "linear-gradient(135deg, #e63946 0%, #f4a261 100%)",
+                        boxShadow: "0 4px 16px rgba(230, 57, 70, 0.25)",
+                      }
+                    : undefined
+                }
+              >
+                {action.label}
+              </Button>
+            </motion.div>
           </Link>
         )}
         {secondaryAction && (
           <Button
             variant="ghost"
             onClick={secondaryAction.onClick}
-            className="text-white/70 hover:text-white hover:bg-white/5"
+            className="text-[#6b6b6b] hover:text-[#a0a0a0] hover:bg-white/[0.03] rounded-xl h-12 px-6"
           >
             {secondaryAction.label}
           </Button>

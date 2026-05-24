@@ -23,13 +23,11 @@ import { MagneticButton } from "@/components/ui/premium/magnetic-button";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 import { Sparkles } from "lucide-react";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
-const sardinianCities = [
-  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Alghero",
-  "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer",
-  "Bosa", "Castelsardo"
-];
+import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
+
+const sardinianCities = SARDINIAN_CITIES;
 
 interface RideRequest {
   id: string;
@@ -161,12 +159,13 @@ export default function RequestsPage() {
             </div>
             <div className="min-w-[140px]">
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("date")}</label>
-              <input
-                type="date"
+              <PremiumDatePicker
+                date={date}
+                onSelect={setDate}
                 min={today}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/40 transition-colors"
+                label=""
+                placeholder={t("date")}
+                className="w-full"
               />
             </div>
             <button

@@ -18,7 +18,11 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://andamus.app";
 // Generate unsubscribe token using HMAC (not forgeable without secret)
 async function getUnsubscribeToken(userId: string): Promise<string | undefined> {
   try {
-    const secret = process.env.RESEND_API_KEY || "fallback-secret";
+    const secret = process.env.RESEND_API_KEY;
+    if (!secret) {
+      console.error("[emails] RESEND_API_KEY is not set — cannot generate unsubscribe token");
+      return undefined;
+    }
     const token = crypto
       .createHmac("sha256", secret)
       .update(`${userId}:${Date.now()}`)

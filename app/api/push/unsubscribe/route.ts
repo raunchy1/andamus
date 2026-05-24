@@ -1,32 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withAuth, apiError, apiSuccess, parseBody } from "@/lib/server/api-utils";
+import { rateLimitPresets } from "@/lib/server/rate-limit/redis";
+import { z } from "zod";
+import type { AuthContext } from "@/lib/server/guards/auth";
 
-export async function POST(req: NextRequest) {
+const unsubscribeSchema = z.object({
+  endpoint: z.string().url("Invalid endpoint URL"),
+});
+
+async function handler(req: NextRequest, ctx: AuthContext) {
+  const body = await parseBody(req, unsubscribeSchema);
+
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { error } = await supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("endpoint", body.endpoint)
+    .eq("user_id", ctx.userId);
+
+  if (error) {
+    console.error("[push/unsubscribe] DB error:", error);
+    return apiError("Failed to remove subscription", "DB_ERROR", 500);
   }
 
-  try {
-    const { endpoint } = await req.json();
-    if (!endpoint) {
-      return NextResponse.json({ error: "Invalid endpoint" }, { status: 400 });
-    }
-
-    const { error } = await supabase
-      .from("push_subscriptions")
-      .delete()
-      .eq("endpoint", endpoint)
-      .eq("user_id", user.id);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  }
+  return apiSuccess({ unsubscribed: true });
 }
+
+export const POST = withAuth(handler, { rateLimit: rateLimitPresets.strict });

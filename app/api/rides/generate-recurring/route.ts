@@ -1,26 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { apiError, apiSuccess } from "@/lib/server/api-utils";
+import { checkRateLimit, rateLimitPresets } from "@/lib/server/rate-limit/redis";
+import { env } from "@/lib/server/validators/env";
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
+  // ── Cron secret validation (fail closed) ──
   const authHeader = req.headers.get("authorization");
+  const cronSecret = env().CRON_SECRET;
 
-  // Simple cron secret protection (fail closed)
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret || !authHeader || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+    return apiError("Unauthorized", "UNAUTHORIZED", 401);
+  }
+
+  // ── Rate limit by cron signature ──
+  const rl = await checkRateLimit({
+    identifier: "cron:generate-recurring",
+    ...rateLimitPresets.cron,
+  });
+  if (!rl.success) {
+    return apiError("Rate limit exceeded", "RATE_LIMITED", 429);
   }
 
   try {
+    const supabase = createServiceRoleClient();
     const { data, error } = await supabase.rpc("generate_rides_from_templates", {
       p_days_ahead: 30,
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error("[rides/generate-recurring] RPC error:", error);
+      throw error;
+    }
 
-    return NextResponse.json({ generated: data });
+    const response = apiSuccess({ generated: data });
+    response.headers.set("X-RateLimit-Limit", String(rl.limit));
+    response.headers.set("X-RateLimit-Remaining", String(rl.remaining));
+    return response;
   } catch (err) {
     const message = err instanceof Error ? err.message : "Generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[rides/generate-recurring] Error:", message);
+    return apiError(message, "GENERATION_FAILED", 500);
   }
+}
+
+// Also support GET for manual triggering
+export async function GET(req: NextRequest) {
+  return POST(req);
 }

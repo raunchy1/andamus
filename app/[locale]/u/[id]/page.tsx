@@ -14,11 +14,20 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it";
 
   const supabase = await createClient();
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from("profiles")
     .select("name, rating, review_count, completed_rides_count, created_at")
-    .eq("id", id)
+    .eq("slug", id)
     .single();
+
+  if (!profile) {
+    const { data: profileById } = await supabase
+      .from("profiles")
+      .select("name, rating, review_count, completed_rides_count, created_at")
+      .eq("id", id)
+      .single();
+    profile = profileById;
+  }
 
   if (!profile) {
     return {
@@ -74,11 +83,19 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   const supabase = await createClient();
 
-  const { data: profileRaw } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", id)
-    .single();
+  // Try resolving as slug first, then fall back to UUID
+  let profileQuery = supabase.from("profiles").select("*").eq("slug", id);
+  let { data: profileRaw } = await profileQuery.single();
+
+  if (!profileRaw) {
+    // Fallback to UUID lookup for backward compatibility
+    const { data: profileById } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", id)
+      .single();
+    profileRaw = profileById;
+  }
 
   if (!profileRaw) {
     notFound();

@@ -1,48 +1,56 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { ensureVapidDetails, webPush } from "@/lib/web-push";
 import { createClient } from "@/lib/supabase/server";
+import { withAuth, apiError, apiSuccess, parseBody } from "@/lib/server/api-utils";
+import { rateLimitPresets } from "@/lib/server/rate-limit/redis";
+import { pushSendSchema } from "@/lib/validators/notifications";
+import type { AuthContext } from "@/lib/server/guards/auth";
 
-export async function POST(req: NextRequest) {
+async function handler(req: NextRequest, ctx: AuthContext) {
+  ensureVapidDetails();
+
+  const body = await parseBody(req, pushSendSchema);
+
+  const supabase = await createClient();
+
+  // Verify the subscription belongs to the authenticated user
+  const { data: sub, error: subError } = await supabase
+    .from("push_subscriptions")
+    .select("p256dh, auth, user_id")
+    .eq("endpoint", body.endpoint)
+    .maybeSingle();
+
+  if (subError) {
+    console.error("[push/send] DB error:", subError);
+    return apiError("Database error", "DB_ERROR", 500);
+  }
+
+  if (!sub) {
+    return apiError("Subscription not found", "NOT_FOUND", 404);
+  }
+
+  if (sub.user_id !== ctx.userId) {
+    return apiError("You do not own this subscription", "FORBIDDEN", 403);
+  }
+
+  const payload = JSON.stringify({
+    title: body.title,
+    body: body.body || "",
+    icon: body.icon || "/icon-192x192.png",
+    url: body.url || "/",
+  });
+
   try {
-    ensureVapidDetails();
-    const { endpoint, title, body, icon, url } = await req.json();
-    if (!endpoint || !title) {
-      return NextResponse.json({ error: "Missing endpoint or title" }, { status: 400 });
-    }
-
-    const supabase = await createClient();
-
-    // Verify authenticated user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Verify the subscription belongs to the authenticated user
-    const { data: sub } = await supabase
-      .from("push_subscriptions")
-      .select("p256dh, auth, user_id")
-      .eq("endpoint", endpoint)
-      .single();
-
-    if (!sub) {
-      return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
-    }
-
-    if (sub.user_id !== user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    const payload = JSON.stringify({ title, body: body || "", icon: icon || "/icon-192x192.png", url: url || "/" });
-
     await webPush.sendNotification(
-      { endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+      { endpoint: body.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
       payload
     );
-
-    return NextResponse.json({ success: true });
+    return apiSuccess({ sent: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Send failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[push/send] WebPush error:", message);
+    return apiError(message, "SEND_FAILED", 500);
   }
 }
+
+export const POST = withAuth(handler, { rateLimit: rateLimitPresets.standard });

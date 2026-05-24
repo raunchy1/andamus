@@ -1,40 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { withAuth, apiError, apiSuccess, parseBody } from "@/lib/server/api-utils";
+import { checkRateLimit, rateLimitPresets } from "@/lib/server/rate-limit/redis";
+import type { AuthContext } from "@/lib/server/guards/auth";
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+const feedbackSchema = z.object({
+  type: z.enum(["bug", "feature", "improvement", "other"]),
+  message: z.string().min(10, "Message must be at least 10 characters").max(5000, "Message too long"),
+  page: z.string().max(500).optional(),
+});
 
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+async function handler(req: NextRequest, ctx: AuthContext) {
+  const body = await parseBody(req, feedbackSchema);
 
-    const body = await req.json();
-    const { type, rating, message } = body;
+  const supabase = await createClient();
 
-    if (!type || !message || typeof rating !== "number" || rating < 1 || rating > 5) {
-      return NextResponse.json({ error: "Invalid feedback data" }, { status: 400 });
-    }
+  const { error } = await supabase.from("feedback").insert({
+    user_id: ctx.userId,
+    type: body.type,
+    message: body.message,
+    page: body.page || null,
+  });
 
-    const { error } = await supabase.from("beta_feedback").insert({
-      user_id: user.id,
-      type,
-      rating,
-      message: message.trim().slice(0, 2000),
-    });
-
-    if (error) {
-      console.error("[feedback] insert error:", error.message);
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("[feedback] unexpected error:", err);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  if (error) {
+    console.error("[feedback] DB error:", error);
+    return apiError("Failed to submit feedback", "DB_ERROR", 500);
   }
+
+  return apiSuccess({ submitted: true });
 }
+
+export const POST = withAuth(handler, { rateLimit: rateLimitPresets.standard });

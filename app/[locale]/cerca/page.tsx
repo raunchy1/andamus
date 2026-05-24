@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
@@ -18,7 +19,9 @@ import { TrustBadge } from "@/components/TrustBadge";
 import { Analytics } from "@/lib/analytics";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
+import { PremiumRideCard } from "@/components/cerca/PremiumRideCard";
 import { AlertModal } from "@/components/cerca/AlertModal";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
 import { GradientText } from "@/components/ui/premium/gradient-text";
@@ -26,11 +29,9 @@ import { MagneticButton } from "@/components/ui/premium/magnetic-button";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
-const sardinianCities = [
-  "Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Tortolì", "Lanusei",
-  "Iglesias", "Alghero",
-  "Siniscola", "Dorgali", "Muravera", "Villacidro", "Sanluri", "Macomer", "Bosa", "Castelsardo"
-];
+import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
+
+const sardinianCities = SARDINIAN_CITIES;
 
 function getFilterOptions(t: (key: string) => string) {
   return [
@@ -295,21 +296,21 @@ function SearchMobile(props: SearchViewProps) {
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2">{t('dateRange')}</label>
                 <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    value={dateFrom}
+                  <PremiumDatePicker
+                    date={dateFrom}
+                    onSelect={setDateFrom}
                     min={today}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
                     placeholder="Da"
+                    label=""
+                    className="w-full"
                   />
-                  <input
-                    type="date"
-                    value={dateTo}
+                  <PremiumDatePicker
+                    date={dateTo}
+                    onSelect={setDateTo}
                     min={dateFrom || today}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full bg-surface-container-high rounded-lg px-3 py-2 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
                     placeholder="A"
+                    label=""
+                    className="w-full"
                   />
                 </div>
               </div>
@@ -442,91 +443,14 @@ function SearchMobile(props: SearchViewProps) {
 
           {!loading && !hasError && rides.map((ride, idx) => (
             <RevealItem key={ride.id}>
-            <Link
-              href={`/${locale}/corsa/${ride.id}`}
-              className={`group relative block overflow-hidden rounded-2xl p-4 sm:p-6 transition-all duration-300 active:scale-[0.98] cursor-pointer border ${
-                idx === 0
-                  ? "border-[#ffb3b1]/25 bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent"
-                  : "border-white/8 bg-white/[0.025] hover:bg-white/[0.04] hover:border-white/15"
-              }`}
-            >
-              <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
-                <div className="space-y-1 min-w-0">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffb3b1]">
-                    {ride.date === today ? t('availableToday') : formatDate(ride.date)}
-                  </span>
-                  <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tighter text-[#e5e2e1]">{ride.time.slice(0, 5)}</h3>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-2xl sm:text-3xl font-extrabold tracking-tighter">
-                    {ride.price === 0 ? <GradientText>{t('free')}</GradientText> : <span className="text-[#e5e2e1]">{`€${ride.price}`}</span>}
-                  </div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-[#e5e2e1]/50">{t('singleSeat')}</div>
-                </div>
-              </div>
-
-              {/* Path Indicator */}
-              <div className="relative py-6 sm:py-8 flex items-center justify-between">
-                <div className="absolute left-0 right-0 h-[2px] bg-white/8" />
-                <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-[#ffb3b1] via-[#e63946] to-[#ffb3b1] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
-                <div className="relative z-10 flex flex-col items-start pr-2 sm:pr-4 max-w-[40%]">
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#ffb3b1] mb-1 truncate max-w-full">{ride.from_city}</span>
-                  <div className="w-3 h-3 rounded-full bg-[#ffb3b1] ring-4 ring-[#0e0e0e]" />
-                </div>
-                <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 flex-shrink-0">
-                  <Car className="w-5 h-5 sm:w-6 sm:h-6 text-[#ffb3b1] transition-transform group-hover:scale-110" />
-                </div>
-                <div className="relative z-10 flex flex-col items-end pl-2 sm:pl-4 max-w-[40%]">
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#e5e2e1] mb-1 opacity-60 truncate max-w-full">{ride.to_city}</span>
-                  <div className="w-3 h-3 rounded-full bg-white/20 ring-4 ring-[#0e0e0e]" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between mt-4 sm:mt-6 pt-4 border-t border-white/5">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Link
-                    href={`/${locale}/u/${ride.driver_id}`}
-                    onClick={() => Analytics.shareEvent?.("profile_click", { source: "search", driver_id: ride.driver_id })}
-                    className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden flex-shrink-0 hover:ring-2 hover:ring-[#e63946]/50 transition-all"
-                  >
-                    {ride.profiles.avatar_url ? (
-                      <Image
-                        src={ride.profiles.avatar_url}
-                        alt={ride.profiles.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-[#e5e2e1]/60" />
-                      </div>
-                    )}
-                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-[#0e0e0e]" />
-                  </Link>
-                  <div className="min-w-0">
-                    <Link
-                      href={`/${locale}/u/${ride.driver_id}`}
-                      onClick={() => Analytics.shareEvent?.("profile_click", { source: "search", driver_id: ride.driver_id })}
-                    >
-                      <p className="font-bold text-[#e5e2e1] truncate hover:text-[#e63946] transition-colors">{ride.profiles.name}</p>
-                    </Link>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
-                      <span className="text-[11px] font-bold text-[#e5e2e1]/60">
-                        {ride.profiles.rating}
-                      </span>
-                      <span className="text-[10px] text-[#e5e2e1]/30">
-                        ({ride.profiles.review_count || 0})
-                      </span>
-                      {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
-                        <BadgeCheck className="w-3.5 h-3.5 text-[#ffb3b1] ml-1" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-[#e5e2e1]/40 group-hover:translate-x-1 group-hover:text-[#ffb3b1] transition-all flex-shrink-0" />
-              </div>
-            </Link>
+              <PremiumRideCard
+                ride={ride}
+                index={idx}
+                today={today}
+                formatDate={formatDate}
+                variant="list"
+                t={t}
+              />
             </RevealItem>
           ))}
         </RevealStagger>
@@ -625,19 +549,21 @@ function SearchDesktop(props: SearchViewProps) {
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('dateLabel')}</label>
             <div className="flex gap-2">
-              <input
-                type="date"
-                value={dateFrom}
+              <PremiumDatePicker
+                date={dateFrom}
+                onSelect={setDateFrom}
                 min={today}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+                placeholder="Da"
+                label=""
+                className="flex-1"
               />
-              <input
-                type="date"
-                value={dateTo}
+              <PremiumDatePicker
+                date={dateTo}
+                onSelect={setDateTo}
                 min={dateFrom || today}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+                placeholder="A"
+                label=""
+                className="flex-1"
               />
             </div>
           </div>
@@ -651,73 +577,99 @@ function SearchDesktop(props: SearchViewProps) {
         {/* Filter Pills & Actions */}
         <div className="flex flex-wrap items-center gap-3">
           {getFilterOptions(t).map((option) => (
-            <button type="button"
+            <motion.button type="button"
               key={option.id}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
-              className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${
+              className={`px-5 py-2.5 rounded-full font-semibold text-[11px] uppercase tracking-widest transition-all ${
                 activeFilter === option.id
-                  ? "bg-[#ffb3b1] text-[#0f0f0f]"
-                  : "bg-[#1a1a1a] text-[#e5e2e1] border border-white/10 hover:border-white/20"
+                  ? "text-white"
+                  : "bg-[#1a1a1a] text-[#a0a0a0] border border-white/[0.06] hover:border-white/[0.1] hover:text-[#e5e2e1]"
               }`}
+              style={activeFilter === option.id ? {
+                background: "linear-gradient(135deg, #e63946 0%, #f4a261 100%)",
+                boxShadow: "0 4px 12px rgba(230, 57, 70, 0.25)",
+              } : undefined}
             >
               {option.label}
-            </button>
+            </motion.button>
           ))}
-          <button type="button"
+          <motion.button type="button"
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowAlertModal(true)}
-            className="px-5 py-2 bg-[#1a1a1a] text-[#ffb3b1] rounded-full font-bold text-[11px] uppercase tracking-widest border border-white/10 hover:border-[#ffb3b1]/30 transition-all flex items-center gap-2"
+            className="px-5 py-2.5 bg-[#1a1a1a] text-[#e63946] rounded-full font-semibold text-[11px] uppercase tracking-widest border border-white/[0.06] hover:border-[#e63946]/20 transition-all flex items-center gap-2"
           >
             <Bell className="w-3 h-3" />
             {t('alertButton')}
-          </button>
-          <button type="button"
+          </motion.button>
+          <motion.button type="button"
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowFilters(!showFilters)}
-            className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest border transition-all flex items-center gap-2 ${
+            className={`px-5 py-2.5 rounded-full font-semibold text-[11px] uppercase tracking-widest border transition-all flex items-center gap-2 ${
               showFilters || activeFiltersCount > 0
-                ? "bg-[#ffb3b1] text-[#0f0f0f] border-[#ffb3b1]"
-                : "bg-[#1a1a1a] text-[#e5e2e1] border-white/10 hover:border-white/20"
+                ? "text-white border-transparent"
+                : "bg-[#1a1a1a] text-[#a0a0a0] border-white/[0.06] hover:border-white/[0.1] hover:text-[#e5e2e1]"
             }`}
+            style={showFilters || activeFiltersCount > 0 ? {
+              background: "linear-gradient(135deg, #e63946 0%, #f4a261 100%)",
+              boxShadow: "0 4px 12px rgba(230, 57, 70, 0.25)",
+            } : undefined}
           >
             <SlidersHorizontal className="w-3 h-3" />
             {t('advancedFilters')}
             {activeFiltersCount > 0 && !showFilters && (
-              <span className="ml-1 w-4 h-4 bg-[#0f0f0f] text-[#ffb3b1] rounded-full text-[9px] font-bold flex items-center justify-center">
+              <span className="ml-1 w-4 h-4 bg-white/20 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
                 {activeFiltersCount}
               </span>
             )}
-          </button>
+          </motion.button>
           {activeFiltersCount > 0 && (
-            <button type="button"
+            <motion.button type="button"
+              whileTap={{ scale: 0.95 }}
               onClick={clearFilters}
-              className="px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest text-[#e5e2e1] hover:text-[#ffb3b1] transition-colors"
+              className="px-5 py-2.5 rounded-full font-semibold text-[11px] uppercase tracking-widest text-[#6b6b6b] hover:text-[#e63946] transition-colors"
             >
               {t('clearFilters')}
-            </button>
+            </motion.button>
           )}
         </div>
 
         {/* Advanced Filters Panel */}
+        <AnimatePresence>
         {showFilters && (
-          <div className="bg-[#141414] border border-white/5 rounded-2xl p-6 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-2xl p-6 space-y-6"
+            style={{
+              background: "linear-gradient(180deg, #111111 0%, #0d0d0d 100%)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.02)",
+            }}
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('fromDateShort')}</label>
-                <input
-                  type="date"
-                  value={dateFrom}
+                <PremiumDatePicker
+                  date={dateFrom}
+                  onSelect={setDateFrom}
                   min={today}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+                  placeholder="Da"
+                  label=""
+                  className="w-full"
                 />
               </div>
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('toDateShort')}</label>
-                <input
-                  type="date"
-                  value={dateTo}
+                <PremiumDatePicker
+                  date={dateTo}
+                  onSelect={setDateTo}
                   min={dateFrom || today}
-                  onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/50"
+                  placeholder="A"
+                  label=""
+                  className="w-full"
                 />
               </div>
               <div>
@@ -788,19 +740,27 @@ function SearchDesktop(props: SearchViewProps) {
                 { id: "women", label: t('womenFilter'), state: prefWomen, setState: setPrefWomen },
                 { id: "students", label: t('studentsFilter'), state: prefStudents, setState: setPrefStudents },
               ].map((item) => (
-                <label
+                <motion.label
                   key={item.id}
-                  className={`flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors border ${
-                    item.state ? 'bg-[#ffb3b1] text-[#0f0f0f] border-[#ffb3b1]' : 'bg-[#1a1a1a] text-[#e5e2e1] border-white/10 hover:border-white/20'
+                  whileTap={{ scale: 0.95 }}
+                  className={`flex cursor-pointer items-center gap-2 rounded-full px-4 py-2.5 text-sm transition-all border ${
+                    item.state
+                      ? "text-white border-transparent"
+                      : "bg-[#1a1a1a] text-[#a0a0a0] border-white/[0.06] hover:border-white/[0.1] hover:text-[#e5e2e1]"
                   }`}
+                  style={item.state ? {
+                    background: "linear-gradient(135deg, #e63946 0%, #f4a261 100%)",
+                    boxShadow: "0 4px 12px rgba(230, 57, 70, 0.2)",
+                  } : undefined}
                 >
                   <input type="checkbox" checked={item.state} onChange={(e) => item.setState(e.target.checked)} className="hidden" />
                   <span className="text-[11px] font-bold uppercase tracking-wider">{item.label}</span>
-                </label>
+                </motion.label>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* Results count */}
@@ -857,112 +817,14 @@ function SearchDesktop(props: SearchViewProps) {
 
         {!loading && !hasError && rides.map((ride, idx) => (
           <RevealItem key={ride.id}>
-          <TiltCard
-            tiltStrength={6}
-            className={`relative h-full rounded-3xl border ${
-              idx === 0
-                ? "border-[#ffb3b1]/30 bg-gradient-to-br from-[#ffb3b1]/[0.08] via-[#e63946]/[0.04] to-transparent"
-                : "border-white/8 bg-white/[0.025] hover:border-white/15"
-            } backdrop-blur-sm`}
-          >
-          <Link
-            href={`/${locale}/corsa/${ride.id}`}
-            className="group block p-6 touch-manipulation"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="space-y-1">
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#ffb3b1]">
-                  {idx === 0 && <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#ffb3b1] animate-pulse" />}
-                  {ride.date === today ? t('today') : formatDate(ride.date)}
-                </span>
-                <h3 className="text-3xl font-extrabold tracking-tighter text-[#e5e2e1]">{ride.time.slice(0, 5)}</h3>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-extrabold tracking-tighter">
-                  {ride.price === 0 ? <GradientText>{t('free')}</GradientText> : <span className="text-[#e5e2e1]">{`€${ride.price}`}</span>}
-                </div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[#e5e2e1]/50">{t('singleSeat')}</div>
-              </div>
-            </div>
-
-            {/* Route */}
-            <div className="relative py-6 flex items-center justify-between mb-4">
-              <div className="absolute left-0 right-0 h-[2px] bg-white/8" />
-              <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-[#ffb3b1] via-[#e63946] to-[#ffb3b1] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
-              <div className="relative z-10 flex flex-col items-start pr-4">
-                <span className="text-[11px] font-bold uppercase text-[#ffb3b1] mb-1">{ride.from_city}</span>
-                <div className="w-3 h-3 rounded-full bg-[#ffb3b1] ring-4 ring-[#0a0a0a]" />
-              </div>
-              <div className="relative z-10 flex flex-col items-center px-4">
-                <Car className="w-5 h-5 text-[#ffb3b1] transition-transform group-hover:scale-110" />
-              </div>
-              <div className="relative z-10 flex flex-col items-end pl-4">
-                <span className="text-[11px] font-bold uppercase text-[#e5e2e1] mb-1 opacity-60">{ride.to_city}</span>
-                <div className="w-3 h-3 rounded-full bg-white/20 ring-4 ring-[#0a0a0a]" />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-              <div className="flex items-center gap-3">
-                <Link
-                  href={`/${locale}/u/${ride.driver_id}`}
-                  onClick={() => Analytics.shareEvent?.("profile_click", { source: "search_desktop", driver_id: ride.driver_id })}
-                  className="relative w-12 h-12 rounded-full border border-white/10 bg-white/5 overflow-hidden hover:ring-2 hover:ring-[#e63946]/50 transition-all"
-                >
-                  {ride.profiles.avatar_url ? (
-                    <Image
-                      src={ride.profiles.avatar_url}
-                      alt={ride.profiles.name}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-[#e5e2e1]/60" />
-                    </div>
-                  )}
-                  <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 border-2 border-[#0a0a0a]" />
-                </Link>
-                <div>
-                  <Link
-                    href={`/${locale}/u/${ride.driver_id}`}
-                    onClick={() => Analytics.shareEvent?.("profile_click", { source: "search_desktop", driver_id: ride.driver_id })}
-                  >
-                    <p className="font-bold text-[#e5e2e1] hover:text-[#e63946] transition-colors">{ride.profiles.name}</p>
-                  </Link>
-                  <div className="flex items-center gap-1.5">
-                    <Star className="w-3 h-3 text-[#ffb3b1] fill-[#ffb3b1]" />
-                    <span className="text-[11px] font-bold text-[#e5e2e1]/60">
-                      {ride.profiles.rating}
-                    </span>
-                    <span className="text-[10px] text-[#e5e2e1]/30">
-                      ({ride.profiles.review_count || 0})
-                    </span>
-                  </div>
-                  <TrustBadge
-                    profile={{
-                      rating: ride.profiles.rating,
-                      review_count: ride.profiles.review_count || 0,
-                      rides_count: ride.profiles.rides_count || 0,
-                      completed_rides_count: ride.profiles.completed_rides_count || 0,
-                      phone_verified: ride.profiles.phone_verified,
-                      id_verified: ride.profiles.id_verified,
-                    }}
-                    size="sm"
-                    showLabel={false}
-                    showScore
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
-                  <BadgeCheck className="w-5 h-5 text-[#ffb3b1]" />
-                )}
-                <ChevronRight className="w-4 h-4 text-[#e5e2e1]/40 group-hover:translate-x-1 group-hover:text-[#ffb3b1] transition-all" />
-              </div>
-            </div>
-          </Link>
-          </TiltCard>
+            <PremiumRideCard
+              ride={ride}
+              index={idx}
+              today={today}
+              formatDate={formatDate}
+              variant="grid"
+              t={t}
+            />
           </RevealItem>
         ))}
       </RevealStagger>
@@ -1239,8 +1101,29 @@ export default function SearchPage() {
     <div className="min-h-screen bg-[#0e0e0e]">
       <ErrorBoundary>
         <Suspense fallback={
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <div className="min-h-screen bg-[#0e0e0e] pt-16 pb-24">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6">
+              <div className="mb-8">
+                <div className="h-5 w-32 mb-2 bg-white/[0.06] rounded-lg animate-pulse" />
+                <div className="h-9 w-24 bg-white/[0.08] rounded-lg animate-pulse" />
+              </div>
+              <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3 mb-6">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="h-10 w-full bg-white/[0.05] rounded-lg animate-pulse" />
+                  <div className="h-10 w-full bg-white/[0.05] rounded-lg animate-pulse" />
+                </div>
+              </div>
+              <div className="flex gap-2 mb-8 overflow-hidden">
+                {[1,2,3,4,5].map((i) => (
+                  <div key={i} className="h-8 rounded-full flex-shrink-0 bg-white/[0.05] animate-pulse w-20" />
+                ))}
+              </div>
+              <div className="space-y-4">
+                {[1,2,3].map((i) => (
+                  <div key={i} className="bg-white/[0.025] border border-white/[0.06] rounded-2xl p-4 sm:p-6 animate-pulse h-48" />
+                ))}
+              </div>
+            </div>
           </div>
         }>
           <SearchContent />

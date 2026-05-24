@@ -10,4 +10,19 @@ Sentry.init({
   release: process.env.VERCEL_GIT_COMMIT_SHA || undefined,
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
   debug: false,
+
+  // Scrub potentially sensitive headers in edge environment
+  beforeSend(event) {
+    if (event.request?.headers) {
+      const scrubbed = { ...event.request.headers };
+      const sensitive = ["authorization", "cookie", "x-api-key", "stripe-signature"];
+      for (const key of Object.keys(scrubbed)) {
+        if (sensitive.includes(key.toLowerCase())) {
+          scrubbed[key] = "[REDACTED]";
+        }
+      }
+      event.request.headers = scrubbed;
+    }
+    return event;
+  },
 });

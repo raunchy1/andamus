@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { type NextResponse } from "next/server";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -22,6 +23,32 @@ export async function createClient() {
             // This can be ignored if you have middleware refreshing
             // user sessions.
           }
+        },
+      },
+    }
+  );
+}
+
+/**
+ * Create a Supabase client for Route Handlers.
+ * REQUIRED for OAuth callbacks and any route that writes auth cookies.
+ * `response.cookies.set()` is the only way to persist cookies in a Route Handler.
+ */
+export async function createRouteHandlerClient(response: NextResponse) {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
