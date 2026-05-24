@@ -1,10 +1,8 @@
-import "server-only";
+"use server";
 
 import {
   isAdmin as checkIsAdmin,
   requireAdmin as _requireAdmin,
-  isAdminInDatabase,
-  isAdminEmail,
 } from "@/lib/session";
 
 export async function isAdmin(userId: string, email?: string | null): Promise<boolean> {
@@ -14,8 +12,6 @@ export async function isAdmin(userId: string, email?: string | null): Promise<bo
 export async function requireAdmin() {
   return _requireAdmin();
 }
-
-export { isAdminInDatabase, isAdminEmail };
 
 /**
  * @deprecated Use `requireAdmin()` directly.

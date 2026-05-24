@@ -2,12 +2,16 @@
  * Server-side admin authorization guards.
  * Checks admin role from database `user_roles` table first,
  * falls back to env-based admin emails for migration period.
+ *
+ * NOTE: This file must NOT statically import from @/lib/supabase/server
+ * or anything that uses next/headers, because middleware.ts imports isAdmin
+ * from here. Dynamic imports are used for requireAdmin/apiAdminGuard so
+ * that next/headers is not bundled into the middleware.
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { AuthError, requireAuth, type AuthContext } from "./auth";
 import { env } from "@/lib/server/validators/env";
+import type { AuthContext } from "./auth";
 
 // Env-based fallback for migration period
 function getEnvAdminEmails(): string[] {
@@ -72,8 +76,10 @@ export async function checkIsAdmin(userId: string, email?: string | null): Promi
 
 /**
  * Require admin access. Throws AuthError if not admin.
+ * Uses dynamic import to avoid pulling next/headers into the middleware bundle.
  */
 export async function requireAdmin(): Promise<AuthContext> {
+  const { requireAuth, AuthError } = await import("./auth");
   const ctx = await requireAuth();
   const admin = await checkIsAdmin(ctx.userId, ctx.user.email);
 
