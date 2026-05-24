@@ -1,131 +1,66 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { FEATURES } from "@/lib/features";
-import {
-  buildSafeRedirectUrl,
-  verifyOAuthState,
-  clearOAuthStateCookie,
-  extractLocaleFromPathname,
-} from "@/lib/auth-helpers";
+import { NextRequest, NextResponse } from "next/server";
+import { createRouteHandlerClient } from "@/lib/supabase/server";
+
+const VALID_LOCALES = ["it", "en", "de"] as const;
+type ValidLocale = (typeof VALID_LOCALES)[number];
+
+function safeLocale(raw: string): ValidLocale {
+  return VALID_LOCALES.includes(raw as ValidLocale) ? (raw as ValidLocale) : "it";
+}
 
 /**
- * Hardened OAuth callback handler.
+ * OAuth / PKCE callback handler — server-side only.
  *
- * SECURITY FIXES APPLIED:
- * - State parameter verified against httpOnly cookie (CSRF protection)
- * - Redirects validated against whitelist (open redirect fix)
- * - Fixed base URL from env vars — NEVER uses request.url or X-Forwarded-Host
- * - Safe error handling — no internal error leakage
- * - Automatic OAuth state cookie cleanup
+ * Why a Route Handler instead of a client component:
+ * - The middleware calls updateSession() which refreshes the existing auth session
+ *   and can inadvertently consume/clear the PKCE code-verifier cookie before the
+ *   browser-side exchangeCodeForSession() has a chance to use it.
+ * - A Route Handler runs before React rendering, reads the code + verifier from
+ *   cookies atomically, and sets the new session cookies on the redirect response.
+ * - This eliminates the race between middleware cookie management and client-side exchange.
  */
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ locale: string }> }
+) {
+  const { locale: rawLocale } = await params;
+  const locale = safeLocale(rawLocale);
+
+  const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const locale = extractLocaleFromPathname(request.nextUrl.pathname);
-
-  // ── 1. Handle OAuth provider errors ─────────────────────────────
   const oauthError = searchParams.get("error");
+  const next = searchParams.get("next") ?? "";
+
+  // ── Google / Supabase returned an error ──
   if (oauthError) {
-    const description = searchParams.get("error_description") ?? oauthError;
-    console.error("[auth/callback] OAuth provider error:", { oauthError, description });
-
-    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
-    const response = NextResponse.redirect(errorUrl);
-    clearOAuthStateCookie(response);
-    return response;
+    return NextResponse.redirect(
+      `${origin}/${locale}/auth/auth-code-error?reason=oauth_error&error=${encodeURIComponent(oauthError)}`
+    );
   }
 
-  // ── 2. Verify OAuth state (CSRF protection) ─────────────────────
-  if (!verifyOAuthState(request)) {
-    console.error("[auth/callback] OAuth state mismatch or missing — possible CSRF attack");
-    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
-    const response = NextResponse.redirect(errorUrl);
-    clearOAuthStateCookie(response);
-    return response;
-  }
-
-  // ── 3. Exchange code for session ────────────────────────────────
+  // ── No code in callback (direct navigation, bot, etc.) ──
   if (!code) {
-    console.error("[auth/callback] Missing authorization code");
-    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
-    const response = NextResponse.redirect(errorUrl);
-    clearOAuthStateCookie(response);
-    return response;
+    return NextResponse.redirect(
+      `${origin}/${locale}/auth/auth-code-error?reason=missing_code`
+    );
   }
 
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
+  // ── Build the redirect response first so we can set cookies on it ──
+  const safeNext =
+    next && next.startsWith("/") && !next.includes("://") ? next : `/${locale}/profilo`;
+  const successRedirect = NextResponse.redirect(`${origin}${safeNext}`);
 
-  if (error || !user) {
-    console.error("[auth/callback] Session exchange failed:", error?.message);
-    const errorUrl = buildSafeRedirectUrl(`/${locale}/auth/auth-code-error`, locale);
-    const response = NextResponse.redirect(errorUrl);
-    clearOAuthStateCookie(response);
-    return response;
+  // ── Exchange PKCE code for session (server-side) ──
+  const supabase = await createRouteHandlerClient(successRedirect);
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (exchangeError) {
+    console.error("[auth/callback] PKCE exchange failed:", exchangeError.message);
+    return NextResponse.redirect(
+      `${origin}/${locale}/auth/auth-code-error?reason=exchange_failed&err=${encodeURIComponent(exchangeError.message)}`
+    );
   }
 
-  // ── 4. Apply referral bonus if present ──────────────────────────
-  const cookieHeader = request.headers.get("cookie");
-  const pendingRefMatch = cookieHeader?.match(/pending_referral_code=([^;]+)/);
-  const pendingRefCode = pendingRefMatch ? decodeURIComponent(pendingRefMatch[1]) : null;
-
-  if (pendingRefCode) {
-    try {
-      await supabase.rpc("apply_referral_bonus", {
-        new_user_id: user.id,
-        referrer_code: pendingRefCode,
-      });
-    } catch (err) {
-      console.error("[auth/callback] Referral bonus failed:", err);
-      // Non-fatal — don't block login
-    }
-  }
-
-  // ── 5. Send welcome email for new users ─────────────────────────
-  const { data: existingProfile } = await supabase
-    .from("profiles")
-    .select("id, created_at")
-    .eq("id", user.id)
-    .single();
-
-  const isNewUser = !existingProfile || (
-    existingProfile.created_at &&
-    new Date(existingProfile.created_at).getTime() > Date.now() - 60000
-  );
-
-  if (isNewUser) {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "https://andamus.it"}/api/emails/welcome`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id }),
-      });
-    } catch (err) {
-      console.error("[auth/callback] welcome email failed (non-fatal):", err);
-    }
-  }
-
-  // ── 6. Check if user has a profile ──────────────────────────────
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("id", user.id)
-    .single();
-
-  const nextPath = searchParams.get("next");
-  const fallbackPath = profile
-    ? `/${locale}/profilo`
-    : FEATURES.WAITLIST_MODE
-      ? `/${locale}/lansare`
-      : `/${locale}/profilo`;
-
-  const redirectUrl = buildSafeRedirectUrl(nextPath, locale, fallbackPath);
-
-  const response = NextResponse.redirect(redirectUrl);
-
-  // ── 6. Cleanup cookies ──────────────────────────────────────────
-  clearOAuthStateCookie(response);
-  response.cookies.delete("pending_referral_code");
-
-  return response;
+  // ── Session cookies are already set on successRedirect by setAll() ──
+  return successRedirect;
 }
