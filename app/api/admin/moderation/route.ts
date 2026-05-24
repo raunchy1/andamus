@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAdmin } from "@/lib/server/api-utils";
+import { requireAdmin, AuthError } from "@/lib/server/guards";
 import { getModerationQueue, resolveReport } from "@/lib/server/moderation/reports";
 import { z } from "zod";
 
@@ -15,31 +15,38 @@ const querySchema = z.object({
  * Returns the moderation queue for admin review.
  */
 export async function GET(request: NextRequest) {
-  return withAdmin(async () => {
-    const searchParams = request.nextUrl.searchParams;
-    const parsed = querySchema.safeParse({
-      status: searchParams.get("status") ?? undefined,
-      severity: searchParams.get("severity") ?? undefined,
-      page: searchParams.get("page") ?? "1",
-      limit: searchParams.get("limit") ?? "50",
-    });
-
-    if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  try {
+    await requireAdmin();
+  } catch (err) {
+    if (err instanceof AuthError) {
+      return NextResponse.json({ error: err.message, code: err.code }, { status: err.statusCode });
     }
+    return NextResponse.json({ error: "Admin access required", code: "FORBIDDEN" }, { status: 403 });
+  }
 
-    const limit = parsed.data.limit ?? 50;
-    const offset = ((parsed.data.page ?? 1) - 1) * limit;
-
-    const { items, total } = await getModerationQueue({
-      status: parsed.data.status,
-      severity: parsed.data.severity,
-      limit,
-      offset,
-    });
-
-    return NextResponse.json({ items, total, page: parsed.data.page ?? 1, pageSize: limit });
+  const searchParams = request.nextUrl.searchParams;
+  const parsed = querySchema.safeParse({
+    status: searchParams.get("status") ?? undefined,
+    severity: searchParams.get("severity") ?? undefined,
+    page: searchParams.get("page") ?? "1",
+    limit: searchParams.get("limit") ?? "50",
   });
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  }
+
+  const limit = parsed.data.limit ?? 50;
+  const offset = ((parsed.data.page ?? 1) - 1) * limit;
+
+  const { items, total } = await getModerationQueue({
+    status: parsed.data.status,
+    severity: parsed.data.severity,
+    limit,
+    offset,
+  });
+
+  return NextResponse.json({ items, total, page: parsed.data.page ?? 1, pageSize: limit });
 }
 
 const resolveSchema = z.object({
@@ -54,28 +61,36 @@ const resolveSchema = z.object({
  * Resolve a moderation report.
  */
 export async function POST(request: NextRequest) {
-  return withAdmin(async (context) => {
-    const body = await request.json().catch(() => ({}));
-    const parsed = resolveSchema.safeParse(body);
-
-    if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  let auth: Awaited<ReturnType<typeof requireAdmin>>;
+  try {
+    auth = await requireAdmin();
+  } catch (err) {
+    if (err instanceof AuthError) {
+      return NextResponse.json({ error: err.message, code: err.code }, { status: err.statusCode });
     }
+    return NextResponse.json({ error: "Admin access required", code: "FORBIDDEN" }, { status: 403 });
+  }
 
-    const success = await resolveReport(
-      parsed.data.reportId,
-      context.userId,
-      {
-        action: parsed.data.action,
-        reason: parsed.data.reason,
-        targetUserId: parsed.data.targetUserId,
-      }
-    );
+  const body = await request.json().catch(() => ({}));
+  const parsed = resolveSchema.safeParse(body);
 
-    if (!success) {
-      return NextResponse.json({ error: "Failed to resolve report" }, { status: 500 });
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  }
+
+  const success = await resolveReport(
+    parsed.data.reportId,
+    auth.userId,
+    {
+      action: parsed.data.action,
+      reason: parsed.data.reason,
+      targetUserId: parsed.data.targetUserId,
     }
+  );
 
-    return NextResponse.json({ success: true });
-  });
+  if (!success) {
+    return NextResponse.json({ error: "Failed to resolve report" }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }
