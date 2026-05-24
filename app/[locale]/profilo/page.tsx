@@ -659,20 +659,12 @@ export default function ProfilePage() {
     return date < new Date();
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel } = useMemo(() => {
     const cRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
     const cBookings = myBookings.filter(b => b.status === 'confirmed');
     let km = 0;
     let passengers = 0;
-    
+
     cRides.forEach(ride => {
       const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
       if (dist) {
@@ -680,7 +672,7 @@ export default function ProfilePage() {
         passengers += (ride.bookings_count || 0);
       }
     });
-    
+
     cBookings.forEach(booking => {
       const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
       if (dist) km += dist;
@@ -688,7 +680,7 @@ export default function ProfilePage() {
 
     const score = profile ? computeTrustScore(profile) : 0;
     const label = getTrustLevel(score);
-    
+
     return {
       completedRides: cRides,
       completedBookings: cBookings,
@@ -699,6 +691,14 @@ export default function ProfilePage() {
       trustLabel: label,
     };
   }, [myRides, myBookings, profile]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   function ProfileMobile() {
     return (

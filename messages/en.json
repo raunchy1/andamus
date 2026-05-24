@@ -613,7 +613,8 @@
     "city": "city",
     "noCityFound": "No city found.",
     "switchToLight": "Switch to light mode",
-    "switchToDark": "Switch to dark mode"
+    "switchToDark": "Switch to dark mode",
+    "retry": "Retry"
   },
   "booking": {
     "loginRequired": "You need to sign in to book a ride",

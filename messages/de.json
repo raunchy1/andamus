@@ -613,7 +613,8 @@
     "city": "Stadt",
     "noCityFound": "Keine Stadt gefunden.",
     "switchToLight": "Zum hellen Modus wechseln",
-    "switchToDark": "Zum dunklen Modus wechseln"
+    "switchToDark": "Zum dunklen Modus wechseln",
+    "retry": "Erneut versuchen"
   },
   "booking": {
     "loginRequired": "Du musst angemeldet sein, um eine Fahrt zu buchen",

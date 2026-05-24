@@ -613,7 +613,8 @@
     "city": "città",
     "noCityFound": "Nessuna città trovata.",
     "switchToLight": "Passa alla modalità chiara",
-    "switchToDark": "Passa alla modalità scura"
+    "switchToDark": "Passa alla modalità scura",
+    "retry": "Riprova"
   },
   "booking": {
     "loginRequired": "Devi accedere per prenotare un passaggio",
