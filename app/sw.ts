@@ -54,7 +54,10 @@ const defaultCache = [
 
 // Initialize Serwist with precaching
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
+  precacheEntries: [
+    { url: "/offline", revision: "1" },
+    ...self.__SW_MANIFEST,
+  ],
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
@@ -143,11 +146,10 @@ const serwist = new Serwist({
       matcher: ({ request }: { request: Request }) => request.mode === "navigate",
       handler: async ({ request }: { request: Request }) => {
         try {
-          return await fetch(request);
+          // Use request.url instead of request to avoid navigate-mode TypeError in browsers
+          return await fetch(request.url);
         } catch {
-          const offline =
-            (await caches.match("/it/offline")) ??
-            (await caches.match("/offline"));
+          const offline = await caches.match("/offline");
           return offline ?? new Response("Offline", { status: 503 });
         }
       },

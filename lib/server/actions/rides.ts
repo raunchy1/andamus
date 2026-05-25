@@ -245,6 +245,7 @@ const TIME_RANGES = {
   night: { from: "22:00:00", to: "04:59:59" },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function applyFilters(
   query: any,
   filters: SearchFilters

@@ -127,7 +127,7 @@ export function rankItems(
   const diversityBoost = options?.diversityBoost ?? 0.05;
 
   // Initial scoring
-  let scored = items.map((item) => ({
+  const scored = items.map((item) => ({
     ...item,
     weightedScore: computeWeightedScore(item.factors),
   }));

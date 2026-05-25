@@ -6,6 +6,7 @@ import { CalendarDays, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PremiumCalendar } from "./premium-calendar";
 import { useDeviceType } from "@/components/view-mode";
+import { useLocale, useTranslations } from "next-intl";
 
 export interface PremiumDatePickerProps {
   date?: string; // YYYY-MM-DD
@@ -43,6 +44,12 @@ export function PremiumDatePicker({
   label = "Data",
   availabilityData,
 }: PremiumDatePickerProps) {
+  const locale = useLocale();
+  const t = useTranslations("calendar");
+
+  const resolvedPlaceholder = placeholder === "Seleziona data" ? t("selectDate") : placeholder;
+  const resolvedLabel = label === "Data" ? t("selectedDate") : label;
+
   const [open, setOpen] = React.useState(false);
   const deviceType = useDeviceType();
   const isMobile = deviceType === "mobile";
@@ -62,12 +69,12 @@ export function PremiumDatePicker({
   };
 
   const displayDate = selectedDate
-    ? selectedDate.toLocaleDateString("it-IT", {
+    ? selectedDate.toLocaleDateString(locale, {
         weekday: "short",
         day: "numeric",
         month: "short",
       })
-    : placeholder;
+    : resolvedPlaceholder;
 
   const isDisabled = (d: Date): boolean => {
     if (minDate && d < minDate) return true;
@@ -114,9 +121,9 @@ export function PremiumDatePicker({
           <CalendarDays className="w-5 h-5 text-[#e63946]" />
         </div>
         <div className="flex flex-col w-full min-w-0">
-          {label && (
+          {resolvedLabel && (
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#6b6b6b] mb-0.5">
-              {label}
+              {resolvedLabel}
             </span>
           )}
           <span
@@ -192,7 +199,7 @@ export function PremiumDatePicker({
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                  <span className="text-sm font-bold text-white">Selectează data</span>
+                  <span className="text-sm font-bold text-white">{t("selectDate")}</span>
                   <button
                     onClick={() => setOpen(false)}
                     className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
@@ -219,7 +226,7 @@ export function PremiumDatePicker({
                       onClick={() => setOpen(false)}
                       className="w-full py-3.5 rounded-xl bg-[#e63946] text-white font-semibold text-sm hover:bg-[#c92a37] transition-colors"
                     >
-                      Confirmă
+                      {t("confirm")}
                     </button>
                   </div>
                 )}

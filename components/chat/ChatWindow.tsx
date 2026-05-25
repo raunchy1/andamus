@@ -1137,20 +1137,6 @@ export default function ChatWindow({
   );
 
   // -- Loading / Error states --
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const otherParticipant = (() => {
-    if (!booking || !user) return null;
-    const isDriver = booking.rides.driver_id === user.id;
-    return isDriver ? booking.passenger : booking.rides.profiles;
-  })();
-
   // Memoize display messages to avoid re-sorting on every render
   const displayMessages = useMemo<DisplayMessage[]>(() => {
     const merged = [
@@ -1185,6 +1171,21 @@ export default function ChatWindow({
     (tempId: string) => handleRetry(tempId),
     [handleRetry]
   );
+
+  // -- Loading / Error states --
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const otherParticipant = (() => {
+    if (!booking || !user) return null;
+    const isDriver = booking.rides.driver_id === user.id;
+    return isDriver ? booking.passenger : booking.rides.profiles;
+  })();
 
   // ============================================================
   // VIEWS

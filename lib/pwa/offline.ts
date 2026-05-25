@@ -16,13 +16,9 @@
 const DB_NAME = "andamus-offline";
 const DB_VERSION = 1;
 
-interface OfflineDB extends IDBDatabase {
-  // Marker interface
-}
+let _db: IDBDatabase | null = null;
 
-let _db: OfflineDB | null = null;
-
-async function getDB(): Promise<OfflineDB | null> {
+async function getDB(): Promise<IDBDatabase | null> {
   if (_db) return _db;
   if (typeof window === "undefined") return null;
 
@@ -31,7 +27,7 @@ async function getDB(): Promise<OfflineDB | null> {
 
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
-      _db = request.result as OfflineDB;
+      _db = request.result;
       resolve(_db);
     };
 

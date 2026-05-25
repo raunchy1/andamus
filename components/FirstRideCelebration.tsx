@@ -13,6 +13,7 @@ interface ConfettiPiece {
   delay: number;
   size: number;
   rotation: number;
+  duration: number;
 }
 
 function generateConfetti(count: number): ConfettiPiece[] {
@@ -24,6 +25,7 @@ function generateConfetti(count: number): ConfettiPiece[] {
     delay: Math.random() * 0.5,
     size: 6 + Math.random() * 8,
     rotation: Math.random() * 360,
+    duration: 2.5 + Math.random() * 1.5,
   }));
 }
 
@@ -96,7 +98,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                   rotate: c.rotation + 720,
                 }}
                 transition={{
-                  duration: 2.5 + Math.random() * 1.5,
+                  duration: c.duration,
                   delay: c.delay,
                   ease: "easeIn",
                 }}

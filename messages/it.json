@@ -1404,5 +1404,20 @@
     "total": "totali",
     "readMore": "Leggi tutto",
     "showLess": "Mostra meno"
+  },
+  "calendar": {
+    "selectedDate": "Data selezionata",
+    "selectDate": "Seleziona una data",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "weekend": "Weekend",
+    "ridesAvailable": "{count}+ corse disponibili",
+    "oneRideAvailable": "1 corsa disponibile",
+    "noRidesAvailable": "Nessuna corsa disponibile",
+    "calendarInfo": "Scegli la data ideale per il tuo viaggio. Gli autisti verificati hanno priorità.",
+    "legend5Plus": "5+ corse",
+    "legend2To4": "2-4 corse",
+    "legend1": "1 corsa",
+    "confirm": "Conferma"
   }
 }

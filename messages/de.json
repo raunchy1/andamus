@@ -1404,5 +1404,20 @@
     "total": "gesamt",
     "readMore": "Mehr lesen",
     "showLess": "Weniger anzeigen"
+  },
+  "calendar": {
+    "selectedDate": "Ausgewähltes Datum",
+    "selectDate": "Wähle ein Datum",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "weekend": "Wochenende",
+    "ridesAvailable": "{count}+ Fahrten verfügbar",
+    "oneRideAvailable": "1 Fahrt verfügbar",
+    "noRidesAvailable": "Keine Fahrten verfügbar",
+    "calendarInfo": "Wählen Sie das ideale Datum für Ihre Reise. Verifizierte Fahrer haben Priorität.",
+    "legend5Plus": "5+ Fahrten",
+    "legend2To4": "2-4 Fahrten",
+    "legend1": "1 Fahrt",
+    "confirm": "Bestätigen"
   }
 }

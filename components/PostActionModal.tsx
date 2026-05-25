@@ -86,6 +86,11 @@ export function PostActionModal({
       })()
     : "";
 
+  const handleClose = useCallback(() => {
+    if (dismissTimer) clearTimeout(dismissTimer);
+    onClose();
+  }, [dismissTimer, onClose]);
+
   useEffect(() => {
     if (open) {
       Haptic.success();
@@ -100,12 +105,7 @@ export function PostActionModal({
         clearTimeout(timer);
       };
     }
-  }, [open]);
-
-  const handleClose = useCallback(() => {
-    if (dismissTimer) clearTimeout(dismissTimer);
-    onClose();
-  }, [dismissTimer, onClose]);
+  }, [open, handleClose, autoDismissMs, type, context?.rideId]);
 
   const handleShareNative = async () => {
     Analytics.shareEvent?.("share_native_attempted", { type });

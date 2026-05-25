@@ -84,7 +84,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
   const supabase = await createClient();
 
   // Try resolving as slug first, then fall back to UUID
-  let profileQuery = supabase.from("profiles").select("*").eq("slug", id);
+  const profileQuery = supabase.from("profiles").select("*").eq("slug", id);
   let { data: profileRaw } = await profileQuery.single();
 
   if (!profileRaw) {

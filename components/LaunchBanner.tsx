@@ -14,8 +14,6 @@ const NEW_FEATURES = [
 ];
 
 export function LaunchBanner() {
-  if (FEATURES.WAITLIST_MODE) return null;
-
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -34,6 +32,7 @@ export function LaunchBanner() {
     setTimeout(() => setIsVisible(false), 300);
   };
 
+  if (FEATURES.WAITLIST_MODE) return null;
   if (!isVisible) return null;
 
   return (

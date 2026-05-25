@@ -4,12 +4,7 @@ import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, CalendarDays, Sparkles, Sun, CloudSun, Sunrise } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const WEEKDAYS = ["Lun", "Mar", "Mie", "Joi", "Vin", "Sam", "Dum"];
-const MONTHS = [
-  "Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie",
-  "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie"
-];
+import { useLocale, useTranslations } from "next-intl";
 
 export interface PremiumCalendarProps {
   selected?: Date;
@@ -50,6 +45,29 @@ export function PremiumCalendar({
   onClose,
   availabilityData,
 }: PremiumCalendarProps) {
+  const locale = useLocale();
+  const t = useTranslations("calendar");
+
+  const WEEKDAYS = React.useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(locale, { weekday: "short" });
+    return Array.from({ length: 7 }, (_, i) => {
+      // 2026-05-25 is a Monday
+      const d = new Date(2026, 4, 25 + i);
+      const dayStr = formatter.format(d);
+      const clean = dayStr.replace(/\.$/, "");
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    });
+  }, [locale]);
+
+  const MONTHS = React.useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(locale, { month: "long" });
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(2026, i, 1);
+      const monthStr = formatter.format(d);
+      return monthStr.charAt(0).toUpperCase() + monthStr.slice(1);
+    });
+  }, [locale]);
+
   const [currentMonth, setCurrentMonth] = React.useState(() => {
     const base = selected || new Date();
     return new Date(base.getFullYear(), base.getMonth(), 1);
@@ -97,7 +115,7 @@ export function PremiumCalendar({
 
   const selectedDayInfo = selected
     ? {
-        weekday: selected.toLocaleDateString("it-IT", { weekday: "long" }),
+        weekday: selected.toLocaleDateString(locale, { weekday: "long" }),
         day: selected.getDate(),
         month: MONTHS[selected.getMonth()],
         year: selected.getFullYear(),
@@ -121,7 +139,7 @@ export function PremiumCalendar({
         <div>
           <div className="flex items-center gap-2 mb-5">
             <CalendarDays className="w-4 h-4 text-[#e63946]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6b6b6b]">Data selezionata</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6b6b6b]">{t("selectedDate")}</span>
           </div>
 
           {selectedDayInfo ? (
@@ -137,15 +155,15 @@ export function PremiumCalendar({
             </motion.div>
           ) : (
             <div className="text-center sm:text-left py-4">
-              <p className="text-sm text-[#444444]">Seleziona una data</p>
+              <p className="text-sm text-[#444444]">{t("selectDate")}</p>
             </div>
           )}
 
           {/* Quick Actions */}
           <div className="mt-6 space-y-2">
-            <QuickButton icon={<Sun className="w-3.5 h-3.5" />} label="Astăzi" onClick={() => handleQuickSelect("today")} />
-            <QuickButton icon={<Sunrise className="w-3.5 h-3.5" />} label="Mâine" onClick={() => handleQuickSelect("tomorrow")} />
-            <QuickButton icon={<CloudSun className="w-3.5 h-3.5" />} label="Weekend" onClick={() => handleQuickSelect("weekend")} />
+            <QuickButton icon={<Sun className="w-3.5 h-3.5" />} label={t("today")} onClick={() => handleQuickSelect("today")} />
+            <QuickButton icon={<Sunrise className="w-3.5 h-3.5" />} label={t("tomorrow")} onClick={() => handleQuickSelect("tomorrow")} />
+            <QuickButton icon={<CloudSun className="w-3.5 h-3.5" />} label={t("weekend")} onClick={() => handleQuickSelect("weekend")} />
           </div>
         </div>
 
@@ -155,12 +173,12 @@ export function PremiumCalendar({
             <div className="flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-[#e63946]" />
               <span className="text-[11px] text-[#6b6b6b]">
-                {totalAvailable}+ corse disponibili
+                {t("ridesAvailable", { count: totalAvailable })}
               </span>
             </div>
           )}
           <p className="text-[10px] text-[#444444] mt-2 leading-relaxed">
-            Scegli la data ideale per il tuo viaggio. Gli autisti verificati hanno priorità.
+            {t("calendarInfo")}
           </p>
         </div>
       </div>
@@ -283,9 +301,9 @@ export function PremiumCalendar({
 
         {/* Legend */}
         <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-center gap-4">
-          <LegendDot color="bg-emerald-400" label="5+ curse" />
-          <LegendDot color="bg-yellow-400" label="2-4 curse" />
-          <LegendDot color="bg-white/30" label="1 cursă" />
+          <LegendDot color="bg-emerald-400" label={t("legend5Plus")} />
+          <LegendDot color="bg-yellow-400" label={t("legend2To4")} />
+          <LegendDot color="bg-white/30" label={t("legend1")} />
         </div>
       </div>
     </div>

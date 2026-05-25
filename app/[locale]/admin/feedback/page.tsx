@@ -2,6 +2,7 @@ import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { isAdmin } from "@/lib/admin-config";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Star, MessageSquare, ThumbsUp, AlertCircle } from "lucide-react";
 import { FeedbackList } from "@/components/admin/FeedbackList";
 
@@ -75,12 +76,12 @@ export default async function AdminFeedbackPage() {
             <h1 className="text-3xl font-extrabold tracking-tight">Beta Feedback</h1>
             <p className="text-white/40 mt-1">Raccolta feedback dagli utenti beta</p>
           </div>
-          <a
+          <Link
             href="/admin"
             className="px-4 py-2 rounded-xl bg-white/5 text-sm font-medium hover:bg-white/10 transition-colors"
           >
             ← Admin
-          </a>
+          </Link>
         </div>
 
         {/* Stats */}

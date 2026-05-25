@@ -30,7 +30,7 @@ const MAX_REFERRALS_PER_USER = 50;
 const applyReferralSchema = z.object({
   referralCode: z.string().min(3).max(50),
   newUserId: z.string().uuid(),
-  ipHash?: z.string().optional(),
+  ipHash: z.string().optional(),
 });
 
 export type ApplyReferralInput = z.infer<typeof applyReferralSchema>;

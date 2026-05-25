@@ -1404,5 +1404,20 @@
     "total": "total",
     "readMore": "Read more",
     "showLess": "Show less"
+  },
+  "calendar": {
+    "selectedDate": "Selected Date",
+    "selectDate": "Select a date",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "weekend": "Weekend",
+    "ridesAvailable": "{count}+ rides available",
+    "oneRideAvailable": "1 ride available",
+    "noRidesAvailable": "No rides available",
+    "calendarInfo": "Choose the ideal date for your trip. Verified drivers have priority.",
+    "legend5Plus": "5+ rides",
+    "legend2To4": "2-4 rides",
+    "legend1": "1 ride",
+    "confirm": "Confirm"
   }
 }
