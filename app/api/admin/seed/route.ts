@@ -151,7 +151,15 @@ const MEETING_POINTS = [
 const randomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomRange = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Allow triggering via CRON_SECRET header (for one-time CLI/curl invocations)
+  // OR via admin session (handled by middleware before this route is reached)
+  const authHeader = request.headers.get("Authorization");
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   console.log("[api/admin/seed] Starting Sardinia Marketplace Seeder...");
   const supabase = createServiceRoleClient();
 
