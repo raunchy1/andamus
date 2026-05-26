@@ -179,7 +179,7 @@ export async function GET() {
     });
 
     if (listError) {
-      logs.push(`Warning: Failed to retrieve user list for cleanup: ${listError.message}`);
+      logs.push(`Warning: Failed to retrieve user list for cleanup: ${listError?.message}`);
     } else if (usersData?.users) {
       const seedUsersInAuth = usersData.users.filter(u => u.email?.toLowerCase().endsWith("@andamus.it"));
       const existingIds = seedUsersInAuth.map(u => u.id);
@@ -257,7 +257,7 @@ export async function GET() {
           if (fetchError || !existingUser) {
             const { data: usersList, error: listError } = await supabase.auth.admin.listUsers();
             if (listError) {
-              logs.push(`Failed to retrieve user list: ${listError.message}`);
+              logs.push(`Failed to retrieve user list: ${listError?.message}`);
               continue;
             }
             const found = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase());

@@ -207,7 +207,7 @@ async function seed() {
     });
 
     if (listError) {
-      console.warn(`⚠️ Warning: Failed to retrieve user list for cleanup: ${listError.message}`);
+      console.warn(`⚠️ Warning: Failed to retrieve user list for cleanup: ${listError?.message}`);
     } else if (usersData?.users) {
       const seedUsersInAuth = usersData.users.filter(u => u.email?.toLowerCase().endsWith("@andamus.it"));
       const existingIds = seedUsersInAuth.map(u => u.id);
@@ -286,7 +286,7 @@ async function seed() {
             // Alternative fallback check by email
             const { data: usersList, error: listError } = await supabase.auth.admin.listUsers();
             if (listError) {
-              console.error(`❌ Failed to retrieve user list: ${listError.message}`);
+              console.error(`❌ Failed to retrieve user list: ${listError?.message}`);
               continue;
             }
             const found = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase());
