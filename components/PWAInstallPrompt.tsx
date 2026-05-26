@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, X, Smartphone } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Analytics } from "@/lib/analytics";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -34,6 +35,7 @@ export function PWAInstallPrompt() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+      Analytics.shareEvent("pwa_install_prompt_shown");
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -46,6 +48,9 @@ export function PWAInstallPrompt() {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
       setIsInstalled(true);
+      Analytics.shareEvent("pwa_install_prompt_accepted");
+    } else {
+      Analytics.shareEvent("pwa_install_prompt_dismissed");
     }
     setDeferredPrompt(null);
   }, [deferredPrompt]);
@@ -53,6 +58,7 @@ export function PWAInstallPrompt() {
   const handleDismiss = useCallback(() => {
     localStorage.setItem("pwa_prompt_dismissed", Date.now().toString());
     setDismissed(true);
+    Analytics.shareEvent("pwa_install_prompt_dismissed");
   }, []);
 
   if (isInstalled || dismissed || !deferredPrompt) return null;
