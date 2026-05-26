@@ -155,8 +155,17 @@ const randomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length
 const randomRange = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
 export async function GET() {
-  console.log("[api/admin/seed] Starting Sardinia Marketplace Seeder via Server Route...");
+  console.log("[api/admin/seed] Inspecting Sardinia Marketplace Profiles Table...");
   const supabase = createServiceRoleClient();
+
+  const { data: testData, error: testErr } = await supabase.from("profiles").select("*").limit(1);
+  if (testErr) {
+    return NextResponse.json({ success: false, error: "Inspect error: " + testErr.message });
+  }
+  return NextResponse.json({
+    success: true,
+    columns: testData && testData.length > 0 ? Object.keys(testData[0]) : "empty"
+  });
 
   const driverIds: string[] = [];
   const logs: string[] = [];
