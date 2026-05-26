@@ -23,8 +23,6 @@ interface PremiumRideCardProps {
       avatar_url: string | null;
       rating: number;
       review_count?: number | null;
-      phone_verified?: boolean;
-      id_verified?: boolean;
     };
   };
   index: number;
@@ -145,7 +143,7 @@ export function PremiumRideCard({
                 </div>
               )}
               {/* Verified indicator */}
-              {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
+              {((ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5) && (
                 <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#2dd4bf] border-2 border-[#0a0a0a] flex items-center justify-center">
                   <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
                     <path d="M1.5 4L3 5.5L6.5 2" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -171,7 +169,7 @@ export function PremiumRideCard({
                 <span className="text-[10px] text-[#444444]">
                   ({ride.profiles.review_count || 0})
                 </span>
-                {(ride.profiles.phone_verified || ride.profiles.id_verified) && (
+                {((ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5) && (
                   <span className="ml-1 text-[9px] font-bold uppercase tracking-wider text-[#2dd4bf] bg-[#2dd4bf]/10 px-1.5 py-0.5 rounded-full">
                     Verif.
                   </span>

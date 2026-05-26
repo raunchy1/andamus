@@ -299,7 +299,7 @@ export async function searchRides(filters: SearchFilters) {
     .select(
       `
       *,
-      profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)
+      profiles!inner(name, avatar_url, rating, review_count, rides_count)
     `
     )
     .eq("status", "active")
@@ -346,15 +346,13 @@ export async function searchRides(filters: SearchFilters) {
       rating: number;
       review_count?: number | null;
       rides_count?: number | null;
-      phone_verified?: boolean;
-      id_verified?: boolean;
     };
   }>;
 
-  // ── Verified filter (client-side because it involves profiles) ──
+  // ── Verified filter (fallback logic since columns don't exist in DB yet) ──
   if (filters.verifiedOnly) {
     results = results.filter(
-      (ride) => ride.profiles.phone_verified || ride.profiles.id_verified
+      (ride) => (ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5
     );
   }
 

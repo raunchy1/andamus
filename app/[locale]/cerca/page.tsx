@@ -65,8 +65,6 @@ interface Ride {
     review_count?: number | null;
     rides_count?: number | null;
     completed_rides_count?: number | null;
-    phone_verified?: boolean;
-    id_verified?: boolean;
   };
 }
 
