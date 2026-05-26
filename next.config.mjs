@@ -84,8 +84,8 @@ const withSerwist = withSerwistInit({
 const composedConfig = withSerwist(withNextIntl(nextConfig));
 
 export default withSentryConfig(composedConfig, {
-  org: "andamus",
-  project: "andamus-nextjs",
+  org: process.env.SENTRY_ORG || "pul-dz",
+  project: process.env.SENTRY_PROJECT || "javascript-nextjs",
   silent: !process.env.CI,
   widenClientFileUpload: true,
   tunnelRoute: "/monitoring",
