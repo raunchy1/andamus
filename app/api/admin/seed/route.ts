@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { isRideExpired } from "@/lib/date-utils";
-
-const VALID_LOCALES = ["it", "en", "de"] as const;
 
 interface SeedUser {
   email: string;
@@ -155,17 +152,8 @@ const randomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length
 const randomRange = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
 export async function GET() {
-  console.log("[api/admin/seed] Inspecting Sardinia Marketplace Profiles Table...");
+  console.log("[api/admin/seed] Starting Sardinia Marketplace Seeder...");
   const supabase = createServiceRoleClient();
-
-  const { data: testData, error: testErr } = await supabase.from("profiles").select("*").limit(1);
-  if (testErr) {
-    return NextResponse.json({ success: false, error: "Inspect error: " + testErr.message });
-  }
-  return NextResponse.json({
-    success: true,
-    columns: testData && testData.length > 0 ? Object.keys(testData[0]) : "empty"
-  });
 
   const driverIds: string[] = [];
   const logs: string[] = [];
@@ -192,27 +180,27 @@ export async function GET() {
           .from("rides")
           .delete()
           .in("driver_id", existingIds);
-        if (delRidesErr) logs.push(`Error deleting old rides: ${delRidesErr.message}`);
+        if (delRidesErr) logs.push(`Error deleting old rides: ${delRidesErr?.message}`);
 
         // Delete dependent verifications
         const { error: delVerErr } = await supabase
           .from("verifications")
           .delete()
           .in("user_id", existingIds);
-        if (delVerErr) logs.push(`Error deleting old verifications: ${delVerErr.message}`);
+        if (delVerErr) logs.push(`Error deleting old verifications: ${delVerErr?.message}`);
 
         // Delete profiles
         const { error: delProfErr } = await supabase
           .from("profiles")
           .delete()
           .in("id", existingIds);
-        if (delProfErr) logs.push(`Error deleting old profiles: ${delProfErr.message}`);
+        if (delProfErr) logs.push(`Error deleting old profiles: ${delProfErr?.message}`);
 
         // Delete auth users
         for (const id of existingIds) {
           const { error: delAuthErr } = await supabase.auth.admin.deleteUser(id);
           if (delAuthErr) {
-            logs.push(`Error deleting auth user ${id}: ${delAuthErr.message}`);
+            logs.push(`Error deleting auth user ${id}: ${delAuthErr?.message}`);
           } else {
             logs.push(`Deleted existing seed user ID: ${id}`);
           }
@@ -245,8 +233,8 @@ export async function GET() {
       let userId = "";
 
       if (authError) {
-        const errMsg = authError.message.toLowerCase();
-        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError.status === 422) {
+        const errMsg = authError?.message?.toLowerCase() || "";
+        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError?.status === 422) {
           // User already exists, fetch their ID from profiles using phone_number
           const { data: existingUser, error: fetchError } = await supabase
             .from("profiles")
@@ -260,23 +248,23 @@ export async function GET() {
               logs.push(`Failed to retrieve user list: ${listError?.message}`);
               continue;
             }
-            const found = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase());
-            if (found) {
-              userId = found.id;
+            const foundId = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase())?.id;
+            if (foundId) {
+              userId = foundId || "";
             } else {
-              logs.push(`Error finding existing user: ${authError.message}`);
+              logs.push(`Error finding existing user: ${authError?.message}`);
               continue;
             }
           } else {
-            userId = existingUser.id;
+            userId = existingUser?.id || "";
           }
           logs.push(`User already registered, reusing existing auth ID: ${userId}`);
         } else {
-          logs.push(`Auth signup error: ${authError.message}`);
+          logs.push(`Auth signup error: ${authError?.message}`);
           continue;
         }
-      } else if (authData.user) {
-        userId = authData.user.id;
+      } else if (authData?.user) {
+        userId = authData?.user?.id || "";
       }
 
       if (!userId) continue;
@@ -297,7 +285,7 @@ export async function GET() {
         .eq("id", userId);
 
       if (profileError) {
-        logs.push(`Error updating profile for ${user.name}: ${profileError.message}`);
+        logs.push(`Error updating profile for ${user.name}: ${profileError?.message}`);
       } else {
         logs.push(`Profile enhanced successfully for ${user.name}`);
       }

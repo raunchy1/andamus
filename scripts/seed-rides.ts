@@ -220,27 +220,27 @@ async function seed() {
           .from("rides")
           .delete()
           .in("driver_id", existingIds);
-        if (delRidesErr) console.error(`❌ Error deleting old rides: ${delRidesErr.message}`);
+        if (delRidesErr) console.error(`❌ Error deleting old rides: ${delRidesErr?.message}`);
 
         // Delete dependent verifications
         const { error: delVerErr } = await supabase
           .from("verifications")
           .delete()
           .in("user_id", existingIds);
-        if (delVerErr) console.error(`❌ Error deleting old verifications: ${delVerErr.message}`);
+        if (delVerErr) console.error(`❌ Error deleting old verifications: ${delVerErr?.message}`);
 
         // Delete profiles
         const { error: delProfErr } = await supabase
           .from("profiles")
           .delete()
           .in("id", existingIds);
-        if (delProfErr) console.error(`❌ Error deleting old profiles: ${delProfErr.message}`);
+        if (delProfErr) console.error(`❌ Error deleting old profiles: ${delProfErr?.message}`);
 
         // Delete auth users
         for (const id of existingIds) {
           const { error: delAuthErr } = await supabase.auth.admin.deleteUser(id);
           if (delAuthErr) {
-            console.error(`❌ Error deleting auth user ${id}: ${delAuthErr.message}`);
+            console.error(`❌ Error deleting auth user ${id}: ${delAuthErr?.message}`);
           } else {
             console.log(`Deleted existing seed user ID: ${id}`);
           }
@@ -273,8 +273,8 @@ async function seed() {
       let userId = "";
 
       if (authError) {
-        const errMsg = authError.message.toLowerCase();
-        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError.status === 422) {
+        const errMsg = authError?.message?.toLowerCase() || "";
+        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError?.status === 422) {
           // User already exists, fetch their ID using phone_number
           const { data: existingUser, error: fetchError } = await supabase
             .from("profiles")
@@ -289,23 +289,23 @@ async function seed() {
               console.error(`❌ Failed to retrieve user list: ${listError?.message}`);
               continue;
             }
-            const found = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase());
-            if (found) {
-              userId = found.id;
+            const foundId = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase())?.id;
+            if (foundId) {
+              userId = foundId || "";
             } else {
-              console.error(`❌ Error finding user: ${authError.message}`);
+              console.error(`❌ Error finding user: ${authError?.message}`);
               continue;
             }
           } else {
-            userId = existingUser.id;
+            userId = existingUser?.id || "";
           }
           console.log(`ℹ️ User already registered, reusing existing auth ID: ${userId}`);
         } else {
-          console.error(`❌ Auth signup error: ${authError.message}`);
+          console.error(`❌ Auth signup error: ${authError?.message}`);
           continue;
         }
-      } else if (authData.user) {
-        userId = authData.user.id;
+      } else if (authData?.user) {
+        userId = authData?.user?.id || "";
       }
 
       if (!userId) continue;
@@ -326,7 +326,7 @@ async function seed() {
         .eq("id", userId);
 
       if (profileError) {
-        console.error(`❌ Error updating profile for ${user.name}: ${profileError.message}`);
+        console.error(`❌ Error updating profile for ${user.name}: ${profileError?.message}`);
       } else {
         console.log(`✅ Profile enhanced successfully.`);
       }
