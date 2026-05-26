@@ -5,13 +5,31 @@ import { createClient } from "@/lib/supabase/client";
 export type { User, Session } from "@supabase/supabase-js";
 
 function getCallbackPath(redirectTo?: string): string {
-  if (redirectTo) return redirectTo;
-  if (typeof window !== "undefined") {
-    const locale = window.location.pathname.split("/")[1];
-    const safeLocale = ["it", "en", "de"].includes(locale) ? locale : "it";
-    return `${window.location.origin}/${safeLocale}/auth/callback`;
+  if (typeof window === "undefined") {
+    return `${process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app"}/auth/callback`;
   }
-  return `${process.env.NEXT_PUBLIC_SITE_URL || "https://andamus.vercel.app"}/it/auth/callback`;
+
+  const origin = window.location.origin;
+  const locale = window.location.pathname.split("/")[1];
+  const safeLocale = ["it", "en", "de"].includes(locale) ? locale : "it";
+
+  let targetPath = redirectTo || `${window.location.pathname}${window.location.search}`;
+
+  if (!targetPath.startsWith("/")) {
+    targetPath = "/" + targetPath;
+  }
+
+  // Prepend locale prefix if not already present in the target path
+  if (!/^\/(it|en|de)(\/|$)/.test(targetPath)) {
+    targetPath = `/${safeLocale}${targetPath}`;
+  }
+
+  // Prevent infinite login loops on callback pages
+  const safeTarget = targetPath.includes("/auth/callback") || targetPath.includes("/auth/auth-code-error")
+    ? `/${safeLocale}/profilo`
+    : targetPath;
+
+  return `${origin}/auth/callback?next=${encodeURIComponent(safeTarget)}`;
 }
 
 export async function signInWithGoogle(redirectTo?: string) {

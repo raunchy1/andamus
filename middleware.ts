@@ -17,7 +17,7 @@ const PUSH_API_REGEX = /^\/api\/push(?:\/|$)/;
 // Auth callback must bypass updateSession and intlMiddleware — the Route Handler
 // exchanges the PKCE code server-side; any middleware cookie mutation before that
 // would consume or invalidate the code-verifier cookie.
-const AUTH_CALLBACK_REGEX = /^\/(it|en|de)\/auth\/callback(\/|$)/;
+const AUTH_CALLBACK_REGEX = /^\/auth\/callback(\/|$)/;
 
 const WAITLIST_MODE = process.env.NEXT_PUBLIC_WAITLIST_MODE === "true";
 const LOCALE_ROOT_REGEX = /^\/(?:it|en|de)?\/?$/;

@@ -101,7 +101,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         email, password,
         options: {
           data: { full_name: name, name },
-          emailRedirectTo: `${window.location.origin}/${locale}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/${locale}/profilo`,
         }
       });
 
@@ -133,9 +133,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
   const handleGoogle = async () => {
     try {
-      const redirectTo = `${window.location.origin}/${locale}/auth/callback`;
       ProductAnalytics.signupStarted("google");
-      await signInWithGoogle(redirectTo);
+      await signInWithGoogle();
       // On success the browser is redirected by Supabase; no further action needed.
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("googleLoginError"));
