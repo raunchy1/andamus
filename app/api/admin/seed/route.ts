@@ -1,23 +1,14 @@
 import { NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
-interface SeedUser {
-  email: string;
-  name: string;
-  avatarUrl: string;
-  phone: string;
-  bio: string;
-  rating: number;
-  ridesCount: number;
-}
+// ── Seed data definitions ──────────────────────────────────────────────────
 
-const SEED_USERS: SeedUser[] = [
+const SEED_USERS = [
   {
     email: "matteo.piras@andamus.it",
     name: "Matteo Piras",
     avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120",
     phone: "+393456789012",
-    bio: "Studente di Informatica all'Università di Cagliari. Torno a Sassari quasi ogni fine settimana per trovare la famiglia.",
     rating: 4.9,
     ridesCount: 42,
   },
@@ -26,7 +17,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Giulia Carta",
     avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120",
     phone: "+393339876543",
-    bio: "Lavoro nel digital marketing a Olbia. Viaggio regolarmente verso Nuoro e Cagliari. Auto spaziosa e ottima musica!",
     rating: 4.8,
     ridesCount: 28,
   },
@@ -35,7 +25,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Alessandro Melis",
     avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120",
     phone: "+393471234567",
-    bio: "Pendolare giornaliero Sassari - Alghero. Viaggiatore tranquillo, amo scambiare due chiacchiere o viaggiare in silenzio se preferite.",
     rating: 4.7,
     ridesCount: 156,
   },
@@ -44,7 +33,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Francesca Sanna",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120",
     phone: "+393284561234",
-    bio: "Specializzanda in Medicina a Sassari. Fine settimana alternati a Cagliari. Viaggio sicuro e auto regolarmente igienizzata.",
     rating: 5.0,
     ridesCount: 19,
   },
@@ -53,7 +41,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Marco Pinna",
     avatarUrl: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=120",
     phone: "+393498877665",
-    bio: "Ingegnere edile, viaggio spesso in tutta la Sardegna per lavoro. Cagliari, Oristano, Nuoro, Olbia. Flessibile con orari e bagagli.",
     rating: 4.6,
     ridesCount: 63,
   },
@@ -62,7 +49,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Chiara Contini",
     avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120",
     phone: "+393312233445",
-    bio: "Studentessa di Lingue a Cagliari, originaria di Oristano. Viaggio spesso il venerdì pomeriggio e la domenica sera.",
     rating: 4.9,
     ridesCount: 31,
   },
@@ -71,7 +57,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Davide Manca",
     avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=120",
     phone: "+393409988776",
-    bio: "Freelance tech, basato a Nuoro. Spesso a Cagliari per meeting o Olbia Airport per voli di lavoro. Guida ecologica.",
     rating: 4.8,
     ridesCount: 55,
   },
@@ -80,7 +65,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Elena Loi",
     avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120",
     phone: "+393397766554",
-    bio: "Insegnante di scuola superiore. Viaggio il fine settimana per tornare nel mio amato paese in Ogliastra da Cagliari.",
     rating: 5.0,
     ridesCount: 12,
   },
@@ -89,7 +73,6 @@ const SEED_USERS: SeedUser[] = [
     name: "Stefano Serra",
     avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=120",
     phone: "+393478899001",
-    bio: "Guida turistica e fotografo. Spostamenti frequenti Cagliari Airport - Villasimius - Chia. Spazio per bagagli voluminosi.",
     rating: 4.7,
     ridesCount: 88,
   },
@@ -98,19 +81,12 @@ const SEED_USERS: SeedUser[] = [
     name: "Martina Usai",
     avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=120",
     phone: "+393291122334",
-    bio: "Lavoratrice pendolare Macomer - Sassari. Puntuale, auto ibrida silenziosa. Viaggio ideale per studenti o pendolari.",
     rating: 4.9,
     ridesCount: 74,
   },
 ];
 
-interface RouteDef {
-  from: string;
-  to: string;
-  avgPrice: number;
-}
-
-const PRIMARY_ROUTES: RouteDef[] = [
+const PRIMARY_ROUTES = [
   { from: "Cagliari", to: "Sassari", avgPrice: 12.0 },
   { from: "Sassari", to: "Cagliari", avgPrice: 12.0 },
   { from: "Cagliari", to: "Olbia", avgPrice: 14.0 },
@@ -149,11 +125,13 @@ const MEETING_POINTS = [
 ];
 
 const randomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-const randomRange = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomRange = (min: number, max: number): number =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
+// ── Route handler ──────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
-  // Allow triggering via CRON_SECRET header (for one-time CLI/curl invocations)
-  // OR via admin session (handled by middleware before this route is reached)
+  // Auth: CRON_SECRET bearer token (set in Vercel env)
   const authHeader = request.headers.get("Authorization");
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
@@ -167,70 +145,57 @@ export async function GET(request: Request) {
   const logs: string[] = [];
 
   try {
-    // ── 0. IDEMPOTENT CLEANUP ──
-    // Retrieve all auth users and filter those with @andamus.it emails to recreate them cleanly.
-    logs.push("Fetching user list for idempotent cleanup...");
-    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
-      perPage: 1000,
-    });
+    // ── 0. IDEMPOTENT CLEANUP ──────────────────────────────────────────────
+    logs.push("Fetching existing @andamus.it users for cleanup...");
+    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
 
     if (listError) {
-      logs.push(`Warning: Failed to retrieve user list for cleanup: ${listError?.message}`);
+      logs.push(`Warning: could not list users: ${listError.message}`);
     } else if (usersData?.users) {
-      const seedUsersInAuth = usersData.users.filter(u => u.email?.toLowerCase().endsWith("@andamus.it"));
-      const existingIds = seedUsersInAuth.map(u => u.id);
+      const seedUsers = usersData.users.filter((u) =>
+        u.email?.toLowerCase().endsWith("@andamus.it")
+      );
+      const existingIds = seedUsers.map((u) => u.id);
 
       if (existingIds.length > 0) {
-        logs.push(`Found ${existingIds.length} existing seed users. Cleaning up old seed data...`);
+        logs.push(`Found ${existingIds.length} existing seed users — cleaning up...`);
 
-        // Delete dependent rides
+        // Delete rides first (FK: rides → profiles)
         const { error: delRidesErr } = await supabase
           .from("rides")
           .delete()
           .in("driver_id", existingIds);
-        if (delRidesErr) logs.push(`Error deleting old rides: ${delRidesErr?.message}`);
+        if (delRidesErr) logs.push(`Delete rides error: ${delRidesErr.message}`);
+        else logs.push(`Deleted old rides for seed users.`);
 
-        // Delete dependent verifications
-        const { error: delVerErr } = await supabase
-          .from("verifications")
-          .delete()
-          .in("user_id", existingIds);
-        if (delVerErr) logs.push(`Error deleting old verifications: ${delVerErr?.message}`);
-
-        // Delete profiles
+        // Delete profiles (FK: profiles → auth.users)
         const { error: delProfErr } = await supabase
           .from("profiles")
           .delete()
           .in("id", existingIds);
-        if (delProfErr) logs.push(`Error deleting old profiles: ${delProfErr?.message}`);
+        if (delProfErr) logs.push(`Delete profiles error: ${delProfErr.message}`);
+        else logs.push(`Deleted old profiles for seed users.`);
 
         // Delete auth users
         for (const id of existingIds) {
           const { error: delAuthErr } = await supabase.auth.admin.deleteUser(id);
-          if (delAuthErr) {
-            logs.push(`Error deleting auth user ${id}: ${delAuthErr?.message}`);
-          } else {
-            logs.push(`Deleted existing seed user ID: ${id}`);
-          }
+          if (delAuthErr) logs.push(`Delete auth user ${id}: ${delAuthErr.message}`);
         }
-
-        logs.push("Idempotent cleanup completed successfully.");
+        logs.push("Cleanup complete.");
       } else {
-        logs.push("No existing seed users found. Ready for fresh seeding.");
+        logs.push("No existing seed users found.");
       }
     }
 
-    // ── 1. DRIVERS SEEDING ──
+    // ── 1. CREATE DRIVERS ──────────────────────────────────────────────────
     for (const user of SEED_USERS) {
-      logs.push(`Seeding user: ${user.name}`);
-      
-      // Create Auth User
+      logs.push(`Creating user: ${user.name}`);
+
+      // Create auth user
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: user.email,
         password: "AndamusLaunch2026PasswordSecret!",
         email_confirm: true,
-        phone: user.phone,
-        phone_confirm: true,
         user_metadata: {
           full_name: user.name,
           name: user.name,
@@ -238,145 +203,92 @@ export async function GET(request: Request) {
         },
       });
 
-      let userId = "";
-
-      if (authError) {
-        const errMsg = authError?.message?.toLowerCase() || "";
-        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError?.status === 422) {
-          // User already exists, fetch their ID from profiles using phone_number
-          const { data: existingUser, error: fetchError } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("phone_number", user.phone)
-            .maybeSingle();
-
-          if (fetchError || !existingUser) {
-            const { data: usersList, error: listError } = await supabase.auth.admin.listUsers();
-            if (listError) {
-              logs.push(`Failed to retrieve user list: ${listError?.message}`);
-              continue;
-            }
-            const foundId = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase())?.id;
-            if (foundId) {
-              userId = foundId || "";
-            } else {
-              logs.push(`Error finding existing user: ${authError?.message}`);
-              continue;
-            }
-          } else {
-            userId = existingUser?.id || "";
-          }
-          logs.push(`User already registered, reusing existing auth ID: ${userId}`);
-        } else {
-          logs.push(`Auth signup error: ${authError?.message}`);
-          continue;
-        }
-      } else if (authData?.user) {
-        userId = authData?.user?.id || "";
+      if (authError || !authData?.user) {
+        logs.push(`Auth error for ${user.name}: ${authError?.message}`);
+        continue;
       }
 
-      if (!userId) continue;
-      driverIds.push(userId);
+      const userId = authData.user.id;
+      logs.push(`Auth user created: ${userId}`);
 
-      // Upsert the profile using only guaranteed-safe columns.
-      // Avoids schema-cache errors from columns that may not exist in production DB.
-      const safeProfile: Record<string, unknown> = {
-        id: userId,
-        name: user.name,
-        avatar_url: user.avatarUrl,
-        phone: user.phone,
-        rating: user.rating,
-        rides_count: user.ridesCount,
-      };
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert(safeProfile, { onConflict: "id" });
+      // Upsert profile — only real production columns
+      const { error: profileError } = await supabase.from("profiles").upsert(
+        {
+          id: userId,
+          name: user.name,
+          avatar_url: user.avatarUrl,
+          phone: user.phone,
+          email: user.email,
+          rating: user.rating,
+          rides_count: user.ridesCount,
+        },
+        { onConflict: "id" }
+      );
 
       if (profileError) {
         logs.push(`Profile upsert error for ${user.name}: ${profileError.message}`);
-        // Fallback: plain insert — maybe the row just doesn't exist yet
-        const { error: insertErr } = await supabase
-          .from("profiles")
-          .insert(safeProfile);
-        if (insertErr) {
-          logs.push(`Profile insert also failed for ${user.name}: ${insertErr.message}`);
-          // Remove from driverIds — can't insert rides without a profile row
-          const idx = driverIds.indexOf(userId);
-          if (idx !== -1) driverIds.splice(idx, 1);
-          continue;
-        } else {
-          logs.push(`Profile inserted via fallback for ${user.name}`);
-        }
-      } else {
-        logs.push(`Profile upserted for ${user.name}`);
+        // Don't add to driverIds — can't create rides without a profile
+        continue;
       }
 
-      // Try optional phone_number column update (non-fatal)
-      await supabase.from("profiles").update({ phone_number: user.phone }).eq("id", userId);
-
-      // Verifications insert (non-fatal)
-      const { error: verErr } = await supabase.from("verifications").insert({
-        user_id: userId,
-        type: "driver_license",
-        status: "approved",
-        verified_at: new Date().toISOString(),
-      });
-      if (verErr) logs.push(`Verification note for ${user.name}: ${verErr.message}`);
+      logs.push(`Profile ready for ${user.name}`);
+      driverIds.push(userId);
     }
 
     if (driverIds.length === 0) {
-      return NextResponse.json({ success: false, error: "No drivers could be created.", logs }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: "No driver profiles could be created.", logs },
+        { status: 500 }
+      );
     }
 
-    logs.push(`Seeded ${driverIds.length} driver profiles. Seeding rides...`);
+    logs.push(`${driverIds.length} driver profiles ready. Seeding rides...`);
 
-    // ── 2. RIDES SEEDING ──
+    // ── 2. SEED RIDES ──────────────────────────────────────────────────────
     const ridesToCreate = 45;
     const today = new Date();
-    const ridesData = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ridesData: any[] = [];
 
     for (let i = 0; i < ridesToCreate; i++) {
       const driverId = randomItem(driverIds);
       const route = randomItem(PRIMARY_ROUTES);
-      
-      const dateOffset = randomRange(1, 8);
+
+      const dateOffset = randomRange(1, 10);
       const rideDate = new Date();
       rideDate.setDate(today.getDate() + dateOffset);
 
       const dayOfWeek = rideDate.getDay();
       let timeString = "";
-      const seats = randomRange(3, 4);
 
       if (dayOfWeek === 5) {
-        // Friday pm spikes
+        // Friday afternoon spike
         const hour = randomItem([14, 15, 16, 17, 18, 19]);
         const minute = randomItem([0, 15, 30, 45]);
-        timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
+        timeString = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`;
       } else if (dayOfWeek === 0) {
-        // Sunday pm spikes
+        // Sunday evening spike
         const hour = randomItem([16, 17, 18, 19, 20, 21]);
         const minute = randomItem([0, 15, 30, 45]);
-        timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
+        timeString = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`;
       } else {
-        // Weekday morning commutes
+        // Weekday: commute / midday / airport
         const pattern = randomItem(["commute", "midday", "airport"]);
         if (pattern === "commute") {
-          const hour = 7;
-          const minute = randomItem([15, 30, 45]);
-          timeString = `0${hour}:${minute}:00`;
+          const minute = randomItem([0, 15, 30, 45]);
+          timeString = `07:${String(minute).padStart(2, "0")}:00`;
         } else if (pattern === "airport") {
           const hour = randomItem([6, 7, 8]);
           const minute = randomItem([0, 15, 30, 45]);
-          timeString = `0${hour}:${minute}:00`;
+          timeString = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`;
         } else {
           const hour = randomRange(11, 15);
-          timeString = `${hour}:30:00`;
+          timeString = `${String(hour).padStart(2, "0")}:30:00`;
         }
       }
 
       const priceOffset = randomRange(-2, 2);
-      const finalPrice = Math.max(0, parseFloat((route.avgPrice + priceOffset).toFixed(1)));
+      const finalPrice = Math.max(1, parseFloat((route.avgPrice + priceOffset).toFixed(1)));
 
       ridesData.push({
         driver_id: driverId,
@@ -384,37 +296,45 @@ export async function GET(request: Request) {
         to_city: route.to,
         date: rideDate.toISOString().split("T")[0],
         time: timeString,
-        seats: seats,
+        seats: randomRange(2, 4),
         price: finalPrice,
         notes: randomItem(SEED_NOTES),
         meeting_point: randomItem(MEETING_POINTS),
         status: "active",
+        fumatori_ammessi: false,
+        animali_ammessi: Math.random() > 0.7,
+        music_in_car: randomItem(["qualsiasi", "pop", "nessuna"]),
+        baggage_large: Math.random() > 0.5,
       });
     }
 
-    // Insert batch rides
+    // Insert all rides in one batch
     const { data: createdRides, error: ridesError } = await supabase
       .from("rides")
       .insert(ridesData)
       .select("id");
 
     if (ridesError) {
-      logs.push(`Error inserting rides: ${ridesError.message}`);
-      return NextResponse.json({ success: false, error: ridesError.message, logs }, { status: 500 });
+      logs.push(`Rides insert error: ${ridesError.message}`);
+      return NextResponse.json(
+        { success: false, error: ridesError.message, logs },
+        { status: 500 }
+      );
     }
 
-    logs.push(`Seeded ${createdRides?.length || 0} active rides successfully!`);
+    const ridesSeeded = createdRides?.length ?? 0;
+    logs.push(`Seeded ${ridesSeeded} rides successfully!`);
 
     return NextResponse.json({
       success: true,
-      message: "Sardinia Marketplace Seeding Completed Successfully!",
+      message: "✅ Sardinia Marketplace Seeding Completed!",
       driversSeeded: driverIds.length,
-      ridesSeeded: createdRides?.length || 0,
+      ridesSeeded,
       logs,
     });
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : "Unknown error";
-    logs.push(`Exception caught: ${errorMsg}`);
+    logs.push(`Exception: ${errorMsg}`);
     return NextResponse.json({ success: false, error: errorMsg, logs }, { status: 500 });
   }
 }
