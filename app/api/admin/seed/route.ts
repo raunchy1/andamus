@@ -278,33 +278,38 @@ export async function GET(request: Request) {
       if (!userId) continue;
       driverIds.push(userId);
 
-      // Enhance the Profile (Omit the non-existent 'bio' column from profiles)
+      // Upsert the profile — guarantees the row exists (trigger may be async)
+      // and sets all required fields in one atomic operation.
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({
+        .upsert({
+          id: userId,
+          name: user.name,
+          avatar_url: user.avatarUrl,
+          phone: user.phone,
+          phone_number: user.phone,
           rating: user.rating,
           rides_count: user.ridesCount,
           phone_verified: true,
           email_verified: true,
           driver_verified: true,
-          phone_number: user.phone,
-          phone: user.phone,
-        })
-        .eq("id", userId);
+        }, { onConflict: "id" });
 
       if (profileError) {
-        logs.push(`Error updating profile for ${user.name}: ${profileError?.message}`);
+        logs.push(`Error upserting profile for ${user.name}: ${profileError?.message}`);
+        // Still continue — profile may already exist and rides may still work
       } else {
-        logs.push(`Profile enhanced successfully for ${user.name}`);
+        logs.push(`Profile upserted successfully for ${user.name}`);
       }
 
-      // Add Driver verification entry for integrity
-      await supabase.from("verifications").insert({
+      // Add Driver verification entry for integrity (non-fatal if duplicate)
+      const { error: verErr } = await supabase.from("verifications").insert({
         user_id: userId,
         type: "driver_license",
         status: "approved",
         verified_at: new Date().toISOString(),
       });
+      if (verErr) logs.push(`Verification note for ${user.name}: ${verErr.message}`);
     }
 
     if (driverIds.length === 0) {
