@@ -278,31 +278,44 @@ export async function GET(request: Request) {
       if (!userId) continue;
       driverIds.push(userId);
 
-      // Upsert the profile — guarantees the row exists (trigger may be async)
-      // and sets all required fields in one atomic operation.
+      // Upsert the profile using only guaranteed-safe columns.
+      // Avoids schema-cache errors from columns that may not exist in production DB.
+      const safeProfile: Record<string, unknown> = {
+        id: userId,
+        name: user.name,
+        avatar_url: user.avatarUrl,
+        phone: user.phone,
+        rating: user.rating,
+        rides_count: user.ridesCount,
+      };
+
       const { error: profileError } = await supabase
         .from("profiles")
-        .upsert({
-          id: userId,
-          name: user.name,
-          avatar_url: user.avatarUrl,
-          phone: user.phone,
-          phone_number: user.phone,
-          rating: user.rating,
-          rides_count: user.ridesCount,
-          phone_verified: true,
-          email_verified: true,
-          driver_verified: true,
-        }, { onConflict: "id" });
+        .upsert(safeProfile, { onConflict: "id" });
 
       if (profileError) {
-        logs.push(`Error upserting profile for ${user.name}: ${profileError?.message}`);
-        // Still continue — profile may already exist and rides may still work
+        logs.push(`Profile upsert error for ${user.name}: ${profileError.message}`);
+        // Fallback: plain insert — maybe the row just doesn't exist yet
+        const { error: insertErr } = await supabase
+          .from("profiles")
+          .insert(safeProfile);
+        if (insertErr) {
+          logs.push(`Profile insert also failed for ${user.name}: ${insertErr.message}`);
+          // Remove from driverIds — can't insert rides without a profile row
+          const idx = driverIds.indexOf(userId);
+          if (idx !== -1) driverIds.splice(idx, 1);
+          continue;
+        } else {
+          logs.push(`Profile inserted via fallback for ${user.name}`);
+        }
       } else {
-        logs.push(`Profile upserted successfully for ${user.name}`);
+        logs.push(`Profile upserted for ${user.name}`);
       }
 
-      // Add Driver verification entry for integrity (non-fatal if duplicate)
+      // Try optional phone_number column update (non-fatal)
+      await supabase.from("profiles").update({ phone_number: user.phone }).eq("id", userId);
+
+      // Verifications insert (non-fatal)
       const { error: verErr } = await supabase.from("verifications").insert({
         user_id: userId,
         type: "driver_license",
