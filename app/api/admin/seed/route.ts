@@ -162,10 +162,64 @@ export async function GET() {
   const logs: string[] = [];
 
   try {
+    // ── 0. IDEMPOTENT CLEANUP ──
+    // Retrieve all auth users and filter those with @andamus.it emails to recreate them cleanly.
+    logs.push("Fetching user list for idempotent cleanup...");
+    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
+      perPage: 1000,
+    });
+
+    if (listError) {
+      logs.push(`Warning: Failed to retrieve user list for cleanup: ${listError.message}`);
+    } else if (usersData?.users) {
+      const seedUsersInAuth = usersData.users.filter(u => u.email?.toLowerCase().endsWith("@andamus.it"));
+      const existingIds = seedUsersInAuth.map(u => u.id);
+
+      if (existingIds.length > 0) {
+        logs.push(`Found ${existingIds.length} existing seed users. Cleaning up old seed data...`);
+
+        // Delete dependent rides
+        const { error: delRidesErr } = await supabase
+          .from("rides")
+          .delete()
+          .in("driver_id", existingIds);
+        if (delRidesErr) logs.push(`Error deleting old rides: ${delRidesErr.message}`);
+
+        // Delete dependent verifications
+        const { error: delVerErr } = await supabase
+          .from("verifications")
+          .delete()
+          .in("user_id", existingIds);
+        if (delVerErr) logs.push(`Error deleting old verifications: ${delVerErr.message}`);
+
+        // Delete profiles
+        const { error: delProfErr } = await supabase
+          .from("profiles")
+          .delete()
+          .in("id", existingIds);
+        if (delProfErr) logs.push(`Error deleting old profiles: ${delProfErr.message}`);
+
+        // Delete auth users
+        for (const id of existingIds) {
+          const { error: delAuthErr } = await supabase.auth.admin.deleteUser(id);
+          if (delAuthErr) {
+            logs.push(`Error deleting auth user ${id}: ${delAuthErr.message}`);
+          } else {
+            logs.push(`Deleted existing seed user ID: ${id}`);
+          }
+        }
+
+        logs.push("Idempotent cleanup completed successfully.");
+      } else {
+        logs.push("No existing seed users found. Ready for fresh seeding.");
+      }
+    }
+
+    // ── 1. DRIVERS SEEDING ──
     for (const user of SEED_USERS) {
       logs.push(`Seeding user: ${user.name}`);
       
-      // 1. Create or fetch Auth User
+      // Create Auth User
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: user.email,
         password: "AndamusLaunch2026PasswordSecret!",
@@ -182,12 +236,13 @@ export async function GET() {
       let userId = "";
 
       if (authError) {
-        if (authError.message.includes("already registered") || authError.message.includes("email_exists")) {
-          // User already exists, fetch their ID
+        const errMsg = authError.message.toLowerCase();
+        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError.status === 422) {
+          // User already exists, fetch their ID from profiles using phone_number
           const { data: existingUser, error: fetchError } = await supabase
             .from("profiles")
             .select("id")
-            .eq("phone", user.phone)
+            .eq("phone_number", user.phone)
             .maybeSingle();
 
           if (fetchError || !existingUser) {
@@ -196,7 +251,7 @@ export async function GET() {
               logs.push(`Failed to retrieve user list: ${listError.message}`);
               continue;
             }
-            const found = usersList.users.find((u) => u.email === user.email);
+            const found = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase());
             if (found) {
               userId = found.id;
             } else {
@@ -218,17 +273,17 @@ export async function GET() {
       if (!userId) continue;
       driverIds.push(userId);
 
-      // 2. Enhance the Profile
+      // Enhance the Profile (Omit the non-existent 'bio' column from profiles)
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
-          bio: user.bio,
           rating: user.rating,
           rides_count: user.ridesCount,
           phone_verified: true,
           email_verified: true,
           driver_verified: true,
           phone_number: user.phone,
+          phone: user.phone,
         })
         .eq("id", userId);
 
@@ -253,7 +308,7 @@ export async function GET() {
 
     logs.push(`Seeded ${driverIds.length} driver profiles. Seeding rides...`);
 
-    // 3. Seed Rides
+    // ── 2. RIDES SEEDING ──
     const ridesToCreate = 45;
     const today = new Date();
     const ridesData = [];
@@ -268,7 +323,7 @@ export async function GET() {
 
       const dayOfWeek = rideDate.getDay();
       let timeString = "";
-      let seats = randomRange(3, 4);
+      const seats = randomRange(3, 4);
 
       if (dayOfWeek === 5) {
         // Friday pm spikes
