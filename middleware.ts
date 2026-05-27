@@ -49,7 +49,9 @@ function jsonError(message: string, code: string, status: number): NextResponse 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAdminPage = ADMIN_PAGE_REGEX.test(pathname);
-  const isAdminApi = ADMIN_API_REGEX.test(pathname) && pathname !== "/api/admin/seed";
+  const isAdminApi = ADMIN_API_REGEX.test(pathname) && 
+    pathname !== "/api/admin/seed" && 
+    pathname !== "/api/admin/refresh-rides";
   const isPushApi = PUSH_API_REGEX.test(pathname);
   const needsAuthCheck = isAdminPage || isAdminApi || isPushApi;
 
