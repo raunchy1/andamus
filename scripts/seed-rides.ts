@@ -228,16 +228,30 @@ async function seed() {
       id: generateDeterministicUUID(`user-${user.email}`)
     }));
 
-    const targetUserIds = seedUsersWithIds.map(u => u.id);
+    // Fetch all existing auth users first to check for existing accounts
+    const { data: usersData } = await supabase.auth.admin.listUsers({
+      perPage: 1000
+    });
+
+    const targetUserIds = new Set<string>();
+    for (const user of seedUsersWithIds) {
+      targetUserIds.add(user.id);
+      if (usersData?.users) {
+        const existing = usersData.users.find(u => u.email?.toLowerCase() === user.email.toLowerCase());
+        if (existing) {
+          targetUserIds.add(existing.id);
+        }
+      }
+    }
 
     // ── 0. DATA INTEGRITY CLEANUP ──
     console.log("ℹ️ Cleaning up old seeded rides to prevent orphaned records...");
     
-    // Delete any old rides associated with seed users (to clean old non-deterministic entries)
+    // Delete any old rides associated with seed users (for both expected stable IDs and actual existing IDs)
     const { error: delRidesErr } = await supabase
       .from("rides")
       .delete()
-      .in("driver_id", targetUserIds);
+      .in("driver_id", Array.from(targetUserIds));
 
     if (delRidesErr) {
       console.warn(`⚠️ Warning during rides cleanup: ${delRidesErr.message}`);
@@ -247,28 +261,15 @@ async function seed() {
     for (const user of seedUsersWithIds) {
       console.log(`👤 Processing user: ${user.name} (${user.email}) -> stable ID: ${user.id}`);
 
-      // Check if user exists in auth.users by ID or email
-      const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
-        perPage: 1000
-      });
-
       let existsInAuth = false;
+      let driverId = user.id; // Default to deterministic stable ID
+
       if (usersData?.users) {
         const existingUser = usersData.users.find(u => u.email?.toLowerCase() === user.email.toLowerCase());
         if (existingUser) {
-          if (existingUser.id !== user.id) {
-            console.log(`⚠️ ID mismatch for ${user.email} (existing: ${existingUser.id}, expected stable: ${user.id}). Deleting to recreate...`);
-            const { error: deleteError } = await supabase.auth.admin.deleteUser(existingUser.id);
-            if (deleteError) {
-              console.error(`❌ Failed to delete mismatched auth user: ${deleteError.message}`);
-              existsInAuth = true; // Skip to avoid foreign key crash later
-            } else {
-              console.log(`✅ Mismatched auth user deleted successfully.`);
-              existsInAuth = false;
-            }
-          } else {
-            existsInAuth = true;
-          }
+          existsInAuth = true;
+          driverId = existingUser.id; // Recover and reuse the actual existing ID
+          console.log(`ℹ️ Found existing auth user for ${user.email} with ID: ${driverId}. Recovering...`);
         }
       }
 
@@ -293,16 +294,17 @@ async function seed() {
           continue;
         } else {
           console.log(`✅ Auth user created successfully.`);
+          driverId = user.id;
         }
       } else {
-        console.log(`ℹ️ Auth user already exists with correct stable ID, skipping creation.`);
+        console.log(`ℹ️ Auth user already exists with ID ${driverId}, skipping creation.`);
       }
 
       // Upsert profile — use ONLY columns in live schema cache.
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({
-          id: user.id,
+          id: driverId, // Use the recovered/stable ID
           name: user.name,
           avatar_url: user.avatarUrl,
           rating: user.rating,
@@ -321,13 +323,13 @@ async function seed() {
       await supabase
         .from("verifications")
         .upsert({
-          user_id: user.id,
+          user_id: driverId, // Use the recovered/stable ID
           type: "driver_license",
           status: "approved",
           verified_at: new Date().toISOString(),
         }, { onConflict: "user_id, type" });
 
-      driverIds.push(user.id);
+      driverIds.push(driverId);
     }
 
     if (driverIds.length === 0) {

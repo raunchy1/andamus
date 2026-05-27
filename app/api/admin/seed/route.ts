@@ -173,16 +173,30 @@ export async function GET(request: Request) {
       id: generateDeterministicUUID(`user-${user.email}`)
     }));
 
-    const targetUserIds = seedUsersWithIds.map(u => u.id);
+    // Fetch all existing auth users first to check for existing accounts
+    const { data: usersData } = await supabase.auth.admin.listUsers({
+      perPage: 1000
+    });
+
+    const targetUserIds = new Set<string>();
+    for (const user of seedUsersWithIds) {
+      targetUserIds.add(user.id);
+      if (usersData?.users) {
+        const existing = usersData.users.find(u => u.email?.toLowerCase() === user.email.toLowerCase());
+        if (existing) {
+          targetUserIds.add(existing.id);
+        }
+      }
+    }
 
     // ── 0. DATA INTEGRITY CLEANUP ──
     logs.push("Cleaning up old seeded rides to prevent orphaned records...");
     
-    // Delete any old rides associated with seed users (to clean old non-deterministic entries)
+    // Delete any old rides associated with seed users (for both expected stable IDs and actual existing IDs)
     const { error: delRidesErr } = await supabase
       .from("rides")
       .delete()
-      .in("driver_id", targetUserIds);
+      .in("driver_id", Array.from(targetUserIds));
 
     if (delRidesErr) {
       logs.push(`Warning during rides cleanup: ${delRidesErr.message}`);
@@ -194,28 +208,15 @@ export async function GET(request: Request) {
     for (const user of seedUsersWithIds) {
       logs.push(`Processing user: ${user.name} (${user.email}) -> stable ID: ${user.id}`);
 
-      // Check if user exists in auth.users by ID or email
-      const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
-        perPage: 1000
-      });
-
       let existsInAuth = false;
+      let driverId = user.id; // Default to deterministic stable ID
+
       if (usersData?.users) {
         const existingUser = usersData.users.find(u => u.email?.toLowerCase() === user.email.toLowerCase());
         if (existingUser) {
-          if (existingUser.id !== user.id) {
-            logs.push(`ID mismatch for ${user.email} (existing: ${existingUser.id}, expected stable: ${user.id}). Deleting to recreate...`);
-            const { error: deleteError } = await supabase.auth.admin.deleteUser(existingUser.id);
-            if (deleteError) {
-              logs.push(`Failed to delete mismatched auth user: ${deleteError.message}`);
-              existsInAuth = true; // Skip to avoid foreign key crash later
-            } else {
-              logs.push(`Mismatched auth user deleted successfully.`);
-              existsInAuth = false;
-            }
-          } else {
-            existsInAuth = true;
-          }
+          existsInAuth = true;
+          driverId = existingUser.id; // Recover and reuse the actual existing ID
+          logs.push(`Found existing auth user for ${user.email} with ID: ${driverId}. Recovering...`);
         }
       }
 
@@ -240,9 +241,10 @@ export async function GET(request: Request) {
           continue;
         } else {
           logs.push(`Auth user created successfully.`);
+          driverId = user.id;
         }
       } else {
-        logs.push(`Auth user already exists with correct stable ID, skipping creation.`);
+        logs.push(`Auth user already exists with ID ${driverId}, skipping creation.`);
       }
 
       // Upsert profile — use ONLY columns that exist in the live schema cache.
@@ -250,7 +252,7 @@ export async function GET(request: Request) {
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({
-          id: user.id,
+          id: driverId, // Use the recovered/stable ID
           name: user.name,
           avatar_url: user.avatarUrl,
           rating: user.rating,
@@ -269,13 +271,13 @@ export async function GET(request: Request) {
       await supabase
         .from("verifications")
         .upsert({
-          user_id: user.id,
+          user_id: driverId, // Use the recovered/stable ID
           type: "driver_license",
           status: "approved",
           verified_at: new Date().toISOString(),
         }, { onConflict: "user_id, type" });
 
-      driverIds.push(user.id);
+      driverIds.push(driverId);
     }
 
     if (driverIds.length === 0) {
