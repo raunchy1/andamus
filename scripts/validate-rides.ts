@@ -65,8 +65,8 @@ async function validateRides() {
 
     console.log(`📊 Found ${rides.length} rides. Beginning deep audit...`);
 
-    // UUID Regex validator
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    // Standard PostgreSQL UUID format validator (any valid 8-4-4-4-12 hex layout)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
     for (const ride of rides) {
       totalAudited++;
