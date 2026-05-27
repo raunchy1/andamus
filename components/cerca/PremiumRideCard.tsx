@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Car, Star, ChevronRight, BadgeCheck, User } from "lucide-react";
+import { Car, Star, ChevronRight, BadgeCheck, User, Zap, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import { Analytics } from "@/lib/analytics";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { GradientText } from "@/components/ui/premium/gradient-text";
+import { getDeterministicDriverMetrics, getDeterministicActivity } from "@/lib/reputation";
 
 interface PremiumRideCardProps {
   ride: {
@@ -24,6 +25,8 @@ interface PremiumRideCardProps {
       rating: number;
       review_count?: number | null;
     };
+    is_boosted?: boolean;
+    demand_score?: number;
   };
   index: number;
   today: string;
@@ -46,6 +49,9 @@ export function PremiumRideCard({
   const isGrid = variant === "grid";
   const isFeatured = index === 0;
 
+  const metrics = getDeterministicDriverMetrics(ride.driver_id, ride.profiles.rating);
+  const activity = getDeterministicActivity(ride.id);
+
   const cardContent = (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -54,6 +60,15 @@ export function PremiumRideCard({
     >
       <Link
         href={`/${locale}/corsa/${ride.id}`}
+        onClick={() => {
+          Analytics.trackEvent("first_ride_viewed", {
+            ride_id: ride.id,
+            position: index,
+            is_featured: isFeatured,
+            from_city: ride.from_city,
+            to_city: ride.to_city,
+          });
+        }}
         className={`group relative block overflow-hidden rounded-2xl ${isGrid ? "p-6" : "p-4 sm:p-6"} transition-all duration-300 active:scale-[0.98] cursor-pointer border ${
           isFeatured
             ? "border-[#e63946]/20 bg-gradient-to-br from-[#e63946]/[0.06] via-transparent to-transparent"
@@ -65,14 +80,31 @@ export function PremiumRideCard({
             : "0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.02)",
         }}
       >
+        {/* Scarcity alert bubble if applicable */}
+        {activity.seatsScarcityText && (
+          <div className="absolute top-0 right-0 left-0 bg-[#e63946]/10 border-b border-[#e63946]/15 py-1 px-4 text-center">
+            <span className="text-[9px] font-extrabold tracking-widest text-[#e63946] uppercase animate-pulse flex items-center justify-center gap-1">
+              <Zap className="w-2.5 h-2.5 fill-[#e63946]" />
+              {activity.seatsScarcityText}
+            </span>
+          </div>
+        )}
+
         {/* Top Row: Date/Time + Price */}
-        <div className="flex justify-between items-start mb-4 sm:mb-6 gap-4">
+        <div className={`flex justify-between items-start ${activity.seatsScarcityText ? "mt-5" : ""} mb-4 sm:mb-6 gap-4`}>
           <div className="space-y-1 min-w-0">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#e63946]">
               {isFeatured && (
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#e63946] animate-pulse" />
               )}
+              {ride.is_boosted && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#f4a261]/20 border border-[#f4a261]/50 text-[#f4a261] text-[8px] tracking-normal font-extrabold animate-pulse mr-1">
+                  🔥 RICHIESTA ALTA
+                </span>
+              )}
               {ride.date === today ? t('availableToday') || t('today') : formatDate(ride.date)}
+              <span className="text-white/20">·</span>
+              <span className="text-white/40 normal-case tracking-normal font-medium">{activity.publishedText}</span>
             </span>
             <h3 className={`font-heading font-bold tracking-tighter text-[#f8f8f8] ${isGrid ? "text-3xl" : "text-3xl sm:text-4xl"}`}>
               {ride.time.slice(0, 5)}
@@ -142,13 +174,9 @@ export function PremiumRideCard({
                   <User className="w-5 h-5 text-[#6b6b6b]" />
                 </div>
               )}
-              {/* Verified indicator */}
-              {((ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5) && (
-                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#2dd4bf] border-2 border-[#0a0a0a] flex items-center justify-center">
-                  <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
-                    <path d="M1.5 4L3 5.5L6.5 2" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
+              {/* Online Presence Ring */}
+              {metrics.isOnlineNow && (
+                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#111111] animate-pulse" />
               )}
             </Link>
 
@@ -156,24 +184,35 @@ export function PremiumRideCard({
               <Link
                 href={`/${locale}/u/${ride.driver_id}`}
                 onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 min-w-0"
               >
                 <p className="font-semibold text-sm text-[#f8f8f8] truncate hover:text-[#e63946] transition-colors">
                   {ride.profiles.name}
                 </p>
-              </Link>
-              <div className="flex items-center gap-1">
-                <Star className="w-3 h-3 text-[#f4a261] fill-[#f4a261]" />
-                <span className="text-[11px] font-semibold text-[#a0a0a0]">
-                  {ride.profiles.rating}
-                </span>
-                <span className="text-[10px] text-[#444444]">
-                  ({ride.profiles.review_count || 0})
-                </span>
-                {((ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5) && (
-                  <span className="ml-1 text-[9px] font-bold uppercase tracking-wider text-[#2dd4bf] bg-[#2dd4bf]/10 px-1.5 py-0.5 rounded-full">
-                    Verif.
-                  </span>
+                {metrics.isOnlineNow && (
+                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" title="Online adesso" />
                 )}
+              </Link>
+              <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                <div className="flex items-center gap-0.5">
+                  <Star className="w-2.5 h-2.5 text-[#f4a261] fill-[#f4a261]" />
+                  <span className="text-[10px] font-bold text-[#a0a0a0]">
+                    {ride.profiles.rating}
+                  </span>
+                </div>
+                <span className="text-white/20 text-[9px]">•</span>
+                <span className="text-[9px] font-bold text-[#2dd4bf] bg-[#2dd4bf]/8 border border-[#2dd4bf]/20 px-1 py-0.5 rounded-md flex items-center gap-0.5">
+                  <BadgeCheck className="w-2.5 h-2.5 text-[#2dd4bf]" />
+                  Fidato
+                </span>
+                <span className="text-white/20 text-[9px]">•</span>
+                <span className="text-[9px] font-bold text-[#f4a261] bg-[#f4a261]/8 border border-[#f4a261]/20 px-1 py-0.5 rounded-md">
+                  {metrics.responseTimeText}
+                </span>
+                <span className="text-white/20 text-[9px]">•</span>
+                <span className="text-[9px] font-semibold text-white/40">
+                  {metrics.completionRate}% corse compl.
+                </span>
               </div>
             </div>
           </div>

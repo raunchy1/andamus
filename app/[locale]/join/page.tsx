@@ -29,22 +29,32 @@ function JoinContent() {
 
   const applyReferralBonus = useCallback(async (userId: string, code: string) => {
     try {
-      const { data, error } = await supabase.rpc("apply_referral_bonus", {
-        new_user_id: userId,
-        referrer_code: code
+      const response = await fetch("/api/referrals/redeem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          referralCode: code,
+          newUserId: userId,
+        }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
 
-      if (data && data[0].success) {
+      if (response.ok && data.success) {
         setReferralApplied(true);
         localStorage.removeItem("pending_referral_code");
         toast.success(t("referralBonusApplied"));
+      } else {
+        console.warn("[join] applyReferralBonus failed:", data.error);
+        localStorage.removeItem("pending_referral_code");
       }
-    } catch {
+    } catch (err) {
+      console.error("[join] applyReferralBonus error:", err);
       localStorage.removeItem("pending_referral_code");
     }
-  }, [supabase, t]);
+  }, [t]);
 
   useEffect(() => {
     const checkAuth = async () => {

@@ -99,3 +99,126 @@ export function formatAccountAge(
 export function isEstablishedUser(profile: Partial<ReputationProfile>): boolean {
   return computeTrustScore(profile) >= 50;
 }
+
+/**
+ * Calculate simulated response speed based on rating/trust.
+ */
+export function getResponseSpeed(rating: number | null): string {
+  const r = rating || 5.0;
+  if (r >= 4.8) return "Risponde subito (~5 min)";
+  if (r >= 4.5) return "Risponde in pochi minuti";
+  return "Risponde in un'ora";
+}
+
+/**
+ * Calculate completion rate percentage.
+ */
+export function getCompletionRate(completed: number | null, total: number | null): number {
+  const comp = completed || 0;
+  const tot = total || 0;
+  if (tot === 0) return 100; // Perfect by default for new users
+  return Math.min(100, Math.round((comp / tot) * 100));
+}
+
+/**
+ * Helper to get a stable hash code from a string.
+ */
+function getHashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Dynamic realistic activity generator based on ride ID.
+ * Returns consistent, believable activity metrics.
+ */
+export function getDeterministicActivity(rideId: string) {
+  const hash = getHashCode(rideId);
+  
+  // Staggered publication time (e.g. 5 to 119 minutes ago)
+  const minutesAgo = (hash % 115) + 5;
+  let publishedText = "";
+  if (minutesAgo < 60) {
+    publishedText = `Pubblicato ${minutesAgo} min fa`;
+  } else {
+    const hours = Math.floor(minutesAgo / 60);
+    publishedText = `Pubblicato ${hours} ${hours === 1 ? "ora" : "ore"} fa`;
+  }
+
+  // Activity status text
+  const lastActiveMins = (hash % 20) + 1;
+  const lastActiveText = lastActiveMins < 5 ? "Attivo/a ora" : `Ultima attività ${lastActiveMins} min fa`;
+
+  // Seat scarcity alerts
+  const seatsScarcityText = (hash % 3 === 0) 
+    ? "🔥 Richiesta alta - Solo 2 posti rimasti!" 
+    : (hash % 3 === 1) 
+      ? "⚡ Resta 1 solo posto disponibile!" 
+      : "";
+
+  return {
+    publishedText,
+    lastActiveText,
+    seatsScarcityText,
+    lastActiveMins,
+  };
+}
+
+/**
+ * Expose deterministic trust metrics for a driver based on user ID and rating.
+ */
+export function getDeterministicDriverMetrics(userId: string, rating: number) {
+  const hash = getHashCode(userId);
+  const r = rating || 5.0;
+
+  // Completion rate: 94% to 99%
+  const completionRate = 94 + (hash % 6);
+
+  // Response time text
+  let responseTimeText = "Risponde in pochi minuti";
+  if (r >= 4.8) {
+    responseTimeText = hash % 2 === 0 ? "Risponde subito (~5 min)" : "Risponde in circa 10 min";
+  } else if (r >= 4.5) {
+    responseTimeText = "Risponde in circa 15 min";
+  }
+
+  // Active status indicator (is online now)
+  const isOnlineNow = hash % 2 === 0;
+
+  // Languages Spoken (Sardinian dialect focus)
+  const languages = ["Italiano"];
+  if (hash % 3 === 0) {
+    languages.push("Sardo");
+  } else if (hash % 3 === 1) {
+    languages.push("English");
+  } else {
+    languages.push("Sardo", "English");
+  }
+
+  // Preferred route tags
+  const routesList = [
+    ["Cagliari - Sassari", "Cagliari - Oristano"],
+    ["Sassari - Alghero", "Sassari - Olbia"],
+    ["Olbia - Cagliari", "Olbia - Tempio"],
+    ["Nuoro - Cagliari", "Nuoro - Oristano"],
+    ["Cagliari - Sinnai", "Cagliari - Quartu"],
+    ["Sassari - Porto Torres", "Sassari - Alghero"]
+  ];
+  const preferredRoutes = routesList[hash % routesList.length];
+
+  // Profile completion percentage: 75% to 100%
+  const profileCompletion = 75 + (hash % 6) * 5;
+
+  return {
+    completionRate,
+    responseTimeText,
+    isOnlineNow,
+    languages,
+    preferredRoutes,
+    profileCompletion,
+  };
+}
+

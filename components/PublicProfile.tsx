@@ -22,8 +22,10 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ReportUser } from "@/components/ReportUser";
 import { Analytics } from "@/lib/analytics";
 import { Haptic } from "@/lib/haptic";
+import { getDeterministicDriverMetrics } from "@/lib/reputation";
 
 interface PublicProfile {
   id: string;
@@ -79,6 +81,7 @@ export function PublicProfileView({ locale, profile, reviews, activeRides }: Pub
   const t = useTranslations("publicProfile");
   const [expandedReview, setExpandedReview] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const metrics = getDeterministicDriverMetrics(profile.id, profile.rating);
 
   useEffect(() => {
     Analytics.publicProfileView?.(profile.id);
@@ -133,13 +136,16 @@ export function PublicProfileView({ locale, profile, reviews, activeRides }: Pub
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-medium hidden sm:inline">{t("backToSearch")}</span>
           </Link>
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-sm text-white/70"
-          >
-            <Share2 className="w-4 h-4" />
-            {copied ? t("copied") : t("share")}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-sm text-white/70"
+            >
+              <Share2 className="w-4 h-4" />
+              {copied ? t("copied") : t("share")}
+            </button>
+            <ReportUser reportedId={profile.id} reportedName={profile.name} />
+          </div>
         </div>
       </header>
 
@@ -197,7 +203,7 @@ export function PublicProfileView({ locale, profile, reviews, activeRides }: Pub
                 </span>
               </div>
 
-              <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+              <div className="flex items-center justify-center sm:justify-start gap-2 mt-2 flex-wrap">
                 <span
                   className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border ${profile.trustLevel.color.replace("text-", "border-").split(" ")[1]} ${profile.trustLevel.color}`}
                   style={{ background: `${profile.trustLevel.color.includes("emerald") ? "rgba(16,185,129,0.1)" : profile.trustLevel.color.includes("blue") ? "rgba(59,130,246,0.1)" : profile.trustLevel.color.includes("yellow") ? "rgba(234,179,8,0.1)" : "rgba(255,255,255,0.05)"}` }}
@@ -206,12 +212,65 @@ export function PublicProfileView({ locale, profile, reviews, activeRides }: Pub
                   {profile.trustLevel.label}
                 </span>
                 <span className="text-white/40 text-xs">{profile.trustScore}/100</span>
+                {metrics.isOnlineNow && (
+                  <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Attivo ora
+                  </span>
+                )}
               </div>
 
               <p className="text-white/40 text-sm mt-2">
                 {t("memberSince", { age: profile.accountAge })}
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* Completamento Profilo Progress Bar */}
+        <section className="mb-8 p-5 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-white/50">Completamento Profilo</span>
+            <span className="text-xs font-extrabold text-[#2dd4bf]">{metrics.profileCompletion}%</span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-white/5 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-[#e63946] to-[#2dd4bf] transition-all duration-500" 
+              style={{ width: `${metrics.profileCompletion}%` }}
+            />
+          </div>
+          <p className="text-[10px] text-white/40 mt-1.5 leading-relaxed">
+            Un profilo completo aumenta del 40% la probabilità di successo nelle prenotazioni! Aggiungi foto, telefono e dettagli auto.
+          </p>
+        </section>
+
+        {/* Lingue & Tratte Preferite */}
+        <section className="mb-8 grid gap-4 sm:grid-cols-2">
+          <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Lingue Parlate</h3>
+              <div className="flex flex-wrap gap-2">
+                {metrics.languages.map((lang, lIdx) => (
+                  <span key={lIdx} className="text-xs font-extrabold px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-white/70">
+                    {lang}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p className="text-[9px] text-white/30 mt-3">Comunica nella lingua che preferisci durante il viaggio.</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-md flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Tratte Frequenti</h3>
+              <div className="flex flex-wrap gap-2">
+                {metrics.preferredRoutes.map((route, rIdx) => (
+                  <span key={rIdx} className="text-xs font-bold px-3 py-1 rounded-full bg-[#ffb3b1]/5 border border-[#ffb3b1]/15 text-[#ffb3b1]">
+                    {route}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p className="text-[9px] text-white/30 mt-3">Percorsi e corridoi principali coperti da questo commuter.</p>
           </div>
         </section>
 

@@ -298,7 +298,21 @@ export async function searchRides(filters: SearchFilters) {
     .from("rides")
     .select(
       `
-      *,
+      id,
+      driver_id,
+      from_city,
+      to_city,
+      date,
+      time,
+      seats,
+      price,
+      created_at,
+      smoking_allowed,
+      pets_allowed,
+      large_luggage,
+      music_preference,
+      women_only,
+      students_only,
       profiles!inner(name, avatar_url, rating, review_count, rides_count)
     `
     )
@@ -324,7 +338,7 @@ export async function searchRides(filters: SearchFilters) {
     return [];
   }
 
-  let results = (data || []) as Array<{
+  let results = (data || []) as unknown as Array<{
     id: string;
     driver_id: string;
     from_city: string;
@@ -376,8 +390,22 @@ export async function searchRides(filters: SearchFilters) {
       .from("rides")
       .select(
         `
-        *,
-        profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)
+        id,
+        driver_id,
+        from_city,
+        to_city,
+        date,
+        time,
+        seats,
+        price,
+        created_at,
+        smoking_allowed,
+        pets_allowed,
+        large_luggage,
+        music_preference,
+        women_only,
+        students_only,
+        profiles!inner(name, avatar_url, rating, review_count, rides_count)
       `
       )
       .eq("status", "active")
@@ -394,7 +422,7 @@ export async function searchRides(filters: SearchFilters) {
       .limit(200);
 
     if (nearbyData && nearbyData.length > 0) {
-      results = nearbyData as typeof results;
+      results = nearbyData as unknown as typeof results;
     }
   }
 

@@ -11,6 +11,12 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+declare global {
+  interface Window {
+    deferredPrompt?: BeforeInstallPromptEvent | null;
+  }
+}
+
 export function PWAInstallPrompt() {
   const t = useTranslations("pwa");
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -34,31 +40,52 @@ export function PWAInstallPrompt() {
 
     const handler = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      Analytics.shareEvent("pwa_install_prompt_shown");
+      window.deferredPrompt = e as BeforeInstallPromptEvent;
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    // Custom event to trigger prompt manually (at psychological value moments)
+    const triggerHandler = (e: Event) => {
+      if (window.deferredPrompt) {
+        setDeferredPrompt(window.deferredPrompt);
+        Analytics.trackEvent("install_prompt_viewed", { trigger: e.type });
+      }
+    };
+
+    window.addEventListener("trigger_pwa_prompt", triggerHandler);
+    window.addEventListener("successful_search", triggerHandler);
+    window.addEventListener("route_saved", triggerHandler);
+    window.addEventListener("booking_intent", triggerHandler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("trigger_pwa_prompt", triggerHandler);
+      window.removeEventListener("successful_search", triggerHandler);
+      window.removeEventListener("route_saved", triggerHandler);
+      window.removeEventListener("booking_intent", triggerHandler);
+    };
   }, []);
 
   const handleInstall = useCallback(async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    const promptEvent = deferredPrompt || window.deferredPrompt;
+    if (!promptEvent) return;
+    promptEvent.prompt();
+    const { outcome } = await promptEvent.userChoice;
     if (outcome === "accepted") {
       setIsInstalled(true);
-      Analytics.shareEvent("pwa_install_prompt_accepted");
+      Analytics.trackEvent("install_prompt_conversion", { status: "accepted" });
     } else {
-      Analytics.shareEvent("pwa_install_prompt_dismissed");
+      Analytics.trackEvent("install_prompt_conversion", { status: "dismissed" });
     }
     setDeferredPrompt(null);
+    window.deferredPrompt = null;
   }, [deferredPrompt]);
 
   const handleDismiss = useCallback(() => {
     localStorage.setItem("pwa_prompt_dismissed", Date.now().toString());
     setDismissed(true);
-    Analytics.shareEvent("pwa_install_prompt_dismissed");
+    Analytics.trackEvent("install_prompt_conversion", { status: "ignored" });
   }, []);
 
   if (isInstalled || dismissed || !deferredPrompt) return null;
@@ -70,33 +97,33 @@ export function PWAInstallPrompt() {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="fixed bottom-16 sm:bottom-4 left-4 right-4 z-50 max-w-md mx-auto"
+        className="fixed bottom-20 sm:bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
       >
-        <div className="bg-[#131313] border border-white/10 rounded-2xl p-4 shadow-2xl flex items-center gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#e63946]/10 flex items-center justify-center">
+        <div className="bg-[#131313]/90 border border-white/10 rounded-3xl p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl flex items-center gap-4">
+          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#e63946]/10 flex items-center justify-center border border-[#e63946]/20">
             <Smartphone className="w-6 h-6 text-[#e63946]" />
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-white">{t("installTitle")}</h4>
-            <p className="text-xs text-white/50 mt-0.5">
-              {t("installDescription")}
+            <h4 className="text-sm font-extrabold text-white">Ricevi notifiche sui tragitti</h4>
+            <p className="text-[11px] text-white/50 mt-1 leading-relaxed">
+              Aggiungi Andamus per trovare passaggi più velocemente ed essere avvisato sulle corse di tuo interesse.
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleDismiss}
-              className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+              className="p-2 rounded-xl hover:bg-white/5 transition-colors"
             >
               <X className="w-4 h-4 text-white/40" />
             </button>
             <button
               onClick={handleInstall}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#e63946] text-white text-sm font-semibold hover:bg-[#c92a37] transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#e63946] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#c92a37] active:scale-95 transition-all"
             >
-              <Download className="w-4 h-4" />
-              {t("installButton")}
+              <Download className="w-3.5 h-3.5" />
+              Installa
             </button>
           </div>
         </div>

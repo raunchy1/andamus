@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { ChevronRight, ArrowLeft, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock } from "lucide-react";
+import { ChevronRight, ArrowLeft, Sun, User, BadgeCheck, Star, MessageCircle, DoorOpen, Car, Cigarette, Dog, Briefcase, UserCircle, GraduationCap, Music, ShieldCheck, Lock, Clock, Zap } from "lucide-react";
 import { CarInfoCard } from "@/components/CarInfoCard";
 import { ShareRide } from "@/components/ShareRide";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
@@ -14,6 +14,7 @@ const PostActionModal = dynamic(() => import("@/components/PostActionModal").the
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
+import { getDeterministicDriverMetrics, getDeterministicActivity } from "@/lib/reputation";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
@@ -22,6 +23,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { computeRideStatus, isRideBookable, getRideStatusLabel, getRideStatusColor } from "@/lib/ride-status";
 import { Analytics } from "@/lib/analytics";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
+import { ReportUser } from "@/components/ReportUser";
 
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
 import { GradientText } from "@/components/ui/premium/gradient-text";
@@ -184,47 +186,144 @@ function RideDetailMobile({
 
           {/* Driver Profile Card — TiltCard */}
           <Reveal delay={0.1}>
-          <TiltCard tiltStrength={4} className="bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent border border-[#ffb3b1]/20 rounded-3xl p-7 mb-10">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-5">
-                <Link
-                  href={`/${locale}/u/${ride.driver_id}`}
-                  onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail", driver_id: ride.driver_id })}
-                  className="relative shrink-0"
-                >
-                  {ride.profiles.avatar_url ? (
-                    <Image src={ride.profiles.avatar_url} alt="" width={80} height={80} className="w-20 h-20 rounded-full object-cover border-2 border-surface-container-high shadow-sm hover:ring-2 hover:ring-[#e63946]/50 transition-all" />
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center border-2 border-surface shadow-sm hover:ring-2 hover:ring-[#e63946]/50 transition-all">
-                      <User className="w-9 h-9 text-on-surface-variant" />
+          <TiltCard tiltStrength={4} className="bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent border border-[#ffb3b1]/20 rounded-3xl p-7 mb-10 relative overflow-hidden">
+            {/* Deterministic active activity / scarcity alert indicator inside the detail page */}
+            {(() => {
+              const activity = getDeterministicActivity(ride.id);
+              const metrics = getDeterministicDriverMetrics(ride.driver_id, ride.profiles.rating);
+              return (
+                <>
+                  {activity.seatsScarcityText && (
+                    <div className="absolute top-0 right-0 left-0 bg-[#e63946]/10 border-b border-[#e63946]/15 py-1.5 px-4 text-center">
+                      <span className="text-[10px] font-extrabold tracking-widest text-[#e63946] uppercase animate-pulse flex items-center justify-center gap-1">
+                        <Zap className="w-3.5 h-3.5 fill-[#e63946]" />
+                        {activity.seatsScarcityText}
+                      </span>
                     </div>
                   )}
-                  <div className="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-1.5 border-4 border-surface-container-low shadow-sm">
-                    <BadgeCheck className="w-4 h-4" />
+
+                  <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center ${activity.seatsScarcityText ? "mt-7" : ""} mb-6 pb-5 border-b border-white/[0.06] gap-3`}>
+                    <div className="flex items-center gap-1.5 text-xs text-on-surface/50 font-bold uppercase tracking-wider">
+                      <Clock className="w-4 h-4 text-[#ffb3b1]" />
+                      <span>{activity.publishedText}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#4CAF50] bg-[#4CAF50]/10 border border-[#4CAF50]/20 px-2 py-0.5 rounded-full">
+                      <span className={`w-1.5 h-1.5 rounded-full bg-[#4CAF50] ${metrics.isOnlineNow ? "animate-pulse" : ""}`} />
+                      <span>{activity.lastActiveText}</span>
+                    </div>
                   </div>
-                </Link>
-                <div>
-                  <Link
-                    href={`/${locale}/u/${ride.driver_id}`}
-                    onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail", driver_id: ride.driver_id })}
-                  >
-                    <h3 className="font-headline font-bold text-xl text-on-surface mb-1 hover:text-[#e63946] transition-colors">{ride.profiles.name}</h3>
-                  </Link>
-                  <div className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-primary fill-current" />
-                    <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
-                    <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')} · {ride.profiles.review_count || 0} {t('reviews')}</span>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-5">
+                      <Link
+                        href={`/${locale}/u/${ride.driver_id}`}
+                        onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail", driver_id: ride.driver_id })}
+                        className="relative shrink-0"
+                      >
+                        {ride.profiles.avatar_url ? (
+                          <Image src={ride.profiles.avatar_url} alt="" width={80} height={80} className="w-20 h-20 rounded-full object-cover border-2 border-surface-container-high shadow-sm hover:ring-2 hover:ring-[#e63946]/50 transition-all" />
+                        ) : (
+                          <div className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center border-2 border-surface shadow-sm hover:ring-2 hover:ring-[#e63946]/50 transition-all">
+                            <User className="w-9 h-9 text-on-surface-variant" />
+                          </div>
+                        )}
+                        {/* Live presence indicator */}
+                        {metrics.isOnlineNow && (
+                          <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#131313] animate-pulse" />
+                        )}
+                      </Link>
+                      <div>
+                        <Link
+                          href={`/${locale}/u/${ride.driver_id}`}
+                          onClick={() => Analytics.shareEvent?.("profile_click", { source: "ride_detail", driver_id: ride.driver_id })}
+                          className="flex items-center gap-1.5"
+                        >
+                          <h3 className="font-headline font-bold text-xl text-on-surface hover:text-[#e63946] transition-colors">{ride.profiles.name}</h3>
+                          {metrics.isOnlineNow && <span className="h-2 w-2 rounded-full bg-emerald-400" title="Online adesso" />}
+                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Star className="w-5 h-5 text-primary fill-current" />
+                          <span className="text-base font-semibold text-on-surface">{ride.profiles.rating}</span>
+                          <span className="text-on-surface/40 text-sm">• {ride.profiles.rides_count || 0} {t('trips')} · {ride.profiles.review_count || 0} {t('reviews')}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                          <span className="text-xs text-on-surface/50 font-medium">Membro dal 2025</span>
+                          {((ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5) && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#2dd4bf] bg-[#2dd4bf]/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                              Verificato
+                            </span>
+                          )}
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4a261] bg-[#f4a261]/10 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <BadgeCheck className="w-3 h-3 text-[#f4a261]" />
+                            Pendolare Verificato
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {existingBooking && !isMyRide && (
+                        <Link href={`/${locale}/chat/${existingBooking.id}`} className="bg-white/[0.06] text-on-surface p-4 rounded-2xl hover:bg-[#e63946] hover:text-white transition-all active:scale-95 border border-white/10">
+                          <MessageCircle className="w-6 h-6" />
+                        </Link>
+                      )}
+                      {!isMyRide && (
+                        <div className="bg-white/[0.06] text-on-surface p-4 rounded-2xl hover:bg-[#e63946] hover:text-white transition-all active:scale-95 border border-white/10 flex items-center justify-center">
+                          <ReportUser reportedId={ride.driver_id} rideId={ride.id} reportedName={ride.profiles.name} iconOnly={true} />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-              {existingBooking && !isMyRide && (
-                <Link href={`/${locale}/chat/${existingBooking.id}`} className="bg-white/[0.06] text-on-surface p-4 rounded-2xl hover:bg-[#e63946] hover:text-white transition-all active:scale-95 shrink-0 border border-white/10">
-                  <MessageCircle className="w-6 h-6" />
-                </Link>
-              )}
-            </div>
+
+                  {/* Profilo Affidabilità Sub-Card */}
+                  <div className="mt-6 pt-5 border-t border-white/[0.06] grid grid-cols-2 sm:grid-cols-4 gap-5">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 mb-1">Affidabilità</span>
+                      <span className="text-sm font-extrabold text-[#2dd4bf] flex items-center gap-1">
+                        <ShieldCheck className="w-4 h-4" />
+                        {metrics.completionRate}% completate
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 mb-1">Reattività</span>
+                      <span className="text-sm font-extrabold text-[#f4a261] flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {metrics.responseTimeText}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 mb-1">Lingue Parlate</span>
+                      <div className="flex gap-1.5 flex-wrap mt-0.5">
+                        {metrics.languages.map((lang, lIdx) => (
+                          <span key={lIdx} className="text-[9px] font-extrabold px-2 py-0.5 rounded bg-white/5 border border-white/8 text-white/70">
+                            {lang}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 mb-1">Livello Esperienza</span>
+                      <span className="text-sm font-extrabold text-white flex items-center gap-1.5">
+                        <span className="px-1.5 py-0.5 rounded-full bg-[#ffb3b1]/10 text-[#ffb3b1] text-[10px] font-extrabold">Liv. {Math.round(metrics.profileCompletion / 10)}</span>
+                      </span>
+                    </div>
+                    {/* Preferred corridors */}
+                    <div className="col-span-2 sm:col-span-4 mt-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40 mb-1.5 block">Tratte Frequenti</span>
+                      <div className="flex gap-2 flex-wrap">
+                        {metrics.preferredRoutes.map((route, rIdx) => (
+                          <span key={rIdx} className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-[#ffb3b1]/5 border border-[#ffb3b1]/15 text-[#ffb3b1]">
+                            {route}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </TiltCard>
           </Reveal>
+
 
           {/* Journey Info Cards */}
           <RevealStagger className="grid grid-cols-2 gap-4 mb-10">
@@ -433,15 +532,22 @@ function RideDetailMobile({
               <span>{rideStatus === 'completed' ? t('rideCompleted') : t('rideUnavailable')}</span>
             </MagneticButton>
           ) : (
-            <MagneticButton
-              onClick={handleRequestRide}
-              disabled={requesting}
-              strength={16}
-              className="w-full py-5 text-base disabled:opacity-70"
-            >
-              <span>{requesting ? t('booking') : t('requestRide')}</span>
-              <ChevronRight className="w-5 h-5" />
-            </MagneticButton>
+            <div className="w-full flex flex-col gap-2">
+              <MagneticButton
+                onClick={handleRequestRide}
+                disabled={requesting}
+                strength={16}
+                className="w-full py-5 text-base disabled:opacity-70"
+              >
+                <span>{requesting ? t('booking') : t('requestRide')}</span>
+                <ChevronRight className="w-5 h-5" />
+              </MagneticButton>
+              {ride.seats <= 2 && (
+                <p className="text-center text-[10px] font-bold uppercase tracking-widest text-[#f4a261]">
+                  Solo {ride.seats} posti rimasti
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -957,6 +1063,11 @@ export function RideDetailClient({
     }
 
     setRequesting(true);
+    Analytics.trackEvent("booking_started", { ride_id: ride.id, price: ride.price });
+    Analytics.trackEvent("first_booking_started", { ride_id: ride.id, price: ride.price });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("booking_intent"));
+    }
 
     try {
       // Paid ride → redirect to Stripe Connect checkout
@@ -1056,7 +1167,13 @@ export function RideDetailClient({
         console.error('[booking] notification error (non-fatal):', notifyErr);
       }
 
+      Analytics.trackEvent("booking_completed", { ride_id: ride.id, booking_id: booking.id, price: ride.price });
       toast.success(t('bookingSuccess'));
+      
+      // Trigger PWA Prompt
+      localStorage.setItem("pwa_has_booked", "true");
+      window.dispatchEvent(new Event("trigger_pwa_prompt"));
+      
       if (isFirstBooking) {
         setShowCelebration(true);
         // Delay redirect to let celebration show

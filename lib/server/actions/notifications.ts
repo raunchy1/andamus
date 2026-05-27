@@ -22,6 +22,25 @@ interface CreateNotificationParams {
 }
 
 /**
+ * Maps notification types to user preference columns.
+ */
+function getPreferenceColumn(type: NotificationType): string | null {
+  switch (type) {
+    case "booking_request":
+      return "push_booking_requests";
+    case "booking_accepted":
+    case "booking_rejected":
+      return "push_booking_confirmed";
+    case "new_message":
+      return "push_new_messages";
+    case "ride_alert":
+      return "push_ride_alerts";
+    default:
+      return null;
+  }
+}
+
+/**
  * Create a notification for a user.
  *
  * SECURITY: This uses the service role client to bypass RLS,
@@ -47,9 +66,25 @@ export async function createNotification({
     throw new Error("Unauthorized: authentication required");
   }
 
-  // ── Cooldown: prevent duplicate notifications within window ──
   const sr = createServiceRoleClient();
-  const cooldownMinutes = type === "new_message" ? 5 : type === "ride_alert" ? 60 : 15;
+
+  // ── Opt-out check: verify user preferences in public.profiles ──
+  const prefColumn = getPreferenceColumn(type);
+  if (prefColumn) {
+    const { data: profile } = await sr
+      .from("profiles")
+      .select(prefColumn)
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profile && (profile as unknown as Record<string, unknown>)[prefColumn] === false) {
+      console.log(`[notifications] User ${userId} has opted out of ${type} notifications. Skipping.`);
+      return false;
+    }
+  }
+
+  // ── Cooldown: prevent duplicate notifications within window ──
+  const cooldownMinutes = type === "new_message" ? 5 : type === "ride_alert" ? 180 : 15;
   const cooldownWindow = new Date(Date.now() - cooldownMinutes * 60 * 1000).toISOString();
 
   const { data: recent, error: recentError } = await sr
@@ -66,6 +101,7 @@ export async function createNotification({
   }
   if (recent) {
     // Duplicate notification within cooldown window — skip
+    console.log(`[notifications] Cooldown active for user ${userId} / ${type}. Skipped duplicate.`);
     return false;
   }
 
@@ -108,6 +144,7 @@ export async function notifyBookingRequest(
     title: "Nuova richiesta di passaggio",
     body: `${passengerName} ha richiesto di unirsi al tuo passaggio`,
     url: `/chat/${bookingId}`,
+    type: "booking_request",
   }).catch(() => {});
   return result;
 }
@@ -121,16 +158,17 @@ export async function notifyBookingAccepted(
   const result = await createNotification({
     userId: passengerId,
     type: "booking_accepted",
-    title: "Passaggio confermato!",
+    title: "Passaggio confermato! 🎉",
     body: `${driverName} ha accettato la tua richiesta`,
     rideId,
     bookingId,
   });
   sendPushToUser({
     userId: passengerId,
-    title: "Passaggio confermato!",
+    title: "Passaggio confermato! 🎉",
     body: `${driverName} ha accettato la tua richiesta`,
     url: `/chat/${bookingId}`,
+    type: "booking_accepted",
   }).catch(() => {});
   return result;
 }
@@ -154,6 +192,7 @@ export async function notifyBookingRejected(
     title: "Richiesta non accettata",
     body: `${driverName} non può offrirti il passaggio`,
     url: `/profilo`,
+    type: "booking_rejected",
   }).catch(() => {});
   return result;
 }
@@ -177,6 +216,7 @@ export async function notifyNewMessage(
     title: "Nuovo messaggio",
     body: `Da ${senderName}`,
     url: `/chat/${bookingId}`,
+    type: "new_message",
   }).catch(() => {});
   return result;
 }
@@ -198,6 +238,7 @@ export async function notifyNewReview(
     title: "Nuova recensione",
     body: `${reviewerName} ha lasciato una recensione`,
     url: `/corsa/${rideId}`,
+    type: "new_review",
   }).catch(() => {});
   return result;
 }
@@ -219,8 +260,40 @@ export async function notifyRideAlert(
     userId,
     title: "Nuovo passaggio disponibile!",
     body: `${fromCity} → ${toCity}`,
-    url: `/corsa/${rideId}`,
+    url: `/corsa/${rideId}?ref=alert`,
+    type: "ride_alert",
   }).catch(() => {});
+  return result;
+}
+
+/**
+ * Dispatches scarcity warnings to drivers or saved route searchers when a ride is nearly full (1 seat left).
+ */
+export async function notifyScarcityAlert(
+  userId: string,
+  fromCity: string,
+  toCity: string,
+  rideId: string
+) {
+  const title = "Ultimo posto rimasto! ⚡";
+  const body = `Affrettati, c'è solo un posto rimasto per il viaggio ${fromCity} → ${toCity}!`;
+  
+  const result = await createNotification({
+    userId,
+    type: "ride_alert",
+    title,
+    body,
+    rideId,
+  });
+
+  sendPushToUser({
+    userId,
+    title,
+    body,
+    url: `/corsa/${rideId}?ref=scarcity`,
+    type: "ride_alert",
+  }).catch(() => {});
+
   return result;
 }
 
@@ -233,20 +306,50 @@ export async function sendPushToUser({
   title,
   body,
   url,
+  type,
 }: {
   userId: string;
   title: string;
   body: string;
   url: string;
+  type?: NotificationType;
 }) {
+  const sr = createServiceRoleClient();
+
+  // ── Opt-out check: verify user push preferences before network requests ──
+  if (type) {
+    const prefColumn = getPreferenceColumn(type);
+    if (prefColumn) {
+      const { data: profile } = await sr
+        .from("profiles")
+        .select(prefColumn)
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (profile && (profile as unknown as Record<string, unknown>)[prefColumn] === false) {
+        return; // skip push
+      }
+    }
+  }
+
+  // ── Quiet hours check: 22:00 - 07:00 Europe/Rome (Sardinian timezone) ──
+  try {
+    const romeTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Rome" });
+    const romeHour = new Date(romeTime).getHours();
+    if (romeHour >= 22 || romeHour < 7) {
+      console.log("[notifications] Quiet hours active. Push skipped.");
+      return;
+    }
+  } catch (err) {
+    console.error("[notifications] Timezone check failed:", err);
+  }
+
   try {
     ensureVapidDetails();
   } catch {
     // VAPID not configured — skip push silently
     return;
   }
-
-  const sr = createServiceRoleClient();
 
   const { data: subscriptions } = await sr
     .from("push_subscriptions")

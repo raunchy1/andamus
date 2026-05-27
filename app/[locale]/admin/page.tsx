@@ -36,7 +36,7 @@ import { checkAdminAccess } from "@/lib/admin";
 import { FEATURES } from "@/lib/features";
 
 const AdminDataTabs = dynamic<
-  { activeTab: "users" | "rides" | "realtime" | "waitinglist"; supabase: SupabaseClient }
+  { activeTab: "users" | "rides" | "realtime" | "waitinglist" | "liquidity"; supabase: SupabaseClient }
 >(
   () => import("./_components/AdminDataTabs"),
   {
@@ -75,7 +75,7 @@ export default function AdminPage() {
   const [stats, setStats] = useState<Partial<Stats>>({});
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(new Date());
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "rides" | "revenue" | "realtime" | "waitinglist">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "rides" | "revenue" | "realtime" | "waitinglist" | "liquidity">("overview");
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
@@ -270,6 +270,7 @@ export default function AdminPage() {
           { id: "users", label: "Utenti" },
           { id: "rides", label: "Corse" },
           { id: "revenue", label: "Revenue" },
+          { id: "liquidity", label: "💧 Liquidità" },
           { id: "realtime", label: "🔴 Live" },
           ...(FEATURES.WAITLIST_MODE ? [{ id: "waitinglist", label: "⏳ Lista d'attesa" }] : []),
         ].map((tab) => (
@@ -296,7 +297,7 @@ export default function AdminPage() {
           <>
             {activeTab === "overview" && <OverviewTab stats={stats} colors={COLORS} />}
             {activeTab === "revenue" && <RevenueTab />}
-            {(activeTab === "users" || activeTab === "rides" || activeTab === "realtime" || (activeTab === "waitinglist" && FEATURES.WAITLIST_MODE)) && (
+            {(activeTab === "users" || activeTab === "rides" || activeTab === "realtime" || activeTab === "liquidity" || (activeTab === "waitinglist" && FEATURES.WAITLIST_MODE)) && (
               <Suspense fallback={
                 <div className="space-y-4 animate-pulse">
                   <Skeleton className="h-8 w-48" />

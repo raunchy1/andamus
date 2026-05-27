@@ -24,6 +24,7 @@ import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 import { Sparkles } from "lucide-react";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
+import { CreateRequestModal } from "@/components/CreateRequestModal";
 
 import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
 
@@ -55,6 +56,7 @@ export default function RequestsPage() {
   const [requests, setRequests] = useState<RideRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const [origin, setOrigin] = useState(searchParams.get("from") || "");
   const [destination, setDestination] = useState(searchParams.get("to") || "");
@@ -174,9 +176,9 @@ export default function RequestsPage() {
             >
               <SlidersHorizontal className="h-5 w-5" />
             </button>
-            <MagneticButton onClick={() => window.location.assign(`/${locale}/profilo`)} strength={12} className="h-12 px-4 py-0 text-xs">
+            <MagneticButton onClick={() => setShowCreateModal(true)} strength={12} className="h-12 px-4 py-0 text-xs">
               <PlusCircle className="h-4 w-4" />
-              {t("findRide")}
+              Crea Richiesta
             </MagneticButton>
           </div>
         </div>
@@ -260,6 +262,15 @@ export default function RequestsPage() {
           )}
         </div>
       </div>
+
+      <CreateRequestModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        initialFrom={origin}
+        initialTo={destination}
+        initialDate={date}
+        onSuccess={fetchRequests}
+      />
     </div>
   );
 }

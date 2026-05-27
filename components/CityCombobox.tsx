@@ -34,7 +34,15 @@ export function CityCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("andamus_recent_cities");
+      if (stored) setRecentSearches(JSON.parse(stored));
+    } catch (e) {}
+  }, []);
 
   // Detect mobile keyboard via visualViewport
   useEffect(() => {
@@ -62,6 +70,13 @@ export function CityCombobox({
   }, [cities, search]);
 
   const handleSelect = (cityName: string) => {
+    if (cityName && cityName !== value) {
+      setRecentSearches((prev) => {
+        const updated = [cityName, ...prev.filter((c) => c !== cityName)].slice(0, 5);
+        try { localStorage.setItem("andamus_recent_cities", JSON.stringify(updated)); } catch (e) {}
+        return updated;
+      });
+    }
     onChange(cityName === value ? "" : cityName);
     setIsOpen(false);
     setSearch("");
@@ -155,6 +170,33 @@ export function CityCombobox({
           className="overflow-y-auto pb-8"
           style={{ flex: 1, minHeight: 0, overscrollBehavior: "contain" }}
         >
+          {search === "" && (
+            <div className="px-5 mb-4 space-y-4">
+              {recentSearches.length > 0 && (
+                <div>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Di recente</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {recentSearches.map(city => (
+                      <button key={`recent-${city}`} type="button" onClick={() => handleSelect(city)} className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary hover:bg-primary/20 transition-colors">
+                        {city}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div>
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">Città popolari</h4>
+                <div className="flex flex-wrap gap-2">
+                  {["Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Alghero", "Aeroporto Cagliari Elmas"].map(city => (
+                    <button key={`pop-${city}`} type="button" onClick={() => handleSelect(city)} className="px-3 py-1.5 rounded-full border border-outline/20 bg-surface-variant/30 text-sm font-medium text-on-surface hover:border-outline/50 transition-colors">
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-on-surface-variant">
               <MapPin size={32} className="mx-auto mb-2 opacity-40" />

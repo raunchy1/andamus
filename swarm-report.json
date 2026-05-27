@@ -1,0 +1,414 @@
+{
+  "timestamp": "2026-05-22T14:47:22.604Z",
+  "stats": {
+    "total": 100,
+    "running": 0,
+    "completed": 0,
+    "failed": 0,
+    "pending": 100
+  },
+  "completed": [],
+  "failed": [],
+  "pending": [
+    {
+      "id": 1,
+      "title": "Fix OAuth callback open redirect"
+    },
+    {
+      "id": 2,
+      "title": "Add OAuth state parameter"
+    },
+    {
+      "id": 3,
+      "title": "Fix messages RLS for drivers"
+    },
+    {
+      "id": 4,
+      "title": "Fix bookings RLS for drivers"
+    },
+    {
+      "id": 5,
+      "title": "Wire up rate limiting"
+    },
+    {
+      "id": 6,
+      "title": "Fix email template XSS"
+    },
+    {
+      "id": 7,
+      "title": "Tighten INSERT policies"
+    },
+    {
+      "id": 8,
+      "title": "Create waiting_list table"
+    },
+    {
+      "id": 9,
+      "title": "Resolve duplicate group tables"
+    },
+    {
+      "id": 10,
+      "title": "Dynamic import heavy deps"
+    },
+    {
+      "id": 11,
+      "title": "Fix Stripe API version"
+    },
+    {
+      "id": 12,
+      "title": "Add missing indexes"
+    },
+    {
+      "id": 13,
+      "title": "Add focus trapping to modals"
+    },
+    {
+      "id": 14,
+      "title": "Fix useDeviceType hydration"
+    },
+    {
+      "id": 15,
+      "title": "Reduce PWA cache TTL"
+    },
+    {
+      "id": 16,
+      "title": "Begin Server Component migration"
+    },
+    {
+      "id": 17,
+      "title": "Drop duplicate Italian columns in rides"
+    },
+    {
+      "id": 18,
+      "title": "Complete German translations"
+    },
+    {
+      "id": 19,
+      "title": "Move admin email to DB"
+    },
+    {
+      "id": 20,
+      "title": "Add down migrations"
+    },
+    {
+      "id": 21,
+      "title": "Design cancellation/refund flow"
+    },
+    {
+      "id": 22,
+      "title": "Fix all lint errors"
+    },
+    {
+      "id": 23,
+      "title": "Refactor profilo/page.tsx - Part 1"
+    },
+    {
+      "id": 24,
+      "title": "Refactor profilo/page.tsx - Part 2"
+    },
+    {
+      "id": 25,
+      "title": "Refactor profilo/page.tsx - Part 3"
+    },
+    {
+      "id": 26,
+      "title": "Refactor profilo/page.tsx - Part 4"
+    },
+    {
+      "id": 27,
+      "title": "Refactor profilo/page.tsx - Part 5"
+    },
+    {
+      "id": 28,
+      "title": "Refactor cerca/page.tsx - Part 1"
+    },
+    {
+      "id": 29,
+      "title": "Refactor cerca/page.tsx - Part 2"
+    },
+    {
+      "id": 30,
+      "title": "Refactor cerca/page.tsx - Part 3"
+    },
+    {
+      "id": 31,
+      "title": "Refactor cerca/page.tsx - Part 4"
+    },
+    {
+      "id": 32,
+      "title": "Refactor ChatWindow.tsx - Part 1"
+    },
+    {
+      "id": 33,
+      "title": "Refactor ChatWindow.tsx - Part 2"
+    },
+    {
+      "id": 34,
+      "title": "Refactor ChatWindow.tsx - Part 3"
+    },
+    {
+      "id": 35,
+      "title": "Refactor ChatWindow.tsx - Part 4"
+    },
+    {
+      "id": 36,
+      "title": "Refactor ChatWindow.tsx - Part 5"
+    },
+    {
+      "id": 37,
+      "title": "Add aria-labels to icon buttons"
+    },
+    {
+      "id": 38,
+      "title": "Extract shared modal component"
+    },
+    {
+      "id": 39,
+      "title": "Create useRideSearch hook"
+    },
+    {
+      "id": 40,
+      "title": "Create useBooking hook"
+    },
+    {
+      "id": 41,
+      "title": "Create useChat hook"
+    },
+    {
+      "id": 42,
+      "title": "Extract API client utilities"
+    },
+    {
+      "id": 43,
+      "title": "Add RLS policy tests - messages"
+    },
+    {
+      "id": 44,
+      "title": "Add RLS policy tests - bookings"
+    },
+    {
+      "id": 45,
+      "title": "Add RLS policy tests - rides"
+    },
+    {
+      "id": 46,
+      "title": "Add unit tests for auth actions"
+    },
+    {
+      "id": 47,
+      "title": "Add unit tests for ride actions"
+    },
+    {
+      "id": 48,
+      "title": "Add unit tests for booking actions"
+    },
+    {
+      "id": 49,
+      "title": "Add unit tests for gamification"
+    },
+    {
+      "id": 50,
+      "title": "Add E2E test - search flow"
+    },
+    {
+      "id": 51,
+      "title": "Add E2E test - booking flow"
+    },
+    {
+      "id": 52,
+      "title": "Add E2E test - chat flow"
+    },
+    {
+      "id": 53,
+      "title": "Add E2E test - payment flow"
+    },
+    {
+      "id": 54,
+      "title": "Add E2E test - profile flow"
+    },
+    {
+      "id": 55,
+      "title": "Add visual regression tests"
+    },
+    {
+      "id": 56,
+      "title": "Add performance tests"
+    },
+    {
+      "id": 57,
+      "title": "Add accessibility tests"
+    },
+    {
+      "id": 58,
+      "title": "Code split admin dashboard"
+    },
+    {
+      "id": 59,
+      "title": "Code split route map"
+    },
+    {
+      "id": 60,
+      "title": "Optimize images"
+    },
+    {
+      "id": 61,
+      "title": "Add image placeholders"
+    },
+    {
+      "id": 62,
+      "title": "Optimize bundle - remove unused deps"
+    },
+    {
+      "id": 63,
+      "title": "Add React.memo to list items"
+    },
+    {
+      "id": 64,
+      "title": "Add useMemo for expensive computations"
+    },
+    {
+      "id": 65,
+      "title": "Implement virtual scrolling for lists"
+    },
+    {
+      "id": 66,
+      "title": "Add request deduplication"
+    },
+    {
+      "id": 67,
+      "title": "Optimize font loading"
+    },
+    {
+      "id": 68,
+      "title": "Add service worker precache config"
+    },
+    {
+      "id": 69,
+      "title": "Implement stale-while-revalidate"
+    },
+    {
+      "id": 70,
+      "title": "Add edge caching headers"
+    },
+    {
+      "id": 71,
+      "title": "Optimize CSS bundle"
+    },
+    {
+      "id": 72,
+      "title": "Add loading skeletons"
+    },
+    {
+      "id": 73,
+      "title": "Remove all any types - Part 1"
+    },
+    {
+      "id": 74,
+      "title": "Remove all any types - Part 2"
+    },
+    {
+      "id": 75,
+      "title": "Add Zod schemas for API inputs"
+    },
+    {
+      "id": 76,
+      "title": "Add Zod schemas for server actions"
+    },
+    {
+      "id": 77,
+      "title": "Generate types from Supabase schema"
+    },
+    {
+      "id": 78,
+      "title": "Add strict TypeScript config"
+    },
+    {
+      "id": 79,
+      "title": "Type all API responses"
+    },
+    {
+      "id": 80,
+      "title": "Type all server actions"
+    },
+    {
+      "id": 81,
+      "title": "Create shared DTO types"
+    },
+    {
+      "id": 82,
+      "title": "Add branded types for IDs"
+    },
+    {
+      "id": 83,
+      "title": "Document component API"
+    },
+    {
+      "id": 84,
+      "title": "Document server actions"
+    },
+    {
+      "id": 85,
+      "title": "Document API routes"
+    },
+    {
+      "id": 86,
+      "title": "Create architecture decision records"
+    },
+    {
+      "id": 87,
+      "title": "Update README with setup guide"
+    },
+    {
+      "id": 88,
+      "title": "Create onboarding guide"
+    },
+    {
+      "id": 89,
+      "title": "Document deployment process"
+    },
+    {
+      "id": 90,
+      "title": "Create troubleshooting guide"
+    },
+    {
+      "id": 91,
+      "title": "Setup GitHub Actions CI"
+    },
+    {
+      "id": 92,
+      "title": "Add pre-commit hooks"
+    },
+    {
+      "id": 93,
+      "title": "Add Dependabot config"
+    },
+    {
+      "id": 94,
+      "title": "Setup staging environment"
+    },
+    {
+      "id": 95,
+      "title": "Add Docker support"
+    },
+    {
+      "id": 96,
+      "title": "Add docker-compose"
+    },
+    {
+      "id": 97,
+      "title": "Setup Sentry source maps"
+    },
+    {
+      "id": 98,
+      "title": "Add health check endpoint"
+    },
+    {
+      "id": 99,
+      "title": "Add environment validation"
+    },
+    {
+      "id": 100,
+      "title": "Add error boundary components"
+    }
+  ]
+}

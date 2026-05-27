@@ -11,10 +11,20 @@ import {
   FileText,
   Loader2,
   AlertCircle,
+  User,
+  Euro,
+  Users,
+  Sparkles,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { AuroraBackground } from "@/components/ui/premium/aurora-background";
+import { OrbGlow } from "@/components/ui/premium/orb-glow";
+import { GradientText } from "@/components/ui/premium/gradient-text";
+import { MagneticButton } from "@/components/ui/premium/magnetic-button";
+import { TiltCard } from "@/components/ui/premium/tilt-card";
+import { Reveal } from "@/components/ui/premium/reveal";
 
 interface RideRequest {
   id: string;
@@ -76,7 +86,7 @@ export default function RequestDetailPage() {
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+    return d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" });
   };
 
   const flexibilityLabel = (val: string) => {
@@ -89,23 +99,31 @@ export default function RequestDetailPage() {
   };
 
   if (error) {
-    return <div className="p-8 text-center text-error">{t("loadError")}</div>;
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+        <AlertCircle className="h-16 w-16 text-[#e63946] mb-4" />
+        <h1 className="text-xl font-bold text-[#e5e2e1]">{t("loadError")}</h1>
+        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-[#ffb3b1] hover:underline">
+          <ArrowLeft className="h-4 w-4" /> {t("backToRequests")}
+        </Link>
+      </div>
+    );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-accent" />
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#ffb3b1]" />
       </div>
     );
   }
 
   if (!request) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
-        <AlertCircle className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-bold text-foreground">{t("notFound")}</h1>
-        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-accent">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+        <AlertCircle className="h-16 w-16 text-[#e63946] mb-4" />
+        <h1 className="text-2xl font-bold text-[#e5e2e1]">{t("notFound")}</h1>
+        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-[#ffb3b1] hover:underline">
           <ArrowLeft className="h-4 w-4" /> {t("backToRequests")}
         </Link>
       </div>
@@ -115,96 +133,139 @@ export default function RequestDetailPage() {
   const isMyRequest = user?.id === request.user_id;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card px-4 py-4">
-        <div className="mx-auto max-w-3xl flex items-center justify-between">
-          <Link href={`/${locale}/richieste`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-            <span className="hidden sm:inline">{t("back")}</span>
-          </Link>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-              {request.from_city} → {request.to_city}
-            </h1>
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                <span className="font-medium">{formatDate(request.date)}</span>
-              </div>
-              {request.time && (
-                <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  <span>{request.time.slice(0, 5)}</span>
-                  <span className="text-sm">({flexibilityLabel(request.time_flexibility)})</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 py-4 border-y border-border">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted overflow-hidden">
-              <span className="text-lg font-bold text-muted-foreground">
-                {request.profiles?.name?.charAt(0)?.toUpperCase() ?? '?'}
-              </span>
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">{request.profiles.name}</p>
-              <p className="text-sm text-muted-foreground">{t("lookingForRide")}</p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">{t("seatsNeeded")}</p>
-              <p className="mt-1 text-xl font-semibold text-foreground">{request.seats_needed}</p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">{t("maxBudget")}</p>
-              <p className="mt-1 text-xl font-semibold text-foreground">
-                {request.max_price !== null ? `${request.max_price}€` : "-"}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">{t("flexibility")}</p>
-              <p className="mt-1 text-xl font-semibold text-foreground">{flexibilityLabel(request.time_flexibility)}</p>
-            </div>
-          </div>
-
-          {request.notes && (
-            <div className="flex gap-3">
-              <FileText className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium text-foreground">{t("notes")}</p>
-                <p className="text-muted-foreground">{request.notes}</p>
-              </div>
-            </div>
-          )}
-
-          {!isMyRequest && user && (
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <p className="text-foreground font-medium mb-2">{t("haveRidePrompt")}</p>
-              <Link
-                href={`/offri?from=${request.from_city}&to=${request.to_city}&date=${request.date}`}
-                className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-accent/90"
-              >
-                <MapPin className="h-4 w-4" />
-                {t("publishRide")}
+    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
+      {/* Header — Premium Aurora */}
+      <AuroraBackground className="border-b border-white/5 px-4 py-8 lg:py-12 relative" showRadialMask={false}>
+        <OrbGlow className="-top-20 -right-32" color="#e63946" size={300} opacity={0.30} />
+        <div className="mx-auto max-w-3xl relative">
+          <Reveal>
+            <div className="mb-4 flex items-center gap-2">
+              <Link href={`/${locale}/richieste`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#e5e2e1]/60 hover:text-[#ffb3b1] transition-colors">
+                <ArrowLeft className="h-4 w-4" />
+                {t("backToRequests")}
               </Link>
             </div>
-          )}
-
-          {isMyRequest && (
-            <div className="rounded-2xl border border-border bg-card p-4 text-center">
-              <p className="text-muted-foreground">{t("yourRequest")}</p>
-              <p className="text-sm text-muted-foreground mt-1">{t("notificationInfo")}</p>
-            </div>
-          )}
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb3b1]/30 bg-[#ffb3b1]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] backdrop-blur-md mb-4">
+              <Sparkles className="h-3 w-3" />
+              {t("lookingForRide")}
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#e5e2e1]">
+              {request.from_city} <GradientText>→</GradientText> {request.to_city}
+            </h1>
+          </Reveal>
         </div>
+      </AuroraBackground>
+
+      {/* Detail Content */}
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <Reveal>
+          <div className="space-y-6">
+            {/* Meta Info */}
+            <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 backdrop-blur-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.05] border border-white/10 overflow-hidden">
+                    {request.profiles?.avatar_url ? (
+                      <img src={request.profiles.avatar_url} alt={request.profiles.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-lg font-bold text-[#ffb3b1]">
+                        {request.profiles?.name?.charAt(0)?.toUpperCase() ?? '?'}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg text-[#e5e2e1]">{request.profiles.name}</p>
+                    <p className="text-xs text-[#e5e2e1]/60">{t("lookingForRide")}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5 text-sm text-[#e5e2e1]/70">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-[#ffb3b1]" />
+                    <span className="capitalize">{formatDate(request.date)}</span>
+                  </div>
+                  {request.time && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-[#ffb3b1]" />
+                      <span>{request.time.slice(0, 5)}</span>
+                      <span className="text-xs text-[#e5e2e1]/40">({flexibilityLabel(request.time_flexibility)})</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid gap-4 sm:grid-cols-3">
+              <TiltCard tiltStrength={4} className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <Users className="h-4 w-4 text-[#ffb3b1]" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#e5e2e1]/60">{t("seatsNeeded")}</p>
+                </div>
+                <p className="text-2xl font-black text-[#e5e2e1]">{request.seats_needed}</p>
+              </TiltCard>
+
+              <TiltCard tiltStrength={4} className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <Euro className="h-4 w-4 text-[#ffb3b1]" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#e5e2e1]/60">{t("maxBudget")}</p>
+                </div>
+                <p className="text-2xl font-black text-[#e5e2e1]">
+                  {request.max_price !== null ? `${request.max_price}€` : "-"}
+                </p>
+              </TiltCard>
+
+              <TiltCard tiltStrength={4} className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
+                <div className="flex items-center gap-2.5 mb-2">
+                  <Clock className="h-4 w-4 text-[#ffb3b1]" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#e5e2e1]/60">{t("flexibilityLabel") || t("flexibility")}</p>
+                </div>
+                <p className="text-lg font-bold text-[#e5e2e1] truncate">{flexibilityLabel(request.time_flexibility)}</p>
+              </TiltCard>
+            </div>
+
+            {/* Notes Section */}
+            {request.notes && (
+              <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-6 backdrop-blur-sm flex gap-4">
+                <FileText className="h-6 w-6 text-[#ffb3b1] flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold text-[#e5e2e1] mb-1">{t("notes")}</p>
+                  <p className="text-[#e5e2e1]/80 leading-relaxed text-sm">{request.notes}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Actions for Drivers */}
+            {!isMyRequest && user && (
+              <div className="rounded-3xl border border-[#ffb3b1]/20 bg-gradient-to-br from-[#ffb3b1]/[0.05] via-[#e63946]/[0.02] to-transparent p-8 text-center backdrop-blur-sm">
+                <MapPin className="h-10 w-10 text-[#ffb3b1] mx-auto mb-3" />
+                <p className="text-lg font-bold text-[#e5e2e1] mb-2">{t("haveRidePrompt")}</p>
+                <p className="text-sm text-[#e5e2e1]/60 mb-6 max-w-md mx-auto">
+                  Pubblica una corsa che corrisponde alle esigenze di questo passeggero. Verrà notificato istantaneamente!
+                </p>
+                <div className="inline-flex justify-center">
+                  <MagneticButton
+                    onClick={() => window.location.assign(`/${locale}/offri?from=${request.from_city}&to=${request.to_city}&date=${request.date}`)}
+                    strength={12}
+                    className="h-12 px-6 text-sm"
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {t("publishRide")}
+                  </MagneticButton>
+                </div>
+              </div>
+            )}
+
+            {/* Information for Request Owner */}
+            {isMyRequest && (
+              <div className="rounded-3xl border border-white/5 bg-white/[0.01] p-6 text-center backdrop-blur-sm">
+                <Sparkles className="h-6 w-6 text-[#ffb3b1] mx-auto mb-2" />
+                <p className="text-sm font-bold text-[#e5e2e1]">{t("yourRequest")}</p>
+                <p className="text-xs text-[#e5e2e1]/50 mt-1 max-w-sm mx-auto">{t("notificationInfo")}</p>
+              </div>
+            )}
+          </div>
+        </Reveal>
       </div>
     </div>
   );

@@ -114,6 +114,27 @@ export const Analytics = {
   trustBadgeClick: (userId: string, score: number) => {
     track("trust_badge_click", { user_id: userId, trust_score: score });
   },
+
+  trackSessionActive: (userCreatedAt: string) => {
+    try {
+      const signupDate = new Date(userCreatedAt);
+      const today = new Date();
+      const diffTime = Math.abs(today.getTime() - signupDate.getTime());
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      track("session_active", {
+        days_since_signup: diffDays,
+        is_d1: diffDays === 1,
+        is_d7: diffDays === 7,
+      });
+    } catch {
+      // Fail silently
+    }
+  },
+
+  trackEvent: (event: string, params?: Record<string, unknown>) => {
+    track(event, params);
+  },
 };
 
 export { identifyUser };

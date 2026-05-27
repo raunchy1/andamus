@@ -15,6 +15,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
+import { Analytics } from "@/lib/analytics";
 
 interface Booking {
   id: string;
@@ -114,6 +115,13 @@ export function BookingButton({
       return;
     }
 
+    Analytics.trackEvent("booking_started", {
+      ride_id: rideId,
+      driver_id: driverId,
+      from_city: ride.from_city,
+      to_city: ride.to_city,
+    });
+
     setIsLoading(true);
     const toastId = toast.loading(t('sendingRequest'));
 
@@ -147,6 +155,14 @@ export function BookingButton({
         booking.id
       );
 
+      Analytics.trackEvent("booking_completed", {
+        booking_id: booking.id,
+        ride_id: rideId,
+        driver_id: driverId,
+        from_city: ride.from_city,
+        to_city: ride.to_city,
+      });
+
       setBookingStatus("pending");
       setBookingId(booking.id);
       
@@ -158,6 +174,13 @@ export function BookingButton({
         router.push(`/${locale}/chat/${booking.id}`);
       }, 1500);
     } catch (err) {
+      Analytics.trackEvent("booking_failed", {
+        ride_id: rideId,
+        driver_id: driverId,
+        from_city: ride.from_city,
+        to_city: ride.to_city,
+        error: err instanceof Error ? err.message : "unknown",
+      });
       toast.dismiss(toastId);
       toast.error(err instanceof Error ? err.message : t('bookingError'));
     } finally {

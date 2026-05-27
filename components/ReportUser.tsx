@@ -10,6 +10,7 @@ interface ReportUserProps {
   reportedId: string;
   rideId?: string;
   reportedName: string;
+  iconOnly?: boolean;
 }
 
 const reportReasons = [
@@ -21,7 +22,7 @@ const reportReasons = [
   { id: "other" },
 ];
 
-export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps) {
+export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false }: ReportUserProps) {
   const t = useTranslations("report");
   const [isOpen, setIsOpen] = useState(false);
   const [reason, setReason] = useState("");
@@ -60,10 +61,11 @@ export function ReportUser({ reportedId, rideId, reportedName }: ReportUserProps
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-red-400"
+        className={iconOnly ? "text-white/50 hover:text-red-400 transition-colors flex items-center justify-center" : "flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-red-400"}
+        title={t("reportUser")}
       >
-        <Flag className="h-4 w-4" />
-        {t("reportUser")}
+        <Flag className="h-4.5 w-4.5" />
+        {!iconOnly && t("reportUser")}
       </button>
 
       {isOpen && (

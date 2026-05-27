@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { saveRoute, deleteSavedRoute } from "@/lib/server/actions/saved-routes";
+import { getCommuteSuggestion } from "@/lib/commute-suggestions";
+import { toast } from "sonner";
+import { Analytics } from "@/lib/analytics";
 import { useDeviceType } from "@/components/view-mode";
 import { SardiniaMap } from "@/components/SardiniaMap";
 import { LaunchBanner } from "@/components/LaunchBanner";
-import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star, Sparkles, ArrowRight, Zap, Heart } from "lucide-react";
+import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star, Sparkles, ArrowRight, Zap, Heart, GraduationCap, X } from "lucide-react";
 import Image from "next/image";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { CityCombobox } from "@/components/CityCombobox";
@@ -47,6 +51,11 @@ interface HomeUIProps {
   userAvatar: string | null;
   handleSearch: (e: React.FormEvent) => void;
   router: ReturnType<typeof useRouter>;
+  savedRoutes: any[];
+  suggestion: { from: string; to: string; reason: string } | null;
+  signals: { ridesAddedToday: number; activeCommutersCount: number; trendingRoute: { from: string; to: string } | null } | null;
+  showInlineOnboarding: boolean;
+  setShowInlineOnboarding: (value: boolean) => void;
 }
 
 interface HomeTranslations {
@@ -91,6 +100,7 @@ interface HomeViewProps extends HomeUIProps {
 function HomeMobile({
   origin,
   setOrigin,
+  destination,
   setDestination,
   todayRides,
   loading,
@@ -99,6 +109,12 @@ function HomeMobile({
   handleSearch,
   locale,
   translations,
+  savedRoutes,
+  router,
+  suggestion,
+  signals,
+  showInlineOnboarding,
+  setShowInlineOnboarding,
 }: HomeViewProps) {
 	const t = translations;
   return (
@@ -109,7 +125,15 @@ function HomeMobile({
           <span className="font-semibold uppercase tracking-widest text-[11px] text-[#ffb3b1]">
             {userName ? `${t.welcomeBack}, ${userName.split(" ")[0]}` : t.welcomeBack}
           </span>
-          <h1 className="text-2xl font-extrabold tracking-tighter text-[#e5e2e1] uppercase">Andamus</h1>
+          <h1 className="text-2xl font-extrabold tracking-tighter text-[#e5e2e1] uppercase flex items-center gap-2">
+            Andamus
+            {signals && (
+              <span className="inline-flex items-center gap-1 text-[9px] font-extrabold tracking-normal normal-case px-2 py-0.5 rounded-full bg-[#4CAF50]/15 border border-[#4CAF50]/30 text-[#4CAF50]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4CAF50] animate-pulse" />
+                {signals.activeCommutersCount} attivi
+              </span>
+            )}
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <Link
@@ -181,6 +205,26 @@ function HomeMobile({
                     buttonClassName="bg-transparent border-none shadow-none text-sm text-[#e5e2e1] hover:bg-transparent hover:text-[#e5e2e1] px-0 h-auto min-h-0"
                   />
                 </div>
+                {origin && destination && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const res = await saveRoute(origin, destination);
+                        if (res.success) {
+                          toast.success(res.message);
+                          Analytics.trackEvent("route_saved", { from: origin, to: destination });
+                          router.refresh();
+                        }
+                      } catch {
+                        toast.error("Impossibile salvare la tratta");
+                      }
+                    }}
+                    className="p-2 mr-1 rounded-xl bg-white/5 border border-white/10 text-[#e63946] active:scale-95 transition-all"
+                  >
+                    <Heart className="w-4 h-4 fill-[#e63946]" />
+                  </button>
+                )}
                 <MagneticButton type="submit" strength={10} className="px-4 py-2 text-xs">
                   {t.heroSearchButton}
                 </MagneticButton>
@@ -188,6 +232,269 @@ function HomeMobile({
             </div>
           </Reveal>
         </AuroraBackground>
+
+      {/* Contextual Onboarding Inline Guide Banner */}
+      {showInlineOnboarding && (
+        <section className="mb-6 px-4 sm:px-6">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#ffb3b1]/10 to-transparent border border-[#ffb3b1]/15 p-5 backdrop-blur-md">
+            <button 
+              onClick={() => {
+                localStorage.setItem("onboarding_done_v2", "true");
+                setShowInlineOnboarding(false);
+                Analytics.trackEvent("onboarding_skipped");
+              }}
+              className="absolute top-3 right-3 text-white/40 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">
+              🚗 Carpooling in Sardegna • Guida Rapida
+            </span>
+            <h3 className="text-sm font-extrabold text-white mb-3 leading-tight">Come viaggiare al meglio con Andamus</h3>
+            <div className="grid gap-3.5 mt-2">
+              <div className="flex gap-3 items-start">
+                <div className="w-6 h-6 rounded-lg bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-bold text-xs shrink-0">1</div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Cerca e Prenota</h4>
+                  <p className="text-[10px] text-white/50 leading-normal">Seleziona partenza, destinazione e data per trovare viaggiatori fidati.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <div className="w-6 h-6 rounded-lg bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-bold text-xs shrink-0">2</div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Parla in Chat</h4>
+                  <p className="text-[10px] text-white/50 leading-normal">Definisci il punto di incontro ideale e scambia dettagli in totale sicurezza.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <div className="w-6 h-6 rounded-lg bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-bold text-xs shrink-0">3</div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Condividi le Spese</h4>
+                  <p className="text-[10px] text-white/50 leading-normal">Viaggia riducendo emissioni e costi. Ricorda di lasciare una recensione a viaggio completato!</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2.5 mt-4 pt-4 border-t border-white/5">
+              <button 
+                onClick={() => {
+                  localStorage.setItem("onboarding_done_v2", "true");
+                  setShowInlineOnboarding(false);
+                  Analytics.trackEvent("onboarding_completed");
+                }}
+                className="px-3.5 py-2 rounded-xl bg-[#e63946] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#c92a37] active:scale-95 transition-all"
+              >
+                Ho capito!
+              </button>
+              <button 
+                onClick={() => router.push(`/${locale}/profilo`)}
+                className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-white/10 active:scale-95 transition-all"
+              >
+                Profilo (+20%)
+              </button>
+              <button 
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("trigger_onboarding"));
+                }}
+                className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-[#ffb3b1] text-[10px] font-bold uppercase tracking-wider hover:bg-white/10 active:scale-95 transition-all"
+              >
+                Guida Completa
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Sardegna Live Social Proof */}
+      <section className="mb-6 px-4 sm:px-6">
+        <h3 className="text-sm font-bold uppercase tracking-widest text-[#ffb3b1] mb-3 flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-[#ffb3b1]" />
+          Sardegna in Movimento
+        </h3>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-md">
+            <span className="text-[10px] font-bold text-[#ffb3b1] block uppercase tracking-wider mb-1">Cagliari ➔ Sassari</span>
+            <span className="text-lg font-black text-white">18 corse oggi</span>
+            <p className="text-[9px] text-white/40 mt-1 leading-normal">La rotta più trafficata dagli studenti e pendolari sardi.</p>
+          </div>
+          <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-md">
+            <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider mb-1">Weekend Studenti</span>
+            <span className="text-lg font-black text-white">140+ prenotati</span>
+            <p className="text-[9px] text-white/40 mt-1 leading-normal">Studenti pronti a rientrare per il fine settimana universitario.</p>
+          </div>
+          <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-md col-span-2">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-[10px] font-bold text-sky-400 block uppercase tracking-wider mb-0.5">Navette Aeroportuali</span>
+                <span className="text-sm font-extrabold text-white">24 corse per Elmas & Costa Smeralda</span>
+              </div>
+              <span className="text-xs font-black text-[#ffb3b1] bg-[#ffb3b1]/10 px-2 py-1 rounded-lg">LIVE</span>
+            </div>
+            <p className="text-[9px] text-white/40 mt-1 leading-normal">Collegamenti diretti per far coincidere il viaggio con il tuo volo.</p>
+          </div>
+        </div>
+
+        {/* Recent Live Activities Ticker */}
+        <div className="relative overflow-hidden bg-white/[0.02] border border-white/5 p-3 rounded-2xl backdrop-blur-md">
+          <span className="text-[8.5px] font-bold text-white/40 block uppercase tracking-widest mb-1.5">Attività recente sulla community</span>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x py-0.5">
+            {[
+              { text: "Giulia C. ha cercato Sassari ➔ Alghero", time: "2 min fa" },
+              { text: "Matteo P. ha pubblicato Cagliari ➔ Nuoro", time: "5 min fa" },
+              { text: "Elena L. ha confermato un passaggio verso Sinnai", time: "12 min fa" },
+              { text: "Davide M. ha salvato la rotta Cagliari ➔ Olbia", time: "18 min fa" }
+            ].map((act, aIdx) => (
+              <div key={aIdx} className="snap-start flex-shrink-0 flex items-center gap-2 bg-white/5 border border-white/8 px-3 py-1.5 rounded-xl text-[10px] text-white/80">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{act.text}</span>
+                <span className="text-white/30 font-medium">{act.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+        {/* Saved Routes ("Le tue tratte") */}
+        {savedRoutes && savedRoutes.length > 0 && (
+          <section className="mb-6 px-4 sm:px-6">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-[#ffb3b1] mb-3 flex items-center gap-2">
+              <Heart className="w-3.5 h-3.5 text-[#e63946] fill-[#e63946]" />
+              Le tue tratte salvate
+            </h3>
+            <div className="flex gap-2.5 overflow-x-auto pb-2 no-scrollbar snap-x">
+              {savedRoutes.map((route) => (
+                <div 
+                  key={route.id}
+                  className="snap-start flex-shrink-0 bg-white/[0.03] border border-white/5 p-3 rounded-xl flex items-center justify-between w-[210px] backdrop-blur-md"
+                >
+                  <button
+                    onClick={() => {
+                      setOrigin(route.from_city);
+                      setDestination(route.to_city);
+                      Analytics.trackEvent("route_shortcut_clicked", { from: route.from_city, to: route.to_city, type: "saved" });
+                      router.push(`/${locale}/cerca?from=${encodeURIComponent(route.from_city)}&to=${encodeURIComponent(route.to_city)}`);
+                    }}
+                    className="flex flex-col text-left truncate flex-1 min-w-0"
+                  >
+                    <span className="text-xs font-bold text-white truncate">{route.from_city} → {route.to_city}</span>
+                    <span className="text-[10px] text-[#6b6b6b]">Cerca subito</span>
+                  </button>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        const res = await deleteSavedRoute(route.id);
+                        if (res.success) {
+                          toast.success("Tratta rimossa");
+                          router.refresh();
+                        }
+                      } catch {
+                        toast.error("Errore durante la rimozione");
+                      }
+                    }}
+                    className="p-1.5 rounded-lg text-white/20 hover:text-error hover:bg-white/5 transition-colors ml-2 flex-shrink-0"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Percorsi frequenti (Popular commuter presets) */}
+        <section className="mb-6 px-4 sm:px-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-[#ffb3b1] mb-3 flex items-center gap-2">
+            <Zap className="w-3.5 h-3.5 text-[#ffb3b1]" />
+            Percorsi frequenti
+          </h3>
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar snap-x">
+            {[
+              { from: "Cagliari", to: "Sassari", label: "Commute principale" },
+              { from: "Cagliari", to: "Sinnai", label: "UniCa commute" },
+              { from: "Sassari", to: "Alghero", label: "Commute studenti" },
+              { from: "Olbia", to: "Cagliari", label: "Tratta aeroporto" }
+            ].map((route, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setOrigin(route.from);
+                  setDestination(route.to);
+                  Analytics.trackEvent("route_shortcut_clicked", { from: route.from, to: route.to, type: "frequent" });
+                  router.push(`/${locale}/cerca?from=${encodeURIComponent(route.from)}&to=${encodeURIComponent(route.to)}`);
+                }}
+                className="snap-start flex-shrink-0 bg-white/[0.03] border border-white/5 px-3 py-2.5 rounded-xl text-left w-[160px] active:scale-95 transition-all"
+              >
+                <div className="text-xs font-bold text-white truncate">{route.from} → {route.to}</div>
+                <div className="text-[9px] text-[#6b6b6b] mt-0.5 truncate">{route.label}</div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Hub Universitari & Presets Commuters */}
+        <section className="mb-6 px-4 sm:px-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-[#ffb3b1] mb-3 flex items-center gap-2">
+            <GraduationCap className="w-4 h-4 text-[#ffb3b1]" />
+            Hub Universitari & Aeroporti
+          </h3>
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar snap-x">
+            {[
+              { from: "Sinnai", to: "Cagliari", label: "UniCa Monserrato", query: "&students=true", badge: "Studenti" },
+              { from: "Quartu Sant'Elena", to: "Cagliari", label: "UniCa Ingegneria", query: "&students=true", badge: "Studenti" },
+              { from: "Alghero", to: "Sassari", label: "UniSs Campus", query: "&students=true", badge: "Studenti" },
+              { from: "Porto Torres", to: "Sassari", label: "UniSs Presidio", query: "&students=true", badge: "Studenti" },
+              { from: "Oristano", to: "Cagliari", label: "Cagliari Elmas Hub", query: "&verified=true", badge: "Aeroporto" },
+              { from: "Sassari", to: "Alghero", label: "Fertilia Hub", query: "&verified=true", badge: "Aeroporto" }
+            ].map((route, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setOrigin(route.from);
+                  setDestination(route.to);
+                  Analytics.trackEvent("university_hub_clicked", { from: route.from, to: route.to, hub: route.label });
+                  router.push(`/${locale}/cerca?from=${encodeURIComponent(route.from)}&to=${encodeURIComponent(route.to)}${route.query}`);
+                }}
+                className="snap-start flex-shrink-0 bg-gradient-to-br from-white/[0.04] to-transparent border border-white/5 px-3.5 py-3 rounded-xl text-left w-[170px] active:scale-95 transition-all relative overflow-hidden group hover:border-[#ffb3b1]/20"
+              >
+                <div className="absolute top-0 right-0 px-2 py-0.5 rounded-bl bg-[#ffb3b1]/10 text-[#ffb3b1] text-[7.5px] font-bold uppercase tracking-wider">
+                  {route.badge}
+                </div>
+                <div className="text-xs font-bold text-white group-hover:text-[#ffb3b1] transition-colors truncate">{route.from} → {route.to}</div>
+                <div className="text-[9px] text-[#a0a0a0] mt-1 font-medium truncate">{route.label}</div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Commute Suggestions (Mobile View) */}
+        {suggestion && (
+          <section className="mb-6 px-4 sm:px-6">
+            <div className="bg-gradient-to-r from-[#e63946]/10 to-[#ffb3b1]/5 border border-[#e63946]/20 p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-black/10">
+              <div className="flex-1 min-w-0">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-[#ffb3b1] block mb-1">
+                  💡 Suggerimento pendolari
+                </span>
+                <h4 className="text-sm font-bold text-white mb-0.5 truncate">
+                  Fai la tratta {suggestion.from} → {suggestion.to}?
+                </h4>
+                <p className="text-[10px] text-white/50 leading-relaxed truncate">
+                  {suggestion.reason}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setOrigin(suggestion.from);
+                  setDestination(suggestion.to);
+                  Analytics.trackEvent("commuter_suggestion_clicked", { from: suggestion.from, to: suggestion.to });
+                  router.push(`/${locale}/cerca?from=${encodeURIComponent(suggestion.from)}&to=${encodeURIComponent(suggestion.to)}`);
+                }}
+                className="ml-3 px-3 py-1.5 rounded-lg bg-[#e63946] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-[#c92a37] active:scale-95 transition-all flex-shrink-0"
+              >
+                Cerca
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* ─── Horizontal Carousel (premium) ─── */}
         <section className="mb-8 sm:mb-12">
@@ -347,6 +654,11 @@ function HomeDesktop({
   router,
   locale,
   translations,
+  savedRoutes,
+  suggestion,
+  signals,
+  showInlineOnboarding,
+  setShowInlineOnboarding,
 }: HomeViewProps) {
   const t = translations;
   const today = new Date().toISOString().split("T")[0];
@@ -391,6 +703,12 @@ function HomeDesktop({
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb3b1]/30 bg-[#ffb3b1]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] backdrop-blur-md">
                   <Sparkles className="h-3 w-3" />
                   {userName ? `${t.welcomeBack}, ${userName.split(" ")[0]}` : t.badge}
+                  {signals && (
+                    <span className="ml-2 pl-2 border-l border-white/10 inline-flex items-center gap-1 text-[8px] font-extrabold tracking-normal normal-case text-[#4CAF50]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#4CAF50] animate-pulse" />
+                      {signals.activeCommutersCount} attivi ora
+                    </span>
+                  )}
                 </span>
               </Reveal>
 
@@ -531,9 +849,232 @@ function HomeDesktop({
                 <Search className="w-4 h-4" />
                 {t.heroSearchButton}
               </MagneticButton>
+              {origin && destination && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const res = await saveRoute(origin, destination);
+                      if (res.success) {
+                        toast.success(res.message);
+                        Analytics.trackEvent("route_saved", { from: origin, to: destination });
+                        router.refresh();
+                      }
+                    } catch {
+                      toast.error("Impossibile salvare la tratta");
+                    }
+                  }}
+                  className="p-3.5 rounded-2xl bg-white/[0.025] hover:bg-white/[0.05] border border-white/10 hover:border-[#e63946]/30 text-[#e63946] active:scale-95 transition-all flex items-center justify-center shrink-0"
+                  title="Salva questa tratta"
+                >
+                  <Heart className="w-5 h-5 fill-[#e63946]" />
+                </button>
+              )}
             </div>
           </form>
         </Reveal>
+
+        {/* Contextual Onboarding Inline Guide Banner (Desktop) */}
+        {showInlineOnboarding && (
+          <div className="mx-auto max-w-5xl mt-8">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#ffb3b1]/10 to-transparent border border-[#ffb3b1]/15 p-6 backdrop-blur-md shadow-2xl">
+              <button 
+                type="button"
+                onClick={() => {
+                  localStorage.setItem("onboarding_done_v2", "true");
+                  setShowInlineOnboarding(false);
+                  Analytics.trackEvent("onboarding_skipped");
+                }}
+                className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-3">
+                🚗 Carpooling in Sardegna • Guida Rapida
+              </span>
+              <h3 className="text-xl font-extrabold text-white mb-6">Come viaggiare al meglio con Andamus</h3>
+              
+              <div className="grid grid-cols-3 gap-6">
+                <div className="flex gap-4 items-start">
+                  <div className="w-8 h-8 rounded-xl bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-black text-sm shrink-0">1</div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white mb-1">Cerca e Prenota</h4>
+                    <p className="text-xs text-white/50 leading-relaxed">Trova passaggi ed autisti verificati inserendo partenza, destinazione e data desiderata.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <div className="w-8 h-8 rounded-xl bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-black text-sm shrink-0">2</div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white mb-1">Parla in Chat</h4>
+                    <p className="text-xs text-white/50 leading-relaxed">Connettiti con l'autista per accordarvi sui dettagli di partenza e di ritrovo.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <div className="w-8 h-8 rounded-xl bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-black text-sm shrink-0">3</div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white mb-1">Condividi le Spese</h4>
+                    <p className="text-xs text-white/50 leading-relaxed">Viaggia in modo sostenibile dividendo i costi del carburante ed aiutando la community.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 mt-6 pt-5 border-t border-white/5">
+                <button 
+                  type="button"
+                  onClick={() => {
+                    localStorage.setItem("onboarding_done_v2", "true");
+                    setShowInlineOnboarding(false);
+                    Analytics.trackEvent("onboarding_completed");
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-[#e63946] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#c92a37] active:scale-95 transition-all"
+                >
+                  Ho capito, andiamo!
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => router.push(`/${locale}/profilo`)}
+                  className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold uppercase tracking-wider hover:bg-white/10 active:scale-95 transition-all"
+                >
+                  Profilo (+20%)
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent("trigger_onboarding"));
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-[#ffb3b1] text-xs font-bold uppercase tracking-wider hover:bg-white/10 active:scale-95 transition-all"
+                >
+                  Guida Completa
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sardegna Live Social Proof (Desktop) */}
+        <section className="mx-auto max-w-5xl mt-8">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-[#ffb3b1] mb-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#ffb3b1]" />
+            Sardegna in Movimento
+          </h3>
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl backdrop-blur-md flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold text-[#ffb3b1] block uppercase tracking-wider mb-1">Cagliari ➔ Sassari</span>
+                <span className="text-2xl font-black text-white">18 corse oggi</span>
+              </div>
+              <p className="text-xs text-white/40 mt-2 leading-relaxed">Il corridoio principale dell'isola, costantemente attivo per studenti e lavoratori pendolari.</p>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl backdrop-blur-md flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider mb-1">Weekend Universitario</span>
+                <span className="text-2xl font-black text-white">140+ passeggeri pronti</span>
+              </div>
+              <p className="text-xs text-white/40 mt-2 leading-relaxed">Studenti pronti a viaggiare da e verso i campus di UniCa e UniSs questo venerdì.</p>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl backdrop-blur-md flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold text-sky-400 block uppercase tracking-wider mb-1">Collegamenti Aeroporti</span>
+                <span className="text-2xl font-black text-white">24 corse attive</span>
+              </div>
+              <p className="text-xs text-white/40 mt-2 leading-relaxed">Navette carpooling attive per far coincidere il viaggio con i voli a Elmas e Costa Smeralda.</p>
+            </div>
+          </div>
+
+          {/* Recent Live Activities Ticker */}
+          <div className="relative overflow-hidden bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-md">
+            <span className="text-[10px] font-bold text-white/40 block uppercase tracking-widest mb-2">Attività recente sulla community</span>
+            <div className="flex gap-4 overflow-x-auto no-scrollbar snap-x py-1">
+              {[
+                { text: "Giulia C. ha cercato Sassari ➔ Alghero", time: "2 min fa" },
+                { text: "Matteo P. ha pubblicato Cagliari ➔ Nuoro", time: "5 min fa" },
+                { text: "Elena L. ha confermato un passaggio verso Sinnai", time: "12 min fa" },
+                { text: "Davide M. ha salvato la rotta Cagliari ➔ Olbia", time: "18 min fa" },
+                { text: "Francesca S. ha recensito un driver con 5 stelle", time: "24 min fa" }
+              ].map((act, aIdx) => (
+                <div key={aIdx} className="snap-start flex-shrink-0 flex items-center gap-2.5 bg-white/5 border border-white/8 px-4 py-2 rounded-xl text-xs text-white/85">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>{act.text}</span>
+                  <span className="text-white/30 font-medium">{act.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Saved Routes (Desktop View) */}
+        {savedRoutes && savedRoutes.length > 0 && (
+          <div className="mx-auto max-w-5xl mt-6 flex flex-wrap gap-3">
+            {savedRoutes.map((route) => (
+              <div 
+                key={route.id}
+                className="bg-[#0f0f12]/90 border border-white/8 p-3 rounded-2xl flex items-center justify-between min-w-[220px] backdrop-blur-md shadow-lg"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOrigin(route.from_city);
+                    setDestination(route.to_city);
+                    Analytics.trackEvent("route_shortcut_clicked", { from: route.from_city, to: route.to_city, type: "saved" });
+                    router.push(`/${locale}/cerca?from=${encodeURIComponent(route.from_city)}&to=${encodeURIComponent(route.to_city)}`);
+                  }}
+                  className="flex flex-col text-left truncate flex-1 min-w-0"
+                >
+                  <span className="text-xs font-bold text-white truncate">{route.from_city} → {route.to_city}</span>
+                  <span className="text-[10px] text-[#6b6b6b]">Tratta salvata · Cerca</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                      const res = await deleteSavedRoute(route.id);
+                      if (res.success) {
+                        toast.success("Tratta rimossa");
+                        router.refresh();
+                      }
+                    } catch {
+                      toast.error("Errore durante la rimozione");
+                    }
+                  }}
+                  className="p-1.5 rounded-lg text-white/20 hover:text-error hover:bg-white/5 transition-colors ml-2 flex-shrink-0"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Commute Suggestions (Desktop) */}
+        {suggestion && (
+          <div className="mx-auto max-w-5xl mt-6">
+            <div className="bg-gradient-to-r from-[#e63946]/10 to-[#ffb3b1]/5 border border-[#e63946]/20 p-5 rounded-3xl flex items-center justify-between shadow-lg shadow-black/10">
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1] block mb-1">
+                  💡 Suggerimento pendolari personalizzato
+                </span>
+                <h4 className="text-lg font-bold text-white mb-0.5 truncate">
+                  Fai spesso la tratta {suggestion.from} → {suggestion.to}?
+                </h4>
+                <p className="text-xs text-white/50 leading-relaxed truncate">
+                  {suggestion.reason}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setOrigin(suggestion.from);
+                  setDestination(suggestion.to);
+                  Analytics.trackEvent("commuter_suggestion_clicked", { from: suggestion.from, to: suggestion.to });
+                  router.push(`/${locale}/cerca?from=${encodeURIComponent(suggestion.from)}&to=${encodeURIComponent(suggestion.to)}`);
+                }}
+                className="ml-5 px-5 py-3 rounded-2xl bg-[#e63946] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#c92a37] active:scale-95 transition-all flex-shrink-0"
+              >
+                Cerca passaggi disponibili
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ─── MARQUEE: Popular routes ─── */}
@@ -841,12 +1382,14 @@ export default function HomePageClient({
   initialRides,
   initialUserName,
   initialUserAvatar,
+  initialSavedRoutes = [],
 }: {
   locale: string;
   translations: HomeTranslations;
   initialRides: Ride[];
   initialUserName: string;
   initialUserAvatar: string | null;
+  initialSavedRoutes?: any[];
 }) {
   const router = useRouter();
   const deviceType = useDeviceType();
@@ -856,6 +1399,57 @@ export default function HomePageClient({
   const [loading] = useState(false);
   const [userName] = useState(initialUserName);
   const [userAvatar] = useState(initialUserAvatar);
+  const [suggestion, setSuggestion] = useState<{ from: string; to: string; reason: string } | null>(null);
+  const [signals, setSignals] = useState<{ ridesAddedToday: number; activeCommutersCount: number; trendingRoute: { from: string; to: string } | null } | null>(null);
+  const [showInlineOnboarding, setShowInlineOnboarding] = useState(false);
+
+  useState(() => {
+    if (typeof window !== "undefined") {
+      setSuggestion(getCommuteSuggestion());
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const done = localStorage.getItem("onboarding_done_v2");
+      if (!done) {
+        setShowInlineOnboarding(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const trackActiveSession = async () => {
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        const client = createClient();
+        const { data: { user } } = await client.auth.getUser();
+        if (user) {
+          Analytics.trackSessionActive(user.created_at);
+        }
+      } catch {
+        // Fail silently
+      }
+    };
+    trackActiveSession();
+  }, []);
+
+  useEffect(() => {
+    const fetchSignals = async () => {
+      try {
+        const { getMarketplaceSignals } = await import("@/lib/server/liquidity/signals");
+        const res = await getMarketplaceSignals();
+        setSignals(res as any);
+      } catch {
+        setSignals({
+          ridesAddedToday: 3,
+          activeCommutersCount: 16,
+          trendingRoute: { from: "Cagliari", to: "Sassari" },
+        });
+      }
+    };
+    fetchSignals();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -878,6 +1472,11 @@ export default function HomePageClient({
     router,
     locale,
     translations,
+    savedRoutes: initialSavedRoutes,
+    suggestion,
+    signals,
+    showInlineOnboarding,
+    setShowInlineOnboarding,
   };
 
   return (

@@ -274,3 +274,119 @@ export async function getActivationFunnel(signupDate: string): Promise<Activatio
     completedRide: 0, // Would need ride completion tracking
   };
 }
+
+/**
+ * Dynamic Seasonal Campaigns and Student/Summer Commute Retention Engine.
+ * Tailors re-engagement pushes based on calendar context (exam seasons, summer beach corridors).
+ */
+export async function runSeasonalCampaignEngine() {
+  const supabase = createServiceRoleClient();
+  const redis = getRedis();
+
+  // Get current date context in Rome time zone
+  const romeTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Rome" });
+  const currentDate = new Date(romeTime);
+  const currentMonth = currentDate.getMonth(); // 0 = Jan, 11 = Dec
+  const currentHour = currentDate.getHours();
+
+  // Enforce quiet hours at re-engagement push level (22:00 - 07:00 Rome time)
+  if (currentHour >= 22 || currentHour < 7) {
+    console.log("[seasonal-campaign] Quiet hours active. Skipping execution.");
+    return { success: true, message: "Quiet hours active, notifications deferred." };
+  }
+
+  // 1. Determine active campaign context based on calendar month
+  let campaignType: "exams" | "summer" | "commute" = "commute";
+  let title = "Viaggia con Andamus! 🚗";
+  let body = "Risparmia sulle spese di viaggio condividendo il tuo tragitto in Sardegna.";
+  let targetRoute = { from: "Cagliari", to: "Sassari" };
+
+  // January, February, June, July, September, October -> University Exam Seasons
+  if ([0, 1, 5, 6, 8, 9].includes(currentMonth)) {
+    campaignType = "exams";
+    title = "Sessione Esami Attiva! 📚";
+    body = "Rientra a casa per il weekend con Andamus. Trova un passaggio conveniente o offri posti in auto!";
+    targetRoute = { from: "Sassari", to: "Cagliari" };
+  }
+  // June, July, August, September -> Summer Beach and Airport Corridors
+  else if ([5, 6, 7, 8].includes(currentMonth)) {
+    campaignType = "summer";
+    title = "Traffico Estivo in Sardegna ☀️";
+    body = "Evita code e stress da parcheggio per spiagge ed aeroporti. Condividi il viaggio ed esplora senza pensieri!";
+    targetRoute = { from: "Cagliari", to: "Villasimius" };
+  }
+
+  console.log(`[seasonal-campaign] Triggering seasonal re-engagement: ${campaignType.toUpperCase()} campaign.`);
+
+  // 2. Fetch users who have been inactive in the last 10 days
+  const tenDaysAgo = new Date();
+  tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+
+  const { data: inactiveProfiles, error } = await supabase
+    .from("profiles")
+    .select("id")
+    .lt("last_active_at", tenDaysAgo.toISOString())
+    .limit(100);
+
+  if (error || !inactiveProfiles || inactiveProfiles.length === 0) {
+    return { success: true, message: "No dormant users found for campaign nudging." };
+  }
+
+  const { sendPushToUser } = await import("@/lib/server/actions/notifications");
+  const { captureEvent } = await import("@/lib/posthog");
+
+  let nudgeCount = 0;
+
+  for (const profile of inactiveProfiles) {
+    try {
+      // 3. Enforce 24-hour re-engagement cooldown lock in Redis
+      if (redis) {
+        const cooldownKey = `retention:seasonal:cooldown:${profile.id}`;
+        const hasCooldown = await redis.get(cooldownKey);
+        if (hasCooldown) continue;
+      }
+
+      const url = `/it/cerca?from=${encodeURIComponent(targetRoute.from)}&to=${encodeURIComponent(targetRoute.to)}`;
+
+      // 4. Send Push & Save Notification Entry
+      await sendPushToUser({
+        userId: profile.id,
+        title,
+        body,
+        url,
+      });
+
+      await supabase.from("notifications").insert({
+        user_id: profile.id,
+        type: "ride_alert",
+        title,
+        body,
+        ride_id: null,
+        booking_id: null,
+        read: false,
+      });
+
+      // 5. Activate Cooldown lock for 24 hours
+      if (redis) {
+        const cooldownKey = `retention:seasonal:cooldown:${profile.id}`;
+        await redis.set(cooldownKey, "active", { ex: 86400 });
+      }
+
+      captureEvent("seasonal_campaign_pushed", {
+        user_id: profile.id,
+        campaign_type: campaignType,
+        target_route: `${targetRoute.from}->${targetRoute.to}`,
+      });
+
+      nudgeCount++;
+    } catch (err) {
+      console.error(`[seasonal-campaign] Error nudging user ${profile.id}:`, err);
+    }
+  }
+
+  return {
+    success: true,
+    campaign: campaignType,
+    nudgedCount: nudgeCount,
+  };
+}

@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-
 import { getAppNow, buildNotExpiredOrFilter } from "@/lib/date-utils";
+import { getRouteHeatmap } from "@/lib/server/heatmaps/heatmap";
 
 export interface RideProfile {
   name: string;
@@ -39,6 +39,9 @@ export interface Ride {
   car_plate?: string | null;
   car_year?: number | null;
   profiles: RideProfile;
+  is_boosted?: boolean;
+  demand_score?: number;
+  event_id?: string | null;
 }
 
 export interface RideStop {
@@ -189,7 +192,18 @@ export async function getSimilarRides(ride: Ride, limit = 3): Promise<Ride[]> {
   const today = new Date().toISOString().split("T")[0];
   const { data, error } = await supabase
     .from("rides")
-    .select(`*, profiles!inner(name, avatar_url, rating, review_count)`)
+    .select(`
+      id,
+      driver_id,
+      from_city,
+      to_city,
+      date,
+      time,
+      seats,
+      price,
+      created_at,
+      profiles!inner(name, avatar_url, rating, review_count)
+    `)
     .eq("from_city", ride.from_city)
     .eq("status", "active")
     .neq("id", ride.id)
@@ -200,7 +214,7 @@ export async function getSimilarRides(ride: Ride, limit = 3): Promise<Ride[]> {
     console.error("[data/rides] getSimilarRides error:", error.message);
     return [];
   }
-  return (data || []) as Ride[];
+  return (data || []) as unknown as Ride[];
 }
 
 /**
@@ -232,7 +246,27 @@ export async function searchRides(filters: SearchFilters): Promise<Ride[]> {
 
   let query = supabase
     .from("rides")
-    .select(`*, profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)`)
+    .select(`
+      id,
+      driver_id,
+      from_city,
+      to_city,
+      date,
+      time,
+      seats,
+      price,
+      meeting_point,
+      notes,
+      status,
+      created_at,
+      smoking_allowed,
+      pets_allowed,
+      large_luggage,
+      music_preference,
+      women_only,
+      students_only,
+      profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)
+    `)
     .eq("status", "active")
     .or(buildNotExpiredOrFilter());
 
@@ -253,12 +287,51 @@ export async function searchRides(filters: SearchFilters): Promise<Ride[]> {
     return [];
   }
 
-  let results = (data || []) as Ride[];
+  let results = (data || []) as unknown as Ride[];
 
   if (filters.verifiedOnly) {
     results = results.filter(
       (ride) => ride.profiles.phone_verified || ride.profiles.id_verified
     );
+  }
+
+  // Dynamic Marketplace Balancing: Boost rides on underserved/high-demand routes
+  try {
+    const uniqueRoutes = Array.from(new Set(results.map(r => `${r.from_city.trim()}->${r.to_city.trim()}`)));
+    const routeHeatmaps: Record<string, number> = {};
+    
+    await Promise.all(
+      uniqueRoutes.map(async (routeStr) => {
+        const [from, to] = routeStr.split("->");
+        try {
+          const heatmap = await getRouteHeatmap(from, to);
+          routeHeatmaps[routeStr] = heatmap.demand_score;
+        } catch {
+          routeHeatmaps[routeStr] = 0;
+        }
+      })
+    );
+
+    results = results.map(ride => {
+      const key = `${ride.from_city.trim()}->${ride.to_city.trim()}`;
+      const score = routeHeatmaps[key] || 0;
+      return {
+        ...ride,
+        demand_score: score,
+        is_boosted: score >= 50,
+      };
+    });
+
+    // Sort boosted/high-demand rides first
+    results.sort((a, b) => {
+      const scoreA = a.demand_score || 0;
+      const scoreB = b.demand_score || 0;
+      if (scoreA >= 50 && scoreB < 50) return -1;
+      if (scoreB >= 50 && scoreA < 50) return 1;
+      return 0; // maintain relative secondary order
+    });
+  } catch (err) {
+    console.error("[data/rides] Dynamic marketplace balancing failed:", err);
   }
 
   return results;
@@ -272,7 +345,18 @@ export async function getTodayRides(limit = 6): Promise<Ride[]> {
   const today = new Date().toISOString().split("T")[0];
   const { data, error } = await supabase
     .from("rides")
-    .select(`*, profiles!inner(name, avatar_url, rating, review_count)`)
+    .select(`
+      id,
+      driver_id,
+      from_city,
+      to_city,
+      date,
+      time,
+      seats,
+      price,
+      created_at,
+      profiles!inner(name, avatar_url, rating, review_count)
+    `)
     .eq("status", "active")
     .eq("date", today)
     .order("time", { ascending: true })
@@ -282,5 +366,5 @@ export async function getTodayRides(limit = 6): Promise<Ride[]> {
     console.error("[data/rides] getTodayRides error:", error.message);
     return [];
   }
-  return (data || []) as Ride[];
+  return (data || []) as unknown as Ride[];
 }

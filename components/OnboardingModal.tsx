@@ -54,18 +54,19 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const t = useTranslations("onboarding.modal");
 
   useEffect(() => {
-    if (hasChecked) return;
-    const onboardingDone = localStorage.getItem("onboarding_done_v2");
-    if (!onboardingDone) {
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-        setHasChecked(true);
-        Analytics.onboardingStarted();
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-    Promise.resolve().then(() => setHasChecked(true));
-  }, [hasChecked]);
+    setHasChecked(true);
+
+    const triggerHandler = () => {
+      setIsOpen(true);
+      Analytics.onboardingStarted();
+    };
+
+    window.removeEventListener("trigger_onboarding", triggerHandler);
+    window.addEventListener("trigger_onboarding", triggerHandler);
+    return () => {
+      window.removeEventListener("trigger_onboarding", triggerHandler);
+    };
+  }, []);
 
   const slides = t.raw("slides") as Array<{
     title: string;

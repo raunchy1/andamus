@@ -49,6 +49,20 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     createClient().then((s) => s.auth.getUser()),
   ]);
 
+  let savedRoutes: any[] = [];
+  if (user) {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("ride_alerts")
+      .select("id, from_city, to_city, created_at")
+      .eq("user_id", user.id)
+      .is("start_date", null)
+      .is("end_date", null)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    savedRoutes = data || [];
+  }
+
   const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
   const userAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
 
@@ -59,6 +73,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       initialRides={todayRides}
       initialUserName={userName}
       initialUserAvatar={userAvatar}
+      initialSavedRoutes={savedRoutes}
     />
   );
 }

@@ -1,19 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
+const inter = {
+  variable: "font-sans",
+};
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
+const spaceGrotesk = {
+  variable: "font-space",
+};
 
 export const metadata: Metadata = {
   title: "Andamus - Carpooling in Sardegna",

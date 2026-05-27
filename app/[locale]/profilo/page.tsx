@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard, RefreshCw, Gift, Share2, Copy, Users } from "lucide-react";
+import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard, RefreshCw, Gift, Share2, Copy, Users, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -24,7 +24,7 @@ import { EmailPreferences } from "@/components/EmailPreferences";
 import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
-import { computeTrustScore, getTrustLevel, formatAccountAge } from "@/lib/reputation";
+import { computeTrustScore, getTrustLevel, formatAccountAge, getResponseSpeed, getCompletionRate } from "@/lib/reputation";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -659,7 +659,7 @@ export default function ProfilePage() {
     return date < new Date();
   };
 
-  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel } = useMemo(() => {
+  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel, responseSpeed, completionRate } = useMemo(() => {
     const cRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
     const cBookings = myBookings.filter(b => b.status === 'confirmed');
     let km = 0;
@@ -680,6 +680,8 @@ export default function ProfilePage() {
 
     const score = profile ? computeTrustScore(profile) : 0;
     const label = getTrustLevel(score);
+    const speed = profile ? getResponseSpeed(profile.rating) : "Risponde subito";
+    const rate = profile ? getCompletionRate(profile.completed_rides_count ?? null, profile.rides_count ?? null) : 100;
 
     return {
       completedRides: cRides,
@@ -689,6 +691,8 @@ export default function ProfilePage() {
       levelInfo: profile ? getLevelInfo(profile.points) : null,
       trustScore: score,
       trustLabel: label,
+      responseSpeed: speed,
+      completionRate: rate,
     };
   }, [myRides, myBookings, profile]);
 
@@ -798,6 +802,24 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
+            
+            {/* Onboarding Milestone Banner */}
+            {profile && (!profile.avatar_url || !profile.car_model || !profile.phone_verified) && (
+              <div 
+                className="w-full mt-6 bg-gradient-to-br from-[#f4a261]/20 to-[#e63946]/10 border border-[#f4a261]/30 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
+                onClick={() => document.getElementById("profile-settings")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                <div className="flex-1">
+                  <h4 className="text-sm font-bold text-white mb-1">Completa il tuo profilo</h4>
+                  <p className="text-xs text-white/70 leading-relaxed">
+                    Aggiungi {!profile.avatar_url ? "una foto" : !profile.phone_verified ? "il tuo numero" : "la tua auto"} per aumentare la fiducia e ricevere più prenotazioni.
+                  </p>
+                </div>
+                <div className="ml-4 shrink-0 bg-[#f4a261]/20 p-2 rounded-full">
+                  <ChevronRight className="w-4 h-4 text-[#f4a261]" />
+                </div>
+              </div>
+            )}
           </section>
           </Reveal>
 
@@ -852,6 +874,32 @@ export default function ProfilePage() {
                     <AnimatedCounter value={trustScore} suffix="%" />
                   </p>
                   <p className={`text-[10px] font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
+                </div>
+              </TiltCard>
+              </RevealItem>
+              <RevealItem>
+              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                  <Repeat className="w-5 h-5 text-[#ffb3b1]" />
+                </div>
+                <div>
+                  <p className="text-2xl font-extrabold text-on-surface">
+                    <AnimatedCounter value={completionRate} suffix="%" />
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Affidabilità</p>
+                </div>
+              </TiltCard>
+              </RevealItem>
+              <RevealItem>
+              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
+                  <MessageCircle className="w-5 h-5 text-[#ffb3b1]" />
+                </div>
+                <div>
+                  <p className="text-sm font-extrabold text-on-surface truncate max-w-[140px]">
+                    {responseSpeed}
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Risposta</p>
                 </div>
               </TiltCard>
               </RevealItem>

@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck } from "lucide-react";
+import { Loader2, RefreshCw, Bell, SlidersHorizontal, X, User, Search, Car, Star, ChevronRight, BadgeCheck, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
@@ -17,6 +17,7 @@ import municipalities from "@/scripts/sardinia-municipalities.json";
 import { EmptyStateSearch } from "@/components/EmptyState";
 import { TrustBadge } from "@/components/TrustBadge";
 import { Analytics } from "@/lib/analytics";
+import { trackSearchInHistory } from "@/lib/commute-suggestions";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
 import { PremiumRideCard } from "@/components/cerca/PremiumRideCard";
@@ -27,6 +28,7 @@ import { OrbGlow } from "@/components/ui/premium/orb-glow";
 import { GradientText } from "@/components/ui/premium/gradient-text";
 import { MagneticButton } from "@/components/ui/premium/magnetic-button";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
+import { CreateRequestModal } from "@/components/CreateRequestModal";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
 import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
@@ -127,6 +129,8 @@ interface SearchViewProps {
   formatDate: (dateStr: string) => string;
   activeFiltersCount: number;
   supabase: ReturnType<typeof createClient>;
+  showCreateModal?: boolean;
+  setShowCreateModal?: (v: boolean) => void;
 }
 
 
@@ -164,6 +168,7 @@ function SearchMobile(props: SearchViewProps) {
     formatDate,
     activeFiltersCount,
     supabase,
+    setShowCreateModal,
   } = props;
 
   return (
@@ -255,6 +260,41 @@ function SearchMobile(props: SearchViewProps) {
             </div>
           </div>
         </div>
+
+        {/* Preset Shortcuts Panel (Zero Friction Search) */}
+        {!origin && !destination && (
+          <section className="mb-6 bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-md">
+            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-[#ffb3b1] uppercase tracking-widest mb-3">
+              <Sparkles className="w-3 h-3 text-[#ffb3b1]" />
+              Scorciatoie consigliate per la Sardegna
+            </span>
+            <div className="flex gap-2.5 overflow-x-auto pb-1.5 no-scrollbar snap-x">
+              {[
+                { from: "Cagliari", to: "Sassari", label: "Dorsale Sarda", badge: "Popolare" },
+                { from: "Sinnai", to: "Cagliari", label: "UniCa Monserrato", badge: "Studenti" },
+                { from: "Sassari", to: "Alghero", label: "Fertilia Airport", badge: "Aeroporto" },
+                { from: "Olbia", to: "Cagliari", label: "Costa Smeralda Hub", badge: "Aeroporto" }
+              ].map((shortcut, sIdx) => (
+                <button
+                  key={sIdx}
+                  type="button"
+                  onClick={() => {
+                    setOrigin(shortcut.from);
+                    setDestination(shortcut.to);
+                    Analytics.trackEvent("route_shortcut_clicked", { from: shortcut.from, to: shortcut.to, type: "cerca_preset" });
+                  }}
+                  className="snap-start flex-shrink-0 bg-white/5 border border-white/8 p-3 rounded-xl text-left w-[160px] active:scale-95 transition-all hover:border-[#ffb3b1]/30 relative overflow-hidden group"
+                >
+                  <div className="absolute top-0 right-0 px-1.5 py-0.5 rounded-bl bg-white/5 text-white/50 text-[7px] font-extrabold uppercase">
+                    {shortcut.badge}
+                  </div>
+                  <div className="text-[11px] font-extrabold text-white group-hover:text-[#ffb3b1] transition-colors truncate">{shortcut.from} ➔ {shortcut.to}</div>
+                  <div className="text-[9px] text-[#a0a0a0] mt-1.5 font-semibold truncate">{shortcut.label}</div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Elegant Filter Pills */}
         <div className="flex gap-2 sm:gap-3 mb-8 sm:mb-10 overflow-x-auto no-scrollbar pb-2">
@@ -436,6 +476,16 @@ function SearchMobile(props: SearchViewProps) {
             <EmptyStateSearch
               hasFilters={activeFiltersCount > 0}
               onClearFilters={clearFilters}
+              onCreateRequest={() => setShowCreateModal?.(true)}
+              onCreateAlert={() => setShowAlertModal(true)}
+              fromCity={origin}
+              toCity={destination}
+              searchDate={dateFrom}
+              onSelectSuggestion={(sFrom, sTo, sDate) => {
+                if (sFrom !== undefined) setOrigin(sFrom);
+                if (sTo !== undefined) setDestination(sTo);
+                if (sDate !== undefined) setDateFrom(sDate || "");
+              }}
             />
           )}
 
@@ -501,6 +551,7 @@ function SearchDesktop(props: SearchViewProps) {
     formatDate,
     activeFiltersCount,
     supabase,
+    setShowCreateModal,
   } = props;
 
   return (
@@ -809,6 +860,16 @@ function SearchDesktop(props: SearchViewProps) {
             <EmptyStateSearch
               hasFilters={activeFiltersCount > 0}
               onClearFilters={clearFilters}
+              onCreateAlert={() => setShowAlertModal(true)}
+              onCreateRequest={() => setShowCreateModal?.(true)}
+              fromCity={origin}
+              toCity={destination}
+              searchDate={dateFrom}
+              onSelectSuggestion={(sFrom, sTo, sDate) => {
+                if (sFrom !== undefined) setOrigin(sFrom);
+                if (sTo !== undefined) setDestination(sTo);
+                if (sDate !== undefined) setDateFrom(sDate || "");
+              }}
             />
           </div>
         )}
@@ -858,16 +919,17 @@ function SearchContent() {
   const [timeWindow, setTimeWindow] = useState("");
   const [maxPrice, setMaxPrice] = useState<number>(50);
   const [minSeats, setMinSeats] = useState<number | null>(null);
-  const [onlyVerified, setOnlyVerified] = useState(false);
+  const [onlyVerified, setOnlyVerified] = useState(searchParams.get("verified") === "true");
   const [prefSmoking, setPrefSmoking] = useState(false);
   const [prefPets, setPrefPets] = useState(false);
   const [prefLuggage, setPrefLuggage] = useState(false);
-  const [prefWomen, setPrefWomen] = useState(false);
-  const [prefStudents, setPrefStudents] = useState(false);
+  const [prefWomen, setPrefWomen] = useState(searchParams.get("women") === "true");
+  const [prefStudents, setPrefStudents] = useState(searchParams.get("students") === "true");
   const [prefMusic, setPrefMusic] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [alertSaving, setAlertSaving] = useState(false);
   const [pullStartY, setPullStartY] = useState(0);
   const [pullDistance, setPullDistance] = useState(0);
@@ -926,8 +988,43 @@ function SearchContent() {
       });
       if (!isMountedRef.current) return;
       setRides(results as Ride[]);
+
+      // Phase 5 Search Conversion Telemetry & PWA Signal
+      if (results && results.length > 0) {
+        Analytics.trackEvent("first_search_success", {
+          origin: origin || undefined,
+          destination: destination || undefined,
+          results_count: results.length,
+        });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("successful_search"));
+        }
+      } else {
+        Analytics.trackEvent("empty_searches", {
+          origin: origin || undefined,
+          destination: destination || undefined,
+        });
+      }
+
       if (origin || destination) {
         Analytics.searchPerformed(origin, destination);
+
+        // Log search telemetry asynchronously
+        fetch("/api/cerca/log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from_city: origin || "Tutte",
+            to_city: destination || "Tutte",
+            date: dateFrom || null,
+            results_count: results ? results.length : 0,
+            device_type: typeof window !== "undefined" ? (window.innerWidth < 768 ? "mobile" : "desktop") : "unknown",
+          }),
+        }).catch(() => {});
+
+        if (origin && destination) {
+          trackSearchInHistory(origin, destination);
+        }
       }
     } catch (err: unknown) {
       if (!isMountedRef.current) return;
@@ -1084,12 +1181,36 @@ function SearchContent() {
     formatDate,
     activeFiltersCount,
     supabase,
+    showCreateModal,
+    setShowCreateModal,
   };
 
   if (deviceType === "mobile") {
-    return <SearchMobile {...sharedProps} />;
+    return (
+      <>
+        <SearchMobile {...sharedProps} />
+        <CreateRequestModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          initialFrom={origin}
+          initialTo={destination}
+          initialDate={dateFrom}
+        />
+      </>
+    );
   }
-  return <SearchDesktop {...sharedProps} />;
+  return (
+    <>
+      <SearchDesktop {...sharedProps} />
+      <CreateRequestModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        initialFrom={origin}
+        initialTo={destination}
+        initialDate={dateFrom}
+      />
+    </>
+  );
 }
 
 // Fix #9: SearchContent uses useSearchParams and useRouter which require a

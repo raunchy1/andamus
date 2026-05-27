@@ -34,26 +34,32 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
   const [copied, setCopied] = useState(false);
 
   const appUrl = typeof window !== "undefined" ? window.location.origin : "https://andamus.it";
-  const rideUrl = `${appUrl}/${locale}/corsa/${ride.id}`;
+  const rideUrl = `${appUrl}/api/share/${ride.id}`;
 
   const priceText = ride.price > 0 ? `€${ride.price}` : ts("free");
 
-  const shareText = ride.driverName
-    ? ts("driverShareText", {
-        driverName: ride.driverName,
-        from: ride.from_city,
-        to: ride.to_city,
-        date: ride.date,
-        time: ride.time.slice(0, 5),
-        price: priceText,
-      })
-    : ts("genericShareText", {
-        from: ride.from_city,
-        to: ride.to_city,
-        date: ride.date,
-        time: ride.time.slice(0, 5),
-        price: priceText,
+  const formattedDate = (() => {
+    try {
+      return new Date(ride.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
       });
+    } catch {
+      return ride.date;
+    }
+  })();
+
+  const shareText = `🚗 *Passaggio su Andamus* 🚗
+
+📍 *Da:* ${ride.from_city}
+🏁 *A:* ${ride.to_city}
+📅 *Quando:* ${formattedDate} alle ${ride.time.slice(0, 5)}
+💰 *Contributo:* ${ride.price > 0 ? `€${ride.price}` : "Gratis!"}
+${ride.driverName ? `👤 *Conducente:* ${ride.driverName}` : ""}
+${ride.trustScore ? `🛡️ *Punteggio Affidabilità:* ${ride.trustScore}%` : ""}
+
+👇 *Vedi i dettagli e prenota qui:*`;
 
   const handleShareNative = useCallback(async () => {
     Haptic.light();
@@ -82,6 +88,7 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
+      Analytics.trackEvent("route_shared", { channel: "copy", ride_id: ride.id, variant });
       Analytics.shareEvent?.("share_completed", { channel: "copy", variant });
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -92,34 +99,38 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
       document.execCommand("copy");
       document.body.removeChild(ta);
       setCopied(true);
+      Analytics.trackEvent("route_shared", { channel: "copy", ride_id: ride.id, variant });
       Analytics.shareEvent?.("share_completed", { channel: "copy", variant });
       setTimeout(() => setCopied(false), 2000);
     }
-  }, [shareText, rideUrl, variant]);
+  }, [shareText, rideUrl, variant, ride.id]);
 
   const handleWhatsApp = useCallback(() => {
     Haptic.light();
     const url = `https://wa.me/?text=${encodeURIComponent(shareText + ` ${rideUrl}`)}`;
     window.open(url, "_blank");
+    Analytics.trackEvent("route_shared", { channel: "whatsapp", ride_id: ride.id, variant });
     Analytics.shareEvent?.("share_completed", { channel: "whatsapp", variant });
     setOpen(false);
-  }, [shareText, rideUrl, variant]);
+  }, [shareText, rideUrl, variant, ride.id]);
 
   const handleTelegram = useCallback(() => {
     Haptic.light();
     const url = `https://t.me/share/url?url=${encodeURIComponent(rideUrl)}&text=${encodeURIComponent(shareText)}`;
     window.open(url, "_blank");
+    Analytics.trackEvent("route_shared", { channel: "telegram", ride_id: ride.id, variant });
     Analytics.shareEvent?.("share_completed", { channel: "telegram", variant });
     setOpen(false);
-  }, [rideUrl, shareText, variant]);
+  }, [rideUrl, shareText, variant, ride.id]);
 
   const handleTwitter = useCallback(() => {
     Haptic.light();
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(rideUrl)}`;
     window.open(url, "_blank");
+    Analytics.trackEvent("route_shared", { channel: "twitter", ride_id: ride.id, variant });
     Analytics.shareEvent?.("share_completed", { channel: "twitter", variant });
     setOpen(false);
-  }, [shareText, rideUrl, variant]);
+  }, [shareText, rideUrl, variant, ride.id]);
 
   const triggerButton = (() => {
     if (variant === "icon") {
