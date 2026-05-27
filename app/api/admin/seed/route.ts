@@ -201,7 +201,22 @@ export async function GET(request: Request) {
 
       let existsInAuth = false;
       if (usersData?.users) {
-        existsInAuth = usersData.users.some(u => u.id === user.id || u.email?.toLowerCase() === user.email.toLowerCase());
+        const existingUser = usersData.users.find(u => u.email?.toLowerCase() === user.email.toLowerCase());
+        if (existingUser) {
+          if (existingUser.id !== user.id) {
+            logs.push(`ID mismatch for ${user.email} (existing: ${existingUser.id}, expected stable: ${user.id}). Deleting to recreate...`);
+            const { error: deleteError } = await supabase.auth.admin.deleteUser(existingUser.id);
+            if (deleteError) {
+              logs.push(`Failed to delete mismatched auth user: ${deleteError.message}`);
+              existsInAuth = true; // Skip to avoid foreign key crash later
+            } else {
+              logs.push(`Mismatched auth user deleted successfully.`);
+              existsInAuth = false;
+            }
+          } else {
+            existsInAuth = true;
+          }
+        }
       }
 
       if (!existsInAuth) {
@@ -227,7 +242,7 @@ export async function GET(request: Request) {
           logs.push(`Auth user created successfully.`);
         }
       } else {
-        logs.push(`Auth user already exists, skipping creation.`);
+        logs.push(`Auth user already exists with correct stable ID, skipping creation.`);
       }
 
       // Upsert profile — use ONLY columns that exist in the live schema cache.
