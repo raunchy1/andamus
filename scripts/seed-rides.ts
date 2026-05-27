@@ -283,8 +283,7 @@ async function seed() {
         console.log(`ℹ️ Auth user already exists, skipping creation.`);
       }
 
-      // Upsert profile in DB to ensure it matches
-      // NOTE: Only core columns to avoid PostgREST schema cache errors.
+      // Upsert profile — use ONLY columns in live schema cache.
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({
@@ -293,8 +292,7 @@ async function seed() {
           avatar_url: user.avatarUrl,
           rating: user.rating,
           rides_count: user.ridesCount,
-          phone_verified: true,
-          phone_number: user.phone,
+          phone: user.phone,
         }, { onConflict: "id" });
 
       if (profileError) {
