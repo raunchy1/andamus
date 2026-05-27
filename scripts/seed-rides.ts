@@ -185,6 +185,28 @@ const MEETING_POINTS = [
   "Rotonda ingresso città",
 ];
 
+import * as crypto from "crypto";
+
+// ──────────────────────────────────────────────────────────────────────────────
+// HELPERS FOR DETERMINISTIC INTEGRITY
+// ──────────────────────────────────────────────────────────────────────────────
+
+function generateDeterministicUUID(seed: string): string {
+  const hash = crypto.createHash("md5").update(seed).digest("hex");
+  return `${hash.substring(0, 8)}-${hash.substring(8, 12)}-${hash.substring(12, 16)}-${hash.substring(16, 20)}-${hash.substring(20, 32)}`;
+}
+
+function createPRNG(seedString: string) {
+  let h = 0;
+  for (let i = 0; i < seedString.length; i++) {
+    h = (Math.imul(31, h) + seedString.charCodeAt(i)) | 0;
+  }
+  return function() {
+    h = (Math.imul(h, 48271) + 2147483647) | 0;
+    return (h & 2147483647) / 2147483648;
+  };
+}
+
 // Helper to get random item
 const randomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 // Helper to get random number in range
@@ -195,126 +217,79 @@ const randomRange = (min: number, max: number): number => Math.floor(Math.random
 // ──────────────────────────────────────────────────────────────────────────────
 
 async function seed() {
-  console.log("🚀 Starting Andamus Sardinia Seeder...");
+  console.log("🚀 Starting Andamus Sardinia Seeder (Deterministic Edition)...");
 
   const driverIds: string[] = [];
 
   try {
-    // ── 0. IDEMPOTENT CLEANUP ──
-    console.log("ℹ️ Fetching user list for idempotent cleanup...");
-    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
-      perPage: 1000,
-    });
+    // Generate deterministic UUIDs for all seed users first
+    const seedUsersWithIds = SEED_USERS.map(user => ({
+      ...user,
+      id: generateDeterministicUUID(`user-${user.email}`)
+    }));
 
-    if (listError) {
-      console.warn(`⚠️ Warning: Failed to retrieve user list for cleanup: ${listError?.message}`);
-    } else if (usersData?.users) {
-      const seedUsersInAuth = usersData.users.filter(u => u.email?.toLowerCase().endsWith("@andamus.it"));
-      const existingIds = seedUsersInAuth.map(u => u.id);
+    const targetUserIds = seedUsersWithIds.map(u => u.id);
 
-      if (existingIds.length > 0) {
-        console.log(`ℹ️ Found ${existingIds.length} existing seed users. Cleaning up old seed data...`);
+    // ── 0. DATA INTEGRITY CLEANUP ──
+    console.log("ℹ️ Cleaning up old seeded rides to prevent orphaned records...");
+    
+    // Delete any old rides associated with seed users (to clean old non-deterministic entries)
+    const { error: delRidesErr } = await supabase
+      .from("rides")
+      .delete()
+      .in("driver_id", targetUserIds);
 
-        // Delete dependent rides
-        const { error: delRidesErr } = await supabase
-          .from("rides")
-          .delete()
-          .in("driver_id", existingIds);
-        if (delRidesErr) console.error(`❌ Error deleting old rides: ${delRidesErr?.message}`);
-
-        // Delete dependent verifications
-        const { error: delVerErr } = await supabase
-          .from("verifications")
-          .delete()
-          .in("user_id", existingIds);
-        if (delVerErr) console.error(`❌ Error deleting old verifications: ${delVerErr?.message}`);
-
-        // Delete profiles
-        const { error: delProfErr } = await supabase
-          .from("profiles")
-          .delete()
-          .in("id", existingIds);
-        if (delProfErr) console.error(`❌ Error deleting old profiles: ${delProfErr?.message}`);
-
-        // Delete auth users
-        for (const id of existingIds) {
-          const { error: delAuthErr } = await supabase.auth.admin.deleteUser(id);
-          if (delAuthErr) {
-            console.error(`❌ Error deleting auth user ${id}: ${delAuthErr?.message}`);
-          } else {
-            console.log(`Deleted existing seed user ID: ${id}`);
-          }
-        }
-
-        console.log("✅ Idempotent cleanup completed successfully.");
-      } else {
-        console.log("ℹ️ No existing seed users found. Ready for fresh seeding.");
-      }
+    if (delRidesErr) {
+      console.warn(`⚠️ Warning during rides cleanup: ${delRidesErr.message}`);
     }
 
     // ── 1. DRIVERS SEEDING ──
-    for (const user of SEED_USERS) {
-      console.log(`👤 Seeding user: ${user.name} (${user.email})...`);
+    for (const user of seedUsersWithIds) {
+      console.log(`👤 Processing user: ${user.name} (${user.email}) -> stable ID: ${user.id}`);
 
-      // Create Auth User
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: user.email,
-        password: "AndamusLaunch2026PasswordSecret!",
-        email_confirm: true,
-        phone: user.phone,
-        phone_confirm: true,
-        user_metadata: {
-          full_name: user.name,
-          name: user.name,
-          avatar_url: user.avatarUrl,
-        },
+      // Check if user exists in auth.users by ID or email
+      const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
+        perPage: 1000
       });
 
-      let userId = "";
-
-      if (authError) {
-        const errMsg = authError?.message?.toLowerCase() || "";
-        if (errMsg.includes("already registered") || errMsg.includes("email_exists") || authError?.status === 422) {
-          // User already exists, fetch their ID using phone_number
-          const { data: existingUser, error: fetchError } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("phone_number", user.phone)
-            .maybeSingle();
-
-          if (fetchError || !existingUser) {
-            // Alternative fallback check by email
-            const { data: usersList, error: listError } = await supabase.auth.admin.listUsers();
-            if (listError) {
-              console.error(`❌ Failed to retrieve user list: ${listError?.message}`);
-              continue;
-            }
-            const foundId = usersList.users.find((u) => u.email?.toLowerCase() === user.email.toLowerCase())?.id;
-            if (foundId) {
-              userId = foundId || "";
-            } else {
-              console.error(`❌ Error finding user: ${authError?.message}`);
-              continue;
-            }
-          } else {
-            userId = existingUser?.id || "";
-          }
-          console.log(`ℹ️ User already registered, reusing existing auth ID: ${userId}`);
-        } else {
-          console.error(`❌ Auth signup error: ${authError?.message}`);
-          continue;
-        }
-      } else if (authData?.user) {
-        userId = authData?.user?.id || "";
+      let existsInAuth = false;
+      if (usersData?.users) {
+        existsInAuth = usersData.users.some(u => u.id === user.id || u.email?.toLowerCase() === user.email.toLowerCase());
       }
 
-      if (!userId) continue;
-      driverIds.push(userId);
+      if (!existsInAuth) {
+        // Create Auth User with our stable UUID
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+          id: user.id,
+          email: user.email,
+          password: "AndamusLaunch2026PasswordSecret!",
+          email_confirm: true,
+          phone: user.phone,
+          phone_confirm: true,
+          user_metadata: {
+            full_name: user.name,
+            name: user.name,
+            avatar_url: user.avatarUrl,
+          },
+        });
 
-      // Enhance the Profile (Omit the non-existent 'bio' column from profiles)
+        if (authError) {
+          console.error(`❌ Failed to create auth user ${user.name}: ${authError.message}`);
+          continue;
+        } else {
+          console.log(`✅ Auth user created successfully.`);
+        }
+      } else {
+        console.log(`ℹ️ Auth user already exists, skipping creation.`);
+      }
+
+      // Upsert profile in DB to ensure it matches
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({
+        .upsert({
+          id: user.id,
+          name: user.name,
+          avatar_url: user.avatarUrl,
           rating: user.rating,
           rides_count: user.ridesCount,
           phone_verified: true,
@@ -322,22 +297,27 @@ async function seed() {
           driver_verified: true,
           phone_number: user.phone,
           phone: user.phone,
-        })
-        .eq("id", userId);
+          email: user.email,
+        }, { onConflict: "id" });
 
       if (profileError) {
-        console.error(`❌ Error updating profile for ${user.name}: ${profileError?.message}`);
+        console.error(`❌ Error upserting profile for ${user.name}: ${profileError.message}`);
+        continue;
       } else {
-        console.log(`✅ Profile enhanced successfully.`);
+        console.log(`✅ Profile stable & enhanced.`);
       }
 
       // Set Driver verification document inside verification table for integrity
-      await supabase.from("verifications").insert({
-        user_id: userId,
-        type: "driver_license",
-        status: "approved",
-        verified_at: new Date().toISOString(),
-      });
+      await supabase
+        .from("verifications")
+        .upsert({
+          user_id: user.id,
+          type: "driver_license",
+          status: "approved",
+          verified_at: new Date().toISOString(),
+        }, { onConflict: "user_id, type" });
+
+      driverIds.push(user.id);
     }
 
     if (driverIds.length === 0) {
@@ -345,7 +325,7 @@ async function seed() {
       process.exit(1);
     }
 
-    console.log(`🎉 Seeded ${driverIds.length} driver profiles. Beginning dynamic ride seeding...`);
+    console.log(`🎉 Seeded ${driverIds.length} driver profiles. Seeding 45 deterministic rides...`);
 
     // ── 2. RIDES SEEDING ──
     const ridesToCreate = 45;
@@ -353,45 +333,53 @@ async function seed() {
     const ridesData = [];
 
     for (let i = 0; i < ridesToCreate; i++) {
-      const driverId = randomItem(driverIds);
-      const route = randomItem(PRIMARY_ROUTES);
+      // Deterministic PRNG initialized with ride seed
+      const prng = createPRNG(`ride-seed-${i}`);
+      const randomItemDet = <T>(arr: T[]): T => arr[Math.floor(prng() * arr.length)];
+      const randomRangeDet = (min: number, max: number): number => Math.floor(prng() * (max - min + 1)) + min;
+
+      const driverId = randomItemDet(driverIds);
+      const route = randomItemDet(PRIMARY_ROUTES);
       
-      const dateOffset = randomRange(1, 8);
+      const dateOffset = randomRangeDet(1, 30);
       const rideDate = new Date();
       rideDate.setDate(today.getDate() + dateOffset);
 
       const dayOfWeek = rideDate.getDay();
       let timeString = "";
-      const seats = randomRange(3, 4);
+      const seats = randomRangeDet(3, 4);
 
       if (dayOfWeek === 5) {
-        const hour = randomItem([14, 15, 16, 17, 18, 19]);
-        const minute = randomItem([0, 15, 30, 45]);
+        const hour = randomItemDet([14, 15, 16, 17, 18, 19]);
+        const minute = randomItemDet([0, 15, 30, 45]);
         timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
       } else if (dayOfWeek === 0) {
-        const hour = randomItem([16, 17, 18, 19, 20, 21]);
-        const minute = randomItem([0, 15, 30, 45]);
+        const hour = randomItemDet([16, 17, 18, 19, 20, 21]);
+        const minute = randomItemDet([0, 15, 30, 45]);
         timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:00`;
       } else {
-        const pattern = randomItem(["commute", "midday", "airport"]);
+        const pattern = randomItemDet(["commute", "midday", "airport"]);
         if (pattern === "commute") {
           const hour = 7;
-          const minute = randomItem([15, 30, 45]);
+          const minute = randomItemDet([15, 30, 45]);
           timeString = `0${hour}:${minute}:00`;
         } else if (pattern === "airport") {
-          const hour = randomItem([6, 7, 8]);
-          const minute = randomItem([0, 15, 30, 45]);
+          const hour = randomItemDet([6, 7, 8]);
+          const minute = randomItemDet([0, 15, 30, 45]);
           timeString = `0${hour}:${minute}:00`;
         } else {
-          const hour = randomRange(11, 15);
+          const hour = randomRangeDet(11, 15);
           timeString = `${hour}:30:00`;
         }
       }
 
-      const priceOffset = randomRange(-2, 2);
+      const priceOffset = randomRangeDet(-2, 2);
       const finalPrice = Math.max(0, parseFloat((route.avgPrice + priceOffset).toFixed(1)));
 
+      const rideId = generateDeterministicUUID(`ride-seed-${i}`);
+
       ridesData.push({
+        id: rideId,
         driver_id: driverId,
         from_city: route.from,
         to_city: route.to,
@@ -399,22 +387,30 @@ async function seed() {
         time: timeString,
         seats: seats,
         price: finalPrice,
-        notes: randomItem(SEED_NOTES),
-        meeting_point: randomItem(MEETING_POINTS),
+        notes: randomItemDet(SEED_NOTES),
+        meeting_point: randomItemDet(MEETING_POINTS),
         status: "active",
+        smoking_allowed: false,
+        fumatori_ammessi: false,
+        pets_allowed: prng() > 0.7,
+        animali_ammessi: prng() > 0.7,
+        music_preference: randomItemDet(["quiet", "music", "talk"]),
+        music_in_car: randomItemDet(["qualsiasi", "pop", "nessuna"]),
+        large_luggage: prng() > 0.5,
+        baggage_large: prng() > 0.5,
       });
     }
 
-    // Insert batch rides
+    // Insert batch rides via upsert to ensure stable UUID keys
     const { data: createdRides, error: ridesError } = await supabase
       .from("rides")
-      .insert(ridesData)
+      .upsert(ridesData, { onConflict: "id" })
       .select("id");
 
     if (ridesError) {
       console.error(`❌ Error inserting rides: ${ridesError.message}`);
     } else {
-      console.log(`✅ Seeded ${createdRides?.length || 0} active, localized rides successfully!`);
+      console.log(`✅ Seeded ${createdRides?.length || 0} active, stable, localized rides successfully!`);
     }
 
     console.log("🏁 Sardinia Seeder finished successfully. Marketplace is bootstrapped!");
@@ -429,3 +425,4 @@ seed().catch((err) => {
   console.error("❌ Uncaught exception during seeding:", err);
   process.exit(1);
 });
+

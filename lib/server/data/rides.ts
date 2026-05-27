@@ -127,13 +127,31 @@ export async function getRideById(rideId: string): Promise<Ride | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("rides")
-    .select(`*, profiles!inner(name, avatar_url, rating, rides_count, review_count, phone_verified, id_verified)`)
+    .select(`*, profiles(name, avatar_url, rating, rides_count, review_count, phone_verified, id_verified)`)
     .eq("id", rideId)
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    console.error("[data/rides] getRideById error:", error?.message);
+  if (error) {
+    console.error("[data/rides] getRideById error:", error?.message, "| rideId:", rideId);
     return null;
+  }
+  if (!data) {
+    console.warn("[data/rides] getRideById: ride not found | rideId:", rideId);
+    return null;
+  }
+  // If profiles join returned null (profile missing), the ride still exists
+  // Return it with a safe fallback profile so the page renders
+  if (!data.profiles) {
+    console.warn("[data/rides] getRideById: missing profile for driver_id:", data.driver_id);
+    (data as Record<string, unknown>).profiles = {
+      name: "Conducente",
+      avatar_url: null,
+      rating: 5.0,
+      rides_count: 0,
+      review_count: 0,
+      phone_verified: false,
+      id_verified: false,
+    };
   }
   return data as Ride;
 }
@@ -368,3 +386,37 @@ export async function getTodayRides(limit = 6): Promise<Ride[]> {
   }
   return (data || []) as unknown as Ride[];
 }
+
+/**
+ * Get upcoming active rides for fallback suggestions.
+ */
+export async function getUpcomingActiveRides(limit = 3): Promise<Ride[]> {
+  const supabase = await createClient();
+  const today = new Date().toISOString().split("T")[0];
+  const { data, error } = await supabase
+    .from("rides")
+    .select(`
+      id,
+      driver_id,
+      from_city,
+      to_city,
+      date,
+      time,
+      seats,
+      price,
+      created_at,
+      profiles!inner(name, avatar_url, rating, review_count)
+    `)
+    .eq("status", "active")
+    .gte("date", today)
+    .order("date", { ascending: true })
+    .order("time", { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    console.error("[data/rides] getUpcomingActiveRides error:", error.message);
+    return [];
+  }
+  return (data || []) as unknown as Ride[];
+}
+
