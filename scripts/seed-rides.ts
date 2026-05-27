@@ -284,6 +284,7 @@ async function seed() {
       }
 
       // Upsert profile in DB to ensure it matches
+      // NOTE: Only core columns to avoid PostgREST schema cache errors.
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({
@@ -293,11 +294,7 @@ async function seed() {
           rating: user.rating,
           rides_count: user.ridesCount,
           phone_verified: true,
-          email_verified: true,
-          driver_verified: true,
           phone_number: user.phone,
-          phone: user.phone,
-          email: user.email,
         }, { onConflict: "id" });
 
       if (profileError) {
