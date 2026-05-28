@@ -79,10 +79,16 @@ export function SafetyButton() {
 
   return (
     <>
-      {/* FAB — toggles open/close, icon changes to X when open */}
+      {/* FAB — positioned just above bottom nav on mobile, bottom-right on desktop */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-[4.25rem] right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg shadow-red-500/30 transition-all hover:scale-110 hover:bg-red-600 active:scale-95 md:bottom-24 md:right-6 md:h-14 md:w-14"
+        className="fixed bottom-24 right-4 z-40 flex h-9 w-9 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 md:bottom-8 md:right-8 md:h-11 md:w-11"
+        style={{
+          background: isOpen ? "rgba(230, 57, 70, 0.95)" : "rgba(20, 20, 20, 0.75)",
+          backdropFilter: "blur(16px)",
+          border: isOpen ? "1px solid rgba(230, 57, 70, 0.4)" : "1px solid rgba(255,255,255,0.1)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+        }}
         aria-label={isOpen ? t("cancel") : t("sosSafety")}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -94,7 +100,7 @@ export function SafetyButton() {
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              <X className="h-5 w-5 md:h-6 md:w-6" />
+              <X className="h-4 w-4 text-white" />
             </motion.span>
           ) : (
             <motion.span
@@ -104,7 +110,7 @@ export function SafetyButton() {
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              <Shield className="h-5 w-5 md:h-6 md:w-6" />
+              <Shield className="h-4 w-4 text-red-400/80" />
             </motion.span>
           )}
         </AnimatePresence>

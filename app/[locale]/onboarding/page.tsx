@@ -145,8 +145,7 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
 
     setData((prev) => ({ ...prev, ...profileUpdates }));
 
-    // Fire-and-forget: update database state asynchronously
-    supabase
+    const { error } = await supabase
       .from("profiles")
       .update({
         name: profileUpdates.fullName,
@@ -156,13 +155,13 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
         avatar_url: profileUpdates.avatarUrl,
         onboarding_step: 2,
       })
-      .eq("id", user.id)
-      .then(({ error }: { error: any }) => {
-        if (error) {
-          console.error("Supabase Profile Update Error:", error.message);
-          toast.error("Salvataggio non riuscito. Controlla la connessione.");
-        }
-      });
+      .eq("id", user.id);
+
+    if (error) {
+      console.error("Supabase Profile Update Error:", error.message);
+      toast.error("Salvataggio non riuscito. Controlla la connessione.");
+      return;
+    }
 
     handleNextStep();
   };
@@ -175,17 +174,20 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
 
     setData((prev) => ({ ...prev, ...roleUpdates }));
 
-    supabase
+    const { error } = await supabase
       .from("profiles")
       .update({
         role: roleUpdates.role,
         preferred_zones: roleUpdates.preferredZones,
         onboarding_step: 3,
       })
-      .eq("id", user.id)
-      .then(({ error }: { error: any }) => {
-        if (error) console.error("Supabase Role Update Error:", error.message);
-      });
+      .eq("id", user.id);
+
+    if (error) {
+      console.error("Supabase Role Update Error:", error.message);
+      toast.error("Salvataggio non riuscito. Controlla la connessione.");
+      return;
+    }
 
     handleNextStep();
   };
@@ -195,7 +197,7 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
 
     setData((prev) => ({ ...prev, pushNotificationsEnabled: enabled }));
 
-    await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({
         push_notifications_enabled: enabled,
@@ -203,6 +205,12 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
         onboarding_completed: true,
       })
       .eq("id", user.id);
+
+    if (error) {
+      console.error("Supabase Notifications Update Error:", error.message);
+      toast.error("Salvataggio non riuscito. Controlla la connessione.");
+      return;
+    }
 
     handleNextStep();
   };

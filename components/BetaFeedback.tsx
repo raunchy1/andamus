@@ -52,16 +52,22 @@ export function BetaFeedback() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — subtle micro-FAB above bottom nav */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 2, type: "spring" }}
+        transition={{ delay: 3, type: "spring", stiffness: 300, damping: 25 }}
         onClick={() => setOpen(true)}
-        className="fixed bottom-[4.25rem] left-4 sm:bottom-6 sm:left-6 z-50 w-12 h-12 rounded-full bg-[#e63946] text-white shadow-lg shadow-[#e63946]/30 flex items-center justify-center hover:bg-[#c92a37] transition-colors"
+        className="fixed bottom-[5.75rem] left-5 z-50 w-8 h-8 sm:bottom-6 sm:left-6 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95 md:hidden"
+        style={{
+          background: "rgba(30, 30, 30, 0.7)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+        }}
         title={t("buttonTitle")}
       >
-        <MessageSquare className="w-5 h-5" />
+        <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/60" />
       </motion.button>
 
       <AnimatePresence>
