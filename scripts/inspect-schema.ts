@@ -1,35 +1,44 @@
 import { createClient } from "@supabase/supabase-js";
-import * as dotenv from "dotenv";
-import * as path from "path";
+import dotenv from "dotenv";
+import path from "path";
 
+// Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !serviceRoleKey) {
-  console.error("Missing credentials");
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local");
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, serviceRoleKey);
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-async function test() {
-  const { data, error } = await supabase.from("profiles").select("*").limit(1);
+async function inspectSchema() {
+  console.log("Querying profiles table schema information...");
+  
+  const { data, error } = await supabase.rpc("inspect_table_columns", { table_name: "profiles" });
+  
   if (error) {
-    console.error("Error fetching profiles:", error);
-  } else if (data && data.length > 0) {
-    console.log("Profiles columns:", Object.keys(data[0]));
-  } else {
-    console.log("Profiles table is empty, creating a dummy user to inspect...");
-    // Let's inspect the table definition by trying to select something
-    const { data: cols, error: colsErr } = await supabase.rpc("get_columns", { table_name: "profiles" });
-    if (colsErr) {
-      console.error("RPC error:", colsErr);
+    // If custom RPC is missing, query pg_attribute directly via custom SQL using a simple select
+    console.log("RPC failed or missing, trying direct query on pg_catalog...");
+    
+    // We can run a query to get a single row to inspect columns
+    const { data: row, error: rowError } = await supabase
+      .from("profiles")
+      .select("*")
+      .limit(1);
+      
+    if (rowError) {
+      console.error("Failed to query profiles table:", rowError.message);
     } else {
-      console.log("Columns from RPC:", cols);
+      console.log("Successfully fetched a row. Available columns are:");
+      console.log(Object.keys(row[0] || {}));
     }
+  } else {
+    console.log("Table columns info:", data);
   }
 }
 
-test().catch(console.error);
+inspectSchema();

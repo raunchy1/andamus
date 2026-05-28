@@ -83,7 +83,7 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
         // Check if user has already completed onboarding to prevent re-onboarding
         const { data: profile, error } = await supabase
           .from("profiles")
-          .select("onboarding_completed, onboarding_step, full_name, phone, bio, birth_year, avatar_url, role, preferred_zones, push_notifications_enabled")
+          .select("onboarding_completed, onboarding_step, name, phone, bio, birth_year, avatar_url, role, preferred_zones, push_notifications_enabled")
           .eq("id", currentUser.id)
           .maybeSingle();
 
@@ -98,7 +98,7 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
         const googleName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || "";
         
         setData({
-          fullName: profile?.full_name || googleName,
+          fullName: profile?.name || googleName,
           phone: profile?.phone || "",
           bio: profile?.bio || "",
           birthYear: profile?.birth_year || 0,
@@ -149,7 +149,7 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
     supabase
       .from("profiles")
       .update({
-        full_name: profileUpdates.fullName,
+        name: profileUpdates.fullName,
         phone: profileUpdates.phone,
         bio: profileUpdates.bio,
         birth_year: profileUpdates.birthYear,

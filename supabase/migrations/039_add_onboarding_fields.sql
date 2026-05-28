@@ -7,6 +7,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role text CHECK (role IN ('driver'
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS preferred_zones text[];
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS birth_year integer;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS push_notifications_enabled boolean DEFAULT false;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio text;
 
 -- Add comment on columns
 COMMENT ON COLUMN profiles.onboarding_step IS 'The furthest step completed in onboarding: 1=Benvenuto, 2=Profilo, 3=Ruolo, 4=Notifiche';
