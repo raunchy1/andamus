@@ -1,0 +1,307 @@
+"use client";
+
+import { useState, useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { createClient } from "@/lib/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import ProgressBar from "./components/ProgressBar";
+
+// Dynamically load steps with Next.js code splitting
+const StepWelcome = dynamic(() => import("./components/StepWelcome"), {
+  loading: () => <StepLoader />,
+});
+const StepProfile = dynamic(() => import("./components/StepProfile"), {
+  loading: () => <StepLoader />,
+});
+const StepRole = dynamic(() => import("./components/StepRole"), {
+  loading: () => <StepLoader />,
+});
+const StepNotifications = dynamic(() => import("./components/StepNotifications"), {
+  loading: () => <StepLoader />,
+});
+const StepComplete = dynamic(() => import("./components/StepComplete"), {
+  loading: () => <StepLoader />,
+});
+
+function StepLoader() {
+  return (
+    <div className="flex flex-col items-center justify-center flex-1 py-12">
+      <Loader2 className="w-8 h-8 animate-spin text-[#e63946]" />
+    </div>
+  );
+}
+
+interface OnboardingData {
+  fullName: string;
+  phone: string;
+  bio: string;
+  birthYear: number;
+  avatarUrl: string;
+  role: "driver" | "passenger" | "both" | "";
+  preferredZones: string[];
+  pushNotificationsEnabled: boolean;
+}
+
+export default function OnboardingPage({ params }: { params: { locale: string } }) {
+  const router = useRouter();
+  const locale = params.locale || "it";
+  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
+
+  // Authentication & Initial Loading states
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  // Flow State
+  const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState<"next" | "back">("next");
+
+  const [data, setData] = useState<OnboardingData>({
+    fullName: "",
+    phone: "",
+    bio: "",
+    birthYear: 0,
+    avatarUrl: "",
+    role: "",
+    preferredZones: [],
+    pushNotificationsEnabled: false,
+  });
+
+  // Verify auth on mount and prefill Google name
+  useEffect(() => {
+    const initOnboarding = async () => {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser) {
+          router.replace(`/${locale}/join`);
+          return;
+        }
+
+        // Check if user has already completed onboarding to prevent re-onboarding
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("onboarding_completed, onboarding_step, full_name, phone, bio, birth_year, avatar_url, role, preferred_zones, push_notifications_enabled")
+          .eq("id", currentUser.id)
+          .maybeSingle();
+
+        if (profile?.onboarding_completed) {
+          router.replace(`/${locale}/profilo`);
+          return;
+        }
+
+        setUser(currentUser);
+        
+        // Prefill display name from Google metadata
+        const googleName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || "";
+        
+        setData({
+          fullName: profile?.full_name || googleName,
+          phone: profile?.phone || "",
+          bio: profile?.bio || "",
+          birthYear: profile?.birth_year || 0,
+          avatarUrl: profile?.avatar_url || currentUser.user_metadata?.avatar_url || "",
+          role: (profile?.role as OnboardingData["role"]) || "",
+          preferredZones: profile?.preferred_zones || [],
+          pushNotificationsEnabled: profile?.push_notifications_enabled || false,
+        });
+
+        // Restore step if they abandoned it halfway through
+        if (profile?.onboarding_step && profile.onboarding_step > 1 && profile.onboarding_step <= 4) {
+          setStep(profile.onboarding_step);
+        }
+
+      } catch (err) {
+        console.error("[onboarding] init failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initOnboarding();
+  }, [router, locale, supabase]);
+
+  const handleNextStep = () => {
+    setDirection("next");
+    setStep((prev) => prev + 1);
+  };
+
+  const handleBackStep = () => {
+    setDirection("back");
+    setStep((prev) => prev - 1);
+  };
+
+  // Immediate save handlers for each step completion
+  const handleProfileComplete = async (profileUpdates: {
+    fullName: string;
+    phone: string;
+    bio: string;
+    birthYear: number;
+    avatarUrl: string;
+  }) => {
+    if (!user) return;
+
+    setData((prev) => ({ ...prev, ...profileUpdates }));
+
+    // Fire-and-forget: update database state asynchronously
+    supabase
+      .from("profiles")
+      .update({
+        full_name: profileUpdates.fullName,
+        phone: profileUpdates.phone,
+        bio: profileUpdates.bio,
+        birth_year: profileUpdates.birthYear,
+        avatar_url: profileUpdates.avatarUrl,
+        onboarding_step: 2,
+      })
+      .eq("id", user.id)
+      .then(({ error }: { error: any }) => {
+        if (error) {
+          console.error("Supabase Profile Update Error:", error.message);
+          toast.error("Salvataggio non riuscito. Controlla la connessione.");
+        }
+      });
+
+    handleNextStep();
+  };
+
+  const handleRoleComplete = async (roleUpdates: {
+    role: "driver" | "passenger" | "both";
+    preferredZones: string[];
+  }) => {
+    if (!user) return;
+
+    setData((prev) => ({ ...prev, ...roleUpdates }));
+
+    supabase
+      .from("profiles")
+      .update({
+        role: roleUpdates.role,
+        preferred_zones: roleUpdates.preferredZones,
+        onboarding_step: 3,
+      })
+      .eq("id", user.id)
+      .then(({ error }: { error: any }) => {
+        if (error) console.error("Supabase Role Update Error:", error.message);
+      });
+
+    handleNextStep();
+  };
+
+  const handleNotificationsComplete = async (enabled: boolean) => {
+    if (!user) return;
+
+    setData((prev) => ({ ...prev, pushNotificationsEnabled: enabled }));
+
+    await supabase
+      .from("profiles")
+      .update({
+        push_notifications_enabled: enabled,
+        onboarding_step: 4,
+        onboarding_completed: true,
+      })
+      .eq("id", user.id);
+
+    handleNextStep();
+  };
+
+  const handleSkipRole = async () => {
+    if (!user) return;
+    
+    // Default fallback values if skipped
+    await supabase
+      .from("profiles")
+      .update({
+        role: "both",
+        preferred_zones: ["Cagliari"],
+        onboarding_step: 3,
+      })
+      .eq("id", user.id);
+
+    handleNextStep();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-[#e63946]" />
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-[100dvh] bg-[#0a0a0a] text-white flex flex-col justify-between items-center relative overflow-hidden select-none">
+      {/* Progress Bar Container */}
+      {step <= 4 && (
+        <div className="w-full max-w-md px-6 pt-6 flex flex-col gap-2">
+          <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-zinc-500 font-sans">
+            <span>Step {step} di 4</span>
+            <span>{Math.round((step / 4) * 100)}% Completato</span>
+          </div>
+          <ProgressBar currentStep={step} totalSteps={4} />
+        </div>
+      )}
+
+      {/* Main Content Area with CSS Slide transition */}
+      <div className="flex-1 w-full max-w-md px-6 py-6 flex flex-col justify-between relative">
+        <div
+          className={`flex-1 flex flex-col justify-between transition-all duration-300 ${
+            direction === "next" 
+              ? "animate-[slide-left_0.35s_ease-out]" 
+              : "animate-[slide-right_0.35s_ease-out]"
+          }`}
+          key={step}
+        >
+          {step === 1 && (
+            <StepWelcome 
+              displayName={user?.user_metadata?.full_name || ""} 
+              onNext={handleNextStep} 
+            />
+          )}
+          
+          {step === 2 && (
+            <StepProfile
+              userId={user?.id || ""}
+              initialData={data}
+              onNext={handleProfileComplete}
+              onBack={handleBackStep}
+            />
+          )}
+
+          {step === 3 && (
+            <StepRole
+              initialData={data}
+              onNext={handleRoleComplete}
+              onBack={handleBackStep}
+              onSkip={handleSkipRole}
+            />
+          )}
+
+          {step === 4 && (
+            <StepNotifications 
+              onNext={handleNotificationsComplete} 
+              onBack={handleBackStep} 
+            />
+          )}
+
+          {step === 5 && (
+            <StepComplete locale={locale} />
+          )}
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes slide-left {
+          from { transform: translateX(30px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slide-right {
+          from { transform: translateX(-30px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `}</style>
+    </main>
+  );
+}

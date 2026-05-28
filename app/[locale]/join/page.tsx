@@ -26,6 +26,7 @@ function JoinContent() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [referralApplied, setReferralApplied] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   const applyReferralBonus = useCallback(async (userId: string, code: string) => {
     try {
@@ -96,6 +97,11 @@ function JoinContent() {
   }, [referralCode, referralApplied, supabase, applyReferralBonus, router, locale]);
 
   const handleLogin = async () => {
+    if (!agreed) {
+      toast.error("Devi accettare i Termini di Servizio e la Privacy Policy per continuare.");
+      return;
+    }
+
     if (referralCode) {
       localStorage.setItem("pending_referral_code", referralCode);
       document.cookie = `pending_referral_code=${encodeURIComponent(referralCode)}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
@@ -218,6 +224,27 @@ function JoinContent() {
               </li>
             )}
           </ul>
+        </div>
+
+        <div className="flex items-start gap-2.5 mb-6 text-left">
+          <input
+            id="terms-checkbox"
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-outline/30 bg-surface-container accent-primary cursor-pointer"
+          />
+          <label htmlFor="terms-checkbox" className="text-xs text-on-surface-variant leading-relaxed cursor-pointer select-none">
+            Accetto i{" "}
+            <Link href={`/${locale}/termini-e-condizioni`} className="text-primary hover:underline font-medium">
+              Termini di Servizio
+            </Link>{" "}
+            e la{" "}
+            <Link href={`/${locale}/privacy-policy`} className="text-primary hover:underline font-medium">
+              Privacy Policy
+            </Link>{" "}
+            di Andamus.
+          </label>
         </div>
 
         <Button

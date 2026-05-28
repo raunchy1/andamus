@@ -12,6 +12,13 @@ function PostHogInit() {
   useEffect(() => {
     if (!POSTHOG_KEY) return;
 
+    // Strict GDPR compliance: check consent in localStorage first
+    const consent = typeof window !== "undefined" ? localStorage.getItem("andamus_cookie_consent") : null;
+    if (consent !== "all") {
+      console.log("[PostHog] Consent not granted. Tracking blocked.");
+      return;
+    }
+
     posthog.init(POSTHOG_KEY, {
       api_host: POSTHOG_HOST,
       person_profiles: "identified_only",

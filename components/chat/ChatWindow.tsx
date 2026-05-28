@@ -520,8 +520,34 @@ export default function ChatWindow({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const retryFnsRef = useRef<Map<string, () => Promise<void>>>(new Map());
-  const isMountedRef = useRef(true);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const messagesRef = useRef<Message[]>([]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // iOS Safari virtual viewport handling
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.visualViewport) return;
+    const vv = window.visualViewport;
+    const handleResize = () => {
+      setViewportHeight(vv.height);
+      // Auto scroll to bottom when viewport changes (e.g. keyboard opens)
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    };
+    vv.addEventListener("resize", handleResize);
+    vv.addEventListener("scroll", handleResize);
+    handleResize();
+    return () => {
+      vv.removeEventListener("resize", handleResize);
+      vv.removeEventListener("scroll", handleResize);
+    };
+  }, []);
 
   // Draft persistence
   const draftKey = `chat-draft-${bookingId}`;
@@ -649,7 +675,7 @@ export default function ChatWindow({
     loadMessages();
   }, [bookingId, supabase, handleMarkAsRead]);
 
-  // Realtime subscription with reconnect
+  // Realtime subscription with reconnect and UPDATE receipt syncing
   useEffect(() => {
     if (!bookingId || !isOnline) return;
 
@@ -671,9 +697,9 @@ export default function ChatWindow({
               Record<string, unknown>
             >
           ) => {
-            // Quick dedup check before expensive fetch
+            // Quick dedup check using ref to prevent resubscription dependency leak
             const newId = payload.new.id as string;
-            if (messages.some((m) => m.id === newId)) return;
+            if (messagesRef.current.some((m) => m.id === newId)) return;
 
             const { data: newMessage } = await supabase
               .from("messages")
@@ -709,6 +735,25 @@ export default function ChatWindow({
             }
           }
         )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "messages",
+            filter: `booking_id=eq.${bookingId}`,
+          },
+          (
+            payload: import("@supabase/supabase-js").RealtimePostgresUpdatePayload<
+              Record<string, unknown>
+            >
+          ) => {
+            const updatedMsg = payload.new as unknown as Message;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === updatedMsg.id ? { ...m, read: updatedMsg.read } : m))
+            );
+          }
+        )
         .subscribe((status: string) => {
           setSubStatus(status);
           if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
@@ -727,12 +772,12 @@ export default function ChatWindow({
     return () => {
       if (channel) supabase.removeChannel(channel);
     };
-  }, [bookingId, supabase, user.id, handleMarkAsRead, messages, isOnline]);
+  }, [bookingId, supabase, user.id, handleMarkAsRead, isOnline]);
 
   // Auto-scroll (debounced)
   useEffect(() => {
     scrollToBottom();
-  }, [messages.length, localMessages.length, scrollToBottom]);
+  }, [messages.length, localMessages.length, scrollToBottom]);;
 
   // Cross-tab unread sync via BroadcastChannel
   useEffect(() => {
@@ -1193,7 +1238,10 @@ export default function ChatWindow({
 
   function ChatMobile() {
     return (
-      <div className="flex h-[100dvh] flex-col bg-[#0a0a0a]">
+      <div 
+        className="flex h-[100dvh] flex-col bg-[#0a0a0a]"
+        style={viewportHeight ? { height: `${viewportHeight}px` } : undefined}
+      >
         {/* Header */}
         <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4 shrink-0">
           <div className="flex flex-col">

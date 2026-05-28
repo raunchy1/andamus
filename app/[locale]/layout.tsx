@@ -12,6 +12,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { LangSetter } from "@/components/LangSetter";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
+import CookieConsent from "@/components/CookieConsent";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -167,6 +168,7 @@ export default async function LocaleLayout({
             <SafetyButton />
             <VersionBadge />
             <Sonner richColors position="top-center" />
+            <CookieConsent />
           </ThemeProvider>
         </PostHogProvider>
       </NextIntlClientProvider>

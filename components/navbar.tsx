@@ -56,6 +56,9 @@ export function Navbar() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"login" | "register">("login");
   const pathname = usePathname();
+  if (pathname?.includes("/onboarding")) {
+    return null;
+  }
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
 
   // Close mobile menu on route change

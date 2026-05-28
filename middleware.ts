@@ -169,6 +169,82 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
+  // ── 5.5. Onboarding flow check ──
+  const isOnboardingPage = /^\/(?:it|en|de)?\/onboarding(?:\/|$)/.test(pathname);
+  if (!pathname.startsWith("/api/") && !AUTH_CALLBACK_REGEX.test(pathname) && hasSupabaseAuthCookie(request)) {
+    const cookieMap = new Map<string, string>(
+      request.cookies.getAll().map((c) => [c.name, c.value])
+    );
+    supabaseResponse.cookies.getAll().forEach((c) => cookieMap.set(c.name, c.value));
+
+    const supabaseClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return Array.from(cookieMap.entries()).map(([name, value]) => ({ name, value }));
+          },
+          setAll() {},
+        },
+      }
+    );
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabaseClient
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const localeMatch = pathname.match(/^\/(it|en|de)(?:\/|$)/);
+      const currentLocale = localeMatch ? localeMatch[1] : "it";
+
+      if (profile && !profile.onboarding_completed) {
+        // Authenticated but NOT onboarded -> Redirect to /onboarding
+        if (!isOnboardingPage) {
+          const redirect = NextResponse.redirect(new URL(`/${currentLocale}/onboarding`, request.url));
+          supabaseResponse.cookies.getAll().forEach((cookie) => {
+            redirect.cookies.set(cookie.name, cookie.value, {
+              httpOnly: cookie.httpOnly,
+              maxAge: cookie.maxAge,
+              domain: cookie.domain,
+              path: cookie.path,
+              sameSite: cookie.sameSite as "strict" | "lax" | "none" | undefined,
+              secure: cookie.secure,
+            });
+          });
+          ["X-Content-Type-Options", "X-Frame-Options", "Referrer-Policy", "Permissions-Policy"].forEach((h) => {
+            const val = supabaseResponse.headers.get(h);
+            if (val) redirect.headers.set(h, val);
+          });
+          return redirect;
+        }
+      } else if (profile && profile.onboarding_completed) {
+        // Authenticated AND onboarded -> Cannot access /onboarding
+        if (isOnboardingPage) {
+          const redirect = NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
+          supabaseResponse.cookies.getAll().forEach((cookie) => {
+            redirect.cookies.set(cookie.name, cookie.value, {
+              httpOnly: cookie.httpOnly,
+              maxAge: cookie.maxAge,
+              domain: cookie.domain,
+              path: cookie.path,
+              sameSite: cookie.sameSite as "strict" | "lax" | "none" | undefined,
+              secure: cookie.secure,
+            });
+          });
+          ["X-Content-Type-Options", "X-Frame-Options", "Referrer-Policy", "Permissions-Policy"].forEach((h) => {
+            const val = supabaseResponse.headers.get(h);
+            if (val) redirect.headers.set(h, val);
+          });
+          return redirect;
+        }
+      }
+    }
+  }
+
   // ── 6. Referral code capture ──
   const refCode = request.nextUrl.searchParams.get("ref");
   if (refCode && /^[A-Z0-9-]+$/i.test(refCode)) {

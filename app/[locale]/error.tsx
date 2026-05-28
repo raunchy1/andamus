@@ -7,10 +7,10 @@ import { useLocale, useTranslations } from "next-intl";
 
 export default function Error({
   error,
-  unstable_retry,
+  reset,
 }: {
   error: Error & { digest?: string };
-  unstable_retry: () => void;
+  reset: () => void;
 }) {
   const locale = useLocale();
   const t = useTranslations("error");
@@ -45,7 +45,7 @@ export default function Error({
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
-            onClick={unstable_retry}
+            onClick={reset}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
