@@ -132,14 +132,6 @@ export default function StepComplete({ locale }: StepCompleteProps) {
           Offri un passaggio
         </button>
       </div>
-
-      <style jsx global>{`
-        @keyframes carousel-emojis {
-          0%, 100% { transform: translateY(0); }
-          30%, 45% { transform: translateY(-96px); }
-          65%, 80% { transform: translateY(-192px); }
-        }
-      `}</style>
     </div>
   );
 }
