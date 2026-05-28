@@ -58,7 +58,7 @@ export function BetaFeedback() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2, type: "spring" }}
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 rounded-full bg-[#e63946] text-white shadow-lg shadow-[#e63946]/30 flex items-center justify-center hover:bg-[#c92a37] transition-colors"
+        className="fixed bottom-[4.25rem] left-4 sm:bottom-6 sm:left-6 z-50 w-12 h-12 rounded-full bg-[#e63946] text-white shadow-lg shadow-[#e63946]/30 flex items-center justify-center hover:bg-[#c92a37] transition-colors"
         title={t("buttonTitle")}
       >
         <MessageSquare className="w-5 h-5" />
