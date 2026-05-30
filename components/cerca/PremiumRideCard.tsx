@@ -60,6 +60,7 @@ export function PremiumRideCard({
     >
       <Link
         href={`/${locale}/corsa/${ride.id}`}
+        data-testid="ride-card"
         onClick={() => {
           Analytics.trackEvent("first_ride_viewed", {
             ride_id: ride.id,
@@ -151,16 +152,17 @@ export function PremiumRideCard({
         {/* Driver Info */}
         <div className={`flex items-center justify-between ${isGrid ? "pt-4 border-t border-white/[0.05]" : "mt-4 sm:mt-6 pt-4 border-t border-white/[0.05]"}`}>
           <div className="flex items-center gap-3 min-w-0">
-            <Link
-              href={`/${locale}/u/${ride.driver_id}`}
+            <div
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 Analytics.shareEvent?.("profile_click", {
                   source: isGrid ? "search_desktop" : "search",
                   driver_id: ride.driver_id,
                 });
+                window.location.href = `/${locale}/u/${ride.driver_id}`;
               }}
-              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/[0.08] bg-white/[0.03] overflow-hidden flex-shrink-0 hover:ring-2 hover:ring-[#e63946]/40 transition-all"
+              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/[0.08] bg-white/[0.03] overflow-hidden flex-shrink-0 hover:ring-2 hover:ring-[#e63946]/40 transition-all cursor-pointer"
             >
               {ride.profiles.avatar_url ? (
                 <Image
@@ -178,13 +180,16 @@ export function PremiumRideCard({
               {metrics.isOnlineNow && (
                 <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#111111] animate-pulse" />
               )}
-            </Link>
+            </div>
 
             <div className="min-w-0">
-              <Link
-                href={`/${locale}/u/${ride.driver_id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 min-w-0"
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = `/${locale}/u/${ride.driver_id}`;
+                }}
+                className="flex items-center gap-1 min-w-0 cursor-pointer"
               >
                 <p className="font-semibold text-sm text-[#f8f8f8] truncate hover:text-[#e63946] transition-colors">
                   {ride.profiles.name}
@@ -192,7 +197,7 @@ export function PremiumRideCard({
                 {metrics.isOnlineNow && (
                   <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" title="Online adesso" />
                 )}
-              </Link>
+              </div>
               <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                 <div className="flex items-center gap-0.5">
                   <Star className="w-2.5 h-2.5 text-[#f4a261] fill-[#f4a261]" />

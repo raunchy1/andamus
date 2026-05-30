@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useDeviceType } from "@/components/view-mode";
+import { getFriendlyErrorMessage } from "@/lib/client/error-handler";
 import { searchRides } from "@/lib/rides-actions";
 import { Slider } from "@/components/ui/slider";
 import { CityCombobox } from "@/components/CityCombobox";
@@ -906,6 +907,7 @@ function SearchDesktop(props: SearchViewProps) {
 
 function SearchContent() {
   const t = useTranslations('search');
+  const searchErrorText = t('searchError');
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1029,11 +1031,11 @@ function SearchContent() {
     } catch (err: unknown) {
       if (!isMountedRef.current) return;
       setHasError(true);
-      toast.error(err instanceof Error ? err.message : t('searchError'));
+      toast.error(err instanceof Error ? err.message : searchErrorText);
     } finally {
       if (isMountedRef.current) setLoading(false);
     }
-  }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, t]);
+  }, [activeFilter, dateFrom, dateTo, timeWindow, destination, maxPrice, minSeats, onlyVerified, origin, prefLuggage, prefMusic, prefPets, prefSmoking, prefStudents, prefWomen, searchErrorText]);
 
   // Fix #2: single debounced effect — removed the redundant immediate useEffect
   // that was causing a double fetch on every mount. fetchRides fires once after

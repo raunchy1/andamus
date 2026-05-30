@@ -13,6 +13,7 @@ import { LangSetter } from "@/components/LangSetter";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import CookieConsent from "@/components/CookieConsent";
+import { Suspense } from "react";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -158,7 +159,9 @@ export default async function LocaleLayout({
         <PostHogProvider>
           <LangSetter locale={locale} />
           <ThemeProvider>
-            <AnalyticsTracker />
+            <Suspense fallback={null}>
+              <AnalyticsTracker />
+            </Suspense>
             <Navbar />
             <ClientLayoutWrapper>
               <div className="page-enter">

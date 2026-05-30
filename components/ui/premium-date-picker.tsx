@@ -104,12 +104,20 @@ export function PremiumDatePicker({
   return (
     <div className={cn("relative", className)}>
       {/* Trigger */}
-      <motion.button
+      <motion.div
+        role="button"
+        tabIndex={0}
         whileTap={{ scale: 0.98 }}
         onClick={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
         className={cn(
           "flex items-center gap-4 w-full px-5 py-4 rounded-2xl",
-          "transition-all cursor-pointer min-w-0 text-left"
+          "transition-all cursor-pointer min-w-0 text-left select-none outline-none focus-visible:ring-1 focus-visible:ring-[#e63946]/50"
         )}
         style={{
           background: "linear-gradient(180deg, #1a1a1a 0%, #141414 100%)",
@@ -143,7 +151,7 @@ export function PremiumDatePicker({
             <X className="w-3.5 h-3.5 text-[#444444] hover:text-[#a0a0a0]" />
           </button>
         )}
-      </motion.button>
+      </motion.div>
 
       {/* Overlay + Picker */}
       <AnimatePresence>

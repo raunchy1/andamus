@@ -87,21 +87,26 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
   // Fetch notifications
   const fetchNotifications = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !isMountedRef.current) return;
+    try {
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
+      if (!user || !isMountedRef.current) return;
 
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(20);
+      const { data: notifs } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(20);
 
-    if (data && isMountedRef.current) {
-      setNotifications(data);
-      setUnreadCount(data.filter((n: { read: boolean }) => !n.read).length);
-      // Sync processed ids to avoid duplicates on realtime
-      processedIds.current = new Set(data.map((n: Notification) => n.id));
+      if (notifs && isMountedRef.current) {
+        setNotifications(notifs);
+        setUnreadCount(notifs.filter((n: { read: boolean }) => !n.read).length);
+        // Sync processed ids to avoid duplicates on realtime
+        processedIds.current = new Set(notifs.map((n: Notification) => n.id));
+      }
+    } catch (err) {
+      console.error("[notifications] fetch error:", err);
     }
   }, [supabase]);
 
@@ -117,47 +122,52 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     const setupSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data } = await supabase.auth.getUser();
+        const user = data?.user;
+        if (!user) return;
 
-      channel = supabase
-        .channel(`notifications:${user.id}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<Record<string, unknown>>) => {
-            const newNotif = payload.new as unknown as Notification;
-            // Deduplication: ignore if already processed
-            if (processedIds.current.has(newNotif.id)) return;
-            processedIds.current.add(newNotif.id);
+        channel = supabase
+          .channel(`notifications:${user.id}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "INSERT",
+              schema: "public",
+              table: "notifications",
+              filter: `user_id=eq.${user.id}`,
+            },
+            (payload: import("@supabase/supabase-js").RealtimePostgresInsertPayload<Record<string, unknown>>) => {
+              const newNotif = payload.new as unknown as Notification;
+              // Deduplication: ignore if already processed
+              if (processedIds.current.has(newNotif.id)) return;
+              processedIds.current.add(newNotif.id);
 
-            setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
-            setUnreadCount((prev) => prev + 1);
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload: import("@supabase/supabase-js").RealtimePostgresUpdatePayload<Record<string, unknown>>) => {
-            const updated = payload.new as unknown as Notification;
-            setNotifications((prev) => {
-              const updatedList = prev.map((n) => (n.id === updated.id ? updated : n));
-              setUnreadCount(updatedList.filter((n) => !n.read).length);
-              return updatedList;
-            });
-          }
-        )
-        .subscribe();
+              setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
+              setUnreadCount((prev) => prev + 1);
+            }
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "notifications",
+              filter: `user_id=eq.${user.id}`,
+            },
+            (payload: import("@supabase/supabase-js").RealtimePostgresUpdatePayload<Record<string, unknown>>) => {
+              const updated = payload.new as unknown as Notification;
+              setNotifications((prev) => {
+                const updatedList = prev.map((n) => (n.id === updated.id ? updated : n));
+                setUnreadCount(updatedList.filter((n) => !n.read).length);
+                return updatedList;
+              });
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.error("[notifications] subscription setup error:", err);
+      }
     };
 
     setupSubscription();

@@ -16,10 +16,12 @@ export async function GET(request: NextRequest) {
   const supabase = createServiceRoleClient();
   
   // Try querying public.feedback first
-  let { data, error } = await supabase
+  const { data: initialData, error } = await supabase
     .from("feedback")
     .select("*, profiles(name, email, avatar_url)")
     .order("created_at", { ascending: false });
+
+  let data = initialData;
 
   if (error) {
     console.warn("[api/admin/feedback] failed to fetch from public.feedback, trying feedback_reports:", error.message);

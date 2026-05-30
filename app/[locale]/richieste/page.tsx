@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -47,7 +47,7 @@ interface RideRequest {
   };
 }
 
-export default function RequestsPage() {
+function RequestsContent() {
   const searchParams = useSearchParams();
   const supabase = createClient();
   const t = useTranslations("requests");
@@ -272,6 +272,18 @@ export default function RequestsPage() {
         onSuccess={fetchRequests}
       />
     </div>
+  );
+}
+
+export default function RequestsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[#ffb3b1]" />
+      </div>
+    }>
+      <RequestsContent />
+    </Suspense>
   );
 }
 

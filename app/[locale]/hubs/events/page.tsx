@@ -1,41 +1,43 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Sparkles, Calendar, MapPin, ArrowRight, Music, Users, Shield } from "lucide-react";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { GradientText } from "@/components/ui/premium/gradient-text";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
 
-export const revalidate = 3600; // ISR cache revalidation every hour
-
 export const metadata: Metadata = {
-  title: "Eventi & Festival Carpooling Sardegna | Andamus",
-  description: "Condividi il viaggio per i festival, concerti e sagre più importanti della Sardegna. Risparmia sulle spese, riduci le emissioni e viaggia in compagnia!",
+  title: "Hub Eventi | Andamus",
+  description: "Trova passaggi per i concerti, festival e grandi eventi in Sardegna.",
 };
 
-type SardiniaEvent = {
+interface SardiniaEvent {
   id: string;
-  slug: string;
   name: string;
   description: string;
   image_url: string;
   start_date: string;
-  end_date: string | null;
   location: string;
-  city: string;
+  category: string;
+  slug: string;
   ride_count?: number;
-};
+}
 
-export default async function EventsHubPage({ params }: { params: { locale: string } }) {
-  const locale = params.locale || "it";
+export default async function EventsHubPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const supabase = createServiceRoleClient();
 
-  // 1. Fetch all active/upcoming events in Sardinia
+  // 1. Fetch upcoming major events in Sardinia
   const { data: events, error } = await supabase
     .from("events")
     .select("*")
     .order("start_date", { ascending: true });
 
-  let parsedEvents: SardiniaEvent[] = events || [];
+  const parsedEvents: SardiniaEvent[] = events || [];
 
   if (error) {
     console.error("[events-hub] Error fetching events:", error.message);
@@ -57,133 +59,143 @@ export default async function EventsHubPage({ params }: { params: { locale: stri
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-[#e5e2e1] overflow-x-hidden relative pb-16 pt-12">
-      {/* Dynamic Aurora Ambient Orb */}
-      <OrbGlow className="-top-40 -left-40" color="#e63946" size={500} opacity={0.25} />
-      <OrbGlow className="bottom-20 -right-40" color="#f4a261" size={400} opacity={0.15} />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1] pb-20">
+      {/* Hero Section with Premium Effects */}
+      <div className="relative pt-12 pb-16 px-6 overflow-hidden">
+        <OrbGlow className="-top-24 -right-24" color="#e63946" size={400} opacity={0.25} />
+        <OrbGlow className="top-1/2 -left-20" color="#4285F4" size={300} opacity={0.15} />
         
-        {/* Breadcrumbs & Badge */}
-        <div className="mb-6">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ffb3b1]/30 bg-[#ffb3b1]/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] backdrop-blur-md">
-            <Music className="h-2.5 w-2.5" />
-            Domination Hub
-          </span>
-        </div>
-
-        {/* Header Block */}
-        <div className="max-w-3xl mb-12 sm:mb-16">
-          <h1 className="font-heading font-extrabold tracking-tighter text-4xl sm:text-5xl lg:text-6xl leading-[0.92] uppercase">
-            Sardegna <br />
-            <GradientText>Eventi & Festival</GradientText>
+        <div className="max-w-4xl mx-auto relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 mb-6 backdrop-blur-md">
+            <Sparkles className="w-3.5 h-3.5 text-[#ffb3b1]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1]">Community Hub</span>
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-6 leading-[0.9]">
+            Grandi Eventi <br />
+            <GradientText>Sardegna 2024</GradientText>
           </h1>
-          <p className="mt-4 text-white/60 text-sm sm:text-base font-medium max-w-2xl leading-relaxed">
-            Viaggia in compagnia verso i concerti, i festival universitari e le feste tradizionali più amate della Sardegna. Condividi il passaggio, dimezza i costi del carburante ed evita lo stress del parcheggio.
+          
+          <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+            Non viaggiare da solo. Unisciti ad altri fan, dividi le spese del viaggio e arriva a destinazione in sicurezza. Il carpooling perfetto per i tuoi eventi preferiti.
           </p>
         </div>
+      </div>
 
-        {/* Events Grid */}
+      {/* Events Grid */}
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex items-center justify-between mb-10 border-b border-white/5 pb-6">
+          <h2 className="text-sm font-black uppercase tracking-[0.3em] text-white/40">Prossime Date</h2>
+          <div className="flex gap-2">
+             <span className="px-3 py-1 rounded-lg bg-white/5 text-[10px] font-bold text-white/60">Tutti</span>
+             <span className="px-3 py-1 rounded-lg hover:bg-white/5 text-[10px] font-bold text-white/30 transition-colors cursor-pointer">Concerti</span>
+             <span className="px-3 py-1 rounded-lg hover:bg-white/5 text-[10px] font-bold text-white/30 transition-colors cursor-pointer">Festival</span>
+          </div>
+        </div>
+
         {parsedEvents.length === 0 ? (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-md p-12 text-center max-w-lg mx-auto">
-            <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <h3 className="text-white font-bold text-lg">Nessun evento in programma</h3>
-            <p className="text-white/40 text-xs mt-2">Torna a trovarci presto per scoprire i prossimi grandi festival e concerti sardi!</p>
+          <div className="py-20 text-center bg-white/[0.02] border border-dashed border-white/10 rounded-3xl">
+            <Calendar className="w-12 h-12 text-white/10 mx-auto mb-4" />
+            <p className="text-white/40 font-medium">Nessun evento programmato al momento.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {parsedEvents.map((event) => {
-              const formattedDate = new Date(event.start_date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              });
-
-              return (
-                <div
-                  key={event.id}
-                  className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[#121212] hover:bg-[#151515] transition-all duration-300 flex flex-col justify-between"
-                  style={{
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.02)",
-                  }}
-                >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {parsedEvents.map((event) => (
+              <Link 
+                key={event.id}
+                href={`/${locale}/cerca?event=${event.slug}`}
+                className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#121212] border border-white/5 hover:border-[#e63946]/30 transition-all duration-500 shadow-2xl hover:shadow-[#e63946]/5"
+                style={{ 
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.03)"
+                }}
+              >
                   {/* Event visual background card */}
                   <div className="relative aspect-[16/10] overflow-hidden w-full bg-neutral-900 border-b border-white/[0.04]">
-                    <img
+                    <Image
                       src={event.image_url}
                       alt={event.name}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      loading="lazy"
+                      fill
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/30 to-transparent" />
                     
-                    {/* Live Surge Indicator */}
+                    {/* Badge Indicator */}
                     <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e63946]/90 backdrop-blur-md text-[9px] font-extrabold tracking-wide uppercase text-white shadow-lg">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                      {event.ride_count || 0} Viaggi attivi
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      {event.ride_count && event.ride_count > 0 ? `${event.ride_count} Passaggi` : "Cerca Passaggio"}
+                    </div>
+
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#ffb3b1] mb-1 block">{event.category}</span>
+                      <h3 className="text-xl font-black text-white leading-tight uppercase tracking-tight group-hover:text-[#ffb3b1] transition-colors">{event.name}</h3>
                     </div>
                   </div>
 
-                  {/* Body Content */}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center gap-4 text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2.5">
-                        <span className="flex items-center gap-1 text-[#ffb3b1]">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {formattedDate}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5" />
-                          {event.city}
-                        </span>
-                      </div>
-
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#ffb3b1] transition-colors leading-tight">
-                        {event.name}
-                      </h3>
-                      
-                      <p className="mt-2 text-white/50 text-xs leading-relaxed line-clamp-3">
-                        {event.description || "Unisciti alla carovana e trova passeggeri o conducenti per andare a questo fantastico evento in Sardegna!"}
-                      </p>
+                  <div className="p-5 flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                       <div className="flex items-center gap-2 text-white/60">
+                          <Calendar className="w-4 h-4 text-[#e63946]" />
+                          <span className="text-xs font-bold">{new Date(event.start_date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                       </div>
+                       <div className="flex items-center gap-2 text-white/60">
+                          <MapPin className="w-4 h-4 text-[#e63946]" />
+                          <span className="text-xs font-bold truncate">{event.location}</span>
+                       </div>
                     </div>
 
-                    {/* CTAs */}
-                    <div className="mt-6 pt-4 border-t border-white/[0.04] grid grid-cols-2 gap-3">
-                      <Link
-                        href={`/${locale}/cerca?from=&to=${encodeURIComponent(event.city)}&date=${event.start_date}`}
-                        className="flex items-center justify-center gap-1 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/5 hover:bg-white/[0.08] transition-colors text-xs font-semibold text-white/90"
-                      >
-                        Trova
-                      </Link>
-                      <Link
-                        href={`/${locale}/offri?to=${encodeURIComponent(event.city)}&date=${event.start_date}&eventId=${event.id}`}
-                        className="flex items-center justify-center gap-1 px-4 py-2.5 rounded-xl bg-[#e63946]/10 hover:bg-[#e63946]/20 border border-[#e63946]/25 transition-colors text-xs font-bold text-[#e63946]"
-                      >
-                        Offri
-                      </Link>
+                    <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">
+                      {event.description}
+                    </p>
+
+                    <div className="pt-2 flex items-center justify-between mt-auto">
+                        <div className="flex -space-x-2">
+                           {[1,2,3].map(i => (
+                             <div key={i} className="w-6 h-6 rounded-full border-2 border-[#121212] bg-neutral-800 flex items-center justify-center">
+                                <Users className="w-3 h-3 text-white/20" />
+                             </div>
+                           ))}
+                           <div className="pl-4 text-[10px] font-bold text-white/30 flex items-center italic">
+                              +12 altri
+                           </div>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:bg-[#e63946] group-hover:text-white group-hover:border-transparent transition-all">
+                           <ArrowRight className="w-4 h-4" />
+                        </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+              </Link>
+            ))}
           </div>
         )}
+      </div>
 
-        {/* Dominance Info Section */}
-        <div className="mt-20 border-t border-white/5 pt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-6">
-            <Shield className="w-6 h-6 text-[#ffb3b1] mb-3" />
-            <h4 className="font-bold text-white text-base">Community Sicura</h4>
-            <p className="text-white/40 text-xs mt-1 leading-relaxed">Profili recensiti e verificati. Andamus garantisce massima trasparenza e rispetto delle regole di mobilità.</p>
+      {/* Trust & Safety Banner */}
+      <div className="max-w-6xl mx-auto px-6 mt-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 rounded-[32px] bg-white/[0.02] border border-white/5 backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#e63946]/5 blur-[80px] rounded-full -mr-20 -mt-20" />
+          
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl bg-[#4CAF50]/10 flex items-center justify-center text-[#4CAF50] mb-4">
+              <Shield className="w-6 h-6" />
+            </div>
+            <h4 className="text-sm font-black uppercase tracking-wider text-white mb-2">Viaggia Sicuro</h4>
+            <p className="text-white/40 text-xs mt-1 leading-relaxed">Profili verificati e feedback della community per ogni autista e passeggero.</p>
           </div>
-          <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-6">
-            <Users className="w-6 h-6 text-[#ffb3b1] mb-3" />
-            <h4 className="font-bold text-white text-base">Incontro Intelligente</h4>
-            <p className="text-white/40 text-xs mt-1 leading-relaxed">Connettiti con altri studenti universitari o amanti dei festival per viaggiare insieme e fare nuove amicizie lungo la strada.</p>
+
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl bg-[#2196F3]/10 flex items-center justify-center text-[#2196F3] mb-4">
+              <Users className="w-6 h-6" />
+            </div>
+            <h4 className="text-sm font-black uppercase tracking-wider text-white mb-2">Community Reale</h4>
+            <p className="text-white/40 text-xs mt-1 leading-relaxed">Incontra persone con i tuoi stessi interessi e vivi l&apos;evento già dal viaggio.</p>
           </div>
-          <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-6">
-            <Sparkles className="w-6 h-6 text-[#ffb3b1] mb-3" />
-            <h4 className="font-bold text-white text-base">Risparmio Garantito</h4>
+
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl bg-[#FFC107]/10 flex items-center justify-center text-[#FFC107] mb-4">
+              <Music className="w-6 h-6" />
+            </div>
+            <h4 className="text-sm font-black uppercase tracking-wider text-white mb-2">Risparmio Equo</h4>
             <p className="text-white/40 text-xs mt-1 leading-relaxed">Metti a disposizione i posti vuoti in auto o prenota il tuo passaggio a prezzi equi, dividendo pedaggi e carburante.</p>
           </div>
         </div>

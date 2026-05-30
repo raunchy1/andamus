@@ -4,8 +4,8 @@ test.describe("Auth Modal", () => {
   test("opens and shows login form", async ({ page }) => {
     await page.goto("/it");
 
-    // Click on profile icon to trigger auth modal
-    await page.click("nav a[href='/it/profilo']");
+    // Click on Accedi button in desktop header to trigger auth modal
+    await page.click("header button:has-text('Accedi')");
 
     // Wait for auth modal to appear
     await expect(page.getByText("Accedi").first()).toBeVisible();

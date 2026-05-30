@@ -69,12 +69,9 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // ── 2. Auth callback fast-path (no session update, no intl redirect) ──
-  // The /[locale]/auth/callback route handler handles PKCE code exchange server-side.
-  // Running updateSession here would mutate the code-verifier cookie and break the flow.
+  // ── 2. Auth callback fast-path ──
   if (AUTH_CALLBACK_REGEX.test(pathname)) {
     const response = NextResponse.next({ request });
-    // Copy security headers but do nothing else
     response.headers.set("X-Content-Type-Options", "nosniff");
     response.headers.set("X-Frame-Options", "DENY");
     response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -83,37 +80,41 @@ export default async function middleware(request: NextRequest) {
 
   const needsSupabase = needsAuthCheck || hasSupabaseAuthCookie(request);
 
-  // ── 3. Supabase session refresh ──
-  const supabaseResponse = needsSupabase
-    ? await updateSession(request)
-    : NextResponse.next({ request });
+  // ── 3. Supabase session refresh & User retrieval (ONE CALL) ──
+  let supabaseResponse = NextResponse.next({ request });
+  let user: import("@supabase/supabase-js").User | null = null;
 
-  // ── 4. API route protection ──
-  if (isAdminApi || isPushApi) {
-    if (!hasSupabaseAuthCookie(request)) {
-      return jsonError("Authentication required", "UNAUTHORIZED", 401);
-    }
-
-    const cookieMap = new Map<string, string>(
-      request.cookies.getAll().map((c) => [c.name, c.value])
-    );
-    supabaseResponse.cookies.getAll().forEach((c) => cookieMap.set(c.name, c.value));
-
+  if (needsSupabase) {
+    // We use a dedicated client for the middleware to manage cookies correctly
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() {
-            return Array.from(cookieMap.entries()).map(([name, value]) => ({ name, value }));
+            return request.cookies.getAll();
           },
-          setAll() {},
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) =>
+              request.cookies.set(name, value)
+            );
+            supabaseResponse = NextResponse.next({
+              request,
+            });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options)
+            );
+          },
         },
       }
     );
+    
+    const { data } = await supabase.auth.getUser();
+    user = data?.user || null;
+  }
 
-    const { data: { user } } = await supabase.auth.getUser();
-
+  // ── 4. API route protection ──
+  if (isAdminApi || isPushApi) {
     if (!user?.id) {
       return jsonError("Authentication required", "UNAUTHORIZED", 401);
     }
@@ -124,32 +125,12 @@ export default async function middleware(request: NextRequest) {
         return jsonError("Admin access required", "FORBIDDEN", 403);
       }
     }
-
-    // Push API: authenticated user is sufficient; ownership verified in route handler
+    // Push API: authenticated user is sufficient
     return supabaseResponse;
   }
 
   // ── 5. Admin page protection ──
   if (isAdminPage) {
-    const cookieMap = new Map<string, string>(
-      request.cookies.getAll().map((c) => [c.name, c.value])
-    );
-    supabaseResponse.cookies.getAll().forEach((c) => cookieMap.set(c.name, c.value));
-
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return Array.from(cookieMap.entries()).map(([name, value]) => ({ name, value }));
-          },
-          setAll() {},
-        },
-      }
-    );
-
-    const { data: { user } } = await supabase.auth.getUser();
     const userIsAdmin = user?.id ? await isAdmin(user.id, user.email) : false;
 
     if (!userIsAdmin) {
@@ -170,83 +151,48 @@ export default async function middleware(request: NextRequest) {
   }
 
   // ── 5.5. Onboarding flow check ──
-  try {
-    const isOnboardingPage = /^\/(?:it|en|de)?\/onboarding(?:\/|$)/.test(pathname);
-    if (!pathname.startsWith("/api/") && !AUTH_CALLBACK_REGEX.test(pathname) && hasSupabaseAuthCookie(request)) {
-      const cookieMap = new Map<string, string>(
-        request.cookies.getAll().map((c) => [c.name, c.value])
-      );
-      supabaseResponse.cookies.getAll().forEach((c) => cookieMap.set(c.name, c.value));
-
-      const supabaseClient = createServerClient(
+  if (user && !pathname.startsWith("/api/") && !AUTH_CALLBACK_REGEX.test(pathname)) {
+    try {
+      // Create a temporary client for DB check (not auth) to avoid extragetUser
+      const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
           cookies: {
             getAll() {
-              return Array.from(cookieMap.entries()).map(([name, value]) => ({ name, value }));
+              return request.cookies.getAll();
             },
             setAll() {},
           },
         }
       );
 
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabaseClient
-          .from("profiles")
-          .select("onboarding_completed")
-          .eq("id", user.id)
-          .maybeSingle();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", user.id)
+        .maybeSingle();
 
-        const localeMatch = pathname.match(/^\/(it|en|de)(?:\/|$)/);
-        const currentLocale = localeMatch ? localeMatch[1] : "it";
+      const localeMatch = pathname.match(/^\/(it|en|de)(?:\/|$)/);
+      const currentLocale = localeMatch ? localeMatch[1] : "it";
+      const isOnboardingPage = /^\/(?:it|en|de)?\/onboarding(?:\/|$)/.test(pathname);
 
-        if (profile && !profile.onboarding_completed) {
-          // Authenticated but NOT onboarded -> Redirect to /onboarding
-          if (!isOnboardingPage) {
-            const redirect = NextResponse.redirect(new URL(`/${currentLocale}/onboarding`, request.url));
-            supabaseResponse.cookies.getAll().forEach((cookie) => {
-              redirect.cookies.set(cookie.name, cookie.value, {
-                httpOnly: cookie.httpOnly,
-                maxAge: cookie.maxAge,
-                domain: cookie.domain,
-                path: cookie.path,
-                sameSite: cookie.sameSite as "strict" | "lax" | "none" | undefined,
-                secure: cookie.secure,
-              });
-            });
-            ["X-Content-Type-Options", "X-Frame-Options", "Referrer-Policy", "Permissions-Policy"].forEach((h) => {
-              const val = supabaseResponse.headers.get(h);
-              if (val) redirect.headers.set(h, val);
-            });
-            return redirect;
-          }
-        } else if (profile && profile.onboarding_completed) {
-          // Authenticated AND onboarded -> Cannot access /onboarding
-          if (isOnboardingPage) {
-            const redirect = NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
-            supabaseResponse.cookies.getAll().forEach((cookie) => {
-              redirect.cookies.set(cookie.name, cookie.value, {
-                httpOnly: cookie.httpOnly,
-                maxAge: cookie.maxAge,
-                domain: cookie.domain,
-                path: cookie.path,
-                sameSite: cookie.sameSite as "strict" | "lax" | "none" | undefined,
-                secure: cookie.secure,
-              });
-            });
-            ["X-Content-Type-Options", "X-Frame-Options", "Referrer-Policy", "Permissions-Policy"].forEach((h) => {
-              const val = supabaseResponse.headers.get(h);
-              if (val) redirect.headers.set(h, val);
-            });
-            return redirect;
-          }
+      if (profile && !profile.onboarding_completed) {
+        if (!isOnboardingPage) {
+          const redirect = NextResponse.redirect(new URL(`/${currentLocale}/onboarding`, request.url));
+          supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
+          return redirect;
+        }
+      } else if (profile && profile.onboarding_completed) {
+        if (isOnboardingPage) {
+          const redirect = NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
+          supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
+          return redirect;
         }
       }
+    } catch (onboardingErr) {
+      console.error("[middleware] Onboarding check failed:", onboardingErr);
     }
-  } catch (onboardingErr) {
-    console.error("[middleware] Onboarding check failed:", onboardingErr);
   }
 
   // ── 6. Referral code capture ──

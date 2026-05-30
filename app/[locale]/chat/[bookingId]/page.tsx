@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import ChatWindow from "@/components/chat/ChatWindow";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 interface ChatPageProps {
   params: Promise<{
@@ -56,5 +58,13 @@ export default async function ChatPage({ params }: ChatPageProps) {
     redirect("/");
   }
 
-  return <ChatWindow bookingId={bookingId} booking={booking} user={user} />;
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
+        <Loader2 className="w-10 h-10 animate-spin text-[#e63946]" />
+      </div>
+    }>
+      <ChatWindow bookingId={bookingId} booking={booking} user={user} />
+    </Suspense>
+  );
 }

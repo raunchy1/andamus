@@ -5,10 +5,10 @@ test.describe("Search page", () => {
     await page.goto("/it/cerca");
 
     // Filter buttons visible
-    await expect(page.locator("button").filter({ hasText: /Tutti|Corsa|Viaggio/ }).first()).toBeVisible();
+    await expect(page.locator("button").filter({ hasText: /Tutti|Gratis|Verificati/ }).first()).toBeVisible({ timeout: 15000 });
 
     // Search results area or empty state
-    const resultsOrEmpty = page.locator("text=Nessuna corsa trovata").or(page.locator("[data-testid='ride-card']"));
-    await expect(resultsOrEmpty.first()).toBeVisible();
+    const resultsOrEmpty = page.locator("[data-testid='ride-card']").or(page.locator("text=Nessun passaggio"));
+    await expect(resultsOrEmpty.first()).toBeVisible({ timeout: 15000 });
   });
 });

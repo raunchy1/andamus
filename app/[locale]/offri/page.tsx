@@ -19,6 +19,7 @@ import dynamic from "next/dynamic";
 
 const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
 import { Analytics } from "@/lib/analytics";
+import { getFriendlyErrorMessage } from "@/lib/client/error-handler";
 import { CarInfoSection } from "@/components/offri/CarInfoSection";
 import { PreferencesSection } from "@/components/offri/PreferencesSection";
 import { StopsSection } from "@/components/offri/StopsSection";
@@ -1144,12 +1145,12 @@ export default function OfferPage() {
         setShowPostAction(true);
       }
       Analytics.rideCreated(formData.origin, formData.destination);
-    } catch (err) {
+    } catch (err: any) {
       // Submit error logged silently
       toast.dismiss(toastId);
-      const errorMessage = err instanceof Error ? err.message : t('unexpectedError');
-      toast.error(t('errorTemplate', { message: errorMessage }));
-      setSubmitError(t('errorUnexpected', { message: errorMessage }));
+      const friendlyMsg = getFriendlyErrorMessage(err, t('unexpectedError'));
+      toast.error(friendlyMsg);
+      setSubmitError(friendlyMsg);
     } finally {
       setIsSubmitting(false);
     }

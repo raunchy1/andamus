@@ -48,12 +48,12 @@ export default function StepComplete({ locale }: StepCompleteProps) {
 
   const handleCerca = () => {
     Haptic.light();
-    router.push(`/${locale}/cerca`);
+    window.location.href = `/${locale}/cerca`;
   };
 
   const handleOffri = () => {
     Haptic.light();
-    router.push(`/${locale}/offri`);
+    window.location.href = `/${locale}/offri`;
   };
 
   return (

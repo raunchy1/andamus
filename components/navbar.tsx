@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { 
@@ -56,9 +56,6 @@ export function Navbar() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<"login" | "register">("login");
   const pathname = usePathname();
-  if (pathname?.includes("/onboarding")) {
-    return null;
-  }
   const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
 
   // Close mobile menu on route change
@@ -102,6 +99,10 @@ export function Navbar() {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  if (pathname?.includes("/onboarding")) {
+    return null;
+  }
 
   // Reset avatar error when user changes by incrementing key
 
@@ -183,7 +184,9 @@ export function Navbar() {
         {/* Desktop Auth Section */}
         <div className="hidden md:flex md:items-center md:gap-2 lg:gap-3 flex-shrink-0">
           {/* Language Selector — always visible */}
-          <LanguageSelector isHome={isHome} />
+          <Suspense fallback={<div className="w-10 h-10 rounded-full" />}>
+            <LanguageSelector isHome={isHome} />
+          </Suspense>
 
           {/* Theme Toggle — always visible */}
           <ThemeToggle isHome={isHome} />
@@ -321,7 +324,9 @@ export function Navbar() {
             <div className="flex items-center justify-between rounded-lg px-3 py-3 text-white/70">
               <span className="font-medium">{t('language')}</span>
               <div className="flex items-center gap-2">
-                <LanguageSelector isHome={isHome} />
+                <Suspense fallback={<div className="w-10 h-10 rounded-full" />}>
+                  <LanguageSelector isHome={isHome} />
+                </Suspense>
                 <ThemeToggle isHome={isHome} />
               </div>
             </div>

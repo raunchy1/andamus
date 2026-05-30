@@ -13,6 +13,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "*.googleusercontent.com", port: "", pathname: "/**" },
       { protocol: "https", hostname: "*.supabase.co", port: "", pathname: "/**" },
+      { protocol: "https", hostname: "images.unsplash.com", port: "", pathname: "/**" },
     ],
   },
 
@@ -33,7 +34,7 @@ const nextConfig = {
         ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com"
         : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
+      "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://images.unsplash.com https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.open-meteo.com wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
       "frame-src 'self' https://accounts.google.com https://*.google.com",

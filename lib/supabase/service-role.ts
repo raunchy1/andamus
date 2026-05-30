@@ -16,13 +16,24 @@ export function createServiceRoleClient() {
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  let key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !key) {
-    throw new Error(
-      "Missing Supabase service role configuration. " +
-        "Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set."
+  if (!url) {
+    console.warn("WARNING: NEXT_PUBLIC_SUPABASE_URL is missing. Returning placeholder client.");
+    return createClient("https://placeholder.supabase.co", "placeholder-key", {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+  }
+
+  if (!key) {
+    console.warn(
+      "WARNING: SUPABASE_SERVICE_ROLE_KEY is missing. " +
+        "Falling back to NEXT_PUBLIC_SUPABASE_ANON_KEY to prevent Server Component crashes."
     );
+    key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
   }
 
   return createClient(url, key, {

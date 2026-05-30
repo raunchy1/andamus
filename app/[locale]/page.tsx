@@ -44,10 +44,30 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     welcomeBack: t('welcomeBack'),
   };
 
-  const [todayRides, { data: { user } }] = await Promise.all([
-    getTodayRides(5),
-    createClient().then((s) => s.auth.getUser()),
-  ]);
+  let todayRides: any[] = [];
+  let user: any = null;
+
+  try {
+    const supabase = await createClient();
+    const [ridesRes, userRes] = await Promise.allSettled([
+      getTodayRides(5),
+      supabase.auth.getUser(),
+    ]);
+
+    if (ridesRes.status === "fulfilled") {
+      todayRides = ridesRes.value;
+    } else {
+      console.error("[home] Failed to fetch today rides:", ridesRes.reason);
+    }
+
+    if (userRes.status === "fulfilled") {
+      user = userRes.value.data?.user || null;
+    } else {
+      console.error("[home] Failed to fetch user:", userRes.reason);
+    }
+  } catch (err) {
+    console.error("[home] Unexpected error in Server Component:", err);
+  }
 
   let savedRoutes: any[] = [];
   if (user) {

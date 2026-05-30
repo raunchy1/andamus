@@ -89,7 +89,7 @@ export default function CookieConsent() {
             <div className="flex items-center justify-between text-xs">
               <div>
                 <span className="font-semibold text-white block">Cookie Necessari</span>
-                <span className="text-white/40 text-[10px]">Essenziali per il funzionamento dell'app (Supabase, Stripe).</span>
+                <span className="text-white/40 text-[10px]">Essenziali per il funzionamento dell&apos;app (Supabase, Stripe).</span>
               </div>
               <input type="checkbox" disabled checked className="accent-[#e63946]" />
             </div>

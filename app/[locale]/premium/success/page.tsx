@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, Loader2 } from "lucide-react";
 import { Analytics } from "@/lib/analytics";
 
-export default function PremiumSuccessPage() {
+function PremiumSuccessContent() {
   const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState(false);
   const searchParams = useSearchParams();
@@ -77,5 +77,17 @@ export default function PremiumSuccessPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function PremiumSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[#ffb3b1]" />
+      </div>
+    }>
+      <PremiumSuccessContent />
+    </Suspense>
   );
 }

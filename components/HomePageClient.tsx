@@ -906,7 +906,7 @@ function HomeDesktop({
                   <div className="w-8 h-8 rounded-xl bg-[#e63946]/10 text-[#e63946] flex items-center justify-center font-black text-sm shrink-0">2</div>
                   <div>
                     <h4 className="text-sm font-bold text-white mb-1">Parla in Chat</h4>
-                    <p className="text-xs text-white/50 leading-relaxed">Connettiti con l'autista per accordarvi sui dettagli di partenza e di ritrovo.</p>
+                    <p className="text-xs text-white/50 leading-relaxed">Connettiti con l&apos;autista per accordarvi sui dettagli di partenza e di ritrovo.</p>
                   </div>
                 </div>
                 <div className="flex gap-4 items-start">
@@ -963,7 +963,7 @@ function HomeDesktop({
                 <span className="text-[10px] font-bold text-[#ffb3b1] block uppercase tracking-wider mb-1">Cagliari ➔ Sassari</span>
                 <span className="text-2xl font-black text-white">18 corse oggi</span>
               </div>
-              <p className="text-xs text-white/40 mt-2 leading-relaxed">Il corridoio principale dell'isola, costantemente attivo per studenti e lavoratori pendolari.</p>
+              <p className="text-xs text-white/40 mt-2 leading-relaxed">Il corridoio principale dell&apos;isola, costantemente attivo per studenti e lavoratori pendolari.</p>
             </div>
             <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl backdrop-blur-md flex flex-col justify-between">
               <div>
@@ -1482,7 +1482,12 @@ export default function HomePageClient({
   return (
     <>
       <LaunchBanner />
-      {deviceType === "mobile" ? <HomeMobile {...props} /> : <HomeDesktop {...props} />}
+      <div className={deviceType === "desktop" ? "block" : "hidden md:block"}>
+        <HomeDesktop {...props} />
+      </div>
+      <div className={deviceType === "mobile" ? "block md:hidden" : "hidden"}>
+        <HomeMobile {...props} />
+      </div>
     </>
   );
 }

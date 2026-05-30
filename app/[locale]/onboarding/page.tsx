@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, use } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
@@ -45,9 +45,9 @@ interface OnboardingData {
   pushNotificationsEnabled: boolean;
 }
 
-export default function OnboardingPage({ params }: { params: { locale: string } }) {
+export default function OnboardingPage({ params }: { params: Promise<{ locale: string }> }) {
   const router = useRouter();
-  const locale = params.locale || "it";
+  const { locale } = use(params);
   const supabase = createClient();
   const [isPending, startTransition] = useTransition();
 

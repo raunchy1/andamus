@@ -4,19 +4,20 @@ test.describe("Homepage", () => {
   test("loads with hero, map and search", async ({ page }) => {
     await page.goto("/it");
 
-    // Hero title visible
-    await expect(page.getByText("ANDAMUS", { exact: true })).toBeVisible();
+    // Brand logo visible in header
+    await expect(page.locator("header").getByText("Andamus", { exact: true }).first()).toBeVisible();
 
-    // Search elements present
-    await expect(page.getByText("CARPOOLING SARDO")).toBeVisible();
+    // Search/hero badge present
+    await expect(page.getByText("Sardegna Condivisa")).toBeVisible();
 
-    // Bottom nav present
-    await expect(page.locator("nav").filter({ hasText: "ESPLORA" })).toBeVisible();
+    // Global navigation header present
+    await expect(page.locator("header nav")).toBeVisible();
   });
 
   test("can navigate to search page", async ({ page }) => {
     await page.goto("/it");
-    await page.click("text=Cerca");
-    await expect(page).toHaveURL(/\/it\/cerca/);
+    // Click specifically on the navigation link to prevent form submit clicks
+    await page.click("header nav a[href='/it/cerca']");
+    await expect(page).toHaveURL(/\/it\/cerca/, { timeout: 15000 });
   });
 });

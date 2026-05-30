@@ -18,21 +18,25 @@ export function AnalyticsTracker() {
   // Identify user + set context on mount
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }: { data: { user: import("@supabase/supabase-js").User | null } }) => {
-      if (user) {
-        identifyUser(user.id, {
-          email: user.email,
-          name: user.user_metadata?.name || user.user_metadata?.full_name,
-        });
-        setSentryUser({
-          id: user.id,
-          email: user.email,
-          name: user.user_metadata?.name || user.user_metadata?.full_name,
-        });
-      } else {
-        setSentryUser(null);
-      }
-    });
+    supabase.auth.getUser()
+      .then(({ data }) => {
+        const user = data?.user;
+        if (user) {
+          identifyUser(user.id, {
+            email: user.email,
+            name: user.user_metadata?.name || user.user_metadata?.full_name,
+          });
+          setSentryUser({
+            id: user.id,
+            email: user.email || undefined,
+          });
+        } else {
+          setSentryUser(null);
+        }
+      })
+      .catch(() => {
+        // Silently fail for analytics
+      });
 
     setSentryTags({
       locale,
