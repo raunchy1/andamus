@@ -88,4 +88,8 @@ export const ProductAnalytics = {
       device_type: deviceType,
       locale,
     }),
+
+  // Generic event tracker
+  trackEvent: (event: string, properties?: Record<string, unknown>) =>
+    captureEvent(event, properties),
 };

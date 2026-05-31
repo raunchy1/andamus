@@ -19,7 +19,7 @@ export function AnalyticsTracker() {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser()
-      .then(({ data }) => {
+      .then(({ data }: { data: { user: import('@supabase/supabase-js').User | null } }) => {
         const user = data?.user;
         if (user) {
           identifyUser(user.id, {
