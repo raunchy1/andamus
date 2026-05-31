@@ -10,6 +10,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { VehicleWizard } from "@/components/vehicles/VehicleWizard";
+import { VehicleEditPanel } from "@/components/vehicles/VehicleEditPanel";
 import { VehicleTrustScore } from "@/components/vehicles/VehicleTrustScore";
 import { toast } from "sonner";
 import type { VehicleWithImages } from "@/lib/types/vehicle";
@@ -24,6 +25,7 @@ export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<VehicleWithImages[]>([]);
   const [loading, setLoading] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState<VehicleWithImages | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -93,6 +95,23 @@ export default function VehiclesPage() {
           />
         </div>
       </div>
+    );
+  }
+
+  // Show edit panel when a vehicle is selected
+  if (editingVehicle) {
+    // Find fresh version from state
+    const freshVehicle = vehicles.find((v) => v.id === editingVehicle.id) ?? editingVehicle;
+    return (
+      <VehicleEditPanel
+        vehicle={freshVehicle}
+        onClose={() => setEditingVehicle(null)}
+        onRefresh={async () => {
+          await fetchVehicles();
+          // Update editing vehicle with fresh data from new state
+          setEditingVehicle((prev) => prev); // trigger re-render; freshVehicle re-derives from vehicles
+        }}
+      />
     );
   }
 
@@ -201,6 +220,7 @@ export default function VehiclesPage() {
                   <VehicleCard
                     vehicle={vehicle}
                     locale={locale}
+                    onEdit={(v) => setEditingVehicle(v)}
                     onDelete={handleDelete}
                     onSetPrimary={handleSetPrimary}
                   />
