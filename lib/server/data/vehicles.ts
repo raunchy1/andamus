@@ -275,14 +275,29 @@ export async function addVehicleImage(
   const isPrimary = nextIndex === 0;
 
   // Upload to storage
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  // Derive extension from filename OR from MIME type (Android can send empty file.type)
+  const mimeToExt: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/heic": "jpg", // convert heic → jpg label (Supabase accepts the bytes)
+    "image/heif": "jpg",
+  };
+  const extFromName = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z]/g, "") || "";
+  const extFromMime = file.type ? mimeToExt[file.type] ?? "jpg" : "";
+  const ext = extFromName || extFromMime || "jpg";
+
+  // Always use a valid MIME type for storage
+  const contentType = file.type && file.type.startsWith("image/") ? file.type : `image/${ext === "jpg" ? "jpeg" : ext}`;
+
   const filename = `${userId}/${vehicleId}/${Date.now()}.${ext}`;
 
   // Upload to storage using service client (bypasses storage RLS)
   const { data: uploadData, error: uploadError } = await serviceClient.storage
     .from("vehicle-images")
     .upload(filename, file, {
-      contentType: file.type,
+      contentType, // use derived contentType (handles empty file.type on Android)
       upsert: false,
     });
 
