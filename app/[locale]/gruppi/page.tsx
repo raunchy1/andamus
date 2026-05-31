@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 import { Users, Plus, MapPin, Search, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { SARDINIA_CITIES } from "@/lib/sardinia-cities";
+import { LocationCombobox } from "@/components/LocationCombobox";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -36,8 +36,6 @@ const GROUP_COLORS = [
   "#e63946", "#2196F3", "#4CAF50", "#FF9800",
   "#9C27B0", "#00BCD4", "#FF5722", "#607D8B",
 ];
-
-const CITIES = Object.keys(SARDINIA_CITIES).sort((a, b) => a.localeCompare(b, "it"));
 
 const EMPTY_FORM: CreateForm = {
   name: "",
@@ -350,16 +348,12 @@ export default function GruppiPage() {
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">
                   {t("origin")} *
                 </label>
-                <select
+                <LocationCombobox
                   value={form.origin}
-                  onChange={(e) => setForm((p) => ({ ...p, origin: e.target.value }))}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a1a1a] px-4 py-3.5 text-white focus:border-[#e63946] focus:outline-none"
-                >
-                  <option value="" className="bg-[#1a1a1a]">{t("selectCity")}</option>
-                  {CITIES.map((c) => (
-                    <option key={c} value={c} className="bg-[#1a1a1a]">{c}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setForm((p) => ({ ...p, origin: val }))}
+                  placeholder={t("selectCity")}
+                  buttonClassName="border-white/10 bg-[#1a1a1a] h-[52px]"
+                />
               </div>
 
               {/* Destination */}
@@ -367,16 +361,12 @@ export default function GruppiPage() {
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">
                   {t("destination")} *
                 </label>
-                <select
+                <LocationCombobox
                   value={form.destination}
-                  onChange={(e) => setForm((p) => ({ ...p, destination: e.target.value }))}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a1a1a] px-4 py-3.5 text-white focus:border-[#e63946] focus:outline-none"
-                >
-                  <option value="" className="bg-[#1a1a1a]">{t("selectCity")}</option>
-                  {CITIES.map((c) => (
-                    <option key={c} value={c} className="bg-[#1a1a1a]">{c}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setForm((p) => ({ ...p, destination: val }))}
+                  placeholder={t("selectCity")}
+                  buttonClassName="border-white/10 bg-[#1a1a1a] h-[52px]"
+                />
               </div>
 
               {/* Description */}
