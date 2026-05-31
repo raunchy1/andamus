@@ -405,3 +405,4 @@ export async function getVehicleForRide(
 // ─── Vehicle completeness score ────────────────────────────────────────────
 
 export { computeVehicleScore };
+// dom 31 mag 2026, 16:40:12, CEST
