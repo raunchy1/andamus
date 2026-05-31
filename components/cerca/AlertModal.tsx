@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
+import { LocationCombobox } from "@/components/LocationCombobox";
 
 interface AlertModalProps {
   showAlertModal: boolean;
@@ -25,17 +26,20 @@ export function AlertModal({
   setShowAlertModal,
   alertSaving,
   setAlertSaving,
-  origin,
-  destination,
+  origin: initialOrigin,
+  destination: initialDestination,
   date,
   minSeats,
   maxPrice,
   supabase,
-  cities,
+  cities: _cities,
 }: AlertModalProps) {
   const t = useTranslations("search");
   const [startDate, setStartDate] = useState(date);
   const [endDate, setEndDate] = useState("");
+  const [origin, setOrigin] = useState(initialOrigin);
+  const [destination, setDestination] = useState(initialDestination);
+
   if (!showAlertModal) return null;
 
   return (
@@ -57,8 +61,8 @@ export function AlertModal({
             const fd = new FormData(form);
             const { error } = await supabase.from("ride_alerts").insert({
               user_id: user.id,
-              from_city: fd.get("alertFrom") as string,
-              to_city: fd.get("alertTo") as string,
+              from_city: origin,
+              to_city: destination,
               start_date: (fd.get("alertStartDate") as string) || null,
               end_date: (fd.get("alertEndDate") as string) || null,
               min_seats: fd.get("alertMinSeats") ? parseInt(fd.get("alertMinSeats") as string) : null,
@@ -77,21 +81,21 @@ export function AlertModal({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("fromLabel")}</label>
-              <select name="alertFrom" defaultValue={origin} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary [&>option]:bg-surface-container-high appearance-none">
-                <option value="">{t("any")}</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
+              <LocationCombobox
+                value={origin}
+                onChange={setOrigin}
+                placeholder={t("any")}
+                buttonClassName="bg-surface-container-high border-none h-12"
+              />
             </div>
             <div>
               <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("toLabel")}</label>
-              <select name="alertTo" defaultValue={destination} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary [&>option]:bg-surface-container-high appearance-none">
-                <option value="">{t("any")}</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
+              <LocationCombobox
+                value={destination}
+                onChange={setDestination}
+                placeholder={t("any")}
+                buttonClassName="bg-surface-container-high border-none h-12"
+              />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
