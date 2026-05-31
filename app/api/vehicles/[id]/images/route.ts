@@ -49,6 +49,15 @@ export async function POST(request: NextRequest, { params }: Params) {
     return NextResponse.json({ url: result.url, path: result.path });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Upload failed";
+    console.error("[vehicles/images POST] Upload error:", {
+      vehicleId,
+      userId: user.id,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      error: msg,
+      stack: error instanceof Error ? error.stack?.slice(0, 500) : undefined,
+    });
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
