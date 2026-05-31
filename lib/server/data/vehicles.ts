@@ -2,6 +2,7 @@
 // Andamus carpooling platform
 
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type {
   Vehicle,
   VehicleWithImages,
@@ -243,7 +244,14 @@ export async function addVehicleImage(
   vehicleId: string,
   file: File
 ): Promise<{ url: string; path: string }> {
+  // Use regular client for DB reads/writes (respects RLS)
   const supabase = await createClient();
+  // Use service client for storage upload (bypasses storage RLS - ownership
+  // is already verified in the route handler before calling this function)
+  const serviceClient = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   // Check image count
   const { count } = await supabase
@@ -270,16 +278,20 @@ export async function addVehicleImage(
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const filename = `${userId}/${vehicleId}/${Date.now()}.${ext}`;
 
-  const { data: uploadData, error: uploadError } = await supabase.storage
+  // Upload to storage using service client (bypasses storage RLS)
+  const { data: uploadData, error: uploadError } = await serviceClient.storage
     .from("vehicle-images")
     .upload(filename, file, {
       contentType: file.type,
       upsert: false,
     });
 
-  if (uploadError) throw uploadError;
+  if (uploadError) {
+    console.error("Storage upload error:", uploadError);
+    throw new Error(uploadError.message);
+  }
 
-  const { data: urlData } = supabase.storage
+  const { data: urlData } = serviceClient.storage
     .from("vehicle-images")
     .getPublicUrl(uploadData.path);
 
