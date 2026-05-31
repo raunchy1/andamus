@@ -25,10 +25,7 @@ import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/revea
 import { Sparkles } from "lucide-react";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { CreateRequestModal } from "@/components/CreateRequestModal";
-
-import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
-
-const sardinianCities = SARDINIAN_CITIES;
+import { LocationCombobox } from "@/components/LocationCombobox";
 
 interface RideRequest {
   id: string;
@@ -133,31 +130,23 @@ function RequestsContent() {
         <Reveal>
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap items-end gap-3">
-            <div className="flex-1 min-w-[140px]">
+            <div className="flex-1 min-w-[200px]">
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("from")}</label>
-              <select
+              <LocationCombobox
                 value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/40 transition-colors"
-              >
-                <option value="" className="bg-[#0d0d0d]">{t("any")}</option>
-                {sardinianCities.map((c) => (
-                  <option key={c} value={c} className="bg-[#0d0d0d]">{c}</option>
-                ))}
-              </select>
+                onChange={setOrigin}
+                placeholder={t("any")}
+                buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
+              />
             </div>
-            <div className="flex-1 min-w-[140px]">
+            <div className="flex-1 min-w-[200px]">
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("to")}</label>
-              <select
+              <LocationCombobox
                 value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 text-[#e5e2e1] outline-none focus:border-[#ffb3b1]/40 transition-colors"
-              >
-                <option value="" className="bg-[#0d0d0d]">{t("any")}</option>
-                {sardinianCities.map((c) => (
-                  <option key={c} value={c} className="bg-[#0d0d0d]">{c}</option>
-                ))}
-              </select>
+                onChange={setDestination}
+                placeholder={t("any")}
+                buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
+              />
             </div>
             <div className="min-w-[140px]">
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("date")}</label>

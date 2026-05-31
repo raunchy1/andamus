@@ -5,7 +5,7 @@ import { X, Loader2, Sparkles, MapPin, Calendar, Clock, Euro, Users, ArrowRight 
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
-import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
+import { LocationCombobox } from "@/components/LocationCombobox";
 import { Analytics } from "@/lib/analytics";
 
 interface CreateRequestModalProps {
@@ -158,44 +158,24 @@ export function CreateRequestModal({
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">
                 Da (Partenza)
               </label>
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-white/30" />
-                <select
-                  value={fromCity}
-                  onChange={(e) => setFromCity(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-10 pr-4 text-sm text-white outline-none focus:border-[#ffb3b1]/40 transition-colors"
-                  required
-                >
-                  <option value="" className="bg-[#0c0c0e]">Seleziona partenza</option>
-                  {SARDINIAN_CITIES.map((c) => (
-                    <option key={c} value={c} className="bg-[#0c0c0e]">
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <LocationCombobox
+                value={fromCity}
+                onChange={setFromCity}
+                placeholder="Seleziona partenza"
+                buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
+              />
             </div>
 
             <div>
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">
                 A (Destinazione)
               </label>
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-white/30" />
-                <select
-                  value={toCity}
-                  onChange={(e) => setToCity(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-10 pr-4 text-sm text-white outline-none focus:border-[#ffb3b1]/40 transition-colors"
-                  required
-                >
-                  <option value="" className="bg-[#0c0c0e]">Seleziona destinazione</option>
-                  {SARDINIAN_CITIES.map((c) => (
-                    <option key={c} value={c} className="bg-[#0c0c0e]">
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <LocationCombobox
+                value={toCity}
+                onChange={setToCity}
+                placeholder="Seleziona destinazione"
+                buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
+              />
             </div>
           </div>
 

@@ -31,10 +31,6 @@ import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { CreateRequestModal } from "@/components/CreateRequestModal";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
-import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
-
-const sardinianCities = SARDINIAN_CITIES;
-
 function getFilterOptions(t: (key: string) => string) {
   return [
     { id: "all", label: t('filterAll') },
@@ -502,7 +498,7 @@ function SearchMobile(props: SearchViewProps) {
         </RevealStagger>
       </main>
 
-      <AlertModal cities={sardinianCities}
+      <AlertModal
         showAlertModal={showAlertModal}
         setShowAlertModal={setShowAlertModal}
         alertSaving={alertSaving}
@@ -884,7 +880,7 @@ function SearchDesktop(props: SearchViewProps) {
         ))}
       </RevealStagger>
 
-      <AlertModal cities={sardinianCities}
+      <AlertModal
         showAlertModal={showAlertModal}
         setShowAlertModal={setShowAlertModal}
         alertSaving={alertSaving}
