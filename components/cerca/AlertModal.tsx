@@ -18,7 +18,6 @@ interface AlertModalProps {
   minSeats: number | null;
   maxPrice: number | null;
   supabase: ReturnType<typeof createClient>;
-  cities: string[];
 }
 
 export function AlertModal({
@@ -32,7 +31,6 @@ export function AlertModal({
   minSeats,
   maxPrice,
   supabase,
-  cities: _cities,
 }: AlertModalProps) {
   const t = useTranslations("search");
   const [startDate, setStartDate] = useState(date);

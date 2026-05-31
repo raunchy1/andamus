@@ -273,7 +273,7 @@ function SearchMobile(props: SearchViewProps) {
                   onClick={() => {
                     setOrigin(shortcut.from);
                     setDestination(shortcut.to);
-                    Analytics.track("popular_route_clicked", { from: shortcut.from, to: shortcut.to, type: "cerca_preset" });
+                    Analytics.trackEvent("popular_route_clicked", { from: shortcut.from, to: shortcut.to, type: "cerca_preset" });
                   }}
                   className="snap-start flex-shrink-0 bg-white/5 border border-white/8 p-3 rounded-xl text-left w-[160px] active:scale-95 transition-all hover:border-[#ffb3b1]/30 relative overflow-hidden group"
                 >
