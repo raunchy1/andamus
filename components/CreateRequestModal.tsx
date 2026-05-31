@@ -156,24 +156,24 @@ export function CreateRequestModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">
-                Da (Partenza)
+                {t("from")}
               </label>
               <LocationCombobox
                 value={fromCity}
                 onChange={setFromCity}
-                placeholder="Seleziona partenza"
+                placeholder={t("any")}
                 buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">
-                A (Destinazione)
+                {t("to")}
               </label>
               <LocationCombobox
                 value={toCity}
                 onChange={setToCity}
-                placeholder="Seleziona destinazione"
+                placeholder={t("any")}
                 buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
               />
             </div>

@@ -226,8 +226,7 @@ function SearchMobile(props: SearchViewProps) {
               {/* From/To Grid */}
               <div className="grid grid-cols-2 gap-2 sm:gap-3 flex-1 min-w-0">
                 {/* Partenza */}
-                <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('fromLabel')}</span>
+                <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-0 py-0 sm:bg-transparent sm:p-0">
                   <div className="w-full">
                     <LocationCombobox
                       value={origin}
@@ -239,8 +238,7 @@ function SearchMobile(props: SearchViewProps) {
                 </div>
 
                 {/* Destinazione */}
-                <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('toLabel')}</span>
+                <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-0 py-0 sm:bg-transparent sm:p-0">
                   <div className="w-full">
                     <LocationCombobox
                       value={destination}

@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { 
   Check, MapPin, Search, X, ChevronDown, 
-  Plane, Anchor, GraduationCap, Star, History
+  Plane, Anchor, GraduationCap, Star, History, Loader2
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -158,6 +158,12 @@ export function LocationCombobox({
     [allLocations, value]
   );
 
+  const displayValue = useMemo(() => {
+    if (selectedLocation) return selectedLocation.name;
+    if (value) return value;
+    return placeholder || t("selectCity");
+  }, [selectedLocation, value, placeholder, t]);
+
   const sheet = (
     <div
       className={cn(
@@ -181,7 +187,7 @@ export function LocationCombobox({
 
         <div className="flex items-center justify-between px-5 py-3 flex-shrink-0">
           <span className="font-semibold text-on-surface text-lg">
-            {placeholder || label || "Seleziona località"}
+            {placeholder || label || t("selectCity")}
           </span>
           <button
             type="button"
@@ -200,7 +206,7 @@ export function LocationCombobox({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cerca città, aeroporto o porto..."
+              placeholder={t("search") + "..."}
               className="flex-1 bg-transparent text-on-surface placeholder:text-on-surface-variant focus:outline-none text-base"
             />
             {search && (
@@ -287,8 +293,8 @@ export function LocationCombobox({
           {filtered.length === 0 && (
             <div className="py-20 text-center text-on-surface-variant">
               <MapPin size={48} className="mx-auto mb-4 opacity-20" />
-              <p className="text-lg font-medium">Nessuna località trovata</p>
-              <p className="text-sm opacity-60">Prova con un nome diverso</p>
+              <p className="text-lg font-medium">{t("noCityFound")}</p>
+              <p className="text-sm opacity-60">{t("retry")}</p>
             </div>
           )}
         </div>
@@ -316,12 +322,15 @@ export function LocationCombobox({
           <span
             className={cn(
               "text-base truncate font-medium",
-              selectedLocation ? "text-on-surface" : "text-on-surface-variant"
+              selectedLocation || value ? "text-on-surface" : "text-on-surface-variant"
             )}
           >
-            {selectedLocation ? selectedLocation.name : placeholder || "Seleziona località"}
+            {displayValue}
           </span>
         </div>
+        {allLocations.length === 0 && !disabled && (
+          <Loader2 size={16} className="text-primary animate-spin mr-1" />
+        )}
         <ChevronDown
           size={18}
           className="text-on-surface-variant flex-shrink-0 opacity-40 group-hover:opacity-100 transition-opacity"

@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { LocationCombobox } from "@/components/LocationCombobox";
 
 type SubmitState = "idle" | "loading" | "success" | "error";
 
@@ -378,20 +379,12 @@ function ComingSoonContent() {
 
                   <div>
                     <FieldLabel htmlFor="zona">La tua zona</FieldLabel>
-                    <select
-                      id="zona"
+                    <LocationCombobox
                       value={zona}
-                      onChange={(e) => setZona(e.target.value)}
-                      className="h-11 w-full rounded-xl border border-[#171614]/10 bg-white px-4 text-sm text-[#171614] outline-none transition focus:border-[#14382b] focus:ring-4 focus:ring-[#14382b]/10 sm:h-12"
-                    >
-                      <option value="">Seleziona la tua zona</option>
-                      <option value="Cagliari">Cagliari</option>
-                      <option value="Sassari">Sassari</option>
-                      <option value="Olbia">Olbia</option>
-                      <option value="Nuoro">Nuoro</option>
-                      <option value="Oristano">Oristano</option>
-                      <option value="Altra">Altra</option>
-                    </select>
+                      onChange={setZona}
+                      placeholder="Seleziona la tua zona"
+                      buttonClassName="h-11 border-[#171614]/10 bg-white text-[#171614] sm:h-12"
+                    />
                   </div>
 
                   {state === "error" && errorMsg && (
