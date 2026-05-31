@@ -13,8 +13,7 @@ import { useDeviceType } from "@/components/view-mode";
 import { getFriendlyErrorMessage } from "@/lib/client/error-handler";
 import { searchRides } from "@/lib/rides-actions";
 import { Slider } from "@/components/ui/slider";
-import { CityCombobox } from "@/components/CityCombobox";
-import municipalities from "@/scripts/sardinia-municipalities.json";
+import { LocationCombobox } from "@/components/LocationCombobox";
 import { EmptyStateSearch } from "@/components/EmptyState";
 import { TrustBadge } from "@/components/TrustBadge";
 import { Analytics } from "@/lib/analytics";
@@ -234,12 +233,11 @@ function SearchMobile(props: SearchViewProps) {
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('fromLabel')}</span>
                   <div className="w-full">
-                    <CityCombobox
-                      cities={municipalities}
+                    <LocationCombobox
                       value={origin}
                       onChange={setOrigin}
                       placeholder={t('departureLabel')}
-                      label="partenza"
+                      label={t('fromLabel')}
                     />
                   </div>
                 </div>
@@ -248,12 +246,11 @@ function SearchMobile(props: SearchViewProps) {
                 <div className="flex flex-col min-w-0 bg-surface-container-highest/50 rounded-lg px-3 py-2 sm:bg-transparent sm:p-0">
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5">{t('toLabel')}</span>
                   <div className="w-full">
-                    <CityCombobox
-                      cities={municipalities}
+                    <LocationCombobox
                       value={destination}
                       onChange={setDestination}
                       placeholder={t('destinationLabel')}
-                      label="destinazione"
+                      label={t('toLabel')}
                     />
                   </div>
                 </div>
@@ -282,7 +279,7 @@ function SearchMobile(props: SearchViewProps) {
                   onClick={() => {
                     setOrigin(shortcut.from);
                     setDestination(shortcut.to);
-                    Analytics.trackEvent("route_shortcut_clicked", { from: shortcut.from, to: shortcut.to, type: "cerca_preset" });
+                    Analytics.track("popular_route_clicked", { from: shortcut.from, to: shortcut.to, type: "cerca_preset" });
                   }}
                   className="snap-start flex-shrink-0 bg-white/5 border border-white/8 p-3 rounded-xl text-left w-[160px] active:scale-95 transition-all hover:border-[#ffb3b1]/30 relative overflow-hidden group"
                 >
@@ -578,22 +575,20 @@ function SearchDesktop(props: SearchViewProps) {
         <form onSubmit={handleSearch} className="bg-[#0d0d0d]/95 backdrop-blur-xl border border-white/10 rounded-3xl p-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)]">
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('departureLabel')}</label>
-            <CityCombobox
-              cities={municipalities}
+            <LocationCombobox
               value={origin}
               onChange={setOrigin}
               placeholder={t('departureLabel')}
-              label="partenza"
+              label={t('departureLabel')}
             />
           </div>
           <div className="flex-1">
             <label className="block text-[11px] font-bold uppercase tracking-widest text-[#ffb3b1] mb-2">{t('destinationLabel')}</label>
-            <CityCombobox
-              cities={municipalities}
+            <LocationCombobox
               value={destination}
               onChange={setDestination}
               placeholder={t('destinationLabel')}
-              label="destinazione"
+              label={t('destinationLabel')}
             />
           </div>
           <div className="flex-1">

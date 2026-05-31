@@ -2,11 +2,11 @@
 
 import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LocationCombobox } from "@/components/LocationCombobox";
 
 interface StopsSectionProps {
   stops: string[];
-  cities: string[];
-  onChange: (stops: string[] | string | boolean | number[]) => void;
+  onChange: (stops: string[]) => void;
   variant?: "mobile" | "desktop";
   className?: string;
   errors?: { stops?: string };
@@ -14,7 +14,6 @@ interface StopsSectionProps {
 
 export function StopsSection({
   stops,
-  cities,
   onChange,
   variant = "mobile",
   className = "",
@@ -31,27 +30,25 @@ export function StopsSection({
       <div className="space-y-3">
         {stops.map((stop, index) => (
           <div key={index} className="flex items-center gap-2">
-            <select
-              value={stop}
-              onChange={(e) => {
-                const next = [...stops];
-                next[index] = e.target.value;
-                onChange(next);
-              }}
-              className="h-12 flex-1 rounded-xl border-none bg-surface-container-highest pl-4 pr-10 text-on-surface font-semibold outline-none focus:ring-1 focus:ring-primary appearance-none"
-            >
-              <option value="">{t("cityPlaceholder")}</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
+            <div className="flex-1">
+              <LocationCombobox
+                value={stop}
+                onChange={(val) => {
+                  const next = [...stops];
+                  next[index] = val;
+                  onChange(next);
+                }}
+                placeholder={t("cityPlaceholder")}
+                buttonClassName="bg-surface-container-highest border-none h-12"
+              />
+            </div>
             <button
               type="button"
               onClick={() => {
                 const next = stops.filter((_, i) => i !== index);
                 onChange(next);
               }}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80"
+              className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-highest/80 flex-shrink-0"
             >
               <X className="w-5 h-5" />
             </button>

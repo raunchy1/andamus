@@ -170,6 +170,7 @@ export function EmptyState({
 // which 404s because all routes are under /[locale]/. Now builds the href with
 // the current locale prefix.
 import { useState, useEffect } from "react";
+import { Analytics } from "@/lib/analytics";
 
 export function EmptyStateSearch({
   hasFilters,
@@ -295,7 +296,10 @@ export function EmptyStateSearch({
                 {recovery.flexibleDates.map((item, idx) => (
                   <button
                     key={idx}
-                    onClick={() => onSelectSuggestion?.(undefined, undefined, item.date)}
+                    onClick={() => {
+                      onSelectSuggestion?.(undefined, undefined, item.date);
+                      Analytics.trackEvent("empty_search_recovered", { type: "flexible_date", date: item.date });
+                    }}
                     className="flex items-center justify-between p-3 rounded-xl border border-white/[0.04] bg-white/[0.03] hover:bg-white/[0.08] hover:border-emerald-500/30 transition duration-200 text-xs text-white"
                   >
                     <span className="font-semibold">
@@ -329,7 +333,10 @@ export function EmptyStateSearch({
                 {recovery.nearbySuggestions.map((item, idx) => (
                   <button
                     key={idx}
-                    onClick={() => onSelectSuggestion?.(item.from_city, item.to_city, undefined)}
+                    onClick={() => {
+                      onSelectSuggestion?.(item.from_city, item.to_city, undefined);
+                      Analytics.trackEvent("search_suggestion_clicked", { from: item.from_city, to: item.to_city, type: "nearby_hub" });
+                    }}
                     className="flex flex-col text-left p-3 rounded-xl border border-white/[0.04] bg-white/[0.03] hover:bg-white/[0.08] hover:border-sky-500/30 transition duration-200 text-xs text-white"
                   >
                     <div className="flex justify-between items-center w-full mb-1">

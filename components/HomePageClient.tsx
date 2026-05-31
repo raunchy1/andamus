@@ -14,8 +14,7 @@ import { LaunchBanner } from "@/components/LaunchBanner";
 import { Search, CircleDot, MapPin, PiggyBank, Leaf, ShieldCheck, SlidersHorizontal, User, PlusCircle, History, Star, Sparkles, ArrowRight, Zap, Heart, GraduationCap, X } from "lucide-react";
 import Image from "next/image";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
-import { CityCombobox } from "@/components/CityCombobox";
-import municipalities from "@/scripts/sardinia-municipalities.json";
+import { LocationCombobox } from "@/components/LocationCombobox";
 import { AuroraBackground } from "@/components/ui/premium/aurora-background";
 import { Spotlight } from "@/components/ui/premium/spotlight";
 import { GradientText } from "@/components/ui/premium/gradient-text";
@@ -196,8 +195,7 @@ function HomeMobile({
               >
                 <div className="flex-1 flex items-center px-3 gap-2 min-w-0">
                   <Search className="w-4 h-4 text-[#ffb3b1] flex-shrink-0" />
-                  <CityCombobox
-                    cities={municipalities}
+                  <LocationCombobox
                     value={origin}
                     onChange={setOrigin}
                     placeholder={t.heroFromPlaceholder}
@@ -810,8 +808,7 @@ function HomeDesktop({
                 <CircleDot className="w-5 h-5 text-[#ffb3b1] flex-shrink-0 transition-transform group-hover:scale-110" />
                 <div className="flex flex-col w-full min-w-0">
                   <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">{t.heroFrom}</label>
-                  <CityCombobox
-                    cities={municipalities}
+                  <LocationCombobox
                     value={origin}
                     onChange={setOrigin}
                     placeholder={t.heroCityPlaceholder}
@@ -825,8 +822,7 @@ function HomeDesktop({
                 <MapPin className="w-5 h-5 text-[#ffb3b1] flex-shrink-0 transition-transform group-hover:scale-110" />
                 <div className="flex flex-col w-full min-w-0">
                   <label className="text-[10px] font-semibold uppercase tracking-wider text-[#e5e2e1]/40 mb-1">{t.heroTo}</label>
-                  <CityCombobox
-                    cities={municipalities}
+                  <LocationCombobox
                     value={destination}
                     onChange={setDestination}
                     placeholder={t.heroCityPlaceholder}

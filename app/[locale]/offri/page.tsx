@@ -11,6 +11,7 @@ import { createRide } from "@/lib/ride-actions";
 import { Calculator, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 import { useDeviceType } from "@/components/view-mode";
 import Image from "next/image";
 import { ShareRide } from "@/components/ShareRide";
@@ -31,10 +32,7 @@ import { MagneticButton } from "@/components/ui/premium/magnetic-button";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
-
-import { SARDINIAN_CITIES } from "@/lib/sardinia-cities";
-
-const sardinianCities = SARDINIAN_CITIES;
+import { LocationCombobox } from "@/components/LocationCombobox";
 
 interface OfferViewProps {
   user: SupabaseUser;
@@ -150,19 +148,16 @@ function OfferMobile({
             <div className="space-y-4">
               <div className="relative">
                 <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">{t('departure')}</label>
-                <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                  <CircleDot className="w-5 h-5 text-primary" />
-                  <select
-                    value={formData.origin}
-                    onChange={(e) => handleChange("origin", e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-surface-container-highest">{t('departurePlaceholder')}</option>
-                    {sardinianCities.map((city) => (
-                      <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
-                    ))}
-                  </select>
-                </div>
+                <LocationCombobox
+                  value={formData.origin}
+                  onChange={(val) => handleChange("origin", val)}
+                  placeholder={t('departurePlaceholder')}
+                  label={t('departure')}
+                  buttonClassName={cn(
+                    "bg-surface-container-highest border-none",
+                    (errors.origin || errors.sameCity) && "ring-1 ring-error"
+                  )}
+                />
                 {errors.origin && <p className="mt-1 text-sm text-error">{errors.origin}</p>}
               </div>
               <div className="flex justify-center -my-2 relative z-10">
@@ -172,19 +167,16 @@ function OfferMobile({
               </div>
               <div className="relative">
                 <label className="font-semibold uppercase tracking-widest text-[10px] text-outline mb-2 block">{t('arrival')}</label>
-                <div className={`flex items-center gap-4 bg-surface-container-highest p-4 rounded-xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                  <MapPin className="w-5 h-5 text-primary" />
-                  <select
-                    value={formData.destination}
-                    onChange={(e) => handleChange("destination", e.target.value)}
-                    className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-surface-container-highest">{t('arrivalPlaceholder')}</option>
-                    {sardinianCities.map((city) => (
-                      <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
-                    ))}
-                  </select>
-                </div>
+                <LocationCombobox
+                  value={formData.destination}
+                  onChange={(val) => handleChange("destination", val)}
+                  placeholder={t('arrivalPlaceholder')}
+                  label={t('arrival')}
+                  buttonClassName={cn(
+                    "bg-surface-container-highest border-none",
+                    (errors.destination || errors.sameCity) && "ring-1 ring-error"
+                  )}
+                />
                 {errors.destination && <p className="mt-1 text-sm text-error">{errors.destination}</p>}
                 {errors.sameCity && <p className="mt-1 text-sm text-error">{errors.sameCity}</p>}
               </div>
@@ -334,7 +326,6 @@ function OfferMobile({
 
             <StopsSection
               stops={formData.stops}
-              cities={sardinianCities}
               onChange={(next) => handleChange("stops", next)}
               errors={errors}
             />
@@ -501,19 +492,16 @@ function OfferDesktop({
                 <div className="space-y-4">
                   <div className="relative">
                     <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">{t('departure')}</label>
-                    <div className={`flex items-center gap-4 bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 transition-all ${errors.origin || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                      <CircleDot className="w-6 h-6 text-primary" />
-                      <select
-                        value={formData.origin}
-                        onChange={(e) => handleChange("origin", e.target.value)}
-                        className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer text-lg"
-                      >
-                        <option value="" className="bg-surface-container-highest">{t('departurePlaceholder')}</option>
-                        {sardinianCities.map((city) => (
-                          <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <LocationCombobox
+                      value={formData.origin}
+                      onChange={(val) => handleChange("origin", val)}
+                      placeholder={t('departurePlaceholder')}
+                      label={t('departure')}
+                      buttonClassName={cn(
+                        "bg-surface-container-highest border-none p-5 rounded-2xl",
+                        (errors.origin || errors.sameCity) && "ring-1 ring-error"
+                      )}
+                    />
                     {errors.origin && <p className="mt-1 text-sm text-error">{errors.origin}</p>}
                   </div>
                   <div className="flex justify-center -my-2 relative z-10">
@@ -523,19 +511,16 @@ function OfferDesktop({
                   </div>
                   <div className="relative">
                     <label className="font-semibold uppercase tracking-widest text-[11px] text-outline mb-2 block">{t('arrival')}</label>
-                    <div className={`flex items-center gap-4 bg-surface-container-highest p-5 rounded-2xl focus-within:ring-1 transition-all ${errors.destination || errors.sameCity ? 'ring-1 ring-error' : 'ring-primary'}`}>
-                      <MapPin className="w-6 h-6 text-primary" />
-                      <select
-                        value={formData.destination}
-                        onChange={(e) => handleChange("destination", e.target.value)}
-                        className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold tracking-tight appearance-none cursor-pointer text-lg"
-                      >
-                        <option value="" className="bg-surface-container-highest">{t('arrivalPlaceholder')}</option>
-                        {sardinianCities.map((city) => (
-                          <option key={city} value={city} className="bg-surface-container-highest">{city}</option>
-                        ))}
-                      </select>
-                    </div>
+                    <LocationCombobox
+                      value={formData.destination}
+                      onChange={(val) => handleChange("destination", val)}
+                      placeholder={t('arrivalPlaceholder')}
+                      label={t('arrival')}
+                      buttonClassName={cn(
+                        "bg-surface-container-highest border-none p-5 rounded-2xl",
+                        (errors.destination || errors.sameCity) && "ring-1 ring-error"
+                      )}
+                    />
                     {errors.destination && <p className="mt-1 text-sm text-error">{errors.destination}</p>}
                     {errors.sameCity && <p className="mt-1 text-sm text-error">{errors.sameCity}</p>}
                   </div>
@@ -675,7 +660,6 @@ function OfferDesktop({
 
                 <StopsSection
                   stops={formData.stops}
-                  cities={sardinianCities}
                   onChange={(next) => handleChange("stops", next)}
                   variant="desktop"
                   errors={errors}
