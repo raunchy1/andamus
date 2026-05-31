@@ -8,6 +8,8 @@ import { ChevronRight, ArrowLeft, Sun, User, BadgeCheck, Star, MessageCircle, Do
 import { CarInfoCard } from "@/components/CarInfoCard";
 import { ShareRide } from "@/components/ShareRide";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
+import { MeetYourRide } from "@/components/vehicles/MeetYourRide";
+import type { VehicleWithImages } from "@/lib/types/vehicle";
 import dynamic from "next/dynamic";
 
 const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
@@ -91,6 +93,7 @@ interface RideDetailViewProps {
   existingBooking: Booking | null;
   requesting: boolean;
   showLoginModal: boolean;
+  vehicle?: VehicleWithImages | null;
   setShowLoginModal: (v: boolean) => void;
   handleShare: () => void;
   handleRequestRide: () => void;
@@ -109,6 +112,7 @@ function RideDetailMobile({
   existingBooking,
   requesting,
   showLoginModal,
+  vehicle,
   setShowLoginModal,
   handleShare: _handleShare,
   handleRequestRide,
@@ -324,6 +328,15 @@ function RideDetailMobile({
           </TiltCard>
           </Reveal>
 
+          {/* Meet Your Ride — Vehicle Gallery & Trust Section */}
+          {vehicle && (
+            <MeetYourRide
+              vehicle={vehicle}
+              driverName={ride.profiles.name}
+              driverRating={ride.profiles.rating}
+              driverId={ride.driver_id}
+            />
+          )}
 
           {/* Journey Info Cards */}
           <RevealStagger className="grid grid-cols-2 gap-4 mb-10">
@@ -975,6 +988,7 @@ export interface RideDetailClientProps {
   existingBooking: Booking | null;
   rideId: string;
   locale: string;
+  vehicle?: VehicleWithImages | null;
 }
 
 export function RideDetailClient({
@@ -986,6 +1000,7 @@ export function RideDetailClient({
   existingBooking: initialBooking,
   rideId,
   locale,
+  vehicle,
 }: RideDetailClientProps) {
   const router = useRouter();
   const deviceType = useDeviceType();
@@ -1202,6 +1217,7 @@ export function RideDetailClient({
     existingBooking,
     requesting,
     showLoginModal,
+    vehicle,
     setShowLoginModal,
     handleShare,
     handleRequestRide,

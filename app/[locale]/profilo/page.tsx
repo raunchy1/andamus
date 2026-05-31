@@ -951,7 +951,26 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          {/* Car Info Section */}
+          {/* NEW: Vehicle Identity System — Link to garage */}
+          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
+            <Reveal>
+            <Link href={`/${locale}/profilo/veicoli`} className="block">
+              <div className="bg-gradient-to-br from-[#ffb3b1]/[0.08] to-transparent border border-[#ffb3b1]/20 rounded-2xl p-5 flex items-center gap-4 hover:border-[#ffb3b1]/40 hover:from-[#ffb3b1]/[0.12] transition-all group">
+                <div className="w-14 h-14 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Car className="w-7 h-7 text-[#ffb3b1]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-headline font-bold text-lg text-on-surface">I tuoi Veicoli</p>
+                  <p className="text-sm text-on-surface/50 truncate">Gestisci il tuo garage, aggiungi foto e comfort</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1] mt-1">Nuovo ✨</p>
+                </div>
+                <ChevronRight className="w-6 h-6 text-on-surface/30 group-hover:text-[#ffb3b1] group-hover:translate-x-1 transition-all flex-shrink-0" />
+              </div>
+            </Link>
+            </Reveal>
+          </section>
+
+          {/* Car Info Section (legacy — preserved for backward compat) */}
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
             <div className="bg-surface-container p-4 rounded-xl">
               <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
@@ -969,6 +988,7 @@ export default function ProfilePage() {
               />
             </div>
           </section>
+
 
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
             <div className="bg-surface-container p-4 rounded-xl">

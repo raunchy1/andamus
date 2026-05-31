@@ -9,7 +9,9 @@ import {
   getUpcomingActiveRides,
   Ride,
 } from "@/lib/server/data/rides";
+import { getVehicleForRide } from "@/lib/server/data/vehicles";
 import { RideDetailClient } from "@/components/ride-detail/RideDetailClient";
+import type { VehicleWithImages } from "@/lib/types/vehicle";
 import * as crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -129,18 +131,24 @@ export default async function RideDetailPage({ params }: Props) {
   let reviews: any[] = [];
   let similarRides: any[] = [];
   let existingBooking: any = null;
+  let vehicle: VehicleWithImages | null = null;
 
   try {
-    const [stopsRes, reviewsRes, similarRidesRes, existingBookingRes] = await Promise.all([
+    const rideWithVehicle = ride as (Ride & { vehicle_id?: string | null });
+    const [stopsRes, reviewsRes, similarRidesRes, existingBookingRes, vehicleRes] = await Promise.all([
       getRideStops(id).catch(() => []),
       getDriverReviews(ride.driver_id, 3).catch(() => []),
       getSimilarRides(ride, 3).catch(() => []),
       getRideBookingForUser(id, user?.id).catch(() => null),
+      rideWithVehicle.vehicle_id
+        ? getVehicleForRide(rideWithVehicle.vehicle_id).catch(() => null)
+        : Promise.resolve(null),
     ]);
     stops = stopsRes;
     reviews = reviewsRes;
     similarRides = similarRidesRes;
     existingBooking = existingBookingRes;
+    vehicle = vehicleRes;
   } catch (err) {
     console.error("Secondary details fetch failed in RideDetailPage:", err);
   }
@@ -195,6 +203,7 @@ export default async function RideDetailPage({ params }: Props) {
       similarRides={similarRides}
       stops={stops}
       existingBooking={existingBooking}
+      vehicle={vehicle}
       rideId={id}
       locale={locale}
     />
