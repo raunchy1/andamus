@@ -561,7 +561,6 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   multiple
-                  capture="environment"
                   className="hidden"
                   onChange={(e) => handleFileSelect(e.target.files)}
                 />
