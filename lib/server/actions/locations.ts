@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export type LocationType = 'city' | 'airport' | 'port' | 'university';
+export type LocationType = 'city' | 'frazione' | 'airport' | 'port' | 'university';
 
 export interface Location {
   id: string;
@@ -14,6 +14,7 @@ export interface Location {
   longitude?: number;
   population?: number;
   popular: boolean;
+  parent_municipality?: string;
 }
 
 /**

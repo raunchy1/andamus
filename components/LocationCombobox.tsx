@@ -22,6 +22,7 @@ interface LocationComboboxProps {
 
 const TYPE_ICONS = {
   city: MapPin,
+  frazione: MapPin,
   airport: Plane,
   port: Anchor,
   university: GraduationCap,
@@ -29,6 +30,7 @@ const TYPE_ICONS = {
 
 const TYPE_LABELS = {
   city: "Città",
+  frazione: "Località",
   airport: "Aeroporti",
   port: "Porti",
   university: "Università",
@@ -278,7 +280,14 @@ export function LocationCombobox({
                     })()}
                   </div>
                   <div className="flex-1 truncate">
-                    <div className="text-base truncate">{loc.name}</div>
+                    <div className="text-base truncate">
+                      {loc.name}
+                      {loc.type === 'frazione' && loc.parent_municipality && (
+                        <span className="text-sm text-on-surface-variant/60 font-normal ml-1.5">
+                          ({loc.parent_municipality})
+                        </span>
+                      )}
+                    </div>
                     {loc.province && <div className="text-xs text-on-surface-variant opacity-70">{loc.province}</div>}
                   </div>
                   {loc.popular && !search && <Star size={14} className="text-primary/40 fill-primary/40" />}
