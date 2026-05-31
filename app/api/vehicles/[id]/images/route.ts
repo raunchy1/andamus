@@ -45,6 +45,10 @@ export async function POST(request: NextRequest, { params }: Params) {
   }
 
   try {
+    // Log env availability for debugging
+    const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+    console.log("[vehicles/images POST] Service key available:", hasServiceKey, "| Vehicle:", vehicleId);
+    
     const result = await addVehicleImage(user.id, vehicleId, file);
     return NextResponse.json({ url: result.url, path: result.path });
   } catch (error) {
@@ -55,6 +59,7 @@ export async function POST(request: NextRequest, { params }: Params) {
       fileName: file.name,
       fileType: file.type,
       fileSize: file.size,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
       error: msg,
       stack: error instanceof Error ? error.stack?.slice(0, 500) : undefined,
     });
