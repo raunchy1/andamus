@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Sparkles, Calendar, MapPin, ArrowRight, Music, Users, Shield } from "lucide-react";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { createClient } from "@/lib/supabase/server";
 import { GradientText } from "@/components/ui/premium/gradient-text";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
 
@@ -29,7 +29,7 @@ export default async function EventsHubPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const supabase = createServiceRoleClient();
+  const supabase = await createClient();
 
   // 1. Fetch upcoming major events in Sardinia
   const { data: events, error } = await supabase

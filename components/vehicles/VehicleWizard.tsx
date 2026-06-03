@@ -97,7 +97,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const goNext = () => {
     const nextIdx = stepIndex + 1;

@@ -36,7 +36,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     const fetchPreferences = async () => {

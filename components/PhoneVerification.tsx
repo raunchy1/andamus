@@ -26,7 +26,7 @@ export function PhoneVerification({
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   // Format phone number to E.164 format (+39XXXXXXXXXX)
   const formatPhoneNumber = (input: string): string => {

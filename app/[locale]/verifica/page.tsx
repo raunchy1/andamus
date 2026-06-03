@@ -47,7 +47,7 @@ export default function VerificationPage() {
     driver: "none",
   });
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     const loadData = async () => {
@@ -110,29 +110,51 @@ export default function VerificationPage() {
   const handleFileUpload = async (type: "id" | "driver", file: File) => {
     if (!file || !user) return;
 
+    // Validate file type (images and PDFs only)
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error(t("invalidFileType"));
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      toast.error(t("fileTooLarge"));
+      return;
+    }
+
     setUploading(type);
 
     try {
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (private bucket)
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}/${type}_${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("verifications")
-        .upload(fileName, file);
+        .upload(fileName, file, { cacheControl: "3600", upsert: false });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      // CRIT-10 FIX: Use signed URL instead of public URL.
+      // The signed URL expires after 15 minutes — enough for preview.
+      // The DB stores the file path (not the URL) for admin access via server-side signed URLs.
+      const { data: signedData, error: signedError } = await supabase.storage
         .from("verifications")
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 900); // 900 seconds = 15 min
 
-      // Create verification record
+      if (signedError) {
+        console.error("[verifica] Signed URL error:", signedError.message);
+        // Document is uploaded successfully even if signed URL fails
+      }
+
+      // Create verification record — store the file PATH, not a public URL
       const { error: dbError } = await supabase.from("verifications").insert({
         user_id: user.id,
         type: type === "id" ? "id_document" : "driver_license",
         status: "pending",
-        document_url: publicUrl,
+        document_url: fileName, // Private path — admins use createSignedUrl server-side
       });
 
       if (dbError) throw dbError;

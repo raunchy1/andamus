@@ -238,13 +238,24 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ============================================================
--- STORAGE BUCKET FOR VERIFICATION DOCUMENTS
+-- STORAGE BUCKET FOR VERIFICATION DOCUMENTS (CRIT-10)
 -- ============================================================
--- Run this in Storage section of Supabase Dashboard:
--- Create bucket: "verifications"
--- Set to: "Public bucket"
--- Allowed MIME types: image/png, image/jpeg
--- Max file size: 5MB
+-- Ensure the "verifications" bucket is created and marked as PRIVATE.
+-- Document files must not be accessible via getPublicUrl().
+-- Only admins and owners can access documents via signed URLs.
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'verifications',
+  'verifications',
+  false,
+  5242880, -- 5MB
+  ARRAY['image/png', 'image/jpeg', 'image/webp', 'application/pdf']::text[]
+)
+ON CONFLICT (id) DO UPDATE SET
+  public = false,
+  file_size_limit = 5242880,
+  allowed_mime_types = ARRAY['image/png', 'image/jpeg', 'image/webp', 'application/pdf']::text[];
 
 -- ============================================================
 -- DONE! Your database is ready for Andamus app

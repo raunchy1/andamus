@@ -35,7 +35,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ verified: true, session });
+    return NextResponse.json({
+      verified: true,
+      status: session.status,
+      paymentStatus: session.payment_status,
+      customerEmail: session.customer_details?.email
+    });
   } catch (error) {
     console.error("[api/premium/verify] Stripe error:", error);
     return NextResponse.json(

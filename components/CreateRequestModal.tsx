@@ -27,7 +27,7 @@ export function CreateRequestModal({
 }: CreateRequestModalProps) {
   const t = useTranslations("requests");
   const locale = useLocale();
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const [loading, setLoading] = useState(false);
   const [fromCity, setFromCity] = useState(initialFrom);

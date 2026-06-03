@@ -12,23 +12,24 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    // Validate required fields
-    const requiredFields = ["userId", "email", "name", "referralCode"];
-
-    for (const field of requiredFields) {
-      if (!body[field] && body[field] !== false) {
-        return NextResponse.json(
-          { error: `Missing required field: ${field}` },
-          { status: 400 }
-        );
-      }
+    // H-02 Security: The userId must match the logged-in user to prevent spoofing welcome emails.
+    if (body.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized: ID mismatch" }, { status: 403 });
     }
 
+    // Always use the email associated with the authenticated session, not the client-provided email
+    const recipientEmail = user.email;
+    if (!recipientEmail) {
+      return NextResponse.json({ error: "User email not found in session" }, { status: 400 });
+    }
+
+    const recipientName = user.user_metadata?.full_name || body.name || "User";
+
     const result = await sendWelcomeEmail({
-      userId: body.userId,
-      email: body.email,
-      name: body.name,
-      referralCode: body.referralCode,
+      userId: user.id,
+      email: recipientEmail,
+      name: recipientName,
+      referralCode: body.referralCode || "",
     });
 
     if (!result.success) {

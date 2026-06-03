@@ -6,6 +6,15 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Andamus <noreply@andamus.app>";
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 /**
  * GET /api/admin/kyc
  * Fetch pending KYC verification requests.
@@ -132,6 +141,10 @@ export async function POST(request: NextRequest) {
     // 3b. Send rejection email (mandatory requirement)
     if (userEmail) {
       try {
+        const safeReason = reason 
+          ? escapeHtml(reason) 
+          : "Il documento caricato non è leggibile o è scaduto. Ti preghiamo di riprovare con una foto più nitida.";
+
         await resend.emails.send({
           from: FROM_EMAIL,
           to: userEmail,
@@ -139,9 +152,9 @@ export async function POST(request: NextRequest) {
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111;">
               <h2 style="color: #e63946;">Ciao ${userName},</h2>
-              <p>Ti informiamo che la tua richiesta di verifica del documento (<b>${verif.type === "id_document" ? "Identità" : "Patente"}</b>) non è stata accettata per il seguente motivo:</p>
+              <p>Ti informiamo che la tua richiesta di verifica del documento (<b>${verif.type === "id_document" ? "Identità" : "Patente"}</b>) non è stata accettata per il seguinte motivo:</p>
               <blockquote style="background: #f7f7f7; border-left: 4px solid #e63946; padding: 15px; margin: 20px 0; font-style: italic;">
-                ${reason || "Il documento caricato non è leggibile o è scaduto. Ti preghiamo di riprovare con una foto più nitida."}
+                ${safeReason}
               </blockquote>
               <p>Puoi accedere nuovamente alla sezione <b>Verifica</b> dell'applicazione per caricare un nuovo documento valido.</p>
               <br/>

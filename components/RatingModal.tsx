@@ -39,7 +39,7 @@ export function RatingModal({
   const [loading, setLoading] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [reviewSaved, setReviewSaved] = useState(false);
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const checkExistingReview = useCallback(async () => {
     const { data } = await supabase

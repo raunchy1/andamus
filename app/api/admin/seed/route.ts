@@ -153,10 +153,19 @@ function createPRNG(seedString: string) {
 // ── Route handler ──────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
-  // Auth: CRON_SECRET bearer token (set in Vercel env)
+  // Security: Block seeding in production entirely
+  if (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV === "production") {
+    return NextResponse.json(
+      { error: "Seed route is disabled in production" },
+      { status: 403 }
+    );
+  }
+
+  // Auth: CRON_SECRET bearer token — FAIL-CLOSED
+  // If CRON_SECRET is not set, reject ALL requests (never fail open).
   const authHeader = request.headers.get("Authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -225,7 +234,7 @@ export async function GET(request: Request) {
         const { data: authData, error: authError } = await supabase.auth.admin.createUser({
           id: user.id,
           email: user.email,
-          password: "AndamusLaunch2026PasswordSecret!",
+          password: crypto.randomUUID() + crypto.randomUUID(),
           email_confirm: true,
           phone: user.phone,
           phone_confirm: true,
@@ -387,12 +396,11 @@ export async function GET(request: Request) {
       message: "✅ Sardinia Marketplace Seeding Completed!",
       driversSeeded: driverIds.length,
       ridesSeeded,
-      logs,
     });
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : "Unknown error";
-    logs.push(`Exception: ${errorMsg}`);
-    return NextResponse.json({ success: false, error: errorMsg, logs }, { status: 500 });
+    console.error("[api/admin/seed] Exception:", errorMsg);
+    return NextResponse.json({ success: false, error: "Seed operation failed" }, { status: 500 });
   }
 }
 

@@ -62,7 +62,7 @@ export function Navbar() {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   
   const navLinks = [
     { href: `/${locale}/`, label: t('home'), icon: Home },

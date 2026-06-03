@@ -10,7 +10,7 @@ import {
   Clock,
   Sparkles
 } from "lucide-react";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { createClient } from "@/lib/supabase/server";
 import { OrbGlow } from "@/components/ui/premium/orb-glow";
 import { RevealItem } from "@/components/ui/premium/reveal";
 
@@ -34,7 +34,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "cerca" });
 
-  const supabase = createServiceRoleClient();
+  const supabase = await createClient();
 
   const hubs: HubData[] = [
     {

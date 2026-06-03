@@ -24,15 +24,16 @@ function createPRNG(seedString: string) {
  * GET /api/admin/refresh-rides
  *
  * Refreshes expired seeded ride dates without recreating users or profiles.
- * Authenticated via CRON_SECRET bearer token or open if CRON_SECRET is empty.
+ * Authenticated via CRON_SECRET bearer token (fail-closed).
  *
  * Called by Vercel cron daily to keep the marketplace populated.
  */
 export async function GET(request: Request) {
-  // Auth check
+  // Auth: CRON_SECRET bearer token — FAIL-CLOSED
+  // If CRON_SECRET is not set, reject ALL requests (never fail open).
   const authHeader = request.headers.get("Authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

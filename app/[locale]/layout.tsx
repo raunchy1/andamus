@@ -136,6 +136,16 @@ export async function generateMetadata({
   };
 }
 
+const SUPPORTED_LOCALES = ["it", "en", "de"] as const;
+
+/**
+ * Enable static generation for all 3 locale variants.
+ * Without this, Next.js treats every page under [locale] as fully dynamic.
+ */
+export function generateStaticParams() {
+  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+}
+
 export default async function LocaleLayout({
   children,
   params,
@@ -144,6 +154,13 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+
+  // Validate locale — reject unsupported values
+  if (!(SUPPORTED_LOCALES as readonly string[]).includes(locale)) {
+    const { notFound } = await import("next/navigation");
+    notFound();
+  }
+
   setRequestLocale(locale);
   let messages;
   try {
@@ -152,6 +169,7 @@ export default async function LocaleLayout({
     console.error('[layout] Failed to load messages for locale:', locale, error);
     messages = await getMessages({ locale: 'it' });
   }
+
 
   return (
     <>

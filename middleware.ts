@@ -1,7 +1,8 @@
 import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+// Note: updateSession from @/lib/supabase/middleware is NOT used here.
+// The middleware creates its own Supabase client inline for cookie management.
 import { createServerClient } from "@supabase/ssr";
 import { isAdmin } from "@/lib/server/guards/admin";
 
@@ -49,9 +50,7 @@ function jsonError(message: string, code: string, status: number): NextResponse 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAdminPage = ADMIN_PAGE_REGEX.test(pathname);
-  const isAdminApi = ADMIN_API_REGEX.test(pathname) && 
-    pathname !== "/api/admin/seed" && 
-    pathname !== "/api/admin/refresh-rides";
+  const isAdminApi = ADMIN_API_REGEX.test(pathname);
   const isPushApi = PUSH_API_REGEX.test(pathname);
   const needsAuthCheck = isAdminPage || isAdminApi || isPushApi;
 
@@ -212,6 +211,9 @@ export default async function middleware(request: NextRequest) {
   supabaseResponse.headers.set("X-Frame-Options", "DENY");
   supabaseResponse.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   supabaseResponse.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(self), payment=(self)");
+
+  // Pass the current pathname to the root layout so it can set <html lang> dynamically (CRIT-09)
+  request.headers.set("x-next-url", pathname);
 
   // ── 8. next-intl locale routing (skip for API routes) ──
   if (pathname.startsWith("/api/")) {

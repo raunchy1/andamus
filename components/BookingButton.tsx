@@ -56,7 +56,7 @@ export function BookingButton({
   const [isLoading, setIsLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   // Check for existing booking on mount
   useEffect(() => {

@@ -1399,11 +1399,11 @@ export default function HomePageClient({
   const [signals, setSignals] = useState<{ ridesAddedToday: number; activeCommutersCount: number; trendingRoute: { from: string; to: string } | null } | null>(null);
   const [showInlineOnboarding, setShowInlineOnboarding] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     if (typeof window !== "undefined") {
       setSuggestion(getCommuteSuggestion());
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1433,9 +1433,10 @@ export default function HomePageClient({
   useEffect(() => {
     const fetchSignals = async () => {
       try {
-        const { getMarketplaceSignals } = await import("@/lib/server/liquidity/signals");
-        const res = await getMarketplaceSignals();
-        setSignals(res as any);
+        const response = await fetch("/api/marketplace/signals");
+        if (!response.ok) throw new Error("API error");
+        const res = await response.json();
+        setSignals(res);
       } catch {
         setSignals({
           ridesAddedToday: 3,

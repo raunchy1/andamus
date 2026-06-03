@@ -16,27 +16,28 @@ export function createServiceRoleClient() {
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  let key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url) {
-    console.warn("WARNING: NEXT_PUBLIC_SUPABASE_URL is missing. Returning placeholder client.");
-    return createClient("https://placeholder.supabase.co", "placeholder-key", {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
+    throw new Error("Lipsește variabila de mediu NEXT_PUBLIC_SUPABASE_URL.");
   }
 
+  // H-01 Fix: Fail-closed strict. Nu se permite rularea fără cheia admin service role în producție.
   if (!key) {
-    console.warn(
-      "WARNING: SUPABASE_SERVICE_ROLE_KEY is missing. " +
-        "Falling back to NEXT_PUBLIC_SUPABASE_ANON_KEY to prevent Server Component crashes."
-    );
-    key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "CRITICAL SECURITY CONFIG: SUPABASE_SERVICE_ROLE_KEY lipsește în producție. " +
+        "Operațiunile administrative sunt blocate."
+      );
+    } else {
+      console.warn(
+        "WARNING: SUPABASE_SERVICE_ROLE_KEY nu este configurat în mediul local. " +
+        "Unele operațiuni de admin pot eșua."
+      );
+    }
   }
 
-  return createClient(url, key, {
+  return createClient(url, key || "dummy-key-for-build-step", {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

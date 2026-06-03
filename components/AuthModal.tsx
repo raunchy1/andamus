@@ -21,7 +21,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const t = useTranslations("auth");
   const locale = useLocale();
   const router = useRouter();
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const [mode, setMode] = useState<"login" | "register">(defaultTab);
   const [email, setEmail] = useState("");
