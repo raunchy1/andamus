@@ -26,9 +26,14 @@ CREATE INDEX IF NOT EXISTS locations_slug_idx ON locations (slug);
 
 -- RLS
 ALTER TABLE locations ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Locations are viewable by everyone" ON locations;
 CREATE POLICY "Locations are viewable by everyone" ON locations FOR SELECT USING (true);
 
 -- Function to search locations with fuzzy matching and grouping
+DROP FUNCTION IF EXISTS public.search_locations(text, integer) CASCADE;
+DROP FUNCTION IF EXISTS public.search_locations(text) CASCADE;
+DROP FUNCTION IF EXISTS public.search_locations() CASCADE;
+
 CREATE OR REPLACE FUNCTION search_locations(search_query TEXT, max_results INTEGER DEFAULT 10)
 RETURNS TABLE (
   id UUID,
@@ -446,4 +451,5 @@ INSERT INTO locations (name, slug, type, province, latitude, longitude, populati
 ('Porto di Arbatax', 'porto-arbatax', 'port', '', 39.9361, 9.7042, 0, FALSE),
 ('UniCa - Cagliari Centro', 'unica-cagliari-centro', 'university', '', 39.2161, 9.1122, 0, TRUE),
 ('UniCa - Monserrato Campus', 'unica-monserrato-campus', 'university', '', 39.2681, 9.1417, 0, TRUE),
-('UniSS - Sassari Centro', 'uniss-sassari-centro', 'university', '', 40.7244, 8.5581, 0, TRUE);
+('UniSS - Sassari Centro', 'uniss-sassari-centro', 'university', '', 40.7244, 8.5581, 0, TRUE)
+ON CONFLICT (slug) DO NOTHING;

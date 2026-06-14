@@ -22,11 +22,13 @@ CREATE INDEX IF NOT EXISTS idx_beta_feedback_resolved ON beta_feedback(resolved_
 ALTER TABLE beta_feedback ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see their own feedback
+DROP POLICY IF EXISTS "Users can view own feedback" ON beta_feedback;
 CREATE POLICY "Users can view own feedback"
   ON beta_feedback FOR SELECT
   USING (auth.uid() = user_id);
 
 -- Users can insert their own feedback
+DROP POLICY IF EXISTS "Users can insert own feedback" ON beta_feedback;
 CREATE POLICY "Users can insert own feedback"
   ON beta_feedback FOR INSERT
   WITH CHECK (auth.uid() = user_id);
@@ -48,6 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_user_activity_weeks_week ON user_activity_weeks(w
 
 ALTER TABLE user_activity_weeks ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own activity weeks" ON user_activity_weeks;
 CREATE POLICY "Users can view own activity weeks"
   ON user_activity_weeks FOR SELECT
   USING (auth.uid() = user_id);

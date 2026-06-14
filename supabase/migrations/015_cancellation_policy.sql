@@ -17,5 +17,5 @@ CREATE INDEX IF NOT EXISTS idx_bookings_cancelled_at ON bookings(cancelled_at) W
 
 -- Update existing cancelled bookings to have cancelled_at timestamp if status is 'cancelled'
 UPDATE bookings 
-SET cancelled_at = COALESCE(updated_at, created_at)
+SET cancelled_at = created_at
 WHERE status = 'cancelled' AND cancelled_at IS NULL;

@@ -16,6 +16,7 @@ ALTER TABLE feedback_reports ENABLE ROW LEVEL SECURITY;
 
 -- Only allow inserts from API (service role)
 -- No direct client access
+DROP POLICY IF EXISTS "No direct access" ON feedback_reports;
 CREATE POLICY "No direct access" ON feedback_reports FOR ALL USING (false);
 
 -- Index for admin queries

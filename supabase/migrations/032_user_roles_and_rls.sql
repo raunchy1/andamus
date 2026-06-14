@@ -74,18 +74,21 @@ CREATE POLICY "bookings_update_own"
     SELECT 1 FROM public.rides r WHERE r.id = ride_id AND r.driver_id = auth.uid()
   ));
 
--- chat_messages: users can only send/read messages for their bookings
-DROP POLICY IF EXISTS "chat_messages_insert_own" ON public.chat_messages;
-CREATE POLICY "chat_messages_insert_own"
-  ON public.chat_messages
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (sender_id = auth.uid() AND EXISTS (
-    SELECT 1 FROM public.bookings b
-    WHERE b.id = booking_id AND (b.passenger_id = auth.uid() OR EXISTS (
-      SELECT 1 FROM public.rides r WHERE r.id = b.ride_id AND r.driver_id = auth.uid()
-    ))
-  ));
+-- messages/chat_messages: users can only send messages for their bookings
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'chat_messages') THEN
+    DROP POLICY IF EXISTS "chat_messages_insert_own" ON public.chat_messages;
+    CREATE POLICY "chat_messages_insert_own"
+      ON public.chat_messages FOR INSERT TO authenticated
+      WITH CHECK (sender_id = auth.uid() AND EXISTS (
+        SELECT 1 FROM public.bookings b
+        WHERE b.id = booking_id AND (b.passenger_id = auth.uid() OR EXISTS (
+          SELECT 1 FROM public.rides r WHERE r.id = b.ride_id AND r.driver_id = auth.uid()
+        ))
+      ));
+  END IF;
+END $$;
 
 -- notifications: users can only read their own notifications
 DROP POLICY IF EXISTS "notifications_select_own" ON public.notifications;
@@ -127,21 +130,27 @@ CREATE POLICY "profiles_update_own"
   USING (id = auth.uid())
   WITH CHECK (id = auth.uid());
 
--- feedback: users can only see their own feedback (admins see all via service_role)
-DROP POLICY IF EXISTS "feedback_select_own" ON public.feedback;
-CREATE POLICY "feedback_select_own"
-  ON public.feedback
-  FOR SELECT
-  TO authenticated
-  USING (user_id = auth.uid());
+-- feedback: users can only see their own feedback (if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'feedback') THEN
+    DROP POLICY IF EXISTS "feedback_select_own" ON public.feedback;
+    CREATE POLICY "feedback_select_own"
+      ON public.feedback FOR SELECT TO authenticated
+      USING (user_id = auth.uid());
+  END IF;
+END $$;
 
--- waiting_list: no RLS needed (public table), but restrict update/delete
-DROP POLICY IF EXISTS "waiting_list_no_update" ON public.waiting_list;
-CREATE POLICY "waiting_list_no_update"
-  ON public.waiting_list
-  FOR UPDATE
-  TO authenticated
-  USING (false);
+-- waiting_list: restrict update/delete (if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'waiting_list') THEN
+    DROP POLICY IF EXISTS "waiting_list_no_update" ON public.waiting_list;
+    CREATE POLICY "waiting_list_no_update"
+      ON public.waiting_list FOR UPDATE TO authenticated
+      USING (false);
+  END IF;
+END $$;
 
 -- ──────────────────────────────────────────────────────────────────────────────
 -- 3. Helper function: is_admin(user_id)

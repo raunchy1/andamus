@@ -89,21 +89,33 @@ CREATE INDEX IF NOT EXISTS idx_profiles_created_at
   ON profiles(created_at DESC);
 
 -- Profiles: trust score for matching
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS trust_score NUMERIC DEFAULT 0;
 CREATE INDEX IF NOT EXISTS idx_profiles_trust_score
   ON profiles(trust_score DESC NULLS LAST);
 
--- Carpool groups: slug lookup
-CREATE INDEX IF NOT EXISTS idx_carpool_groups_slug
-  ON carpool_groups(slug);
+-- Carpool groups: slug lookup (if column exists)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'carpool_groups' AND column_name = 'slug'
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_carpool_groups_slug ON carpool_groups(slug);
+  END IF;
+END $$;
 
 -- Events: upcoming events listing
-CREATE INDEX IF NOT EXISTS idx_events_date_status
-  ON events(date, status)
-  WHERE status = 'active';
-
--- Events: slug lookup
-CREATE INDEX IF NOT EXISTS idx_events_slug
-  ON events(slug);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'events' AND column_name = 'start_date') THEN
+    CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);
+  ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'events' AND column_name = 'date') THEN
+    CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'events' AND column_name = 'slug') THEN
+    CREATE INDEX IF NOT EXISTS idx_events_slug ON events(slug);
+  END IF;
+END $$;
 
 -- Group memberships: member lookups
 CREATE INDEX IF NOT EXISTS idx_group_memberships_user
@@ -113,19 +125,19 @@ CREATE INDEX IF NOT EXISTS idx_group_memberships_user
 CREATE INDEX IF NOT EXISTS idx_group_memberships_group
   ON group_memberships(group_id, joined_at DESC);
 
--- Ride stops: route reconstruction
-CREATE INDEX IF NOT EXISTS idx_ride_stops_ride_order
-  ON ride_stops(ride_id, order_index);
-
--- Subscriptions: active subscription lookup
-CREATE INDEX IF NOT EXISTS idx_subscriptions_user_active
-  ON subscriptions(user_id, status)
-  WHERE status = 'active';
-
--- Safety reports: open reports queue
-CREATE INDEX IF NOT EXISTS idx_safety_reports_status_created
-  ON safety_reports(status, created_at DESC)
-  WHERE status = 'open';
+-- Optional indexes (only if tables/columns exist)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'ride_stops') THEN
+    CREATE INDEX IF NOT EXISTS idx_ride_stops_ride_order ON ride_stops(ride_id, order_index);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'subscriptions') THEN
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_user_active ON subscriptions(user_id, status) WHERE status = 'active';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'safety_reports') THEN
+    CREATE INDEX IF NOT EXISTS idx_safety_reports_status_created ON safety_reports(status, created_at DESC) WHERE status = 'open';
+  END IF;
+END $$;
 
 -- User roles: role-based lookups
 CREATE INDEX IF NOT EXISTS idx_user_roles_role_user
@@ -174,6 +186,10 @@ CREATE TABLE IF NOT EXISTS hourly_metrics (
 
 CREATE INDEX IF NOT EXISTS idx_hourly_metrics_hour_endpoint
   ON hourly_metrics(hour DESC, endpoint);
+
+-- Ensure optional profile columns exist for analytics views
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS id_verified BOOLEAN DEFAULT FALSE;
 
 -- ============================================
 -- 4. MATERIALIZED VIEWS FOR DASHBOARDS
@@ -445,16 +461,19 @@ $$ LANGUAGE plpgsql;
 -- Content reports: users can create reports, admins can see all
 ALTER TABLE content_reports ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can create reports" ON content_reports;
 CREATE POLICY "Users can create reports"
   ON content_reports FOR INSERT
   TO authenticated
   WITH CHECK (reporter_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can view their own reports" ON content_reports;
 CREATE POLICY "Users can view their own reports"
   ON content_reports FOR SELECT
   TO authenticated
   USING (reporter_id = auth.uid());
 
+DROP POLICY IF EXISTS "Admins can manage all reports" ON content_reports;
 CREATE POLICY "Admins can manage all reports"
   ON content_reports FOR ALL
   TO authenticated
@@ -468,6 +487,7 @@ CREATE POLICY "Admins can manage all reports"
 -- User blocks: users manage their own blocks
 ALTER TABLE user_blocks ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users manage own blocks" ON user_blocks;
 CREATE POLICY "Users manage own blocks"
   ON user_blocks FOR ALL
   TO authenticated
@@ -477,6 +497,7 @@ CREATE POLICY "Users manage own blocks"
 -- Moderation actions: admin-only
 ALTER TABLE moderation_actions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can view moderation actions" ON moderation_actions;
 CREATE POLICY "Admins can view moderation actions"
   ON moderation_actions FOR SELECT
   TO authenticated
@@ -487,6 +508,7 @@ CREATE POLICY "Admins can view moderation actions"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can create moderation actions" ON moderation_actions;
 CREATE POLICY "Admins can create moderation actions"
   ON moderation_actions FOR INSERT
   TO authenticated
@@ -500,6 +522,7 @@ CREATE POLICY "Admins can create moderation actions"
 -- Daily metrics: admin-only read
 ALTER TABLE daily_metrics ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can read daily metrics" ON daily_metrics;
 CREATE POLICY "Admins can read daily metrics"
   ON daily_metrics FOR SELECT
   TO authenticated
@@ -513,6 +536,7 @@ CREATE POLICY "Admins can read daily metrics"
 -- Hourly metrics: admin-only read
 ALTER TABLE hourly_metrics ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can read hourly metrics" ON hourly_metrics;
 CREATE POLICY "Admins can read hourly metrics"
   ON hourly_metrics FOR SELECT
   TO authenticated
@@ -526,6 +550,7 @@ CREATE POLICY "Admins can read hourly metrics"
 -- Audit log: admin-only
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can read audit log" ON audit_log;
 CREATE POLICY "Admins can read audit log"
   ON audit_log FOR SELECT
   TO authenticated

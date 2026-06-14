@@ -4,6 +4,10 @@
 ALTER TABLE locations ADD COLUMN IF NOT EXISTS parent_municipality TEXT;
 
 -- Update the search function to handle parent names and improve ranking
+DROP FUNCTION IF EXISTS public.search_locations(text, integer) CASCADE;
+DROP FUNCTION IF EXISTS public.search_locations(text) CASCADE;
+DROP FUNCTION IF EXISTS public.search_locations() CASCADE;
+
 CREATE OR REPLACE FUNCTION search_locations(search_query TEXT, max_results INTEGER DEFAULT 10)
 RETURNS TABLE (
   id UUID,

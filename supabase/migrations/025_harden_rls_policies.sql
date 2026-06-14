@@ -42,6 +42,9 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'bookings' AND table_schema = 'public') THEN
     DROP POLICY IF EXISTS "Users can update their own bookings" ON bookings;
+    DROP POLICY IF EXISTS "Passengers can update their own bookings" ON bookings;
+    DROP POLICY IF EXISTS "Drivers can update bookings for their rides" ON bookings;
+    DROP POLICY IF EXISTS "bookings_update_participant" ON bookings;
 
     CREATE POLICY "Passengers can update their own bookings"
       ON bookings FOR UPDATE
@@ -60,6 +63,7 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications' AND table_schema = 'public') THEN
     DROP POLICY IF EXISTS "System can insert notifications" ON notifications;
+    DROP POLICY IF EXISTS "Users can insert their own notifications" ON notifications;
 
     CREATE POLICY "Users can insert their own notifications"
       ON notifications FOR INSERT
@@ -94,6 +98,7 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_actions' AND table_schema = 'public') THEN
     DROP POLICY IF EXISTS "System can insert actions" ON user_actions;
+    DROP POLICY IF EXISTS "Users can insert their own actions" ON user_actions;
 
     CREATE POLICY "Users can insert their own actions"
       ON user_actions FOR INSERT
@@ -108,6 +113,7 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'push_subscriptions' AND table_schema = 'public') THEN
     DROP POLICY IF EXISTS "System can insert push subscriptions" ON push_subscriptions;
+    DROP POLICY IF EXISTS "Users can insert their own push subscriptions" ON push_subscriptions;
 
     CREATE POLICY "Users can insert their own push subscriptions"
       ON push_subscriptions FOR INSERT

@@ -24,7 +24,7 @@ CREATE POLICY "Events are viewable by everyone"
 -- Seed some famous Sardinian events
 INSERT INTO events (slug, name, description, image_url, start_date, end_date, location, city)
 VALUES
-  ('sagra-sant-efisio', 'Sagra di Sant\'Efisio', 'La più importante festa religiosa della Sardegna, con la colorita processione da Cagliari a Nora.', 'https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9', '2025-05-01', '2025-05-01', 'Cattedrale di Cagliari', 'Cagliari'),
+  ('sagra-sant-efisio', 'Sagra di Sant''Efisio', 'La più importante festa religiosa della Sardegna, con la colorita processione da Cagliari a Nora.', 'https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9', '2025-05-01', '2025-05-01', 'Cattedrale di Cagliari', 'Cagliari'),
   ('cavalcata-sarda', 'Cavalcata Sarda', 'Grande sfilata di costumi e cavalli tradizionali sardi in centro a Sassari.', 'https://images.unsplash.com/photo-1504674900247-0877df9cc836', '2025-05-18', '2025-05-18', 'Centro storico', 'Sassari'),
   ('autunno-barbagia', 'Autunno in Barbagia', 'Itinerario enogastronomico e culturale nei borghi della Barbagia.', 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3', '2025-09-06', '2025-12-08', 'Vari borghi', 'Nuoro'),
   ('calici-sotto-le-stelle', 'Calici di Stelle', 'Degustazione di vini sardi sotto il cielo stellato di Bosa.', 'https://images.unsplash.com/photo-1516594915287-0112c5aa2ac3', '2025-08-10', '2025-08-10', 'Lungo il fiume Temo', 'Bosa'),
@@ -56,9 +56,9 @@ CREATE POLICY "Authenticated users can create groups"
 INSERT INTO carpool_groups (name, description, type, city)
 VALUES
   ('Università di Cagliari', 'Passaggi giornalieri per i campus di Cagliari e Monserrato.', 'university', 'Cagliari'),
-  ('Aeroporto Olbia Costa Smeralda', 'Corse verso l\'aeroporto di Olbia da tutta la Gallura.', 'airport', 'Olbia'),
+  ('Aeroporto Olbia Costa Smeralda', 'Corse verso l''aeroporto di Olbia da tutta la Gallura.', 'airport', 'Olbia'),
   ('Navetta Sassari - Alghero', 'Gruppo per i pendolari della tratta Sassari-Alghero.', 'commute', 'Sassari'),
-  ('Fiera di Sant\'Efisio', 'Trova un passaggio per la Sagra di Sant\'Efisio.', 'event', 'Cagliari')
+  ('Fiera di Sant''Efisio', 'Trova un passaggio per la Sagra di Sant''Efisio.', 'event', 'Cagliari')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================

@@ -20,14 +20,8 @@ CREATE INDEX IF NOT EXISTS idx_referral_attempts_created ON referral_attempts(cr
 
 ALTER TABLE referral_attempts ENABLE ROW LEVEL SECURITY;
 
--- Only admins can view attempt logs
-CREATE POLICY "Admin view referral attempts"
-  ON referral_attempts FOR SELECT
-  USING (EXISTS (
-    SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true
-  ));
-
 -- ── Enhanced apply_referral_bonus with fraud checks ──
+DROP FUNCTION IF EXISTS apply_referral_bonus(UUID, TEXT);
 CREATE OR REPLACE FUNCTION apply_referral_bonus(
   new_user_id UUID,
   referrer_code TEXT
@@ -139,3 +133,11 @@ BEGIN
     ALTER TABLE profiles ADD COLUMN is_admin BOOLEAN DEFAULT false;
   END IF;
 END $$;
+
+-- Only admins can view attempt logs (after is_admin column exists)
+DROP POLICY IF EXISTS "Admin view referral attempts" ON referral_attempts;
+CREATE POLICY "Admin view referral attempts"
+  ON referral_attempts FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true
+  ));

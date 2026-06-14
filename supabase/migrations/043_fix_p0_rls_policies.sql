@@ -1,5 +1,5 @@
 -- ============================================================
--- MIGRATION 039: P0 RLS Fixes (idempotent)
+-- MIGRATION 043: P0 RLS Fixes (idempotent)
 -- ============================================================
 -- Ensures drivers can read chat messages and update booking status.
 -- Safe to re-run; consolidates policies from migrations 025 and 032.
