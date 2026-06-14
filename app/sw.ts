@@ -104,7 +104,7 @@ const serwist = new Serwist({
         plugins: [
           new ExpirationPlugin({
             maxEntries: 200,
-            maxAgeSeconds: 60 * 60, // 1 hour
+            maxAgeSeconds: 5 * 60, // 5 minutes
           }),
         ],
       }),
@@ -131,7 +131,7 @@ const serwist = new Serwist({
         plugins: [
           new ExpirationPlugin({
             maxEntries: 50,
-            maxAgeSeconds: 60 * 60, // 1 hour
+            maxAgeSeconds: 5 * 60, // 5 minutes
           }),
         ],
         networkTimeoutSeconds: 3,

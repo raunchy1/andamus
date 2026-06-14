@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ensureVapidDetails, webPush } from "@/lib/web-push";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { checkServerRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   ensureVapidDetails();
@@ -10,6 +11,11 @@ export async function POST(req: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rateLimit = await checkServerRateLimit(user.id, "alerts_check", 20, 1);
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
   try {

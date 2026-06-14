@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { withRateLimit } from "@/lib/server/api-utils";
+import { rateLimitPresets } from "@/lib/server/rate-limit/redis";
 
-export async function POST(req: NextRequest) {
+async function handler(req: NextRequest): Promise<NextResponse> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -41,13 +43,14 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
     const res = NextResponse.json(data);
-    res.headers.set("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=3600");
+    res.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=60");
     return res;
   } catch {
-    // Error logged to Sentry in production
     return NextResponse.json(
       { error: "Distance calculation failed" },
       { status: 500 }
     );
   }
 }
+
+export const POST = withRateLimit(handler, { rateLimit: rateLimitPresets.standard });

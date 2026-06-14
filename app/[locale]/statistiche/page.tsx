@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -21,16 +22,12 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
 import { getUserBadges, type Badge } from "@/lib/gamification";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer
-} from "recharts";
 import { toast } from "sonner";
+
+const ActivityChart = dynamic(
+  () => import("./_components/ActivityChart").then((m) => m.ActivityChart),
+  { ssr: false, loading: () => <div className="h-full w-full animate-pulse bg-white/5 rounded-xl" /> }
+);
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -408,30 +405,11 @@ export default function StatisticsPage() {
             {t('activityLast12Months')}
           </h2>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.activityData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="rgba(255,255,255,0.5)"
-                  fontSize={12}
-                />
-                <YAxis 
-                  stroke="rgba(255,255,255,0.5)"
-                  fontSize={12}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#111111', 
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '8px'
-                  }}
-                  labelStyle={{ color: '#fff' }}
-                />
-                <Bar dataKey="driver" name={t('driver')} fill="#e63946" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="passenger" name={t('passenger')} fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <ActivityChart
+              data={stats.activityData}
+              driverLabel={t("driver")}
+              passengerLabel={t("passenger")}
+            />
           </div>
         </div>
 

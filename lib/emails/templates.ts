@@ -1,6 +1,8 @@
 // Email HTML Templates for Andamus
 // Uses responsive design with the Andamus red (#e63946) color scheme
 
+import { escapeHtml } from "./escape";
+
 const brandColor = "#e63946";
 const bgColor = "#0a0a0a";
 const surfaceColor = "#1a1a1a";
@@ -77,18 +79,25 @@ export function getBookingRequestEmailTemplate(data: {
   baseUrl: string;
   unsubscribeToken?: string;
 }): { subject: string; html: string } {
+  const driverName = escapeHtml(data.driverName);
+  const passengerName = escapeHtml(data.passengerName);
+  const fromCity = escapeHtml(data.fromCity);
+  const toCity = escapeHtml(data.toCity);
+  const date = escapeHtml(data.date);
+  const time = escapeHtml(data.time);
+
   const content = `<tr>
     <td style="padding: 40px;">
-      <h2 style="margin: 0 0 20px 0; color: ${textColor}; font-size: 24px; font-weight: 700;">Ciao ${data.driverName}! 👋</h2>
+      <h2 style="margin: 0 0 20px 0; color: ${textColor}; font-size: 24px; font-weight: 700;">Ciao ${driverName}! 👋</h2>
       <p style="margin: 0 0 30px 0; color: ${textColor}; font-size: 16px; line-height: 1.6;">
-        <strong style="color: ${brandColor};">${data.passengerName}</strong> ha richiesto di unirsi al tuo passaggio!
+        <strong style="color: ${brandColor};">${passengerName}</strong> ha richiesto di unirsi al tuo passaggio!
       </p>
       
       <!-- Ride Details Box -->
       <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border-left: 4px solid ${brandColor};">
         <h3 style="margin: 0 0 16px 0; color: ${textColor}; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Dettagli corsa</h3>
-        <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 18px; font-weight: 600;">${data.fromCity} → ${data.toCity}</p>
-        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📅 ${data.date} · 🕐 ${data.time}</p>
+        <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 18px; font-weight: 600;">${fromCity} → ${toCity}</p>
+        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📅 ${date} · 🕐 ${time}</p>
       </div>
       
       <!-- Passenger Info -->
@@ -97,7 +106,7 @@ export function getBookingRequestEmailTemplate(data: {
         <div style="display: flex; align-items: center; gap: 12px;">
           <div style="width: 48px; height: 48px; background-color: ${surfaceColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">👤</div>
           <div>
-            <p style="margin: 0; color: ${textColor}; font-size: 16px; font-weight: 600;">${data.passengerName}</p>
+            <p style="margin: 0; color: ${textColor}; font-size: 16px; font-weight: 600;">${passengerName}</p>
             <p style="margin: 4px 0 0 0; color: ${textMuted}; font-size: 14px;">
               ⭐ ${data.passengerRating.toFixed(1)}
               ${data.passengerVerified ? ' · <span style="color: #22c55e;">✓ Verificato</span>' : ''}
@@ -142,8 +151,15 @@ export function getBookingConfirmedEmailTemplate(data: {
 }): { subject: string; html: string } {
   const L = data.locale || "it";
   const _ = (key: string) => tEmail(L, key);
+  const driverName = escapeHtml(data.driverName);
+  const fromCity = escapeHtml(data.fromCity);
+  const toCity = escapeHtml(data.toCity);
+  const date = escapeHtml(data.date);
+  const time = escapeHtml(data.time);
+  const meetingPoint = escapeHtml(data.meetingPoint);
+  const bookingId = escapeHtml(data.bookingId);
   const phoneSection = data.driverPhone
-    ? `<p style="margin: 8px 0 0 0; color: ${textMuted}; font-size: 14px;">📞 ${data.driverPhone}</p>`
+    ? `<p style="margin: 8px 0 0 0; color: ${textMuted}; font-size: 14px;">📞 ${escapeHtml(data.driverPhone)}</p>`
     : "";
 
   const content = `<tr>
@@ -154,15 +170,15 @@ export function getBookingConfirmedEmailTemplate(data: {
       </div>
       
       <p style="margin: 0 0 30px 0; color: ${textColor}; font-size: 16px; line-height: 1.6; text-align: center;">
-        Ottima notizia! <strong style="color: ${brandColor};">${data.driverName}</strong> ha accettato la tua richiesta 🎉
+        Ottima notizia! <strong style="color: ${brandColor};">${driverName}</strong> ha accettato la tua richiesta 🎉
       </p>
       
       <!-- Ride Details Box -->
       <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 24px; border-left: 4px solid #22c55e;">
         <h3 style="margin: 0 0 16px 0; color: ${textColor}; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Dettagli corsa</h3>
-        <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 18px; font-weight: 600;">${data.fromCity} → ${data.toCity}</p>
-        <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 14px;">📅 ${data.date} · 🕐 ${data.time}</p>
-        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📍 ${data.meetingPoint}</p>
+        <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 18px; font-weight: 600;">${fromCity} → ${toCity}</p>
+        <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 14px;">📅 ${date} · 🕐 ${time}</p>
+        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📍 ${meetingPoint}</p>
       </div>
       
       <!-- Driver Info -->
@@ -171,7 +187,7 @@ export function getBookingConfirmedEmailTemplate(data: {
         <div style="display: flex; align-items: center; gap: 12px;">
           <div style="width: 48px; height: 48px; background-color: ${surfaceColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">🚗</div>
           <div>
-            <p style="margin: 0; color: ${textColor}; font-size: 16px; font-weight: 600;">${data.driverName}</p>
+            <p style="margin: 0; color: ${textColor}; font-size: 16px; font-weight: 600;">${driverName}</p>
             <p style="margin: 4px 0 0 0; color: ${textMuted}; font-size: 14px;">⭐ ${data.driverRating.toFixed(1)}</p>
             ${phoneSection}
           </div>
@@ -187,7 +203,7 @@ export function getBookingConfirmedEmailTemplate(data: {
       
       <!-- Action Button -->
       <div style="text-align: center;">
-        <a href="${data.baseUrl}/chat/${data.bookingId}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">💬 Apri la chat</a>
+        <a href="${data.baseUrl}/chat/${bookingId}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">💬 Apri la chat</a>
       </div>
     </td>
   </tr>`;
@@ -208,6 +224,11 @@ export function getBookingRejectedEmailTemplate(data: {
   baseUrl: string;
   unsubscribeToken?: string;
 }): { subject: string; html: string } {
+  const driverName = escapeHtml(data.driverName);
+  const fromCity = escapeHtml(data.fromCity);
+  const toCity = escapeHtml(data.toCity);
+  const date = escapeHtml(data.date);
+
   const content = `<tr>
     <td style="padding: 40px;">
       <div style="text-align: center; margin-bottom: 30px;">
@@ -216,11 +237,11 @@ export function getBookingRejectedEmailTemplate(data: {
       </div>
       
       <p style="margin: 0 0 16px 0; color: ${textColor}; font-size: 16px; line-height: 1.6; text-align: center;">
-        Purtroppo <strong>${data.driverName}</strong> non può accettare la tua richiesta per il passaggio:
+        Purtroppo <strong>${driverName}</strong> non può accettare la tua richiesta per il passaggio:
       </p>
       
       <p style="margin: 0 0 30px 0; color: ${textMuted}; font-size: 16px; text-align: center;">
-        ${data.fromCity} → ${data.toCity} · ${data.date}
+        ${fromCity} → ${toCity} · ${date}
       </p>
       
       <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; text-align: center;">
@@ -253,6 +274,16 @@ export function getNewMessageEmailTemplate(data: {
   baseUrl: string;
   unsubscribeToken?: string;
 }): { subject: string; html: string } {
+  const senderName = escapeHtml(data.senderName);
+  const fromCity = escapeHtml(data.fromCity);
+  const toCity = escapeHtml(data.toCity);
+  const bookingId = escapeHtml(data.bookingId);
+  const preview = escapeHtml(
+    data.messagePreview.length > 100
+      ? data.messagePreview.substring(0, 100) + "..."
+      : data.messagePreview
+  );
+
   const content = `<tr>
     <td style="padding: 40px;">
       <div style="text-align: center; margin-bottom: 30px;">
@@ -261,20 +292,20 @@ export function getNewMessageEmailTemplate(data: {
       </div>
       
       <p style="margin: 0 0 30px 0; color: ${textColor}; font-size: 16px; line-height: 1.6; text-align: center;">
-        <strong style="color: ${brandColor};">${data.senderName}</strong> ti ha inviato un messaggio riguardo il passaggio <strong>${data.fromCity} → ${data.toCity}</strong>
+        <strong style="color: ${brandColor};">${senderName}</strong> ti ha inviato un messaggio riguardo il passaggio <strong>${fromCity} → ${toCity}</strong>
       </p>
       
       <!-- Message Preview -->
       <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border-left: 4px solid ${brandColor};">
         <p style="margin: 0; color: ${textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Anteprima messaggio</p>
         <p style="margin: 0; color: ${textColor}; font-size: 16px; line-height: 1.6; font-style: italic;">
-          "${data.messagePreview.length > 100 ? data.messagePreview.substring(0, 100) + "..." : data.messagePreview}"
+          "${preview}"
         </p>
       </div>
       
       <!-- Action Button -->
       <div style="text-align: center; margin-bottom: 24px;">
-        <a href="${data.baseUrl}/chat/${data.bookingId}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">Rispondi ora</a>
+        <a href="${data.baseUrl}/chat/${bookingId}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">Rispondi ora</a>
       </div>
       
       <p style="margin: 0; color: ${textMuted}; font-size: 14px; text-align: center;">
@@ -284,7 +315,7 @@ export function getNewMessageEmailTemplate(data: {
   </tr>`;
 
   return {
-    subject: `💬 Nuovo messaggio da ${data.senderName} - Andamus`,
+    subject: `💬 Nuovo messaggio da ${senderName} - Andamus`,
     html: getBaseTemplate(content, data.unsubscribeToken),
   };
 }
@@ -301,11 +332,14 @@ export function getWelcomeEmailTemplate(data: {
 }): { subject: string; html: string } {
   const L = data.locale || "it";
   const _ = (key: string) => tEmail(L, key);
+  const name = escapeHtml(data.name);
+  const referralCode = escapeHtml(data.referralCode);
+
   const content = `<tr>
     <td style="padding: 40px;">
       <h2 style="margin: 0 0 20px 0; color: ${textColor}; font-size: 28px; font-weight: 700;">Benvenuto su Andamus! 🚗</h2>
       <p style="margin: 0 0 30px 0; color: ${textColor}; font-size: 16px; line-height: 1.6;">
-        Ciao <strong>${data.name}</strong>, benvenuto nella community del carpooling sardo!
+        Ciao <strong>${name}</strong>, benvenuto nella community del carpooling sardo!
       </p>
       
       <!-- 3 Steps -->
@@ -342,7 +376,7 @@ export function getWelcomeEmailTemplate(data: {
       <!-- Referral Code -->
       <div style="background-color: ${bgColor}; border: 2px dashed ${brandColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; text-align: center;">
         <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 14px;">Il tuo codice invito</p>
-        <p style="margin: 0; color: ${brandColor}; font-size: 24px; font-weight: 800; letter-spacing: 0.1em; font-family: monospace;">${data.referralCode}</p>
+        <p style="margin: 0; color: ${brandColor}; font-size: 24px; font-weight: 800; letter-spacing: 0.1em; font-family: monospace;">${referralCode}</p>
         <p style="margin: 8px 0 0 0; color: ${textMuted}; font-size: 12px;">Condividilo con gli amici per ottenere punti extra!</p>
       </div>
       
@@ -377,6 +411,13 @@ export function getRideReminderEmailTemplate(data: {
   const _ = (key: string) => tEmail(L, key);
   const roleText = data.isDriver ? "guidi" : "partecipi";
   const emoji = data.isDriver ? "🚗" : "🚶";
+  const recipientName = escapeHtml(data.recipientName);
+  const fromCity = escapeHtml(data.fromCity);
+  const toCity = escapeHtml(data.toCity);
+  const date = escapeHtml(data.date);
+  const time = escapeHtml(data.time);
+  const meetingPoint = escapeHtml(data.meetingPoint);
+  const bookingId = escapeHtml(data.bookingId);
 
   const content = `<tr>
     <td style="padding: 40px;">
@@ -386,16 +427,16 @@ export function getRideReminderEmailTemplate(data: {
       </div>
       
       <p style="margin: 0 0 30px 0; color: ${textColor}; font-size: 16px; line-height: 1.6; text-align: center;">
-        Ciao ${data.recipientName}, ti ricordiamo che <strong style="color: ${brandColor};">domani</strong> hai un passaggio in programma ${emoji}
+        Ciao ${recipientName}, ti ricordiamo che <strong style="color: ${brandColor};">domani</strong> hai un passaggio in programma ${emoji}
       </p>
       
       <!-- Ride Details Box -->
       <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border-left: 4px solid ${brandColor};">
         <h3 style="margin: 0 0 16px 0; color: ${textColor}; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Dettagli corsa</h3>
-        <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 20px; font-weight: 700;">${data.fromCity} → ${data.toCity}</p>
-        <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 16px;">📅 ${data.date}</p>
-        <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 16px;">🕐 ${data.time}</p>
-        <p style="margin: 0; color: ${textMuted}; font-size: 16px;">📍 ${data.meetingPoint}</p>
+        <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 20px; font-weight: 700;">${fromCity} → ${toCity}</p>
+        <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 16px;">📅 ${date}</p>
+        <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 16px;">🕐 ${time}</p>
+        <p style="margin: 0; color: ${textMuted}; font-size: 16px;">📍 ${meetingPoint}</p>
       </div>
       
       <!-- Reminder Note -->
@@ -407,7 +448,7 @@ export function getRideReminderEmailTemplate(data: {
       
       <!-- Action Button -->
       <div style="text-align: center;">
-        <a href="${data.baseUrl}/chat/${data.bookingId}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">💬 Apri la chat</a>
+        <a href="${data.baseUrl}/chat/${bookingId}" style="display: inline-block; background-color: ${brandColor}; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 16px;">💬 Apri la chat</a>
       </div>
     </td>
   </tr>`;
@@ -427,13 +468,14 @@ export function getWeeklyDigestEmailTemplate(data: {
   streakWeeks: number;
   baseUrl: string;
 }): { subject: string; html: string } {
+  const name = escapeHtml(data.name);
   const rideItems = data.rides
     .map(
       (r) => `
     <tr>
       <td style="padding: 16px; background-color: ${bgColor}; border-radius: 8px; margin-bottom: 8px;">
-        <p style="margin: 0 0 4px 0; color: ${textColor}; font-size: 16px; font-weight: 700;">${r.from} → ${r.to}</p>
-        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📅 ${r.date} · 🕐 ${r.time} · 👤 ${r.driver}${r.price > 0 ? ` · €${r.price}` : ""}</p>
+        <p style="margin: 0 0 4px 0; color: ${textColor}; font-size: 16px; font-weight: 700;">${escapeHtml(r.from)} → ${escapeHtml(r.to)}</p>
+        <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📅 ${escapeHtml(r.date)} · 🕐 ${escapeHtml(r.time)} · 👤 ${escapeHtml(r.driver)}${r.price > 0 ? ` · €${escapeHtml(r.price)}` : ""}</p>
       </td>
     </tr>
     <tr><td style="height: 8px;"></td></tr>
@@ -455,7 +497,7 @@ export function getWeeklyDigestEmailTemplate(data: {
       </div>
       
       <p style="margin: 0 0 24px 0; color: ${textColor}; font-size: 16px; line-height: 1.6; text-align: center;">
-        Ciao ${data.name}, ecco i passaggi disponibili questa settimana in Sardegna 🚗
+        Ciao ${name}, ecco i passaggi disponibili questa settimana in Sardegna 🚗
       </p>
       
       ${streakSection}

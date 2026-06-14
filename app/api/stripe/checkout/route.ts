@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
+import { checkServerRateLimit } from "@/lib/rate-limit";
+import { getAppBaseUrl } from "@/lib/server/actions/auth";
 
 const getStripe = () => {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -19,6 +21,11 @@ export async function POST(req: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rateLimit = await checkServerRateLimit(user.id, "stripe_checkout", 10, 1);
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
   try {
@@ -71,7 +78,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:7001";
+    const origin = getAppBaseUrl();
 
     const session = await getStripe().checkout.sessions.create({
       customer: customerId,

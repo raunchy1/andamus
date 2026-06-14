@@ -35,10 +35,20 @@ function getCallbackPath(redirectTo?: string): string {
 export async function signInWithGoogle(redirectTo?: string) {
   const supabase = createClient();
 
+  const stateRes = await fetch("/api/auth/oauth-state", { method: "POST" });
+  if (!stateRes.ok) {
+    throw new Error("Failed to initialize OAuth session");
+  }
+  const { state } = (await stateRes.json()) as { state: string };
+
+  const callbackUrl = getCallbackPath(redirectTo);
+  const separator = callbackUrl.includes("?") ? "&" : "?";
+  const redirectWithState = `${callbackUrl}${separator}state=${encodeURIComponent(state)}`;
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: getCallbackPath(redirectTo),
+      redirectTo: redirectWithState,
     },
   });
 
