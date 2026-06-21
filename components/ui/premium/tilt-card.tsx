@@ -91,7 +91,7 @@ export function TiltCard({
       }}
       className={cn(
         "group relative isolate overflow-hidden rounded-2xl transition-shadow",
-        "hover:shadow-[0_30px_60px_-25px_rgba(230,57,70,0.45)]",
+        "hover:shadow-[0_30px_60px_-25px_rgba(79, 179, 201,0.45)]",
         className
       )}
       {...props}

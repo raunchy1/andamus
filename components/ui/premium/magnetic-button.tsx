@@ -62,8 +62,8 @@ export function MagneticButton({
       className={cn(
         "group relative isolate inline-flex items-center justify-center overflow-hidden rounded-xl",
         "select-none px-7 py-3.5 font-bold uppercase tracking-widest text-sm",
-        "bg-[#e63946] text-white shadow-[0_10px_30px_-12px_rgba(230,57,70,0.7)]",
-        "transition-shadow hover:shadow-[0_20px_45px_-15px_rgba(230,57,70,0.9)]",
+        "bg-[#4FB3C9] text-white shadow-[0_10px_30px_-12px_rgba(79, 179, 201,0.7)]",
+        "transition-shadow hover:shadow-[0_20px_45px_-15px_rgba(79, 179, 201,0.9)]",
         "active:scale-[0.97]",
         className
       )}

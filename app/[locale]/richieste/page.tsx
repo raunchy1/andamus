@@ -105,16 +105,16 @@ function RequestsContent() {
     <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
       {/* Header — Premium Aurora */}
       <AuroraBackground className="border-b border-white/5 px-4 py-8 lg:py-12 relative" showRadialMask={false}>
-        <OrbGlow className="-top-20 -right-32" color="#e63946" size={300} opacity={0.30} />
+        <OrbGlow className="-top-20 -right-32" color="#4FB3C9" size={300} opacity={0.30} />
         <div className="mx-auto max-w-5xl relative">
           <Reveal>
           <div className="mb-4 flex items-center gap-2">
-            <Link href={`/${locale}/cerca`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#e5e2e1]/60 hover:text-[#ffb3b1] transition-colors">
+            <Link href={`/${locale}/cerca`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#e5e2e1]/60 hover:text-[#4FB3C9] transition-colors">
               <ArrowLeft className="h-4 w-4" />
               {t("backToSearch")}
             </Link>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb3b1]/30 bg-[#ffb3b1]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] backdrop-blur-md mb-4">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#4FB3C9]/30 bg-[#4FB3C9]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9] backdrop-blur-md mb-4">
             <Sparkles className="h-3 w-3" />
             {t("subtitle")}
           </span>
@@ -131,7 +131,7 @@ function RequestsContent() {
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[200px]">
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("from")}</label>
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">{t("from")}</label>
               <LocationCombobox
                 value={origin}
                 onChange={setOrigin}
@@ -140,7 +140,7 @@ function RequestsContent() {
               />
             </div>
             <div className="flex-1 min-w-[200px]">
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("to")}</label>
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">{t("to")}</label>
               <LocationCombobox
                 value={destination}
                 onChange={setDestination}
@@ -149,7 +149,7 @@ function RequestsContent() {
               />
             </div>
             <div className="min-w-[140px]">
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1]">{t("date")}</label>
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">{t("date")}</label>
               <PremiumDatePicker
                 date={date}
                 onSelect={setDate}
@@ -161,7 +161,7 @@ function RequestsContent() {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="h-12 rounded-xl border border-white/10 bg-white/[0.03] px-4 text-[#ffb3b1] hover:bg-white/[0.06] hover:border-[#ffb3b1]/30 transition-all"
+              className="h-12 rounded-xl border border-white/10 bg-white/[0.03] px-4 text-[#4FB3C9] hover:bg-white/[0.06] hover:border-[#4FB3C9]/30 transition-all"
             >
               <SlidersHorizontal className="h-5 w-5" />
             </button>
@@ -179,7 +179,7 @@ function RequestsContent() {
         <div className="mx-auto max-w-5xl">
           {loading ? (
             <div className="py-20 text-center">
-              <Loader2 className="mx-auto h-10 w-10 animate-spin text-[#ffb3b1]" />
+              <Loader2 className="mx-auto h-10 w-10 animate-spin text-[#4FB3C9]" />
             </div>
           ) : requests.length === 0 ? (
             <Reveal>
@@ -197,7 +197,7 @@ function RequestsContent() {
                   tiltStrength={5}
                   className={`relative h-full rounded-3xl border ${
                     idx === 0
-                      ? "border-[#ffb3b1]/25 bg-gradient-to-br from-[#ffb3b1]/[0.07] via-[#e63946]/[0.04] to-transparent"
+                      ? "border-[#4FB3C9]/25 bg-gradient-to-br from-[#4FB3C9]/[0.07] via-[#4FB3C9]/[0.04] to-transparent"
                       : "border-white/8 bg-white/[0.025]"
                   } backdrop-blur-sm`}
                 >
@@ -206,7 +206,7 @@ function RequestsContent() {
                   className="group block p-6"
                 >
                   <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1]">
+                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9]">
                       <Calendar className="h-3.5 w-3.5" />
                       <span>{formatDate(req.date)}</span>
                       {req.time && (
@@ -224,12 +224,12 @@ function RequestsContent() {
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-[#e5e2e1]/60 mb-4">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.05] border border-white/8 px-2.5 py-1">
-                      <Users className="h-3.5 w-3.5 text-[#ffb3b1]" />
+                      <Users className="h-3.5 w-3.5 text-[#4FB3C9]" />
                       {seatLabel(req.seats_needed)}
                     </span>
                     {req.max_price !== null && (
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.05] border border-white/8 px-2.5 py-1">
-                        <Euro className="h-3.5 w-3.5 text-[#ffb3b1]" />
+                        <Euro className="h-3.5 w-3.5 text-[#4FB3C9]" />
                         {t("maxPrice", { price: req.max_price })}
                       </span>
                     )}
@@ -241,7 +241,7 @@ function RequestsContent() {
                       </div>
                       <p className="text-sm font-bold text-[#e5e2e1]">{req.profiles.name}</p>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-[#e5e2e1]/40 group-hover:translate-x-1 group-hover:text-[#ffb3b1] transition-all" />
+                    <ChevronRight className="h-5 w-5 text-[#e5e2e1]/40 group-hover:translate-x-1 group-hover:text-[#4FB3C9] transition-all" />
                   </div>
                 </Link>
                 </TiltCard>
@@ -268,7 +268,7 @@ export default function RequestsPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[#ffb3b1]" />
+        <Loader2 className="w-10 h-10 animate-spin text-[#4FB3C9]" />
       </div>
     }>
       <RequestsContent />

@@ -164,9 +164,9 @@ export default function VehiclesPage() {
 
         {/* Error */}
         {error && !loading && (
-          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-2xl px-4 py-4 mb-6">
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-sm text-red-400">{error}</p>
+          <div className="flex items-center gap-3 bg-bad/10 border border-bad/20 rounded-2xl px-4 py-4 mb-6">
+            <AlertCircle className="w-5 h-5 text-bad shrink-0" />
+            <p className="text-sm text-bad">{error}</p>
           </div>
         )}
 

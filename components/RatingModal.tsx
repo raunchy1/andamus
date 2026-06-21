@@ -153,7 +153,7 @@ export function RatingModal({
           <>
             {/* User Info */}
             <div className="mb-6 flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#4FB3C9]/10 text-[#4FB3C9]">
                 {reviewedUser.avatar_url ? (
                   <Image
                     src={reviewedUser.avatar_url}
@@ -196,7 +196,7 @@ export function RatingModal({
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-center text-sm font-medium text-[#e63946]">
+              <p className="mt-2 text-center text-sm font-medium text-[#4FB3C9]">
                 {rating === 1 && t("rating1")}
                 {rating === 2 && t("rating2")}
                 {rating === 3 && t("rating3")}
@@ -215,7 +215,7 @@ export function RatingModal({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder={t("describeExperience")}
                 rows={3}
-                className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-4 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[#e63946]"
+                className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-4 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[#4FB3C9]"
               />
             </div>
 
@@ -223,7 +223,7 @@ export function RatingModal({
             <button
               onClick={handleSubmit}
               disabled={loading || rating === 0}
-              className="w-full rounded-xl bg-[#e63946] py-4 text-base font-semibold text-white shadow-lg shadow-[#e63946]/25 transition-all hover:bg-[#c92a37] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-[#4FB3C9] py-4 text-base font-semibold text-white shadow-lg shadow-[#4FB3C9]/25 transition-all hover:bg-[#3d9db3] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin" />

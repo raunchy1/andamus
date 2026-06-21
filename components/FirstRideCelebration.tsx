@@ -17,7 +17,7 @@ interface ConfettiPiece {
 }
 
 function generateConfetti(count: number): ConfettiPiece[] {
-  const colors = ["#e63946", "#ffb3b1", "#ffd700", "#10b981", "#3b82f6", "#f59e0b"];
+  const colors = ["#4FB3C9", "#4FB3C9", "#ffd700", "#10b981", "#3b82f6", "#f59e0b"];
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -59,7 +59,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     first_booking: {
       title: t("firstBookingTitle"),
       subtitle: t("firstBookingSubtitle"),
-      icon: <Sparkles className="w-12 h-12 text-[#e63946]" />,
+      icon: <Sparkles className="w-12 h-12 text-[#4FB3C9]" />,
     },
     level_up: {
       title: title || t("levelUpTitle"),
@@ -69,7 +69,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     badge_earned: {
       title: title || t("badgeTitle"),
       subtitle: subtitle || t("badgeSubtitle"),
-      icon: <Trophy className="w-12 h-12 text-[#e63946]" />,
+      icon: <Trophy className="w-12 h-12 text-[#4FB3C9]" />,
     },
   };
 
@@ -128,13 +128,13 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
             </button>
 
             <div className="relative overflow-hidden rounded-3xl bg-[#131313] border border-white/10 shadow-2xl p-8 text-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#e63946]/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#4FB3C9]/10 to-transparent" />
 
               <motion.div
                 initial={{ scale: 0, rotate: -20 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 15, delay: 0.4 }}
-                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#e63946]/20 to-[#ffb3b1]/10 border border-[#e63946]/20 mb-6"
+                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#4FB3C9]/20 to-[#4FB3C9]/10 border border-[#4FB3C9]/20 mb-6"
               >
                 {content.icon}
               </motion.div>
@@ -162,7 +162,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 onClick={handleClose}
-                className="relative w-full py-3 rounded-xl bg-[#e63946] text-white font-semibold hover:bg-[#c92a37] transition-colors"
+                className="relative w-full py-3 rounded-xl bg-[#4FB3C9] text-white font-semibold hover:bg-[#3d9db3] transition-colors"
               >
                 {t("ctaButton")}
               </motion.button>

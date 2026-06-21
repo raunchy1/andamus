@@ -49,7 +49,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 group">
-              <Car className="h-6 w-6 text-[#e63946] transition-transform group-hover:scale-110" />
+              <Car className="h-6 w-6 text-[#4FB3C9] transition-transform group-hover:scale-110" />
               <span className="text-lg font-bold">Andamus</span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
@@ -57,7 +57,7 @@ export function Footer() {
             </p>
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#e63946]/10 text-[#e63946] text-sm font-medium hover:bg-[#e63946]/20 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#4FB3C9]/10 text-[#4FB3C9] text-sm font-medium hover:bg-[#4FB3C9]/20 transition-colors"
             >
               <Share2 className="h-4 w-4" />
               {t("shareAndamus")}

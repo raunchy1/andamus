@@ -35,7 +35,7 @@ export function BadgeUnlockNotification({
       exit={{ opacity: 0, y: -20, scale: 0.9 }}
       className="fixed bottom-[96px] right-6 z-[60]"
     >
-      <div className="bg-gradient-to-r from-[#e63946] to-[#c92a37] text-white rounded-2xl shadow-2xl p-6 max-w-sm border border-white/20">
+      <div className="bg-gradient-to-r from-[#4FB3C9] to-[#3d9db3] text-white rounded-2xl shadow-2xl p-6 max-w-sm border border-white/20">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-white/60 hover:text-white transition-colors"
@@ -279,7 +279,7 @@ export function LevelProgress({ points }: { points: number }) {
         </div>
         <div className="text-right">
           <p className="text-white/60 text-sm">{t("points")}</p>
-          <p className="text-[#e63946] text-2xl font-bold">{points}</p>
+          <p className="text-[#4FB3C9] text-2xl font-bold">{points}</p>
         </div>
       </div>
       
@@ -290,7 +290,7 @@ export function LevelProgress({ points }: { points: number }) {
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-[#e63946] to-[#ff6b6b] rounded-full"
+            className="h-full bg-gradient-to-r from-[#4FB3C9] to-[#4FB3C9] rounded-full"
           />
         </div>
         <div className="flex justify-between mt-2 text-xs text-white/40">
@@ -326,7 +326,7 @@ export function PointsInfo() {
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-6">
       <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <span className="text-[#e63946]">💎</span>
+        <span className="text-[#4FB3C9]">💎</span>
         {t("howToEarnPoints")}
       </h3>
       
@@ -337,7 +337,7 @@ export function PointsInfo() {
               <span className="text-lg">{item.icon}</span>
               <span className="text-white/80 text-sm">{t(`pointActions.${item.key}`)}</span>
             </div>
-            <span className="text-[#e63946] font-semibold text-sm">+{item.points} pts</span>
+            <span className="text-[#4FB3C9] font-semibold text-sm">+{item.points} pts</span>
           </div>
         ))}
       </div>

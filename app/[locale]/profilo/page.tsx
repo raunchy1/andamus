@@ -726,7 +726,7 @@ export default function ProfilePage() {
           onTouchCancel={handleTouchCancel}
         >
         <AuroraBackground className="border-b border-white/5">
-          <OrbGlow className="-top-10 -right-20" color="#e63946" size={260} opacity={0.32} />
+          <OrbGlow className="-top-10 -right-20" color="#4FB3C9" size={260} opacity={0.32} />
           <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
             <div className="flex items-center gap-3">
               <Link href={`/${locale}/profilo`} className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
@@ -756,7 +756,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={() => setShowLogoutConfirm(true)}
-                className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-[#ffb3b1] hover:bg-white/[0.08] transition-all active:scale-95"
+                className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-[#4FB3C9] hover:bg-white/[0.08] transition-all active:scale-95"
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -771,7 +771,7 @@ export default function ProfilePage() {
               <svg className="custom-ring w-full h-full absolute">
                 <circle className="text-white/8" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
                 <circle
-                  className="text-[#ffb3b1]"
+                  className="text-[#4FB3C9]"
                   cx="80"
                   cy="80"
                   fill="transparent"
@@ -784,10 +784,10 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffb3b1] mb-1">{t("level")}</span>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-1">{t("level")}</span>
                 <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
-              <div className="absolute -bottom-2 bg-[#e63946] text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-[#e63946]/40">
+              <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
                 {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
@@ -806,7 +806,7 @@ export default function ProfilePage() {
             {/* Onboarding Milestone Banner */}
             {profile && (!profile.avatar_url || !profile.car_model || !profile.phone_verified) && (
               <div 
-                className="w-full mt-6 bg-gradient-to-br from-[#f4a261]/20 to-[#e63946]/10 border border-[#f4a261]/30 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
+                className="w-full mt-6 bg-gradient-to-br from-[#4FB3C9]/20 to-[#4FB3C9]/10 border border-[#4FB3C9]/30 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
                 onClick={() => document.getElementById("profile-settings")?.scrollIntoView({ behavior: "smooth" })}
               >
                 <div className="flex-1">
@@ -815,8 +815,8 @@ export default function ProfilePage() {
                     Aggiungi {!profile.avatar_url ? "una foto" : !profile.phone_verified ? "il tuo numero" : "la tua auto"} per aumentare la fiducia e ricevere più prenotazioni.
                   </p>
                 </div>
-                <div className="ml-4 shrink-0 bg-[#f4a261]/20 p-2 rounded-full">
-                  <ChevronRight className="w-4 h-4 text-[#f4a261]" />
+                <div className="ml-4 shrink-0 bg-[#4FB3C9]/20 p-2 rounded-full">
+                  <ChevronRight className="w-4 h-4 text-[#4FB3C9]" />
                 </div>
               </div>
             )}
@@ -827,8 +827,8 @@ export default function ProfilePage() {
             <RevealStagger className="grid grid-cols-2 gap-3">
               <RevealItem>
               <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                  <Car className="w-5 h-5 text-[#ffb3b1]" />
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                  <Car className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">
@@ -840,8 +840,8 @@ export default function ProfilePage() {
               </RevealItem>
               <RevealItem>
               <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                  <Route className="w-5 h-5 text-[#ffb3b1]" />
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                  <Route className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">
@@ -853,8 +853,8 @@ export default function ProfilePage() {
               </RevealItem>
               <RevealItem>
               <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                  <Star className="w-5 h-5 text-[#ffb3b1]" />
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                  <Star className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">
@@ -879,8 +879,8 @@ export default function ProfilePage() {
               </RevealItem>
               <RevealItem>
               <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                  <Repeat className="w-5 h-5 text-[#ffb3b1]" />
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                  <Repeat className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-on-surface">
@@ -892,8 +892,8 @@ export default function ProfilePage() {
               </RevealItem>
               <RevealItem>
               <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                  <MessageCircle className="w-5 h-5 text-[#ffb3b1]" />
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                  <MessageCircle className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
                   <p className="text-sm font-extrabold text-on-surface truncate max-w-[140px]">
@@ -955,16 +955,16 @@ export default function ProfilePage() {
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
             <Reveal>
             <Link href={`/${locale}/profilo/veicoli`} className="block">
-              <div className="bg-gradient-to-br from-[#ffb3b1]/[0.08] to-transparent border border-[#ffb3b1]/20 rounded-2xl p-5 flex items-center gap-4 hover:border-[#ffb3b1]/40 hover:from-[#ffb3b1]/[0.12] transition-all group">
-                <div className="w-14 h-14 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <Car className="w-7 h-7 text-[#ffb3b1]" />
+              <div className="bg-gradient-to-br from-[#4FB3C9]/[0.08] to-transparent border border-[#4FB3C9]/20 rounded-2xl p-5 flex items-center gap-4 hover:border-[#4FB3C9]/40 hover:from-[#4FB3C9]/[0.12] transition-all group">
+                <div className="w-14 h-14 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Car className="w-7 h-7 text-[#4FB3C9]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-headline font-bold text-lg text-on-surface">I tuoi Veicoli</p>
                   <p className="text-sm text-on-surface/50 truncate">Gestisci il tuo garage, aggiungi foto e comfort</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffb3b1] mt-1">Nuovo ✨</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9] mt-1">Nuovo ✨</p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-on-surface/30 group-hover:text-[#ffb3b1] group-hover:translate-x-1 transition-all flex-shrink-0" />
+                <ChevronRight className="w-6 h-6 text-on-surface/30 group-hover:text-[#4FB3C9] group-hover:translate-x-1 transition-all flex-shrink-0" />
               </div>
             </Link>
             </Reveal>
@@ -1232,7 +1232,7 @@ export default function ProfilePage() {
                   <EmptyState
                     title={t("noRecurringRides")}
                     description={t("noRecurringRidesDescription")}
-                    icon={<Repeat className="w-12 h-12 text-[#e63946]" />}
+                    icon={<Repeat className="w-12 h-12 text-[#4FB3C9]" />}
                     action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
                   />
                 ) : (
@@ -1277,7 +1277,7 @@ export default function ProfilePage() {
                   <EmptyState
                     title={t("noAlerts")}
                     description={t("noAlertsDescription")}
-                    icon={<Bell className="w-12 h-12 text-[#e63946]" />}
+                    icon={<Bell className="w-12 h-12 text-[#4FB3C9]" />}
                     action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
                   />
                 ) : (
@@ -1390,7 +1390,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-on-surface pb-16 relative">
         <AuroraBackground className="absolute inset-x-0 top-0 h-[520px] -z-10 pointer-events-none" showRadialMask={false}>
-          <OrbGlow className="-top-20 -left-20" color="#e63946" size={340} opacity={0.30} />
+          <OrbGlow className="-top-20 -left-20" color="#4FB3C9" size={340} opacity={0.30} />
         </AuroraBackground>
         <div className="max-w-6xl mx-auto px-8 py-10 relative">
           <Reveal>
@@ -1399,7 +1399,7 @@ export default function ProfilePage() {
               <svg className="custom-ring w-full h-full absolute">
                 <circle className="text-white/8" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
                 <circle
-                  className="text-[#ffb3b1]"
+                  className="text-[#4FB3C9]"
                   cx="96"
                   cy="96"
                   fill="transparent"
@@ -1412,10 +1412,10 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-[#ffb3b1] mb-1">{t("level")}</span>
+                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-1">{t("level")}</span>
                 <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
-              <div className="absolute -bottom-2 bg-[#e63946] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-[#e63946]/40">
+              <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
                 {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
@@ -1438,8 +1438,8 @@ export default function ProfilePage() {
           <RevealStagger className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
             <RevealItem>
             <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                <Car className="w-6 h-6 text-[#ffb3b1]" />
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                <Car className="w-6 h-6 text-[#4FB3C9]" />
               </div>
               <div>
                 <p className="text-4xl font-extrabold text-on-surface">
@@ -1451,8 +1451,8 @@ export default function ProfilePage() {
             </RevealItem>
             <RevealItem>
             <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                <Route className="w-6 h-6 text-[#ffb3b1]" />
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                <Route className="w-6 h-6 text-[#4FB3C9]" />
               </div>
               <div>
                 <p className="text-4xl font-extrabold">
@@ -1464,8 +1464,8 @@ export default function ProfilePage() {
             </RevealItem>
             <RevealItem>
             <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#ffb3b1]/10 ring-1 ring-[#ffb3b1]/20">
-                <Star className="w-6 h-6 text-[#ffb3b1]" />
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
+                <Star className="w-6 h-6 text-[#4FB3C9]" />
               </div>
               <div>
                 <p className="text-4xl font-extrabold text-on-surface">
@@ -1688,7 +1688,7 @@ export default function ProfilePage() {
                       <EmptyState
                         title={t("noRecurringRides")}
                         description={t("noRecurringRidesDescription")}
-                        icon={<Repeat className="w-12 h-12 text-[#e63946]" />}
+                        icon={<Repeat className="w-12 h-12 text-[#4FB3C9]" />}
                         action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
                       />
                     ) : (
@@ -1733,7 +1733,7 @@ export default function ProfilePage() {
                       <EmptyState
                         title={t("noAlerts")}
                         description={t("noAlertsDescription")}
-                        icon={<Bell className="w-12 h-12 text-[#e63946]" />}
+                        icon={<Bell className="w-12 h-12 text-[#4FB3C9]" />}
                         action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
                       />
                     ) : (

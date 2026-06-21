@@ -57,8 +57,8 @@ export function MeetYourRide({
       <div className="mb-10">
         {/* Section header */}
         <div className="flex items-center gap-2 mb-5">
-          <div className="w-8 h-8 rounded-xl bg-[#ffb3b1]/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-[#ffb3b1]" />
+          <div className="w-8 h-8 rounded-xl bg-[#4FB3C9]/10 flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-[#4FB3C9]" />
           </div>
           <div>
             <h3 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40">
@@ -72,7 +72,7 @@ export function MeetYourRide({
 
         <TiltCard
           tiltStrength={3}
-          className="bg-gradient-to-br from-[#ffb3b1]/[0.06] via-transparent to-transparent border border-[#ffb3b1]/15 rounded-3xl overflow-hidden"
+          className="bg-gradient-to-br from-[#4FB3C9]/[0.06] via-transparent to-transparent border border-[#4FB3C9]/15 rounded-3xl overflow-hidden"
         >
           {/* Vehicle gallery */}
           {vehicle.images.length > 0 ? (
@@ -132,21 +132,21 @@ export function MeetYourRide({
             <div className="grid grid-cols-3 gap-3 mb-4">
               {vehicle.seats_available && (
                 <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
-                  <Users className="w-5 h-5 text-[#ffb3b1]" />
+                  <Users className="w-5 h-5 text-[#4FB3C9]" />
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40">Posti</p>
                   <p className="font-bold text-on-surface">{vehicle.seats_available}</p>
                 </div>
               )}
               {vehicle.fuel_type && (
                 <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
-                  <Fuel className="w-5 h-5 text-[#ffb3b1]" />
+                  <Fuel className="w-5 h-5 text-[#4FB3C9]" />
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40">Motore</p>
                   <p className="font-bold text-on-surface text-center text-sm">{fuelLabel}</p>
                 </div>
               )}
               {vehicle.transmission && (
                 <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
-                  <Settings className="w-5 h-5 text-[#ffb3b1]" />
+                  <Settings className="w-5 h-5 text-[#4FB3C9]" />
                   <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40">Cambio</p>
                   <p className="font-bold text-on-surface text-center text-sm">{transLabel}</p>
                 </div>
@@ -164,9 +164,9 @@ export function MeetYourRide({
                 </div>
               )}
               {score.total >= 80 && (
-                <div className="flex items-center gap-1.5 bg-[#ffb3b1]/10 border border-[#ffb3b1]/20 px-3 py-1.5 rounded-full">
-                  <Star className="w-3.5 h-3.5 text-[#ffb3b1] fill-current" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#ffb3b1]">
+                <div className="flex items-center gap-1.5 bg-[#4FB3C9]/10 border border-[#4FB3C9]/20 px-3 py-1.5 rounded-full">
+                  <Star className="w-3.5 h-3.5 text-[#4FB3C9] fill-current" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#4FB3C9]">
                     Profilo Completo
                   </span>
                 </div>

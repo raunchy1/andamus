@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  */
 export function OrbGlow({
   className,
-  color = "#e63946",
+  color = "#4FB3C9",
   size = 360,
   blur = 60,
   opacity = 0.45,

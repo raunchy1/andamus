@@ -165,7 +165,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
                   <button
                     onClick={() => handleDeleteImage(img.id)}
                     disabled={deletingImg === img.id}
-                    className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-black/60 text-white hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100 active:opacity-100"
+                    className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-black/60 text-white hover:bg-bad transition-all opacity-0 group-hover:opacity-100 active:opacity-100"
                   >
                     {deletingImg === img.id ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />

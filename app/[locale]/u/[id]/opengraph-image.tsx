@@ -79,7 +79,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             width: 400,
             height: 400,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(230,57,70,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(79, 179, 201,0.12) 0%, transparent 70%)",
           }}
         />
         <div
@@ -101,7 +101,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
               width: 44,
               height: 44,
               borderRadius: 12,
-              background: "#e63946",
+              background: "#4FB3C9",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -125,7 +125,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
               width: 180,
               height: 180,
               borderRadius: 36,
-              background: avatarUrl ? "transparent" : "linear-gradient(135deg, #e63946 0%, #c92a37 100%)",
+              background: avatarUrl ? "transparent" : "linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -201,11 +201,11 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             style={{
               fontSize: 20,
               fontWeight: 600,
-              color: "#e63946",
-              background: "rgba(230,57,70,0.1)",
+              color: "#4FB3C9",
+              background: "rgba(79, 179, 201,0.1)",
               padding: "10px 24px",
               borderRadius: 10,
-              border: "1px solid rgba(230,57,70,0.3)",
+              border: "1px solid rgba(79, 179, 201,0.3)",
             }}
           >
             {titleText}

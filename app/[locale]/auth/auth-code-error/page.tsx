@@ -81,11 +81,11 @@ export default async function AuthCodeErrorPage({
 
   return (
     <div className="min-h-[100dvh] bg-[#0a0a0a] flex items-center justify-center px-6 py-16">
-      <div className="max-w-md w-full text-center space-y-8 bg-[#141417] border border-white/5 rounded-3xl p-8 shadow-[0_30px_80px_-25px_rgba(230,57,70,0.15)]">
+      <div className="max-w-md w-full text-center space-y-8 bg-[#141417] border border-white/5 rounded-3xl p-8 shadow-[0_30px_80px_-25px_rgba(79, 179, 201,0.15)]">
         
         {/* Warning Icon */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e63946]/10 border border-[#e63946]/20 shadow-[0_0_15px_rgba(230,57,70,0.1)]">
-          <AlertTriangle className="h-8 w-8 text-[#e63946]" />
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4FB3C9]/10 border border-[#4FB3C9]/20 shadow-[0_0_15px_rgba(79, 179, 201,0.1)]">
+          <AlertTriangle className="h-8 w-8 text-[#4FB3C9]" />
         </div>
 
         {/* Diagnostic Titles */}
@@ -106,7 +106,7 @@ export default async function AuthCodeErrorPage({
         {/* Developer Debug Box (Dev mode only) */}
         {isDev && (
           <div className="text-left bg-[#0f0f11] border border-white/10 rounded-2xl p-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#ffb3b1] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#4FB3C9] uppercase tracking-wider">
               <Terminal className="w-3.5 h-3.5" />
               <span>Developer Diagnostics</span>
             </div>
@@ -122,7 +122,7 @@ export default async function AuthCodeErrorPage({
         <div className="flex flex-col gap-3 pt-2">
           <Link
             href={`/${locale}/profilo`}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#e63946] px-6 py-4 text-sm font-bold text-white hover:bg-[#c92a37] transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(230,57,70,0.4)]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#4FB3C9] px-6 py-4 text-sm font-bold text-white hover:bg-[#3d9db3] transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(79, 179, 201,0.4)]"
           >
             <RefreshCw className="w-4 h-4" />
             <span>{locale === "it" ? "Riprova l'accesso" : locale === "en" ? "Retry Login" : "Erneut versuchen"}</span>

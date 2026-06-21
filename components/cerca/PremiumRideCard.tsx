@@ -72,20 +72,20 @@ export function PremiumRideCard({
         }}
         className={`group relative block overflow-hidden rounded-2xl ${isGrid ? "p-6" : "p-4 sm:p-6"} transition-all duration-300 active:scale-[0.98] cursor-pointer border ${
           isFeatured
-            ? "border-[#e63946]/20 bg-gradient-to-br from-[#e63946]/[0.06] via-transparent to-transparent"
+            ? "border-[#4FB3C9]/20 bg-gradient-to-br from-[#4FB3C9]/[0.06] via-transparent to-transparent"
             : "border-white/[0.06] bg-[#111111] hover:bg-[#141414] hover:border-white/[0.1]"
         }`}
         style={{
           boxShadow: isFeatured
-            ? "0 4px 24px rgba(230,57,70,0.08), inset 0 1px 0 rgba(255,255,255,0.03)"
+            ? "0 4px 24px rgba(79, 179, 201,0.08), inset 0 1px 0 rgba(255,255,255,0.03)"
             : "0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.02)",
         }}
       >
         {/* Scarcity alert bubble if applicable */}
         {activity.seatsScarcityText && (
-          <div className="absolute top-0 right-0 left-0 bg-[#e63946]/10 border-b border-[#e63946]/15 py-1 px-4 text-center">
-            <span className="text-[9px] font-extrabold tracking-widest text-[#e63946] uppercase animate-pulse flex items-center justify-center gap-1">
-              <Zap className="w-2.5 h-2.5 fill-[#e63946]" />
+          <div className="absolute top-0 right-0 left-0 bg-[#4FB3C9]/10 border-b border-[#4FB3C9]/15 py-1 px-4 text-center">
+            <span className="text-[9px] font-extrabold tracking-widest text-[#4FB3C9] uppercase animate-pulse flex items-center justify-center gap-1">
+              <Zap className="w-2.5 h-2.5 fill-[#4FB3C9]" />
               {activity.seatsScarcityText}
             </span>
           </div>
@@ -94,12 +94,12 @@ export function PremiumRideCard({
         {/* Top Row: Date/Time + Price */}
         <div className={`flex justify-between items-start ${activity.seatsScarcityText ? "mt-5" : ""} mb-4 sm:mb-6 gap-4`}>
           <div className="space-y-1 min-w-0">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#e63946]">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9]">
               {isFeatured && (
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#e63946] animate-pulse" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#4FB3C9] animate-pulse" />
               )}
               {ride.is_boosted && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#f4a261]/20 border border-[#f4a261]/50 text-[#f4a261] text-[8px] tracking-normal font-extrabold animate-pulse mr-1">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#4FB3C9]/20 border border-[#4FB3C9]/50 text-[#4FB3C9] text-[8px] tracking-normal font-extrabold animate-pulse mr-1">
                   🔥 RICHIESTA ALTA
                 </span>
               )}
@@ -128,17 +128,17 @@ export function PremiumRideCard({
         {/* Path Indicator */}
         <div className={`relative flex items-center justify-between ${isGrid ? "py-6 mb-4" : "py-6 sm:py-8"}`}>
           <div className="absolute left-0 right-0 h-[2px] bg-white/[0.06]" />
-          <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-[#e63946] via-[#f4a261] to-[#e63946] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
+          <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-[#4FB3C9] via-[#4FB3C9] to-[#4FB3C9] scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
 
           <div className="relative z-10 flex flex-col items-start pr-2 sm:pr-4 max-w-[40%]">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#e63946] mb-1 truncate max-w-full">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#4FB3C9] mb-1 truncate max-w-full">
               {ride.from_city}
             </span>
-            <div className="w-3 h-3 rounded-full bg-[#e63946] ring-4 ring-[#0a0a0a]" />
+            <div className="w-3 h-3 rounded-full bg-[#4FB3C9] ring-4 ring-[#0a0a0a]" />
           </div>
 
           <div className="relative z-10 flex flex-col items-center px-2 sm:px-4 flex-shrink-0">
-            <Car className="w-5 h-5 sm:w-6 sm:h-6 text-[#e63946] transition-transform group-hover:scale-110" />
+            <Car className="w-5 h-5 sm:w-6 sm:h-6 text-[#4FB3C9] transition-transform group-hover:scale-110" />
           </div>
 
           <div className="relative z-10 flex flex-col items-end pl-2 sm:pl-4 max-w-[40%]">
@@ -162,7 +162,7 @@ export function PremiumRideCard({
                 });
                 window.location.href = `/${locale}/u/${ride.driver_id}`;
               }}
-              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/[0.08] bg-white/[0.03] overflow-hidden flex-shrink-0 hover:ring-2 hover:ring-[#e63946]/40 transition-all cursor-pointer"
+              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/[0.08] bg-white/[0.03] overflow-hidden flex-shrink-0 hover:ring-2 hover:ring-[#4FB3C9]/40 transition-all cursor-pointer"
             >
               {ride.profiles.avatar_url ? (
                 <Image
@@ -191,7 +191,7 @@ export function PremiumRideCard({
                 }}
                 className="flex items-center gap-1 min-w-0 cursor-pointer"
               >
-                <p className="font-semibold text-sm text-[#f8f8f8] truncate hover:text-[#e63946] transition-colors">
+                <p className="font-semibold text-sm text-[#f8f8f8] truncate hover:text-[#4FB3C9] transition-colors">
                   {ride.profiles.name}
                 </p>
                 {metrics.isOnlineNow && (
@@ -200,7 +200,7 @@ export function PremiumRideCard({
               </div>
               <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                 <div className="flex items-center gap-0.5">
-                  <Star className="w-2.5 h-2.5 text-[#f4a261] fill-[#f4a261]" />
+                  <Star className="w-2.5 h-2.5 text-[#4FB3C9] fill-[#4FB3C9]" />
                   <span className="text-[10px] font-bold text-[#a0a0a0]">
                     {ride.profiles.rating}
                   </span>
@@ -211,7 +211,7 @@ export function PremiumRideCard({
                   Fidato
                 </span>
                 <span className="text-white/20 text-[9px]">•</span>
-                <span className="text-[9px] font-bold text-[#f4a261] bg-[#f4a261]/8 border border-[#f4a261]/20 px-1 py-0.5 rounded-md">
+                <span className="text-[9px] font-bold text-[#4FB3C9] bg-[#4FB3C9]/8 border border-[#4FB3C9]/20 px-1 py-0.5 rounded-md">
                   {metrics.responseTimeText}
                 </span>
                 <span className="text-white/20 text-[9px]">•</span>
@@ -222,7 +222,7 @@ export function PremiumRideCard({
             </div>
           </div>
 
-          <ChevronRight className="w-5 h-5 text-[#444444] group-hover:translate-x-1 group-hover:text-[#e63946] transition-all flex-shrink-0" />
+          <ChevronRight className="w-5 h-5 text-[#444444] group-hover:translate-x-1 group-hover:text-[#4FB3C9] transition-all flex-shrink-0" />
         </div>
       </Link>
     </motion.div>

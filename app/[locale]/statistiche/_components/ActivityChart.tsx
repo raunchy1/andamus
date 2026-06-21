@@ -29,7 +29,7 @@ export function ActivityChart({ data, driverLabel, passengerLabel }: ActivityCha
           }}
           labelStyle={{ color: "#fff" }}
         />
-        <Bar dataKey="driver" name={driverLabel} fill="#e63946" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="driver" name={driverLabel} fill="#4FB3C9" radius={[4, 4, 0, 0]} />
         <Bar dataKey="passenger" name={passengerLabel} fill="#3b82f6" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>

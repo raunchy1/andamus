@@ -43,7 +43,7 @@ function PremiumSuccessContent() {
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
           <p className="text-error mb-4">{t("verificationFailed")}</p>
-          <Link href={`/${locale}`} className="inline-flex items-center justify-center rounded-xl bg-[#e63946] px-6 py-3 text-white font-medium hover:bg-[#c92a37] transition-colors">
+          <Link href={`/${locale}`} className="inline-flex items-center justify-center rounded-xl bg-[#4FB3C9] px-6 py-3 text-white font-medium hover:bg-[#3d9db3] transition-colors">
             {t("backToHome")}
           </Link>
         </div>
@@ -71,7 +71,7 @@ function PremiumSuccessContent() {
         </p>
         <Link
           href={`/${locale}/profilo`}
-          className="inline-flex items-center justify-center rounded-xl bg-[#e63946] px-6 py-3 text-white font-medium hover:bg-[#c92a37] transition-colors"
+          className="inline-flex items-center justify-center rounded-xl bg-[#4FB3C9] px-6 py-3 text-white font-medium hover:bg-[#3d9db3] transition-colors"
         >
           {t("goToProfile")}
         </Link>
@@ -84,7 +84,7 @@ export default function PremiumSuccessPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[#ffb3b1]" />
+        <Loader2 className="w-10 h-10 animate-spin text-[#4FB3C9]" />
       </div>
     }>
       <PremiumSuccessContent />

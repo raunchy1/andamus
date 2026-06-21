@@ -58,7 +58,7 @@ export default async function manifest({
     start_url: `/${locale}`,
     display: "standalone",
     background_color: "#0a0a0a",
-    theme_color: "#e63946",
+    theme_color: "#0A0A0A",
     orientation: "portrait",
     scope: "/",
     lang: locale,

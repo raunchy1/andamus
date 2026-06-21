@@ -193,7 +193,7 @@ export default function VerificationPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#e63946]" />
+        <Loader2 className="h-12 w-12 animate-spin text-[#4FB3C9]" />
       </div>
     );
   }
@@ -215,7 +215,7 @@ export default function VerificationPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Status Card */}
-        <div className="mb-8 rounded-3xl bg-gradient-to-br from-[#e63946] to-[#c92a37] p-8 text-white">
+        <div className="mb-8 rounded-3xl bg-gradient-to-br from-[#4FB3C9] to-[#3d9db3] p-8 text-white">
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20">
               <Shield className="h-10 w-10" />
@@ -304,7 +304,7 @@ export default function VerificationPage() {
             </div>
 
             {status.id !== "verified" && status.id !== "pending" && (
-              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#e63946] hover:bg-white/10">
+              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#4FB3C9] hover:bg-white/10">
                 <Upload className="mb-2 h-8 w-8 text-white/50" />
                 <span className="text-sm text-white/70">{t("uploadIdCard")}</span>
                 <span className="mt-1 text-xs text-white/40">{t("pngJpgUpTo5mb")}</span>
@@ -357,7 +357,7 @@ export default function VerificationPage() {
             </div>
 
             {status.driver !== "verified" && status.driver !== "pending" && (
-              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#e63946] hover:bg-white/10">
+              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#4FB3C9] hover:bg-white/10">
                 <Upload className="mb-2 h-8 w-8 text-white/50" />
                 <span className="text-sm text-white/70">{t("uploadLicense")}</span>
                 <span className="mt-1 text-xs text-white/40">{t("pngJpgUpTo5mb")}</span>

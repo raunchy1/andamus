@@ -229,7 +229,7 @@ export function VehicleCard({
                     onDelete(vehicle.id);
                   }}
                   aria-label="Elimina veicolo"
-                  className="p-2 rounded-xl bg-surface-container-high hover:bg-red-500/20 text-on-surface/60 hover:text-red-400 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                  className="p-2 rounded-xl bg-surface-container-high hover:bg-bad/20 text-on-surface/60 hover:text-bad transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bad"
                 >
                   <Trash2 className="w-4 h-4" aria-hidden="true" />
                 </button>

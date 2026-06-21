@@ -135,13 +135,13 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
   return (
     <div className="relative min-h-screen bg-[#0b0b0f] text-white pt-24 pb-16 px-4 overflow-hidden">
       {/* Decorative Orbs */}
-      <OrbGlow color="#e63946" className="top-12 left-1/4 w-[400px] h-[400px] opacity-15" />
-      <OrbGlow color="#f4a261" className="bottom-12 right-1/4 w-[500px] h-[500px] opacity-10" />
+      <OrbGlow color="#4FB3C9" className="top-12 left-1/4 w-[400px] h-[400px] opacity-15" />
+      <OrbGlow color="#4FB3C9" className="bottom-12 right-1/4 w-[500px] h-[500px] opacity-10" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Header section */}
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#e63946]/30 bg-[#e63946]/10 text-[#f4a261] text-xs font-semibold backdrop-blur-md shadow-lg shadow-[#e63946]/5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#4FB3C9]/30 bg-[#4FB3C9]/10 text-[#4FB3C9] text-xs font-semibold backdrop-blur-md shadow-lg shadow-[#4FB3C9]/5">
             <Sparkles className="w-3.5 h-3.5" />
             Nodi di Viaggio Popolari
           </div>
@@ -172,10 +172,10 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
                       <Icon className="w-6 h-6" />
                     </div>
                     <div className="space-y-1">
-                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f4a261]">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9]">
                         {hub.type === "airport" ? "Hub Aeroportuale" : "Snodo Universitario"}
                       </div>
-                      <h3 className="text-xl font-heading font-bold text-white group-hover:text-[#f4a261] transition">
+                      <h3 className="text-xl font-heading font-bold text-white group-hover:text-[#4FB3C9] transition">
                         {hub.name}
                       </h3>
                     </div>
@@ -195,10 +195,10 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
                         <Link
                           key={sIdx}
                           href={`/${locale}/cerca?from=${encodeURIComponent(shortcut.from)}&to=${encodeURIComponent(shortcut.to)}`}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.03] text-xs text-white/80 hover:bg-white/[0.08] hover:border-white/[0.1] hover:text-[#f4a261] transition"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.03] text-xs text-white/80 hover:bg-white/[0.08] hover:border-white/[0.1] hover:text-[#4FB3C9] transition"
                         >
                           {shortcut.label}
-                          <ChevronRight className="w-3 h-3 text-[#f4a261]/80" />
+                          <ChevronRight className="w-3 h-3 text-[#4FB3C9]/80" />
                         </Link>
                       ))}
                     </div>
@@ -210,7 +210,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
                       <div className="text-xs font-bold uppercase tracking-widest text-white/30">
                         Prossime Partenze Attive
                       </div>
-                      <span className="text-[10px] font-bold bg-[#e63946]/10 text-[#f4a261] px-2 py-0.5 rounded-full border border-[#e63946]/20">
+                      <span className="text-[10px] font-bold bg-[#4FB3C9]/10 text-[#4FB3C9] px-2 py-0.5 rounded-full border border-[#4FB3C9]/20">
                         {hub.totalActiveCount} passaggi attivi
                       </span>
                     </div>
@@ -244,7 +244,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
                               </div>
                             </div>
                             <div className="text-right">
-                              <span className="font-bold text-[#f4a261]">€{ride.price}</span>
+                              <span className="font-bold text-[#4FB3C9]">€{ride.price}</span>
                               <div className="text-[9px] text-white/40">Posti: {ride.seats_available}</div>
                             </div>
                           </Link>
@@ -253,7 +253,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
                     ) : (
                       <div className="text-center py-6 px-4 rounded-2xl border border-dashed border-white/[0.04] bg-white/[0.01] text-xs text-white/40">
                         Nessuna partenza diretta registrata per le prossime ore.
-                        <Link href={`/${locale}/offri?from=${encodeURIComponent(hub.city)}`} className="block mt-2 font-semibold text-[#f4a261] hover:underline">
+                        <Link href={`/${locale}/offri?from=${encodeURIComponent(hub.city)}`} className="block mt-2 font-semibold text-[#4FB3C9] hover:underline">
                           Pubblica il primo tragitto!
                         </Link>
                       </div>

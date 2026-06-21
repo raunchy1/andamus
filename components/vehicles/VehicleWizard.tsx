@@ -579,8 +579,8 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                       </div>
                     )}
                     {img.error && (
-                      <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
-                        <AlertCircle className="w-6 h-6 text-red-400" />
+                      <div className="absolute inset-0 bg-bad/20 flex items-center justify-center">
+                        <AlertCircle className="w-6 h-6 text-bad" />
                       </div>
                     )}
                     {idx === 0 && (
@@ -591,7 +591,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                     <button
                       type="button"
                       onClick={() => removeImage(img.id)}
-                      className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white hover:bg-red-500 transition-all"
+                      className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white hover:bg-bad transition-all"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>

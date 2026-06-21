@@ -112,7 +112,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
                       <span>{language.name}</span>
                     </div>
                     {locale === language.code && (
-                      <Check className="h-4 w-4 text-[#e63946]" />
+                      <Check className="h-4 w-4 text-[#4FB3C9]" />
                     )}
                   </Link>
                 ))}

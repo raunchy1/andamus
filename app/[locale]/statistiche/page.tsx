@@ -326,7 +326,7 @@ export default function StatisticsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e63946]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4FB3C9]" />
       </div>
     );
   }
@@ -344,7 +344,7 @@ export default function StatisticsPage() {
             {t('backToProfile')}
           </Link>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-[#e63946]" />
+            <TrendingUp className="w-8 h-8 text-[#4FB3C9]" />
             {t('myStats')}
           </h1>
           <p className="text-white/60 mt-2">{t('subtitle')}</p>
@@ -365,7 +365,7 @@ export default function StatisticsPage() {
             suffix=" kg"
           />
           <StatCard 
-            icon={<Car className="w-6 h-6 text-[#e63946]" />}
+            icon={<Car className="w-6 h-6 text-[#4FB3C9]" />}
             value={stats.ridesAsDriver}
             label={t('asDriver')}
           />
@@ -401,7 +401,7 @@ export default function StatisticsPage() {
         {/* Activity Chart */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#e63946]" />
+            <Calendar className="w-5 h-5 text-[#4FB3C9]" />
             {t('activityLast12Months')}
           </h2>
           <div className="h-64">
@@ -417,7 +417,7 @@ export default function StatisticsPage() {
         {stats.favoriteRoutes.length > 0 && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#e63946]" />
+              <MapPin className="w-5 h-5 text-[#4FB3C9]" />
               {t('favoriteRoutes')}
             </h2>
             <div className="space-y-3">
@@ -456,7 +456,7 @@ export default function StatisticsPage() {
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <Clock className="w-5 h-5 text-[#e63946]" />
+              <Clock className="w-5 h-5 text-[#4FB3C9]" />
               {t('fullHistory')}
             </h2>
             
@@ -476,7 +476,7 @@ export default function StatisticsPage() {
               onClick={() => setActiveTab("driver")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "driver"
-                  ? "bg-[#e63946] text-white"
+                  ? "bg-[#4FB3C9] text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10"
               }`}
             >
@@ -487,7 +487,7 @@ export default function StatisticsPage() {
               onClick={() => setActiveTab("passenger")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "passenger"
-                  ? "bg-[#e63946] text-white"
+                  ? "bg-[#4FB3C9] text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10"
               }`}
             >
@@ -501,7 +501,7 @@ export default function StatisticsPage() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#e63946] outline-none"
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#4FB3C9] outline-none"
             >
               <option value="all">{t('allYears')}</option>
               {years.map(year => (
@@ -512,7 +512,7 @@ export default function StatisticsPage() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#e63946] outline-none"
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#4FB3C9] outline-none"
             >
               <option value="all">{t('allMonths')}</option>
               {Array.from({ length: 12 }, (_, i) => {
@@ -529,7 +529,7 @@ export default function StatisticsPage() {
             <select
               value={selectedRoute}
               onChange={(e) => setSelectedRoute(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#e63946] outline-none"
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#4FB3C9] outline-none"
             >
               <option value="all">{t('allRoutes')}</option>
               {uniqueRoutes.map(route => (
@@ -550,7 +550,7 @@ export default function StatisticsPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center gap-1">
-                      <div className="h-2 w-2 rounded-full bg-[#e63946]" />
+                      <div className="h-2 w-2 rounded-full bg-[#4FB3C9]" />
                       <div className="h-8 w-0.5 bg-white/20" />
                       <div className="h-2 w-2 rounded-full bg-white/40" />
                     </div>
@@ -593,7 +593,7 @@ export default function StatisticsPage() {
         {badges.length > 0 && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Award className="w-5 h-5 text-[#e63946]" />
+              <Award className="w-5 h-5 text-[#4FB3C9]" />
               {t('achievementHistory')}
             </h2>
             <div className="space-y-4">
@@ -689,7 +689,7 @@ function getBadgeDetails(type: string, translate: ReturnType<typeof useTranslati
       name: translate('badgeAmbassadorName'),
       description: translate('badgeAmbassadorDesc'),
       icon: "🏆",
-      color: "bg-red-500",
+      color: "bg-bad",
     },
   };
   

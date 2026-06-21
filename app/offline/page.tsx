@@ -12,9 +12,9 @@ export default function OfflinePage() {
       <div className="max-w-md w-full text-center">
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <div className="absolute inset-0 bg-[#e63946]/20 blur-2xl rounded-full" />
-            <div className="relative h-24 w-24 rounded-full bg-gradient-to-br from-[#e63946]/20 to-[#ffb3b1]/10 flex items-center justify-center border border-[#e63946]/20">
-              <WifiOff className="h-12 w-12 text-[#e63946]" />
+            <div className="absolute inset-0 bg-[#4FB3C9]/20 blur-2xl rounded-full" />
+            <div className="relative h-24 w-24 rounded-full bg-gradient-to-br from-[#4FB3C9]/20 to-[#4FB3C9]/10 flex items-center justify-center border border-[#4FB3C9]/20">
+              <WifiOff className="h-12 w-12 text-[#4FB3C9]" />
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@ export default function OfflinePage() {
         {/* Offline capabilities */}
         <div className="grid grid-cols-2 gap-3">
           <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 text-left">
-            <Clock className="w-5 h-5 text-[#ffb3b1] mb-2" />
+            <Clock className="w-5 h-5 text-[#4FB3C9] mb-2" />
             <h3 className="text-sm font-semibold text-white mb-1">Cronologia</h3>
             <p className="text-xs text-white/40">Le tue corse salvate sono disponibili offline</p>
           </div>
@@ -59,15 +59,15 @@ export default function OfflinePage() {
           <h3 className="text-white font-medium mb-2 text-sm">Cosa puoi fare:</h3>
           <ul className="text-white/40 text-sm space-y-1.5 text-left">
             <li className="flex items-start gap-2">
-              <span className="text-[#e63946] mt-0.5">•</span>
+              <span className="text-[#4FB3C9] mt-0.5">•</span>
               Verifica che il Wi-Fi o i dati mobili siano attivi
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-[#e63946] mt-0.5">•</span>
+              <span className="text-[#4FB3C9] mt-0.5">•</span>
               Prova a disattivare e riattivare la connessione
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-[#e63946] mt-0.5">•</span>
+              <span className="text-[#4FB3C9] mt-0.5">•</span>
               Controlla se ci sono problemi con la tua rete
             </li>
           </ul>

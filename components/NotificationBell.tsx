@@ -44,7 +44,7 @@ const notificationIcons = {
 const notificationColors = {
   booking_request: "bg-blue-500/20 text-blue-400",
   booking_accepted: "bg-green-500/20 text-green-400",
-  booking_rejected: "bg-red-500/20 text-red-400",
+  booking_rejected: "bg-bad/20 text-bad",
   new_message: "bg-purple-500/20 text-purple-400",
   new_review: "bg-yellow-500/20 text-yellow-400",
   ride_alert: "bg-orange-500/20 text-orange-400",
@@ -276,7 +276,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
+          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#4FB3C9] text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -292,7 +292,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
               <button
                 onClick={markAllAsRead}
                 disabled={loading}
-                className="flex items-center gap-1 text-xs text-[#e63946] hover:text-white transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 text-xs text-[#4FB3C9] hover:text-white transition-colors disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
@@ -337,7 +337,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                       <p className="mt-1 text-xs text-white/40">{timeAgo(notification.created_at, t)}</p>
                     </div>
                     {!notification.read && (
-                      <div className="mt-2 h-2 w-2 rounded-full bg-[#e63946]" />
+                      <div className="mt-2 h-2 w-2 rounded-full bg-[#4FB3C9]" />
                     )}
                   </Link>
                 );

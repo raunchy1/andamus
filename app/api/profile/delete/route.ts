@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
           subject: "Conferma eliminazione account | Andamus",
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111;">
-              <h2 style="color: #e63946;">Ciao ${userName},</h2>
+              <h2 style="color: #4FB3C9;">Ciao ${userName},</h2>
               <p>Ti confermiamo che la tua richiesta di eliminazione dell'account è stata elaborata con successo.</p>
               <p>In conformità al Regolamento Generale sulla Protezione dei Dati (GDPR - Regolamento UE 2016/679), tutti i tuoi dati personali, inclusi i passaggi pubblicati, le prenotazioni effettuate e la cronologia dei messaggi, sono stati rimossi in modo permanente e definitivo dai nostri database.</p>
               <p>Speriamo che la tua esperienza di viaggio condiviso con noi sia stata positiva e ti auguriamo il meglio per le tue future avventure in Sardegna.</p>

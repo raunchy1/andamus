@@ -24,8 +24,8 @@ export default function Error({
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
         <div className="flex justify-center mb-6">
-          <div className="h-24 w-24 rounded-full bg-red-500/10 flex items-center justify-center">
-            <AlertTriangle className="h-12 w-12 text-red-500" />
+          <div className="h-24 w-24 rounded-full bg-bad/10 flex items-center justify-center">
+            <AlertTriangle className="h-12 w-12 text-bad" />
           </div>
         </div>
         
@@ -46,7 +46,7 @@ export default function Error({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#e63946] text-white rounded-xl font-medium hover:bg-[#c92a37] transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#4FB3C9] text-white rounded-xl font-medium hover:bg-[#3d9db3] transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
             {t("retry")}

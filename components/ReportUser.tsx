@@ -61,7 +61,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={iconOnly ? "text-white/50 hover:text-red-400 transition-colors flex items-center justify-center" : "flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-red-400"}
+        className={iconOnly ? "text-white/50 hover:text-bad transition-colors flex items-center justify-center" : "flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-bad"}
         title={t("reportUser")}
       >
         <Flag className="h-4.5 w-4.5" />
@@ -74,8 +74,8 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20">
-                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bad/20">
+                  <AlertTriangle className="h-5 w-5 text-bad" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">{t("reportUser")}</h3>
@@ -101,7 +101,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                     key={r.id}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
                       reason === r.id
-                        ? "border-[#e63946] bg-[#e63946]/10"
+                        ? "border-[#4FB3C9] bg-[#4FB3C9]/10"
                         : "border-white/10 bg-white/5 hover:bg-white/10"
                     }`}
                   >
@@ -111,7 +111,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                       value={r.id}
                       checked={reason === r.id}
                       onChange={(e) => setReason(e.target.value)}
-                      className="h-4 w-4 accent-[#e63946]"
+                      className="h-4 w-4 accent-[#4FB3C9]"
                     />
                     <span className="text-sm text-white">{t(`reasons.${r.id}`)}</span>
                   </label>
@@ -129,7 +129,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("describeWhatHappened")}
                 rows={3}
-                className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-3 text-sm text-white outline-none focus:border-[#e63946] placeholder:text-white/30"
+                className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-3 text-sm text-white outline-none focus:border-[#4FB3C9] placeholder:text-white/30"
               />
             </div>
 
@@ -137,7 +137,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
             <button
               onClick={handleSubmit}
               disabled={loading || !reason}
-              className="w-full rounded-xl bg-red-500 py-3 text-sm font-semibold text-white transition-all hover:bg-red-600 disabled:opacity-50"
+              className="w-full rounded-xl bg-bad py-3 text-sm font-semibold text-white transition-all hover:bg-bad disabled:opacity-50"
             >
               {loading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin" />

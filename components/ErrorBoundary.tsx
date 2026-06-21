@@ -25,9 +25,9 @@ interface State {
 function ErrorFallback({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[200px] p-8 text-center">
-      <div className="rounded-2xl bg-red-500/10 border border-red-500/20 p-8 max-w-md backdrop-blur-sm">
+      <div className="rounded-2xl bg-bad/10 border border-bad/20 p-8 max-w-md backdrop-blur-sm">
         <div className="flex justify-center mb-4">
-          <div className="h-14 w-14 rounded-full bg-red-500/15 flex items-center justify-center">
+          <div className="h-14 w-14 rounded-full bg-bad/15 flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -36,7 +36,7 @@ function ErrorFallback({ onRetry }: { onRetry: () => void }) {
               strokeWidth={2}
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-7 w-7 text-red-400"
+              className="h-7 w-7 text-bad"
             >
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
               <line x1="12" y1="9" x2="12" y2="13" />
@@ -60,7 +60,7 @@ function ErrorFallback({ onRetry }: { onRetry: () => void }) {
           </button>
           <button
             onClick={() => window.location.reload()}
-            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-colors"
+            className="px-5 py-2.5 bg-bad hover:bg-bad/80 text-white rounded-xl text-sm font-semibold transition-colors"
           >
             Ricarica / Reload
           </button>

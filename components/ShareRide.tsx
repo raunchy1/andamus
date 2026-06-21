@@ -150,7 +150,7 @@ ${ride.trustScore ? `🛡️ *Punteggio Affidabilità:* ${ride.trustScore}%` : "
           onClick={handleShareNative}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-colors text-sm font-medium ${className}`}
         >
-          <Share2 className="w-4 h-4 text-[#e63946]" />
+          <Share2 className="w-4 h-4 text-[#4FB3C9]" />
           {t("share")}
         </button>
       );
@@ -159,7 +159,7 @@ ${ride.trustScore ? `🛡️ *Punteggio Affidabilità:* ${ride.trustScore}%` : "
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={handleShareNative}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#e63946]/10 text-[#e63946] hover:bg-[#e63946]/20 transition-colors text-sm font-semibold ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4FB3C9]/10 text-[#4FB3C9] hover:bg-[#4FB3C9]/20 transition-colors text-sm font-semibold ${className}`}
       >
         <Share2 className="w-4 h-4" />
         {t("share")}

@@ -162,7 +162,7 @@ export default function StripeStatusPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white p-6">
-        <Loader2 className="w-12 h-12 animate-spin text-[#e63946] mb-4" />
+        <Loader2 className="w-12 h-12 animate-spin text-[#4FB3C9] mb-4" />
         <p className="text-white/50 text-sm font-medium">{texts.loading}</p>
       </div>
     );
@@ -199,7 +199,7 @@ export default function StripeStatusPage() {
           {/* Subtle accent glows */}
           {isConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />}
           {isPendingSetup && <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />}
-          {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#e63946]/10 rounded-full blur-2xl pointer-events-none" />}
+          {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#4FB3C9]/10 rounded-full blur-2xl pointer-events-none" />}
 
           <div className="flex flex-col items-center text-center space-y-4 relative z-10">
             {/* Status Icons */}
@@ -214,8 +214,8 @@ export default function StripeStatusPage() {
               </div>
             )}
             {isNotConnected && (
-              <div className="w-16 h-16 rounded-2xl bg-[#e63946]/10 border border-[#e63946]/20 flex items-center justify-center shadow-lg shadow-[#e63946]/5">
-                <CreditCard className="w-8 h-8 text-[#ffb3b1]" />
+              <div className="w-16 h-16 rounded-2xl bg-[#4FB3C9]/10 border border-[#4FB3C9]/20 flex items-center justify-center shadow-lg shadow-[#4FB3C9]/5">
+                <CreditCard className="w-8 h-8 text-[#4FB3C9]" />
               </div>
             )}
 
@@ -229,7 +229,7 @@ export default function StripeStatusPage() {
               <p className="text-xs font-bold uppercase tracking-wider opacity-60">
                 {isConnected && <span className="text-emerald-400">{texts.connectedStatus}</span>}
                 {isPendingSetup && <span className="text-amber-400">{texts.pendingStatus}</span>}
-                {isNotConnected && <span className="text-red-400">{texts.notConnectedStatus}</span>}
+                {isNotConnected && <span className="text-bad">{texts.notConnectedStatus}</span>}
               </p>
             </div>
 
@@ -246,7 +246,7 @@ export default function StripeStatusPage() {
                 type="button"
                 onClick={handleOnboard}
                 disabled={isPending}
-                className="w-full mt-4 py-4 px-6 rounded-2xl bg-[#e63946] text-white font-extrabold text-sm uppercase tracking-wider hover:bg-[#c92a37] active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#e63946]/20"
+                className="w-full mt-4 py-4 px-6 rounded-2xl bg-[#4FB3C9] text-white font-extrabold text-sm uppercase tracking-wider hover:bg-[#3d9db3] active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#4FB3C9]/20"
               >
                 {isPending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -273,7 +273,7 @@ export default function StripeStatusPage() {
           <div className="space-y-3">
             <div className="bg-[#141414]/40 border border-white/5 rounded-2xl p-4 flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-                <Coins className="w-5 h-5 text-[#ffb3b1]" />
+                <Coins className="w-5 h-5 text-[#4FB3C9]" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-sm font-bold text-white">{texts.benefit1Title}</h4>
@@ -283,7 +283,7 @@ export default function StripeStatusPage() {
 
             <div className="bg-[#141414]/40 border border-white/5 rounded-2xl p-4 flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-                <TrendingUp className="w-5 h-5 text-[#ffb3b1]" />
+                <TrendingUp className="w-5 h-5 text-[#4FB3C9]" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-sm font-bold text-white">{texts.benefit2Title}</h4>
@@ -293,7 +293,7 @@ export default function StripeStatusPage() {
 
             <div className="bg-[#141414]/40 border border-white/5 rounded-2xl p-4 flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5 text-[#ffb3b1]" />
+                <ShieldCheck className="w-5 h-5 text-[#4FB3C9]" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-sm font-bold text-white">{texts.benefit3Title}</h4>

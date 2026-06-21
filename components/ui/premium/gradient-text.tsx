@@ -10,9 +10,9 @@ import { ReactNode } from "react";
 export function GradientText({
   className,
   children,
-  from = "#ffb3b1",
-  via = "#e63946",
-  to = "#ffb3b1",
+  from = "#4FB3C9",
+  via = "#4FB3C9",
+  to = "#4FB3C9",
 }: {
   className?: string;
   children: ReactNode;

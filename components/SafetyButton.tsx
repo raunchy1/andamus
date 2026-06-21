@@ -151,8 +151,8 @@ export function SafetyButton() {
               {/* Header */}
               <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20">
-                    <Shield className="h-5 w-5 text-red-400" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bad/20">
+                    <Shield className="h-5 w-5 text-bad" />
                   </div>
                   <div>
                     <p className="font-semibold text-white">{t("safety")}</p>
@@ -173,7 +173,7 @@ export function SafetyButton() {
                 {/* SOS Button */}
                 <button
                   onClick={() => setShowSOS(true)}
-                  className="w-full rounded-2xl bg-red-500 p-5 text-left transition-all hover:bg-red-600 active:scale-[0.98]"
+                  className="w-full rounded-2xl bg-bad p-5 text-left transition-all hover:bg-bad active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
@@ -269,17 +269,17 @@ export function SafetyButton() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm rounded-3xl border border-red-500/30 bg-[#131313] p-6 text-center"
+              className="w-full max-w-sm rounded-3xl border border-bad/30 bg-[#131313] p-6 text-center"
             >
-              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20">
-                <AlertTriangle className="h-10 w-10 text-red-400" />
+              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-bad/20">
+                <AlertTriangle className="h-10 w-10 text-bad" />
               </div>
               <h3 className="mb-2 text-2xl font-bold text-white">{t("emergencyQuestion")}</h3>
               <p className="mb-6 text-white/60">{t("emergencyDescription")}</p>
               <div className="space-y-3">
                 <button
                   onClick={handleEmergencyCall}
-                  className="w-full rounded-xl bg-red-500 py-4 text-lg font-bold text-white transition-all hover:bg-red-600"
+                  className="w-full rounded-xl bg-bad py-4 text-lg font-bold text-white transition-all hover:bg-bad"
                 >
                   {t("call112")}
                 </button>

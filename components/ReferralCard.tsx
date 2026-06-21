@@ -45,12 +45,12 @@ export function ReferralCard({ locale, profile }: ReferralCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-[#e63946]/10 via-[#e63946]/5 to-transparent border border-[#e63946]/20 rounded-2xl p-5"
+      className="bg-gradient-to-br from-[#4FB3C9]/10 via-[#4FB3C9]/5 to-transparent border border-[#4FB3C9]/20 rounded-2xl p-5"
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#e63946]/20 flex items-center justify-center">
-            <Gift className="w-5 h-5 text-[#e63946]" />
+          <div className="w-10 h-10 rounded-xl bg-[#4FB3C9]/20 flex items-center justify-center">
+            <Gift className="w-5 h-5 text-[#4FB3C9]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">{t("title")}</h3>
@@ -71,7 +71,7 @@ export function ReferralCard({ locale, profile }: ReferralCardProps) {
             </div>
             <button
               onClick={handleCopy}
-              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#e63946] hover:bg-[#c92a37] text-white transition-colors shrink-0"
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9] hover:bg-[#3d9db3] text-white transition-colors shrink-0"
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             </button>
@@ -87,7 +87,7 @@ export function ReferralCard({ locale, profile }: ReferralCardProps) {
             <Link
               href={`/${locale}/invita`}
               onClick={() => Analytics.referralClicked?.("profile_card")}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#e63946] hover:text-[#ffb3b1] transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4FB3C9] hover:text-[#4FB3C9] transition-colors"
             >
               <Share2 className="w-3.5 h-3.5" />
               {t("share")}
@@ -98,7 +98,7 @@ export function ReferralCard({ locale, profile }: ReferralCardProps) {
         <Link
           href={`/${locale}/invita`}
           onClick={() => Analytics.referralClicked?.("profile_card")}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#e63946]/10 text-[#e63946] font-semibold text-sm hover:bg-[#e63946]/20 transition-colors"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#4FB3C9]/10 text-[#4FB3C9] font-semibold text-sm hover:bg-[#4FB3C9]/20 transition-colors"
         >
           <Share2 className="w-4 h-4" />
           {t("inviteFriends")}

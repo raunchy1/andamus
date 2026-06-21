@@ -155,8 +155,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       >
         {/* Progress Bar (if loading) */}
         {loading && (
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[#e63946]/20 overflow-hidden">
-            <div className="h-full bg-[#e63946] animate-progress-indeterminate" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#4FB3C9]/20 overflow-hidden">
+            <div className="h-full bg-[#4FB3C9] animate-progress-indeterminate" />
           </div>
         )}
 
@@ -170,7 +170,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           </button>
           
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[#e63946] flex items-center justify-center text-white shadow-lg shadow-[#e63946]/20">
+            <div className="w-10 h-10 rounded-xl bg-[#4FB3C9] flex items-center justify-center text-white shadow-lg shadow-[#4FB3C9]/20">
               <Car size={24} strokeWidth={2.5} />
             </div>
             <h2 className="text-2xl font-black text-white tracking-tighter uppercase">
@@ -189,7 +189,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               onClick={() => setMode("login")}
               className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
                 mode === "login" 
-                  ? "bg-[#e63946] text-white shadow-lg shadow-[#e63946]/20" 
+                  ? "bg-[#4FB3C9] text-white shadow-lg shadow-[#4FB3C9]/20" 
                   : "text-white/40 hover:text-white/60"
               }`}
             >
@@ -199,7 +199,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               onClick={() => setMode("register")}
               className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
                 mode === "register" 
-                  ? "bg-[#e63946] text-white shadow-lg shadow-[#e63946]/20" 
+                  ? "bg-[#4FB3C9] text-white shadow-lg shadow-[#4FB3C9]/20" 
                   : "text-white/40 hover:text-white/60"
               }`}
             >
@@ -216,14 +216,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 {t("nameLabel")}
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#e63946] transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
                   <User size={18} />
                 </div>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/5 focus:border-[#e63946]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                  className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
                   placeholder={t("namePlaceholder")}
                 />
               </div>
@@ -235,14 +235,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               {t("emailLabel")}
             </label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#e63946] transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
                 <Mail size={18} />
               </div>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/5 focus:border-[#e63946]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
                 placeholder="nome@esempio.it"
               />
             </div>
@@ -253,14 +253,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               {t("passwordLabel")}
             </label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#e63946] transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
                 <Lock size={18} />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/5 focus:border-[#e63946]/50 rounded-2xl pl-12 pr-12 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-12 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
                 placeholder={t("passwordPlaceholder")}
               />
               <button
@@ -279,14 +279,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
                 {t("confirmPasswordLabel")}
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#e63946] transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
                   <Lock size={18} />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/5 focus:border-[#e63946]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                  className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
                   placeholder={t("confirmPasswordPlaceholder")}
                 />
               </div>
@@ -296,7 +296,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           <button
             onClick={mode === "login" ? handleLogin : handleRegister}
             disabled={loading}
-            className="w-full bg-[#e63946] hover:bg-[#c92a37] disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-[#e63946]/20 flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="w-full bg-[#4FB3C9] hover:bg-[#3d9db3] disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-[#4FB3C9]/20 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />

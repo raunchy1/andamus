@@ -64,7 +64,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             width: 400,
             height: 400,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(230,57,70,0.15) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(79, 179, 201,0.15) 0%, transparent 70%)",
           }}
         />
         <div
@@ -86,7 +86,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
               width: 44,
               height: 44,
               borderRadius: 12,
-              background: "#e63946",
+              background: "#4FB3C9",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -115,7 +115,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             <span style={{ fontSize: 64, fontWeight: 800, color: "white", letterSpacing: "-0.03em" }}>
               {fromCity}
             </span>
-            <span style={{ fontSize: 48, color: "#e63946", fontWeight: 300 }}>→</span>
+            <span style={{ fontSize: 48, color: "#4FB3C9", fontWeight: 300 }}>→</span>
             <span style={{ fontSize: 64, fontWeight: 800, color: "white", letterSpacing: "-0.03em" }}>
               {toCity}
             </span>
@@ -129,8 +129,8 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
               style={{
                 fontSize: 28,
                 fontWeight: 700,
-                color: price > 0 ? "#e63946" : "#10b981",
-                background: price > 0 ? "rgba(230,57,70,0.15)" : "rgba(16,185,129,0.15)",
+                color: price > 0 ? "#4FB3C9" : "#10b981",
+                background: price > 0 ? "rgba(79, 179, 201,0.15)" : "rgba(16,185,129,0.15)",
                 padding: "8px 20px",
                 borderRadius: 12,
               }}
@@ -151,11 +151,11 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             style={{
               fontSize: 20,
               fontWeight: 600,
-              color: "#e63946",
-              background: "rgba(230,57,70,0.1)",
+              color: "#4FB3C9",
+              background: "rgba(79, 179, 201,0.1)",
               padding: "10px 24px",
               borderRadius: 10,
-              border: "1px solid rgba(230,57,70,0.3)",
+              border: "1px solid rgba(79, 179, 201,0.3)",
             }}
           >
             {locale === "it" ? "Prenota su Andamus" : locale === "de" ? "Auf Andamus buchen" : "Book on Andamus"}

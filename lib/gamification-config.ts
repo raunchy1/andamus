@@ -57,7 +57,7 @@ export const BADGES = {
     name: "Ambasciatore",
     description: "50 corse pubblicate",
     icon: "🏆",
-    color: "bg-red-500",
+    color: "bg-bad",
   },
   REFERRER_1: {
     type: "referrer_1",

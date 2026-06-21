@@ -197,7 +197,7 @@ export async function GET(
 </head>
 <body style="background:#0a0a0a;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
   <div style="text-align:center;">
-    <div style="border:3px solid #ffb3b1;border-top-color:transparent;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 15px;"></div>
+    <div style="border:3px solid #4FB3C9;border-top-color:transparent;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 15px;"></div>
     <p style="font-size:14px;letter-spacing:1px;opacity:0.8;">Apertura viaggio su Andamus...</p>
   </div>
   <style>

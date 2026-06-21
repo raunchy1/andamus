@@ -70,7 +70,7 @@
   --color-primary-fixed: #ffdad8;
   --color-surface-variant: #353534;
   --color-tertiary: #6fd8cc;
-  --color-primary-fixed-dim: #ffb3b1;
+  --color-primary-fixed-dim: #4FB3C9;
   --color-on-error: #690005;
   --color-on-secondary-container: #babcbd;
   --color-on-error-container: #ffdad6;
@@ -84,7 +84,7 @@
   --color-on-primary-container: #5b000e;
   --color-on-tertiary: #003733;
   --color-tertiary-fixed-dim: #6fd8cc;
-  --color-surface-tint: #ffb3b1;
+  --color-surface-tint: #4FB3C9;
   --color-on-primary: #680011;
   --color-primary-container: #ff535b;
   --color-on-primary-fixed: #410007;
@@ -524,7 +524,7 @@ img, video, svg {
 /* Waveform bars for chat */
 .waveform-bar {
   width: 3px;
-  background: #ffb3b1;
+  background: #4FB3C9;
   border-radius: 1px;
   margin: 0 1px;
 }
@@ -539,7 +539,7 @@ img, video, svg {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #ffb3b1;
+  background-color: #4FB3C9;
 }
 
 /* Custom ring rotation for profile */
@@ -628,8 +628,8 @@ html {
 }
 
 @keyframes pulseRing {
-  0%   { box-shadow: 0 0 0 0   rgba(230, 57, 70, 0.55); }
-  100% { box-shadow: 0 0 0 24px rgba(230, 57, 70, 0); }
+  0%   { box-shadow: 0 0 0 0   rgba(79, 179, 201, 0.55); }
+  100% { box-shadow: 0 0 0 24px rgba(79, 179, 201, 0); }
 }
 
 /* Respect reduced motion */
@@ -730,7 +730,7 @@ html {
 
   /* Gradient backgrounds */
   .bg-gradient-primary {
-    background: linear-gradient(135deg, #e63946 0%, #f4a261 100%);
+    background: linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%);
   }
 
   .bg-gradient-surface {
@@ -742,7 +742,7 @@ html {
   }
 
   .bg-gradient-card-glow {
-    background: radial-gradient(ellipse at top, rgba(230,57,70,0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse at top, rgba(79, 179, 201,0.08) 0%, transparent 70%);
   }
 
   /* Premium card surface */
@@ -766,11 +766,11 @@ html {
 
   /* Glow effects */
   .glow-primary {
-    box-shadow: 0 0 40px rgba(230, 57, 70, 0.15);
+    box-shadow: 0 0 40px rgba(79, 179, 201, 0.15);
   }
 
   .glow-primary-sm {
-    box-shadow: 0 0 20px rgba(230, 57, 70, 0.12);
+    box-shadow: 0 0 20px rgba(79, 179, 201, 0.12);
   }
 
   .glow-accent {
@@ -779,13 +779,13 @@ html {
 
   /* Premium button */
   .btn-premium {
-    background: linear-gradient(135deg, #e63946 0%, #f4a261 100%);
-    box-shadow: 0 4px 16px rgba(230, 57, 70, 0.3);
+    background: linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%);
+    box-shadow: 0 4px 16px rgba(79, 179, 201, 0.3);
     transition: all var(--duration-normal) var(--ease-default);
   }
 
   .btn-premium:hover {
-    box-shadow: 0 6px 24px rgba(230, 57, 70, 0.4);
+    box-shadow: 0 6px 24px rgba(79, 179, 201, 0.4);
     transform: translateY(-1px);
   }
 
@@ -807,7 +807,7 @@ html {
 
   /* Text gradient */
   .text-gradient {
-    background: linear-gradient(135deg, #e63946 0%, #f4a261 100%);
+    background: linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

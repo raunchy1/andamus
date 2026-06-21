@@ -45,7 +45,7 @@ export function StripeConnectBanner() {
   if (status === "loading") {
     return (
       <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 flex items-center gap-3">
-        <Loader2 className="w-5 h-5 animate-spin text-[#ffb3b1]" />
+        <Loader2 className="w-5 h-5 animate-spin text-[#4FB3C9]" />
         <span className="text-sm text-on-surface/60">Verifica pagamenti...</span>
       </div>
     );
@@ -64,9 +64,9 @@ export function StripeConnectBanner() {
   }
 
   return (
-    <div className="rounded-2xl border border-[#ffb3b1]/20 bg-[#ffb3b1]/5 p-5 space-y-3">
+    <div className="rounded-2xl border border-[#4FB3C9]/20 bg-[#4FB3C9]/5 p-5 space-y-3">
       <div className="flex items-start gap-3">
-        <CreditCard className="w-5 h-5 text-[#ffb3b1] shrink-0 mt-0.5" />
+        <CreditCard className="w-5 h-5 text-[#4FB3C9] shrink-0 mt-0.5" />
         <div>
           <p className="text-sm font-semibold text-on-surface">
             {status === "pending" ? "Completa la configurazione pagamenti" : "Attiva i pagamenti per le tue corse"}
@@ -81,7 +81,7 @@ export function StripeConnectBanner() {
       <button
         onClick={handleOnboard}
         disabled={isRedirecting}
-        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#ffb3b1]/20 border border-[#ffb3b1]/30 px-4 py-2.5 text-sm font-semibold text-[#ffb3b1] hover:bg-[#ffb3b1]/30 transition-colors disabled:opacity-60"
+        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#4FB3C9]/20 border border-[#4FB3C9]/30 px-4 py-2.5 text-sm font-semibold text-[#4FB3C9] hover:bg-[#4FB3C9]/30 transition-colors disabled:opacity-60"
       >
         {isRedirecting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

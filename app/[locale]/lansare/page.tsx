@@ -92,7 +92,7 @@ export default function LaunchPage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="animate-pulse text-[#e63946]">
+        <div className="animate-pulse text-[#4FB3C9]">
           <Rocket className="w-12 h-12" />
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#e63946] to-[#ff6b6b] mb-6"
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#4FB3C9] to-[#4FB3C9] mb-6"
           >
             <Rocket className="w-10 h-10 text-white" />
           </motion.div>
@@ -138,14 +138,14 @@ export default function LaunchPage() {
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-[#e5e2e1]/70">{t("progress")}</span>
-            <span className="text-sm font-bold text-[#e63946]">{progress}%</span>
+            <span className="text-sm font-bold text-[#4FB3C9]">{progress}%</span>
           </div>
           <div className="h-3 bg-[#1c1b1b] rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="h-full bg-gradient-to-r from-[#e63946] to-[#ff6b6b] rounded-full"
+              className="h-full bg-gradient-to-r from-[#4FB3C9] to-[#4FB3C9] rounded-full"
             />
           </div>
         </motion.div>
@@ -169,7 +169,7 @@ export default function LaunchPage() {
                 transition={{ delay: 0.5 + index * 0.1 }}
                 className={`relative p-5 rounded-2xl border transition-all ${
                   isCompleted
-                    ? "bg-[#1c1b1b]/50 border-[#e63946]/30"
+                    ? "bg-[#1c1b1b]/50 border-[#4FB3C9]/30"
                     : "bg-[#1c1b1b] border-[#2a2a2a] hover:border-[#3a3a3a]"
                 }`}
               >
@@ -179,8 +179,8 @@ export default function LaunchPage() {
                     onClick={() => toggleItem(item.id)}
                     className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                       isCompleted
-                        ? "bg-[#e63946] border-[#e63946]"
-                        : "border-[#e5e2e1]/30 hover:border-[#e63946]"
+                        ? "bg-[#4FB3C9] border-[#4FB3C9]"
+                        : "border-[#e5e2e1]/30 hover:border-[#4FB3C9]"
                     }`}
                   >
                     {isCompleted && <Check className="w-4 h-4 text-white" />}
@@ -189,12 +189,12 @@ export default function LaunchPage() {
                   {/* Icon */}
                   <div
                     className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-                      isCompleted ? "bg-[#e63946]/20" : "bg-[#0a0a0a]"
+                      isCompleted ? "bg-[#4FB3C9]/20" : "bg-[#0a0a0a]"
                     }`}
                   >
                     <Icon
                       className={`w-6 h-6 ${
-                        isCompleted ? "text-[#e63946]" : "text-[#e5e2e1]/70"
+                        isCompleted ? "text-[#4FB3C9]" : "text-[#e5e2e1]/70"
                       }`}
                     />
                   </div>
@@ -220,11 +220,11 @@ export default function LaunchPage() {
                     {!isCompleted && (
                       <div className="mt-3">
                         {item.isShare ? (
-                          <ShareApp variant="outline" className="text-[#e63946] border-[#e63946]/50" />
+                          <ShareApp variant="outline" className="text-[#4FB3C9] border-[#4FB3C9]/50" />
                         ) : item.action ? (
                           <Link
                             href={`/${locale}${item.action.href}`}
-                            className="inline-flex items-center gap-1 text-sm font-medium text-[#e63946] hover:text-[#ff6b6b] transition-colors"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-[#4FB3C9] hover:text-[#4FB3C9] transition-colors"
                           >
                             {item.action.label}
                             <ChevronRight className="w-4 h-4" />
@@ -238,7 +238,7 @@ export default function LaunchPage() {
                 {/* Completion badge */}
                 {isCompleted && (
                   <div className="absolute top-4 right-4">
-                    <Star className="w-5 h-5 text-[#e63946] fill-[#e63946]" />
+                    <Star className="w-5 h-5 text-[#4FB3C9] fill-[#4FB3C9]" />
                   </div>
                 )}
               </motion.div>
@@ -251,7 +251,7 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#e63946]/20 to-[#ff6b6b]/20 border border-[#e63946]/30 text-center"
+            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#4FB3C9]/20 to-[#4FB3C9]/20 border border-[#4FB3C9]/30 text-center"
           >
             <h2 className="text-2xl font-bold text-white mb-2">
               {t("allDone")}
@@ -262,7 +262,7 @@ export default function LaunchPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href={`/${locale}/cerca`}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#e63946] text-white font-semibold hover:bg-[#c92a37] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#4FB3C9] text-white font-semibold hover:bg-[#3d9db3] transition-colors"
               >
                 <Search className="w-5 h-5" />
                 {t("findRide")}

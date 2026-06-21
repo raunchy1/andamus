@@ -81,7 +81,7 @@ export function getRideStatusColor(status: ComputedRideStatus): string {
     case "completed":
       return "bg-white/10 text-white/60 border-white/20";
     case "cancelled":
-      return "bg-red-500/20 text-red-400 border-red-500/30";
+      return "bg-bad/20 text-bad border-bad/30";
     default:
       return "bg-white/10 text-white/60";
   }

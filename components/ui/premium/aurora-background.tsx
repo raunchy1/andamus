@@ -29,7 +29,7 @@ export function AuroraBackground({
           )}
           style={{
             backgroundImage: [
-              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(230,57,70,0.50), transparent 60%)",
+              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(79, 179, 201,0.50), transparent 60%)",
               "radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,179,177,0.40), transparent 60%)",
               "radial-gradient(ellipse 70% 60% at 60% 80%, rgba(111,216,204,0.30), transparent 60%)",
             ].join(","),

@@ -22,7 +22,7 @@ export function DesktopNav() {
     <nav className="fixed top-0 left-0 right-0 z-nav bg-[#0f0f0f]/90 backdrop-blur-md border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
         <Link href={`/${locale}`} className="flex items-center gap-3">
-          <Car className="w-8 h-8 text-[#ffb3b1]" />
+          <Car className="w-8 h-8 text-[#4FB3C9]" />
           <span className="text-2xl font-extrabold tracking-tighter text-white uppercase">Andamus</span>
         </Link>
 
@@ -35,7 +35,7 @@ export function DesktopNav() {
                 key={item.href}
                 href={fullHref}
                 className={`text-sm font-semibold uppercase tracking-widest transition-colors ${
-                  isActive ? "text-[#ffb3b1]" : "text-white/50 hover:text-white"
+                  isActive ? "text-[#4FB3C9]" : "text-white/50 hover:text-white"
                 }`}
               >
                 {t(item.labelKey)}

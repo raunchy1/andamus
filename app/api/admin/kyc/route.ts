@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
           subject: "Profilo Verificato! 🎉 | Andamus",
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111;">
-              <h2 style="color: #e63946;">Ciao ${userName},</h2>
+              <h2 style="color: #4FB3C9;">Ciao ${userName},</h2>
               <p>Siamo felici di informarti che il tuo documento (<b>${verif.type === "id_document" ? "Identità" : "Patente"}</b>) è stato approvato con successo!</p>
               <p>Il badge di verifica è ora attivo sul tuo profilo, aumentando la fiducia della community nei tuoi confronti.</p>
               <br/>
@@ -151,9 +151,9 @@ export async function POST(request: NextRequest) {
           subject: "Aggiornamento sulla verifica dei documenti | Andamus",
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #111;">
-              <h2 style="color: #e63946;">Ciao ${userName},</h2>
+              <h2 style="color: #4FB3C9;">Ciao ${userName},</h2>
               <p>Ti informiamo che la tua richiesta di verifica del documento (<b>${verif.type === "id_document" ? "Identità" : "Patente"}</b>) non è stata accettata per il seguinte motivo:</p>
-              <blockquote style="background: #f7f7f7; border-left: 4px solid #e63946; padding: 15px; margin: 20px 0; font-style: italic;">
+              <blockquote style="background: #f7f7f7; border-left: 4px solid #4FB3C9; padding: 15px; margin: 20px 0; font-style: italic;">
                 ${safeReason}
               </blockquote>
               <p>Puoi accedere nuovamente alla sezione <b>Verifica</b> dell'applicazione per caricare un nuovo documento valido.</p>

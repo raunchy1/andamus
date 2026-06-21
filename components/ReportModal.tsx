@@ -61,7 +61,7 @@ export function ReportModal({ open, onClose }: ReportModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <div className="flex items-center gap-2">
-            <Bug className="w-5 h-5 text-[#e63946]" />
+            <Bug className="w-5 h-5 text-[#4FB3C9]" />
             <h3 className="font-bold text-white text-lg">{t("title")}</h3>
           </div>
           <button
@@ -89,7 +89,7 @@ export function ReportModal({ open, onClose }: ReportModalProps) {
                 placeholder={t("placeholder")}
                 rows={4}
                 maxLength={1000}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#e63946]/50 resize-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#4FB3C9]/50 resize-none"
               />
 
               <div className="flex items-center justify-between">
@@ -99,7 +99,7 @@ export function ReportModal({ open, onClose }: ReportModalProps) {
                 <button
                   onClick={handleSubmit}
                   disabled={sending || !text.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#e63946] text-white rounded-xl text-sm font-semibold hover:bg-[#c92a37] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4FB3C9] text-white rounded-xl text-sm font-semibold hover:bg-[#3d9db3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
