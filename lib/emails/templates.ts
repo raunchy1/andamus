@@ -1,31 +1,32 @@
 // Email HTML Templates for Andamus
-// Uses responsive design with the Andamus red (#e63946) color scheme
+// Light transactional template with teal accent (#4FB3C9)
 
 import { escapeHtml } from "./escape";
 
-const brandColor = "#e63946";
-const bgColor = "#0a0a0a";
-const surfaceColor = "#1a1a1a";
-const textColor = "#ffffff";
-const textMuted = "#9ca3af";
+const brandColor = "#4FB3C9";
+const bgColor = "#f6f7f8";
+const surfaceColor = "#ffffff";
+const textColor = "#1a1a18";
+const textMuted = "#6b7280";
+const borderColor = "#e5e7eb";
 
 function getBaseTemplate(content: string, unsubscribeToken?: string): string {
   const unsubscribeSection = unsubscribeToken
     ? `<tr>
-        <td style="padding: 30px 40px; background-color: ${surfaceColor}; border-top: 1px solid #333;">
+        <td style="padding: 30px 40px; background-color: ${surfaceColor}; border-top: 1px solid ${borderColor};">
           <p style="margin: 0; font-size: 12px; color: ${textMuted}; text-align: center;">
             Non vuoi più ricevere queste email? 
             <a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?token=${unsubscribeToken}" style="color: ${brandColor}; text-decoration: underline;">Disiscriviti</a>
           </p>
           <p style="margin: 10px 0 0 0; font-size: 12px; color: ${textMuted}; text-align: center;">
-            Andamus - Il carpooling dei sardi
+            andamus — il carpooling dei sardi
           </p>
         </td>
       </tr>`
     : `<tr>
-        <td style="padding: 30px 40px; background-color: ${surfaceColor}; border-top: 1px solid #333;">
+        <td style="padding: 30px 40px; background-color: ${surfaceColor}; border-top: 1px solid ${borderColor};">
           <p style="margin: 0; font-size: 12px; color: ${textMuted}; text-align: center;">
-            Andamus - Il carpooling dei sardi
+            andamus — il carpooling dei sardi
           </p>
         </td>
       </tr>`;
@@ -35,20 +36,18 @@ function getBaseTemplate(content: string, unsubscribeToken?: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Andamus</title>
+  <title>andamus</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: ${bgColor}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${bgColor};">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table width="100%" max-width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: ${surfaceColor}; border-radius: 16px; overflow: hidden;">
+        <table width="100%" max-width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: ${surfaceColor}; border-radius: 16px; overflow: hidden; border: 1px solid ${borderColor};">
           <!-- Header -->
           <tr>
-            <td style="padding: 0;">
-              <div style="background-color: ${brandColor}; padding: 30px 40px; text-align: center;">
-                <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">ANDAMUS</h1>
-                <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;">Il carpooling dei sardi</p>
-              </div>
+            <td style="padding: 32px 40px 24px; text-align: center; border-bottom: 1px solid ${borderColor};">
+              <h1 style="margin: 0; color: ${textColor}; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; text-transform: lowercase;">andamus</h1>
+              <p style="margin: 8px 0 0 0; color: ${textMuted}; font-size: 13px; font-weight: 500;">il carpooling dei sardi</p>
             </td>
           </tr>
           
@@ -94,7 +93,7 @@ export function getBookingRequestEmailTemplate(data: {
       </p>
       
       <!-- Ride Details Box -->
-      <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border-left: 4px solid ${brandColor};">
+      <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border: 1px solid ${borderColor}; border-left: 4px solid ${brandColor};">
         <h3 style="margin: 0 0 16px 0; color: ${textColor}; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Dettagli corsa</h3>
         <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 18px; font-weight: 600;">${fromCity} → ${toCity}</p>
         <p style="margin: 0; color: ${textMuted}; font-size: 14px;">📅 ${date} · 🕐 ${time}</p>
@@ -296,7 +295,7 @@ export function getNewMessageEmailTemplate(data: {
       </p>
       
       <!-- Message Preview -->
-      <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border-left: 4px solid ${brandColor};">
+      <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border: 1px solid ${borderColor}; border-left: 4px solid ${brandColor};">
         <p style="margin: 0; color: ${textMuted}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Anteprima messaggio</p>
         <p style="margin: 0; color: ${textColor}; font-size: 16px; line-height: 1.6; font-style: italic;">
           "${preview}"
@@ -431,7 +430,7 @@ export function getRideReminderEmailTemplate(data: {
       </p>
       
       <!-- Ride Details Box -->
-      <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border-left: 4px solid ${brandColor};">
+      <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 30px; border: 1px solid ${borderColor}; border-left: 4px solid ${brandColor};">
         <h3 style="margin: 0 0 16px 0; color: ${textColor}; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Dettagli corsa</h3>
         <p style="margin: 0 0 8px 0; color: ${textColor}; font-size: 20px; font-weight: 700;">${fromCity} → ${toCity}</p>
         <p style="margin: 0 0 8px 0; color: ${textMuted}; font-size: 16px;">📅 ${date}</p>
@@ -440,8 +439,8 @@ export function getRideReminderEmailTemplate(data: {
       </div>
       
       <!-- Reminder Note -->
-      <div style="background-color: rgba(230, 57, 70, 0.1); border: 1px solid rgba(230, 57, 70, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-        <p style="margin: 0; color: ${brandColor}; font-size: 14px; line-height: 1.6; text-align: center;">
+      <div style="background-color: #eef8fb; border: 1px solid ${borderColor}; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+        <p style="margin: 0; color: ${textColor}; font-size: 14px; line-height: 1.6; text-align: center;">
           <strong>💡 Suggerimento:</strong> Contatta l'${data.isDriver ? "altro passeggero" : "autista"} in chat per confermare i dettagli dell'incontro.
         </p>
       </div>

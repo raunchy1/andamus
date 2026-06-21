@@ -5,29 +5,29 @@ import { ChevronLeft, Shield, Lock, Eye, Trash2, UserCheck } from "lucide-react"
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
+    <div className="min-h-screen bg-bg text-fg">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/5">
+      <header className="sticky top-0 z-40 bg-bg/90 backdrop-blur-md border-b border-line">
         <div className="max-w-3xl mx-auto px-6 h-16 flex items-center">
           <Link
             href="/"
-            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-dim hover:text-fg transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
             <span className="text-sm font-medium">Indietro</span>
           </Link>
-          <h1 className="ml-4 text-lg font-bold">Privacy Policy</h1>
+          <h1 className="ml-4 text-lg font-bold heading-editorial">privacy policy</h1>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-12">
         {/* Hero */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#e63946]/10 mb-6">
-            <Shield className="w-8 h-8 text-[#e63946]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent-dim mb-6">
+            <Shield className="w-8 h-8 text-accent" strokeWidth={1.5} />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Informativa sulla Privacy</h2>
-          <p className="text-white/60">
+          <h2 className="text-3xl font-bold mb-4 heading-editorial">informativa sulla privacy</h2>
+          <p className="text-muted">
             La tua privacy è importante per noi. Scopri come proteggiamo i tuoi dati.
           </p>
         </div>
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             <UserCheck className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-bold text-green-400 mb-2">Conformità GDPR</h3>
-              <p className="text-white/70 text-sm leading-relaxed">
+              <p className="text-dim text-sm leading-relaxed">
                 Andamus tratta i tuoi dati personali nel rispetto del Regolamento (UE) 2016/679 
                 (GDPR). Questa informativa ti spiega quali dati raccogliamo, perché li usiamo 
                 e quali sono i tuoi diritti.
@@ -51,10 +51,10 @@ export default function PrivacyPage() {
         <div className="space-y-12">
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Eye className="w-5 h-5 text-[#e63946]" />
+              <Eye className="w-5 h-5 text-accent" />
               Titolare del trattamento
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Il Titolare del trattamento dei dati personali è Andamus, con sede in Sardegna, Italia.
               </p>
@@ -68,10 +68,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">1</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">1</span>
               Dati che raccogliamo
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>Raccogliamo i seguenti tipi di dati:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>
@@ -100,10 +100,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">2</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">2</span>
               Finalità del trattamento
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>Utilizziamo i tuoi dati per:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Permetterti di registrarti e utilizzare la piattaforma</li>
@@ -119,10 +119,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">3</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">3</span>
               Base giuridica
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>Il trattamento dei tuoi dati si basa su:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>
@@ -145,10 +145,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">4</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">4</span>
               Conservazione dei dati
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>I tuoi dati sono conservati per:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>
@@ -174,10 +174,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">5</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">5</span>
               Condivisione dei dati
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>I tuoi dati personali <strong>non sono venduti a terzi</strong>. Possono essere condivisi con:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>
@@ -197,10 +197,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-[#e63946]" />
+              <Lock className="w-5 h-5 text-accent" />
               Sicurezza
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Adottiamo misure tecniche e organizzative per proteggere i tuoi dati:
               </p>
@@ -215,10 +215,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">6</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">6</span>
               I tuoi diritti (GDPR)
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>In qualità di interessato, hai i seguenti diritti:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>
@@ -252,10 +252,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">7</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">7</span>
               Cookie
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Utilizziamo solo cookie tecnici necessari al funzionamento della piattaforma 
                 (autenticazione, preferenze). Non utilizziamo cookie di profilazione o di terze parti 
@@ -266,10 +266,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-[#e63946]" />
+              <Trash2 className="w-5 h-5 text-accent" />
               Cancellazione account
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Puoi richiedere la cancellazione del tuo account in qualsiasi momento dal tuo profilo 
                 o scrivendo a <strong>privacy@andamus.it</strong>. I dati saranno cancellati entro 30 
@@ -280,10 +280,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">8</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">8</span>
               Modifiche alla privacy policy
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Ci riserviamo il diritto di aggiornare questa informativa. Le modifiche saranno 
                 pubblicate su questa pagina con la data di aggiornamento. Ti invitiamo a consultare 
@@ -294,10 +294,10 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Shield className="w-6 h-6 text-[#e63946]" />
+              <Shield className="w-6 h-6 text-accent" />
               Contatti
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Per qualsiasi domanda sulla privacy o per esercitare i tuoi diritti:
               </p>
@@ -314,12 +314,12 @@ export default function PrivacyPage() {
           <div className="mt-6 flex items-center justify-center gap-4">
             <Link
               href="/termini-e-condizioni"
-              className="text-[#e63946] hover:underline text-sm"
+              className="text-accent hover:underline text-sm"
             >
               Termini e Condizioni
             </Link>
             <span className="text-white/30">·</span>
-            <Link href="/" className="text-white/70 hover:text-white text-sm">
+            <Link href="/" className="text-dim hover:text-white text-sm">
               Torna alla home
             </Link>
           </div>

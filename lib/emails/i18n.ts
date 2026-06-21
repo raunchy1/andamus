@@ -28,7 +28,7 @@ const EMAIL_STRINGS: Record<EmailLocale, Record<string, string>> = {
 
     rideReminderSubject: "⏰ Domani parti! - Andamus",
     rideReminderTitle: "Domani parti!",
-    rideReminderBody: "ti ricordiamo che <strong style=\"color: #e63946;\">domani</strong> hai un passaggio in programma",
+    rideReminderBody: "ti ricordiamo che <strong style=\"color: #4FB3C9;\">domani</strong> hai un passaggio in programma",
     rideReminderDriverTip:
       "<strong>💡 Suggerimento:</strong> Contatta l'altro passeggero in chat per confermare i dettagli dell'incontro.",
     rideReminderPassengerTip:
@@ -63,7 +63,7 @@ const EMAIL_STRINGS: Record<EmailLocale, Record<string, string>> = {
     rideReminderSubject: "⏰ You're leaving tomorrow! - Andamus",
     rideReminderTitle: "You're leaving tomorrow!",
     rideReminderBody:
-      "we remind you that <strong style=\"color: #e63946;\">tomorrow</strong> you have a ride scheduled",
+      "we remind you that <strong style=\"color: #4FB3C9;\">tomorrow</strong> you have a ride scheduled",
     rideReminderDriverTip:
       "<strong>💡 Tip:</strong> Contact the other passenger in chat to confirm meeting details.",
     rideReminderPassengerTip:
@@ -98,7 +98,7 @@ const EMAIL_STRINGS: Record<EmailLocale, Record<string, string>> = {
     rideReminderSubject: "⏰ Du fährst morgen! - Andamus",
     rideReminderTitle: "Du fährst morgen!",
     rideReminderBody:
-      "wir erinnern dich daran, dass du <strong style=\"color: #e63946;\">morgen</strong> eine Fahrt geplant hast",
+      "wir erinnern dich daran, dass du <strong style=\"color: #4FB3C9;\">morgen</strong> eine Fahrt geplant hast",
     rideReminderDriverTip:
       "<strong>💡 Tipp:</strong> Kontaktiere den anderen Mitfahrer im Chat, um die Treffdetails zu bestätigen.",
     rideReminderPassengerTip:

@@ -174,35 +174,35 @@ export default function PremiumPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#e63946] animate-spin" />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-accent animate-spin" strokeWidth={1.5} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] py-12 px-4">
+    <div className="min-h-screen bg-bg py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <Link 
             href={`/${locale}`}
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-muted hover:text-fg mb-6 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
             {tc("back")}
           </Link>
           
           <div className="flex justify-center mb-6">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-              <Crown className="h-8 w-8 text-white" />
+            <div className="h-16 w-16 rounded-2xl bg-accent-dim border border-line flex items-center justify-center">
+              <Crown className="h-8 w-8 text-accent" strokeWidth={1.5} />
             </div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-fg mb-4 heading-editorial">
             {t("choosePlan")}
           </h1>
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">
+          <p className="text-muted text-lg max-w-2xl mx-auto">
             {t("subtitle")}
           </p>
 
@@ -211,7 +211,7 @@ export default function PremiumPage() {
               <button
                 onClick={handleManageSubscription}
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-5 py-2.5 text-sm font-medium text-fg hover:bg-surface-2 transition-colors disabled:opacity-50"
               >
                 {t("manageSubscription")}
               </button>
@@ -224,33 +224,31 @@ export default function PremiumPage() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`relative rounded-2xl p-6 ${
-                plan.popular
-                  ? "bg-gradient-to-b from-[#e63946] to-[#c92a37] text-white"
-                  : "bg-white/5 text-white border border-white/10"
+              className={`relative rounded-2xl p-6 bg-surface border ${
+                plan.popular ? "border-accent" : "border-line"
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                    <Star className="w-3 h-3" />
+                  <span className="bg-accent text-accent-fg text-xs font-mono font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                    <Star className="w-3 h-3" strokeWidth={1.5} />
                     {t("mostPopular")}
                   </span>
                 </div>
               )}
 
               <div className="mb-6">
-                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                <p className={`text-sm ${plan.popular ? "text-white/80" : "text-white/50"}`}>
+                <h3 className="text-xl font-bold mb-2 text-fg heading-editorial">{plan.name}</h3>
+                <p className="text-sm text-muted">
                   {plan.description}
                 </p>
               </div>
 
               <div className="mb-6">
-                <span className="text-4xl font-bold">
+                <span className="text-4xl font-bold font-mono text-fg">
                   {plan.price === 0 ? t("freeName") : `€${plan.price}`}
                 </span>
-                <span className={plan.popular ? "text-white/80" : "text-white/50"}>
+                <span className="text-muted font-mono text-sm ml-1">
                   {plan.period}
                 </span>
               </div>
@@ -258,10 +256,8 @@ export default function PremiumPage() {
               <ul className="space-y-3 mb-6">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <Check className={`w-5 h-5 flex-shrink-0 ${
-                      plan.popular ? "text-white" : "text-[#e63946]"
-                    }`} />
-                    <span className="text-sm">{feature}</span>
+                    <Check className="w-5 h-5 flex-shrink-0 text-accent" strokeWidth={1.5} />
+                    <span className="text-sm text-dim">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -271,10 +267,10 @@ export default function PremiumPage() {
                 disabled={currentPlan === plan.id}
                 className={`w-full py-3 px-4 rounded-xl font-medium transition-all ${
                   currentPlan === plan.id
-                    ? "bg-white/20 cursor-not-allowed"
+                    ? "bg-surface-2 text-muted cursor-not-allowed border border-line"
                     : plan.popular
-                    ? "bg-white text-[#e63946] hover:bg-white/90"
-                    : "bg-[#e63946] text-white hover:bg-[#c92a37]"
+                    ? "bg-accent text-accent-fg hover:opacity-90"
+                    : "border border-line bg-surface-2 text-fg hover:border-accent hover:text-accent"
                 }`}
               >
                 {currentPlan === plan.id ? t("currentPlan") : plan.cta}
@@ -284,17 +280,17 @@ export default function PremiumPage() {
         </div>
 
         {/* Trust badges */}
-        <div className="mt-16 flex flex-wrap justify-center gap-8 text-white/40">
+        <div className="mt-16 flex flex-wrap justify-center gap-8 text-muted">
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5" />
+            <Shield className="w-5 h-5" strokeWidth={1.5} />
             <span className="text-sm">{t("securePayments")}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5" />
+            <Zap className="w-5 h-5" strokeWidth={1.5} />
             <span className="text-sm">{t("instantActivation")}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Check className="w-5 h-5" />
+            <Check className="w-5 h-5" strokeWidth={1.5} />
             <span className="text-sm">{t("cancelAnytime")}</span>
           </div>
         </div>

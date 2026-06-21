@@ -5,40 +5,40 @@ import { ChevronLeft, Shield, FileText, AlertTriangle } from "lucide-react";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
+    <div className="min-h-screen bg-bg text-fg">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/5">
+      <header className="sticky top-0 z-40 bg-bg/90 backdrop-blur-md border-b border-line">
         <div className="max-w-3xl mx-auto px-6 h-16 flex items-center">
           <Link
             href="/"
-            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-dim hover:text-fg transition-colors"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
             <span className="text-sm font-medium">Indietro</span>
           </Link>
-          <h1 className="ml-4 text-lg font-bold">Termini e Condizioni</h1>
+          <h1 className="ml-4 text-lg font-bold heading-editorial">termini e condizioni</h1>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-12">
         {/* Hero */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#e63946]/10 mb-6">
-            <FileText className="w-8 h-8 text-[#e63946]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent-dim mb-6">
+            <FileText className="w-8 h-8 text-accent" strokeWidth={1.5} />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Termini e Condizioni d&apos;Uso</h2>
-          <p className="text-white/60">
+          <h2 className="text-3xl font-bold mb-4 heading-editorial">termini e condizioni d&apos;uso</h2>
+          <p className="text-muted">
             Ultimo aggiornamento: {new Date().toLocaleDateString("it-IT", { month: "long", year: "numeric" })}
           </p>
         </div>
 
         {/* Important Notice */}
-        <div className="bg-[#e63946]/5 border border-[#e63946]/20 rounded-2xl p-6 mb-12">
+        <div className="bg-accent-dim border border-line rounded-2xl p-6 mb-12">
           <div className="flex items-start gap-4">
-            <AlertTriangle className="w-6 h-6 text-[#e63946] flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-6 h-6 text-accent flex-shrink-0 mt-0.5" strokeWidth={1.5} />
             <div>
-              <h3 className="font-bold text-[#e63946] mb-2">Importante</h3>
-              <p className="text-white/70 text-sm leading-relaxed">
+              <h3 className="font-bold text-accent mb-2 heading-editorial">importante</h3>
+              <p className="text-dim text-sm leading-relaxed">
                 Andamus è una piattaforma di <strong>carpooling tra privati</strong>. Non è un servizio di 
                 trasporto pubblico né una società di noleggio. Gli utenti sono responsabili del rispetto 
                 delle normative vigenti in materia di trasporto non di linea.
@@ -51,10 +51,10 @@ export default function TermsPage() {
         <div className="space-y-12">
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">1</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">1</span>
               Definizioni
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 <strong>Piattaforma:</strong> il sito web e le applicazioni mobili Andamus che permettono 
                 di mettere in contatto autisti e passeggeri per condividere viaggi in automobile.
@@ -75,10 +75,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">2</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">2</span>
               Natura del servizio
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Andamus è una <strong>piattaforma di intermediazione gratuita</strong> che mette in contatto 
                 privati per la condivisione di spese di viaggio. Non forniamo servizi di trasporto e non 
@@ -99,10 +99,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">3</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">3</span>
               Registrazione e account
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Per utilizzare Andamus devi avere almeno <strong>18 anni</strong> e registrarti con un 
                 account Google verificato. Sei responsabile della veridicità delle informazioni fornite 
@@ -122,10 +122,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">4</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">4</span>
               Responsabilità degli utenti
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p className="font-semibold text-white">Come autista:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Devi possedere patente valida e veicolo assicurato regolarmente</li>
@@ -144,10 +144,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">5</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">5</span>
               Limitazione di responsabilità
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 <strong>Andamus non è responsabile:</strong>
               </p>
@@ -167,10 +167,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">6</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">6</span>
               Comportamento e sicurezza
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>È severamente vietato:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Utilizzare la piattaforma per attività illecite o fraudolente</li>
@@ -189,10 +189,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">7</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">7</span>
               Pagamenti
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 I pagamenti tra autisti e passeggeri avvengono <strong>direttamente</strong> senza 
                 intermediazione di Andamus. La piattaforma non gestisce pagamenti né trattiene commissioni.
@@ -206,10 +206,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">8</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">8</span>
               Modifiche ai termini
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Ci riserviamo il diritto di modificare i presenti Termini e Condizioni in qualsiasi momento. 
                 Le modifiche entreranno in vigore dalla data di pubblicazione sulla piattaforma. 
@@ -220,10 +220,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center text-sm text-[#e63946]">9</span>
+              <span className="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center text-sm text-accent">9</span>
               Legge applicabile
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 I presenti Termini e Condizioni sono regolati dalla legge italiana. Per qualsiasi 
                 controversia sarà competente il foro di Cagliari.
@@ -233,10 +233,10 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Shield className="w-6 h-6 text-[#e63946]" />
+              <Shield className="w-6 h-6 text-accent" />
               Contatti
             </h3>
-            <div className="space-y-3 text-white/70 leading-relaxed">
+            <div className="space-y-3 text-dim leading-relaxed">
               <p>
                 Per qualsiasi domanda sui presenti termini, puoi contattarci all&apos;indirizzo:
               </p>
@@ -253,12 +253,12 @@ export default function TermsPage() {
           <div className="mt-6 flex items-center justify-center gap-4">
             <Link
               href="/privacy-policy"
-              className="text-[#e63946] hover:underline text-sm"
+              className="text-accent hover:underline text-sm"
             >
               Privacy Policy
             </Link>
             <span className="text-white/30">·</span>
-            <Link href="/" className="text-white/70 hover:text-white text-sm">
+            <Link href="/" className="text-dim hover:text-white text-sm">
               Torna alla home
             </Link>
           </div>
