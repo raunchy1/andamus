@@ -7,38 +7,23 @@ const DEV_HOSTNAMES = ["localhost", "127.0.0.1", "dev.", "staging.", "preview."]
 
 export function VersionBadge() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isAdmin] = useState(false);
 
   useEffect(() => {
-    // Check if in development
     const isDev = DEV_HOSTNAMES.some(
       (hostname) =>
         window.location.hostname.includes(hostname) ||
         window.location.hostname === "localhost"
     );
-
-    // Check if user is admin (basic check, can be enhanced)
-    const checkAdmin = async () => {
-      try {
-        // You can add more sophisticated admin checking here
-        // For now, just show in dev mode
-        setIsVisible(isDev);
-      } catch {
-        setIsVisible(isDev);
-      }
-    };
-
-    checkAdmin();
+    setIsVisible(isDev && process.env.NODE_ENV === "development");
   }, []);
 
   if (!isVisible) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-[90] hidden md:block">
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e63946]/90 text-white text-xs font-mono shadow-lg backdrop-blur-sm">
-        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+      <div className="flex items-center gap-2 rounded-full border border-line bg-surface/95 px-3 py-1.5 font-mono text-xs text-dim shadow-sm backdrop-blur-sm">
+        <span className="size-2 rounded-full bg-accent/60" />
         <span>{APP_VERSION}</span>
-        {isAdmin && <span className="text-white/70">[ADMIN]</span>}
       </div>
     </div>
   );

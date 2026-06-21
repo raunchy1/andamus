@@ -2,7 +2,20 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { Activity, RefreshCw, AlertTriangle, TrendingUp, Smartphone, Monitor } from "lucide-react";
+import {
+  Activity,
+  RefreshCw,
+  AlertTriangle,
+  TrendingUp,
+  Smartphone,
+  Monitor,
+  Car,
+  User,
+  ClipboardList,
+  Radio,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { getLiquidityMetrics } from "@/lib/server/liquidity/tracker";
 
 type AdminSupabase = SupabaseClient;
@@ -29,10 +42,15 @@ interface AdminRideRow {
 
 interface RealtimeEvent {
   type: "ride_created" | "user_joined" | "booking";
-  icon: string;
   message: string;
   time: string;
 }
+
+const realtimeIcons = {
+  ride_created: Car,
+  user_joined: User,
+  booking: ClipboardList,
+} as const;
 
 interface RidePayload {
   new: { from_city?: string; to_city?: string };
@@ -69,7 +87,7 @@ function UsersList({ supabase }: { supabase: AdminSupabase }) {
     return (
       <div className="animate-pulse space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-[#111] rounded-2xl h-16" />
+          <div key={i} className="h-16 rounded-[var(--radius)] bg-surface" />
         ))}
       </div>
     );
@@ -77,37 +95,36 @@ function UsersList({ supabase }: { supabase: AdminSupabase }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-white">Ultimi {users.length} utenti</h3>
-        <span className="text-white/40 text-sm">{users.length} risultati</span>
+        <h3 className="text-sm font-semibold lowercase text-fg">ultimi {users.length} utenti</h3>
+        <span className="font-mono text-xs text-dim">{users.length} risultati</span>
       </div>
-      {users.map((user) => (
-        <div
-          key={user.id}
-          className="bg-[#111] border border-white/10 rounded-2xl p-4 flex items-center gap-3"
-        >
-          <div className="w-10 h-10 rounded-full bg-[#e63946]/20 flex items-center justify-center flex-shrink-0">
-            <span className="text-[#e63946] font-bold">
-              {(user.name || "?").charAt(0).toUpperCase()}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-medium text-sm truncate">
-              {user.name || "Senza nome"}
-            </p>
-            <p className="text-white/40 text-xs truncate">{user.phone || "—"}</p>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <p className="text-white/30 text-xs">
-              {new Date(user.created_at).toLocaleDateString("it")}
-            </p>
-            {user.phone_verified && (
-              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
-                Verificato
+      <div className="divide-y divide-line rounded-[var(--radius)] border border-line bg-surface">
+        {users.map((user) => (
+          <div key={user.id} className="flex items-center gap-3 p-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface-2">
+              <span className="font-mono text-sm font-medium text-muted">
+                {(user.name || "?").charAt(0).toUpperCase()}
               </span>
-            )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-fg">
+                {user.name || "Senza nome"}
+              </p>
+              <p className="truncate font-mono text-xs text-dim">{user.phone || "—"}</p>
+            </div>
+            <div className="shrink-0 text-right">
+              <p className="font-mono text-[10px] text-dim">
+                {new Date(user.created_at).toLocaleDateString("it")}
+              </p>
+              {user.phone_verified && (
+                <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-ok/30 bg-ok/10 px-2 py-0.5 font-mono text-[10px] text-ok">
+                  verificato
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -132,47 +149,50 @@ function RidesList({ supabase }: { supabase: AdminSupabase }) {
     return (
       <div className="animate-pulse space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-[#111] rounded-2xl h-16" />
+          <div key={i} className="h-16 rounded-[var(--radius)] bg-surface" />
         ))}
       </div>
     );
 
   return (
     <div className="space-y-3">
-      <h3 className="font-bold text-white">Ultime {rides.length} corse</h3>
-      {rides.map((ride) => (
-        <div key={ride.id} className="bg-[#111] border border-white/10 rounded-2xl p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-white font-medium text-sm">
-              {ride.from_city} → {ride.to_city}
+      <h3 className="text-sm font-semibold lowercase text-fg">ultime {rides.length} corse</h3>
+      <div className="divide-y divide-line rounded-[var(--radius)] border border-line bg-surface">
+        {rides.map((ride) => (
+          <div key={ride.id} className="p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium text-fg">
+                {ride.from_city} → {ride.to_city}
+              </p>
+              <span
+                className={cn(
+                  "rounded-full border px-2 py-0.5 font-mono text-[10px] lowercase",
+                  ride.status === "active"
+                    ? "border-ok/30 bg-ok/10 text-ok"
+                    : "border-line bg-surface-2 text-dim"
+                )}
+              >
+                {ride.status}
+              </span>
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-4">
+              <p className="font-mono text-xs text-dim">
+                {ride.date} · {ride.time}
+              </p>
+              <p className="font-mono text-xs text-dim">{ride.seats} posti</p>
+              <p className="font-mono text-xs text-fg">
+                {ride.price ? `€${ride.price}` : "gratis"}
+              </p>
+            </div>
+            <p className="mt-1 font-mono text-[10px] text-dim">
+              driver:{" "}
+              {(Array.isArray(ride.profiles)
+                ? ride.profiles[0]?.name
+                : ride.profiles?.name) || "sconosciuto"}
             </p>
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${
-                ride.status === "active"
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-white/10 text-white/40"
-              }`}
-            >
-              {ride.status}
-            </span>
           </div>
-          <div className="flex items-center gap-4 mt-1">
-            <p className="text-white/40 text-xs">
-              {ride.date} · {ride.time}
-            </p>
-            <p className="text-white/40 text-xs">{ride.seats} posti</p>
-            <p className="text-[#e63946] text-xs font-medium">
-              {ride.price ? `€${ride.price}` : "Gratis"}
-            </p>
-          </div>
-          <p className="text-white/30 text-xs mt-1">
-            Driver:{" "}
-            {(Array.isArray(ride.profiles)
-              ? ride.profiles[0]?.name
-              : ride.profiles?.name) || "Sconosciuto"}
-          </p>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -191,7 +211,6 @@ function RealtimePanel({ supabase }: { supabase: AdminSupabase }) {
             [
               {
                 type: "ride_created" as const,
-                icon: "🚗",
                 message: `Nuova corsa: ${payload.new.from_city} → ${payload.new.to_city}`,
                 time: new Date().toLocaleTimeString("it"),
               },
@@ -208,7 +227,6 @@ function RealtimePanel({ supabase }: { supabase: AdminSupabase }) {
             [
               {
                 type: "user_joined" as const,
-                icon: "👤",
                 message: `Nuovo utente registrato`,
                 time: new Date().toLocaleTimeString("it"),
               },
@@ -225,7 +243,6 @@ function RealtimePanel({ supabase }: { supabase: AdminSupabase }) {
             [
               {
                 type: "booking" as const,
-                icon: "📋",
                 message: `Nuova prenotazione`,
                 time: new Date().toLocaleTimeString("it"),
               },
@@ -244,34 +261,39 @@ function RealtimePanel({ supabase }: { supabase: AdminSupabase }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-        <h3 className="font-bold text-white">Attività in tempo reale</h3>
+        <span className="size-2 animate-pulse rounded-full bg-accent" />
+        <h3 className="text-sm font-semibold lowercase text-fg">attività in tempo reale</h3>
       </div>
 
       {events.length === 0 ? (
-        <div className="bg-[#111] border border-white/10 rounded-2xl p-8 text-center">
-          <Activity size={32} className="text-white/20 mx-auto mb-3" />
-          <p className="text-white/40">In ascolto per nuovi eventi...</p>
-          <p className="text-white/20 text-sm mt-1">
-            Le attività appariranno qui in tempo reale
+        <div className="rounded-[var(--radius)] border border-line bg-surface p-8 text-center">
+          <Radio size={32} className="mx-auto mb-3 text-dim" strokeWidth={1.5} />
+          <p className="text-sm text-muted">in ascolto per nuovi eventi...</p>
+          <p className="mt-1 text-xs text-dim">
+            le attività appariranno qui in tempo reale
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {events.map((event, i) => (
-            <div
-              key={i}
-              className="bg-[#111] border border-white/10 rounded-xl p-3 flex items-center gap-3 animate-in fade-in slide-in-from-top-2"
-            >
-              <span className="text-2xl">{event.icon}</span>
-              <div className="flex-1">
-                <p className="text-white text-sm">{event.message}</p>
+        <div className="divide-y divide-line rounded-[var(--radius)] border border-line bg-surface">
+          {events.map((event, i) => {
+            const Icon = realtimeIcons[event.type];
+            return (
+              <div
+                key={i}
+                className="flex items-center gap-3 p-3 animate-in fade-in slide-in-from-top-2"
+              >
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-line bg-surface-2">
+                  <Icon className="size-4 text-muted" strokeWidth={1.5} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-fg">{event.message}</p>
+                </div>
+                <span className="shrink-0 font-mono text-[10px] text-dim">
+                  {event.time}
+                </span>
               </div>
-              <span className="text-white/30 text-xs flex-shrink-0">
-                {event.time}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -318,67 +340,66 @@ function WaitingListTab({ supabase }: { supabase: AdminSupabase }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <div className="size-10 animate-spin rounded-full border-2 border-line border-t-accent" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: "Iscritti totali", value: total, color: "#3b82f6" },
-          { label: "Invitati da altri", value: referralCount, color: "#10b981" },
-          { label: "Zone diverse", value: Object.keys(zonaCount).length, color: "#f59e0b" },
+          { label: "iscritti totali", value: total },
+          { label: "invitati da altri", value: referralCount },
+          { label: "zone diverse", value: Object.keys(zonaCount).length },
           {
-            label: "Tasso referral",
+            label: "tasso referral",
             value: `${total > 0 ? Math.round((referralCount / total) * 100) : 0}%`,
-            color: "#8b5cf6",
           },
         ].map((kpi, i) => (
-          <div key={i} className="bg-[#111] border border-white/10 rounded-2xl p-4">
-            <p className="text-3xl font-bold" style={{ color: kpi.color }}>
-              {kpi.value}
-            </p>
-            <p className="text-white/50 text-xs mt-1">{kpi.label}</p>
+          <div key={i} className="rounded-[var(--radius)] border border-line bg-surface p-4">
+            <p className="font-mono text-3xl font-semibold text-fg">{kpi.value}</p>
+            <p className="mt-1 text-xs text-muted">{kpi.label}</p>
           </div>
         ))}
       </div>
 
       {Object.keys(zonaCount).length > 0 && (
-        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
-          <h3 className="font-semibold text-white mb-4">Distribuzione per zona</h3>
+        <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+          <p className="text-eyebrow mb-4">distribuzione per zona</p>
           <div className="flex flex-wrap gap-2">
             {Object.entries(zonaCount)
               .sort((a, b) => b[1] - a[1])
               .map(([zona, count]) => (
                 <span
                   key={zona}
-                  className="flex items-center gap-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm px-3 py-1.5 rounded-xl"
+                  className="flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-3 py-1.5 font-mono text-xs text-muted"
                 >
-                  {zona} <span className="font-bold text-white">{count}</span>
+                  {zona.toLowerCase()}{" "}
+                  <span className="font-semibold text-fg">{count}</span>
                 </span>
               ))}
           </div>
         </div>
       )}
 
-      <div className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden">
-        <div className="p-4 border-b border-white/10 flex items-center justify-between gap-3">
+      <div className="overflow-hidden rounded-[var(--radius)] border border-line bg-surface">
+        <div className="flex items-center justify-between gap-3 border-b border-line p-4">
           <input
             type="text"
-            placeholder="Cerca per email, zona o codice..."
+            placeholder="cerca per email, zona o codice..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-blue-500"
+            className="flex-1 rounded-[var(--radius-sm)] border border-line bg-surface-2 px-4 py-2 text-sm text-fg outline-none placeholder:text-dim focus:border-accent"
           />
           <button
+            type="button"
             onClick={load}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+            className="rounded-[var(--radius-sm)] border border-line bg-surface-2 p-2 transition-colors hover:bg-elevated"
           >
-            <RefreshCw size={16} className="text-white/60" />
+            <RefreshCw size={16} className="text-muted" strokeWidth={1.5} />
           </button>
-          <span className="text-white/40 text-sm whitespace-nowrap">
+          <span className="whitespace-nowrap font-mono text-xs text-dim">
             {filtered.length} risultati
           </span>
         </div>
@@ -386,45 +407,40 @@ function WaitingListTab({ supabase }: { supabase: AdminSupabase }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="px-4 py-3 text-left text-white/40 font-medium">#</th>
-                <th className="px-4 py-3 text-left text-white/40 font-medium">Email</th>
-                <th className="px-4 py-3 text-left text-white/40 font-medium">Telefono</th>
-                <th className="px-4 py-3 text-left text-white/40 font-medium">Zona</th>
-                <th className="px-4 py-3 text-left text-white/40 font-medium">Ref. code</th>
-                <th className="px-4 py-3 text-left text-white/40 font-medium">Invitato da</th>
-                <th className="px-4 py-3 text-left text-white/40 font-medium">Data</th>
+              <tr className="border-b border-line">
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">#</th>
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">email</th>
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">telefono</th>
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">zona</th>
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">ref. code</th>
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">invitato da</th>
+                <th className="px-4 py-3 text-left font-mono text-[10px] font-medium uppercase text-dim">data</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-line">
               {filtered.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-white/5 hover:bg-white/3 transition-colors"
-                >
-                  <td className="px-4 py-3 font-bold text-blue-400">#{row.position}</td>
-                  <td className="px-4 py-3 text-white">{row.email}</td>
-                  <td className="px-4 py-3 text-white/50">{row.phone ?? "—"}</td>
+                <tr key={row.id} className="transition-colors hover:bg-surface-2/50">
+                  <td className="px-4 py-3 font-mono text-xs text-fg">#{row.position}</td>
+                  <td className="px-4 py-3 text-fg">{row.email}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted">{row.phone ?? "—"}</td>
                   <td className="px-4 py-3">
                     {row.zona ? (
-                      <span className="bg-blue-500/10 text-blue-300 text-xs px-2 py-1 rounded-lg">
-                        {row.zona}
+                      <span className="rounded-full border border-line bg-surface-2 px-2 py-1 font-mono text-[10px] text-muted">
+                        {row.zona.toLowerCase()}
                       </span>
                     ) : (
-                      <span className="text-white/30">—</span>
+                      <span className="text-dim">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-mono text-white/60 text-xs">
-                    {row.referral_code}
-                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-dim">{row.referral_code}</td>
                   <td className="px-4 py-3 font-mono text-xs">
                     {row.referred_by ? (
-                      <span className="text-green-400">{row.referred_by}</span>
+                      <span className="text-ok">{row.referred_by}</span>
                     ) : (
-                      <span className="text-white/20">—</span>
+                      <span className="text-dim">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-white/40 text-xs whitespace-nowrap">
+                  <td className="whitespace-nowrap px-4 py-3 font-mono text-[10px] text-dim">
                     {new Date(row.created_at).toLocaleString("it", {
                       dateStyle: "short",
                       timeStyle: "short",
@@ -434,8 +450,8 @@ function WaitingListTab({ supabase }: { supabase: AdminSupabase }) {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-white/30">
-                    Nessun risultato
+                  <td colSpan={7} className="px-4 py-12 text-center text-dim">
+                    nessun risultato
                   </td>
                 </tr>
               )}
@@ -470,7 +486,7 @@ function LiquidityTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-10 h-10 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin" />
+        <div className="size-10 animate-spin rounded-full border-2 border-line border-t-accent" />
       </div>
     );
   }
@@ -480,156 +496,155 @@ function LiquidityTab() {
 
   return (
     <div className="space-y-6">
-      {/* Metrics Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: "Ricerche totali (30gg)", value: metrics?.totalSearches || 0, color: "#3b82f6" },
-          { label: "Rotte in carenza (Dead Zones)", value: deadZoneCount, color: "#ef4444" },
-          { 
-            label: "Tratta più cercata", 
-            value: topSpikeRoute ? `${topSpikeRoute.from_city} ➔ ${topSpikeRoute.to_city}` : "Nessuna", 
-            color: "#f59e0b",
-            isSmallText: true 
+          { label: "ricerche totali (30gg)", value: metrics?.totalSearches || 0 },
+          { label: "rotte in carenza", value: deadZoneCount },
+          {
+            label: "tratta più cercata",
+            value: topSpikeRoute
+              ? `${topSpikeRoute.from_city} → ${topSpikeRoute.to_city}`
+              : "nessuna",
+            isSmallText: true,
           },
           {
-            label: "Media matching liquidity",
+            label: "media matching liquidity",
             value: `${metrics?.highDemandRoutes?.length ? Math.round(metrics.highDemandRoutes.reduce((acc: number, r: any) => acc + r.liquidity_ratio, 0) / metrics.highDemandRoutes.length) : 0}%`,
-            color: "#10b981",
           },
         ].map((kpi, i) => (
-          <div key={i} className="bg-[#111] border border-white/10 rounded-2xl p-4 flex flex-col justify-between min-h-[110px]">
-            <p className={`font-bold ${kpi.isSmallText ? "text-sm sm:text-base leading-tight mt-1" : "text-3xl"}`} style={{ color: kpi.color }}>
+          <div
+            key={i}
+            className="flex min-h-[110px] flex-col justify-between rounded-[var(--radius)] border border-line bg-surface p-4"
+          >
+            <p
+              className={cn(
+                "font-mono font-semibold text-fg",
+                kpi.isSmallText ? "text-sm leading-tight sm:text-base" : "text-3xl"
+              )}
+            >
               {kpi.value}
             </p>
-            <p className="text-white/50 text-xs mt-2">{kpi.label}</p>
+            <p className="mt-2 text-xs text-muted">{kpi.label}</p>
           </div>
         ))}
       </div>
 
       {/* Grid of details */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Dead Zones */}
-        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
-          <h4 className="text-sm font-bold text-red-400 mb-4 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 animate-pulse" />
-            Zone Morte / Rotte in Carenza (Risultati = 0)
+        <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+          <h4 className="mb-4 flex items-center gap-2 text-sm font-semibold lowercase text-fg">
+            <AlertTriangle className="size-4 text-bad" strokeWidth={1.5} />
+            rotte in carenza
           </h4>
-          <p className="text-xs text-white/40 mb-4">
-            Ricerche degli utenti che non hanno restituito alcun viaggio. Ideale per suggerire ai driver dove conviene pubblicare passaggi.
+          <p className="mb-4 text-xs text-muted">
+            Ricerche degli utenti che non hanno restituito alcun viaggio.
           </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-white/5 text-white/40">
-                  <th className="py-2 text-left">Rotta in Carenza</th>
-                  <th className="py-2 text-right">Ricerche Vuote</th>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-line text-dim">
+                <th className="py-2 text-left font-mono text-[10px] uppercase">rotta</th>
+                <th className="py-2 text-right font-mono text-[10px] uppercase">ricerche vuote</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {metrics?.deadZoneRoutes?.map((route: any, idx: number) => (
+                <tr key={idx} className="hover:bg-surface-2/50">
+                  <td className="py-3 text-sm text-fg">
+                    {route.from_city} → {route.to_city}
+                  </td>
+                  <td className="py-3 text-right font-mono text-sm text-bad">{route.count}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {metrics?.deadZoneRoutes?.map((route: any, idx: number) => (
-                  <tr key={idx} className="border-b border-white/[0.02] hover:bg-white/[0.02]">
-                    <td className="py-3 font-semibold text-white">
-                      {route.from_city} ➔ {route.to_city}
-                    </td>
-                    <td className="py-3 text-right font-bold text-red-400 font-mono">
-                      {route.count}
-                    </td>
-                  </tr>
-                ))}
-                {(!metrics?.deadZoneRoutes || deadZoneCount === 0) && (
-                  <tr>
-                    <td colSpan={2} className="py-6 text-center text-white/20">
-                      Nessuna rotta in carenza rilevata! Ottimo bilanciamento di liquidità.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))}
+              {(!metrics?.deadZoneRoutes || deadZoneCount === 0) && (
+                <tr>
+                  <td colSpan={2} className="py-6 text-center text-dim">
+                    nessuna rotta in carenza rilevata
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* High Demand & Conversion */}
-        <div className="bg-[#111] border border-white/10 rounded-2xl p-5">
-          <h4 className="text-sm font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            Rotte ad Alta Frequenza e Tasso Liquido
+        <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+          <h4 className="mb-4 flex items-center gap-2 text-sm font-semibold lowercase text-fg">
+            <TrendingUp className="size-4 text-accent" strokeWidth={1.5} />
+            rotte ad alta frequenza
           </h4>
-          <p className="text-xs text-white/40 mb-4">
-            Le rotte più cercate nelle ultime 48 ore e la percentuale di ricerche che hanno trovato almeno 1 passaggio attivo.
+          <p className="mb-4 text-xs text-muted">
+            Le rotte più cercate nelle ultime 48 ore e il tasso di matching.
           </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-white/5 text-white/40">
-                  <th className="py-2 text-left">Rotta Popolare</th>
-                  <th className="py-2 text-center">Ricerche (48h)</th>
-                  <th className="py-2 text-right">Tasso Matching</th>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-line text-dim">
+                <th className="py-2 text-left font-mono text-[10px] uppercase">rotta</th>
+                <th className="py-2 text-center font-mono text-[10px] uppercase">ricerche</th>
+                <th className="py-2 text-right font-mono text-[10px] uppercase">matching</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {metrics?.highDemandRoutes?.map((route: any, idx: number) => (
+                <tr key={idx} className="hover:bg-surface-2/50">
+                  <td className="py-3 text-sm text-fg">
+                    {route.from_city} → {route.to_city}
+                  </td>
+                  <td className="py-3 text-center font-mono text-muted">{route.total_searches}</td>
+                  <td className="py-3 text-right font-mono text-accent">{route.liquidity_ratio}%</td>
                 </tr>
-              </thead>
-              <tbody>
-                {metrics?.highDemandRoutes?.map((route: any, idx: number) => (
-                  <tr key={idx} className="border-b border-white/[0.02] hover:bg-white/[0.02]">
-                    <td className="py-3 font-semibold text-white">
-                      {route.from_city} ➔ {route.to_city}
-                    </td>
-                    <td className="py-3 text-center text-white/70 font-mono">
-                      {route.total_searches}
-                    </td>
-                    <td className="py-3 text-right font-bold text-emerald-400 font-mono">
-                      {route.liquidity_ratio}%
-                    </td>
-                  </tr>
-                ))}
-                {(!metrics?.highDemandRoutes || metrics.highDemandRoutes.length === 0) && (
-                  <tr>
-                    <td colSpan={3} className="py-6 text-center text-white/20">
-                      In attesa di dati di ricerca recenti...
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))}
+              {(!metrics?.highDemandRoutes || metrics.highDemandRoutes.length === 0) && (
+                <tr>
+                  <td colSpan={3} className="py-6 text-center text-dim">
+                    in attesa di dati di ricerca recenti...
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Operational Performance Funnel */}
       <div className="grid gap-6 md:grid-cols-3">
         {[
-          { label: "Installazioni PWA", value: `${metrics?.pwaInstallRate || 38}%`, desc: "Percentuale di utenti attivi con push subscription o PWA attiva.", color: "text-[#ffb3b1]" },
-          { label: "CTR Push Notifications", value: `${metrics?.pushCTR || 24}%`, desc: "Click-through rate (aperture/invii) delle notifiche push e re-engagement.", color: "text-[#ff6b6b]" },
-          { label: "Conversione Ricerca-Prenotazione", value: `${metrics?.checkoutConversion || 6}%`, desc: "Tasso di conversione medio da ricerca di viaggio a prenotazione confermata.", color: "text-emerald-400" },
+          { label: "installazioni pwa", value: `${metrics?.pwaInstallRate || 38}%`, desc: "Utenti attivi con push subscription o PWA attiva." },
+          { label: "ctr push notifications", value: `${metrics?.pushCTR || 24}%`, desc: "Click-through rate delle notifiche push." },
+          { label: "conversione ricerca-prenotazione", value: `${metrics?.checkoutConversion || 6}%`, desc: "Tasso medio da ricerca a prenotazione confermata." },
         ].map((item, idx) => (
-          <div key={idx} className="bg-[#111] border border-white/10 rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+          <div
+            key={idx}
+            className="flex flex-col justify-between rounded-[var(--radius)] border border-line bg-surface p-5"
+          >
             <div>
-              <div className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{item.label}</div>
-              <div className={`text-4xl font-extrabold font-mono mt-2 ${item.color}`}>{item.value}</div>
+              <p className="text-eyebrow">{item.label}</p>
+              <p className="mt-2 font-mono text-4xl font-semibold text-fg">{item.value}</p>
             </div>
-            <p className="text-white/40 text-xs mt-3 leading-relaxed">{item.desc}</p>
+            <p className="mt-3 text-xs leading-relaxed text-muted">{item.desc}</p>
           </div>
         ))}
       </div>
 
-      {/* Device break down */}
-      <div className="bg-[#111] border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="flex flex-col items-center justify-between gap-6 rounded-[var(--radius)] border border-line bg-surface p-5 md:flex-row">
         <div>
-          <h4 className="text-sm font-bold text-white mb-2">Canale Telemetrico dei Dispositivi</h4>
-          <p className="text-xs text-white/40">
-            Ripartizione degli utenti che effettuano ricerche in base alla tipologia di browser o smartphone.
+          <h4 className="mb-2 text-sm font-semibold lowercase text-fg">dispositivi</h4>
+          <p className="text-xs text-muted">
+            Ripartizione delle ricerche per tipologia di dispositivo.
           </p>
         </div>
-        <div className="flex gap-8">
+        <div className="flex gap-4">
           {[
-            { label: "Mobile", value: metrics?.deviceBreakdown?.mobile || 0, icon: Smartphone, color: "text-blue-400" },
-            { label: "Desktop", value: metrics?.deviceBreakdown?.desktop || 0, icon: Monitor, color: "text-[#f4a261]" },
+            { label: "mobile", value: metrics?.deviceBreakdown?.mobile || 0, icon: Smartphone },
+            { label: "desktop", value: metrics?.deviceBreakdown?.desktop || 0, icon: Monitor },
           ].map((item, idx) => {
             const ItemIcon = item.icon;
             return (
-              <div key={idx} className="flex items-center gap-3 bg-white/[0.02] px-4 py-3 rounded-xl border border-white/5">
-                <ItemIcon className={`w-5 h-5 ${item.color}`} />
+              <div
+                key={idx}
+                className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-line bg-surface-2 px-4 py-3"
+              >
+                <ItemIcon className="size-5 text-muted" strokeWidth={1.5} />
                 <div>
-                  <div className="text-[10px] text-white/40 font-bold uppercase">{item.label}</div>
-                  <div className="text-base font-bold text-white font-mono">{item.value}</div>
+                  <p className="text-eyebrow">{item.label}</p>
+                  <p className="font-mono text-base font-semibold text-fg">{item.value}</p>
                 </div>
               </div>
             );

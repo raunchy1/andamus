@@ -4,6 +4,12 @@ import { useDeviceType } from "./view-mode";
 import { BottomNav } from "./BottomNav";
 import { usePathname } from "next/navigation";
 
+/** Active conversation thread — not the inbox list. */
+function isChatThread(pathname: string | null) {
+  if (!pathname) return false;
+  return /\/chat\/[^/]+/.test(pathname);
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const deviceType = useDeviceType();
 
@@ -21,10 +27,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 function MobileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isOnboarding = pathname?.includes("/onboarding") ?? false;
+  const chatThread = isChatThread(pathname);
 
   if (isOnboarding) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] overflow-x-hidden">
+      <div className="min-h-screen bg-bg overflow-x-hidden">
         <main className="w-full min-h-[100dvh] overflow-x-hidden">
           {children}
         </main>
@@ -32,12 +39,20 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  if (chatThread) {
+    return (
+      <div className="min-h-screen bg-bg overflow-x-hidden">
+        <main className="w-full min-h-[100dvh] overflow-hidden pt-16">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#050505] overflow-x-hidden">
-      {/* Mobile container - full width on actual mobile devices */}
-      <div className="relative w-full min-h-screen bg-[#0a0a0a] overflow-x-hidden">
-        {/* Content wrapper with EXPLICIT padding for fixed navbars */}
-        <main className="flex-1 w-full pt-[72px] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] min-h-[100dvh] overflow-x-hidden">
+    <div className="min-h-screen bg-bg overflow-x-hidden">
+      <div className="relative w-full min-h-screen overflow-x-hidden">
+        <main className="flex-1 w-full pt-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] min-h-[100dvh] overflow-x-hidden">
           {children}
         </main>
         <BottomNav />
@@ -49,10 +64,11 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
 function DesktopLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isOnboarding = pathname?.includes("/onboarding") ?? false;
+  const chatThread = isChatThread(pathname);
 
   if (isOnboarding) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] overflow-x-hidden flex items-center justify-center">
+      <div className="min-h-screen bg-bg overflow-x-hidden flex items-center justify-center">
         <main className="w-full max-w-md min-h-screen flex flex-col justify-center">
           {children}
         </main>
@@ -60,9 +76,17 @@ function DesktopLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  if (chatThread) {
+    return (
+      <div className="min-h-screen bg-bg text-fg overflow-hidden">
+        <main className="min-h-0 overflow-hidden">{children}</main>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#e5e2e1] overflow-x-hidden">
-      <main className="pt-[80px] pb-16 max-w-6xl mx-auto px-6 lg:px-8 min-h-screen">
+    <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
+      <main className="pt-20 pb-16 max-w-6xl mx-auto px-6 lg:px-8 min-h-screen">
         {children}
       </main>
     </div>

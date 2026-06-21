@@ -9,14 +9,14 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
   const percentage = Math.min(Math.max((currentStep / totalSteps) * 100, 0), 100);
 
   return (
-    <div className="w-full bg-[#1c1c1e] h-1.5 overflow-hidden rounded-full border border-white/[0.04]">
+    <div className="h-1 w-full overflow-hidden rounded-full bg-line">
       <div
         role="progressbar"
         aria-valuenow={currentStep}
         aria-valuemin={0}
         aria-valuemax={totalSteps}
         aria-label={`Progresso onboarding: step ${currentStep} di ${totalSteps}`}
-        className="h-full bg-[#e63946] transition-all duration-500 ease-out rounded-full"
+        className="h-full rounded-full bg-accent transition-all duration-500 ease-out"
         style={{ width: `${percentage}%` }}
       />
     </div>

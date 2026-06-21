@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, ChevronDown, MapPin, Shield, MessageCircle, Trophy, Zap } from "lucide-react";
+import { X, ChevronDown, MapPin, Shield, MessageCircle, Trophy, Zap } from "lucide-react";
 import { FEATURES } from "@/lib/features";
 
 const NEW_FEATURES = [
-  { icon: MapPin, text: "50+ città sarde connesse", color: "text-blue-400" },
-  { icon: Shield, text: "Pulsante SOS per emergenze", color: "text-red-400" },
-  { icon: MessageCircle, text: "Chat integrata tra utenti", color: "text-green-400" },
-  { icon: Trophy, text: "Sistema livelli e punti", color: "text-yellow-400" },
-  { icon: Zap, text: "Notifiche push in tempo reale", color: "text-purple-400" },
+  { icon: MapPin, text: "50+ città sarde connesse" },
+  { icon: Shield, text: "Pulsante SOS per emergenze" },
+  { icon: MessageCircle, text: "Chat integrata tra utenti" },
+  { icon: Trophy, text: "Sistema livelli e punti" },
+  { icon: Zap, text: "Notifiche push in tempo reale" },
 ];
 
 export function LaunchBanner() {
@@ -45,40 +45,37 @@ export function LaunchBanner() {
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
           className="fixed left-0 right-0 top-16 z-[90] md:top-20"
         >
-          <div className="bg-gradient-to-r from-[#e63946] via-[#ff6b6b] to-[#e63946] text-white shadow-2xl">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="border-b border-line bg-surface/95 backdrop-blur-sm">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
               <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <p className="text-sm font-medium">
-                    <span className="font-bold">🎉 Andamus è ora live!</span>
-                    <span className="hidden sm:inline"> Il carpooling dei sardi è qui. </span>
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden />
+                  <p className="text-sm text-muted truncate">
+                    <span className="font-medium text-fg">Andamus è ora live!</span>
+                    <span className="hidden sm:inline"> Il carpooling dei sardi è qui.</span>
                     <button
                       onClick={() => setShowDetails(!showDetails)}
-                      className="hidden md:inline-flex items-center gap-1 ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full hover:bg-white/30 transition-colors"
+                      className="hidden md:inline-flex items-center gap-1 ml-2 text-xs text-accent border border-line rounded-full px-2 py-0.5 hover:border-line-strong hover:bg-surface-2 transition-colors"
                     >
                       Novità v1.0
-                      <ChevronDown className={`w-3 h-3 transition-transform ${showDetails ? "rotate-180" : ""}`} />
+                      <ChevronDown className={`w-3 h-3 transition-transform ${showDetails ? "rotate-180" : ""}`} strokeWidth={1.5} />
                     </button>
                   </p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <span className="hidden sm:inline text-xs bg-white/20 px-3 py-1 rounded-full font-medium">
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="hidden sm:inline text-[10px] font-mono text-accent border border-line rounded-full px-2 py-0.5">
                     v1.0
                   </span>
                   <button
                     onClick={handleDismiss}
-                    className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+                    className="p-1.5 rounded-full text-muted hover:text-fg hover:bg-surface-2 transition-colors"
                     aria-label="Chiudi banner"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
 
-              {/* Expandable "What's New" section */}
               <AnimatePresence>
                 {showDetails && (
                   <motion.div
@@ -88,21 +85,19 @@ export function LaunchBanner() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="pt-4 pb-2 border-t border-white/20 mt-3">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-white/80 mb-3">
-                        Cosa c&apos;è di nuovo in v1.0
-                      </p>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div className="pt-3 pb-1 border-t border-line mt-2.5">
+                      <p className="text-eyebrow mb-2">cosa c&apos;è di nuovo in v1.0</p>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                         {NEW_FEATURES.map((feature, index) => (
                           <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2"
+                            className="flex items-center gap-2 bg-surface-2 border border-line rounded-[var(--radius-sm)] px-2.5 py-2"
                           >
-                            <feature.icon className={`w-4 h-4 ${feature.color}`} />
-                            <span className="text-xs font-medium">{feature.text}</span>
+                            <feature.icon className="w-3.5 h-3.5 text-muted shrink-0" strokeWidth={1.5} />
+                            <span className="text-xs text-muted">{feature.text}</span>
                           </motion.div>
                         ))}
                       </div>

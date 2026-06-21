@@ -144,18 +144,17 @@ export function Navbar() {
   return (
     <>
       <header 
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 shadow-lg`}
+        className="fixed top-0 left-0 right-0 z-[100] bg-bg/95 backdrop-blur-md border-b border-line"
       >
       <nav className="mx-auto flex h-16 md:h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <Link 
           href={`/${locale}`} 
-          className="flex items-center gap-2 md:gap-3 text-white transition-all hover:scale-105 flex-shrink-0"
+          className="flex items-center flex-shrink-0 transition-opacity hover:opacity-80"
         >
-          <div className="flex h-9 w-9 md:h-11 md:w-11 items-center justify-center rounded-xl bg-[#e63946] flex-shrink-0">
-            <Car className="h-5 w-5 md:h-6 md:w-6 text-white" />
-          </div>
-          <span className="text-xl md:text-2xl font-bold tracking-tight whitespace-nowrap">Andamus</span>
+          <span className="text-xl md:text-2xl font-bold tracking-[-0.03em] text-fg lowercase whitespace-nowrap">
+            andamus
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -166,15 +165,15 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative px-3 xl:px-4 py-2 text-sm font-medium transition-all rounded-lg whitespace-nowrap ${
+                className={`relative px-3 xl:px-4 py-2 text-sm font-medium transition-colors rounded-[var(--radius-sm)] whitespace-nowrap ${
                   isActive
-                    ? "text-white bg-[#e63946]/20"
-                    : "text-white/65 hover:text-white hover:bg-white/5"
+                    ? "text-fg bg-accent-dim"
+                    : "text-muted hover:text-fg hover:bg-surface-2"
                 }`}
               >
                 {link.label}
                 {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#e63946]" />
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />
                 )}
               </Link>
             );
@@ -199,7 +198,7 @@ export function Navbar() {
                   {isAdmin(user?.email) && (
                     <Link
                       href="/admin"
-                      className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg"
                       title={t('admin')}
                     >
                       <Shield className="h-5 w-5" />
@@ -210,15 +209,15 @@ export function Navbar() {
                   <NotificationBell isHome={isHome} />
 
                   {/* Share App */}
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white">
-                    <ShareApp variant="icon" className="text-white/70" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg">
+                    <ShareApp variant="icon" className="text-muted" />
                   </div>
 
                   {/* Invite Friends Link -->
                   {FEATURES.WAITLIST_MODE && (
                     <Link
                       href={`/${locale}/invita`}
-                      className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg"
                       title={t('invite')}
                     >
                       <Gift className="h-5 w-5" />
@@ -228,7 +227,7 @@ export function Navbar() {
                   {/* Statistics Link */}
                   <Link
                     href={`/${locale}/statistiche`}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg"
                     title={t('statistics')}
                   >
                     <BarChart3 className="h-5 w-5" />
@@ -237,7 +236,7 @@ export function Navbar() {
                   {/* SOS Button */}
                   <button
                     onClick={openSOSModal}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-bad transition-colors hover:bg-bad/10 hover:text-bad"
                     title={t('sosEmergency')}
                     aria-label={t('sosEmergency')} // a11y: icon-only button
                   >
@@ -246,7 +245,7 @@ export function Navbar() {
 
                   <Link 
                     href={`/${locale}/profilo`}
-                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1.5 text-white transition-all hover:bg-white/10 lg:px-3 min-w-0"
+                    className="flex items-center gap-2 rounded-full border border-line bg-surface px-2 py-1.5 text-fg transition-colors hover:bg-surface-2 lg:px-3 min-w-0"
                   >
                     {getUserAvatar() && !avatarError ? (
                       <Image 
@@ -259,8 +258,8 @@ export function Navbar() {
                         onError={() => setAvatarError(true)}
                       />
                     ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946] flex-shrink-0">
-                        <User className="h-4 w-4" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted flex-shrink-0">
+                        <User className="h-4 w-4" strokeWidth={1.5} />
                       </div>
                     )}
                     <span className="hidden xl:inline text-sm font-medium max-w-[120px] truncate">
@@ -270,7 +269,7 @@ export function Navbar() {
 
                   <button
                     onClick={handleLogout}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg"
                     title={t('logout')}
                     aria-label={t('logout')} // a11y: icon-only button
                   >
@@ -281,14 +280,13 @@ export function Navbar() {
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={handleOpenLogin}
-                    variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent"
+                    variant="secondary"
                   >
                     {t('login')}
                   </Button>
                   <Button
                     onClick={handleOpenRegister}
-                    className="bg-[#e63946] text-white hover:bg-[#c92a37] shadow-lg shadow-[#e63946]/20"
+                    variant="primary"
                   >
                     {t('register')}
                   </Button>
@@ -301,7 +299,7 @@ export function Navbar() {
         {/* Mobile menu button */}
         <button
           type="button"
-          className="inline-flex items-center justify-center rounded-lg p-2 text-white transition-colors hover:bg-white/10 md:hidden"
+          className="inline-flex items-center justify-center rounded-[var(--radius-sm)] p-2 text-fg transition-colors hover:bg-surface-2 md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? t('closeMenu') : t('openMenu')} // a11y: icon-only button
         >
@@ -318,10 +316,10 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-x-0 top-16 border-b border-white/10 bg-[#0a0a0a]/98 backdrop-blur-lg md:hidden">
+        <div className="fixed inset-x-0 top-16 border-b border-line bg-bg/98 backdrop-blur-lg md:hidden">
           <div className="space-y-1 px-4 pb-4 pt-2">
             {/* Language & Theme - Mobile */}
-            <div className="flex items-center justify-between rounded-lg px-3 py-3 text-white/70">
+            <div className="flex items-center justify-between rounded-[var(--radius-sm)] px-3 py-3 text-muted">
               <span className="font-medium">{t('language')}</span>
               <div className="flex items-center gap-2">
                 <Suspense fallback={<div className="w-10 h-10 rounded-full" />}>
@@ -338,10 +336,10 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-colors ${
+                  className={`flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-base font-medium transition-colors ${
                     isActive
-                      ? "bg-[#e63946] text-white"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                      ? "bg-accent-dim text-fg"
+                      : "text-muted hover:bg-surface-2 hover:text-fg"
                   }`}
                 >
                   <link.icon className="h-5 w-5" />
@@ -351,7 +349,7 @@ export function Navbar() {
             })}
             
             {/* Mobile Auth */}
-            <div className="border-t border-white/10 pt-3 mt-3">
+            <div className="border-t border-line pt-3 mt-3">
               {!loading && (
                 <>
                   {user ? (
@@ -360,7 +358,7 @@ export function Navbar() {
                         <Link
                           href={`/${locale}/invita`}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
+                          className="flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-muted hover:bg-surface-2"
                         >
                           <Gift className="h-5 w-5" />
                           <span>{t('invite')}</span>
@@ -369,7 +367,7 @@ export function Navbar() {
                       <Link
                         href={`/${locale}/statistiche`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
+                        className="flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-muted hover:bg-surface-2"
                       >
                         <BarChart3 className="h-5 w-5" />
                         <span>{t('statistics')}</span>
@@ -379,7 +377,7 @@ export function Navbar() {
                           openSOSModal();
                           setMobileMenuOpen(false);
                         }}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-red-400 hover:bg-red-500/10"
+                        className="flex w-full items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-left text-bad hover:bg-bad/10"
                       >
                         <Siren className="h-5 w-5" />
                         <span>{t('sosEmergency')}</span>
@@ -388,7 +386,7 @@ export function Navbar() {
                         <Link
                           href="/admin"
                           onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-white/70 hover:bg-white/10"
+                          className="flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-muted hover:bg-surface-2"
                         >
                           <Shield className="h-5 w-5" />
                           <span>{t('admin')}</span>
@@ -397,7 +395,7 @@ export function Navbar() {
                       <Link
                         href={`/${locale}/profilo`}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white"
+                        className="flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-fg"
                       >
                         {getUserAvatar() && !avatarError ? (
                           <Image 
@@ -410,19 +408,19 @@ export function Navbar() {
                             onError={() => setAvatarError(true)}
                           />
                         ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e63946]/10 text-[#e63946]">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-muted">
                             <User className="h-4 w-4" />
                           </div>
                         )}
                         <span className="font-medium">{getUserName()}</span>
                       </Link>
-                      <div className="border-t border-white/10 pt-3 mt-2">
+                      <div className="border-t border-line pt-3 mt-2">
                         <button
                           onClick={() => {
                             handleLogout();
                             setMobileMenuOpen(false);
                           }}
-                          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-red-400 hover:bg-red-500/10"
+                          className="flex w-full items-center gap-3 rounded-[var(--radius-sm)] px-3 py-3 text-left text-bad hover:bg-bad/10"
                           aria-label={t('logout')}
                         >
                           <LogOut className="h-5 w-5" />
@@ -437,8 +435,8 @@ export function Navbar() {
                           handleOpenLogin();
                           setMobileMenuOpen(false);
                         }}
-                        variant="outline"
-                        className="w-full border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent"
+                        variant="secondary"
+                        className="w-full"
                       >
                         {t('login')}
                       </Button>
@@ -447,7 +445,8 @@ export function Navbar() {
                           handleOpenRegister();
                           setMobileMenuOpen(false);
                         }}
-                        className="w-full bg-[#e63946] text-white hover:bg-[#c92a37]"
+                        variant="primary"
+                        className="w-full"
                       >
                         {t('register')}
                       </Button>

@@ -176,48 +176,48 @@ export function LocationCombobox({
     >
       <div
         className={cn(
-          "w-full sm:w-[30rem] sm:mx-auto bg-surface-container flex flex-col shadow-2xl transition-all duration-300",
+          "w-full sm:w-[30rem] sm:mx-auto bg-surface flex flex-col shadow-2xl transition-all duration-300 border border-line",
           keyboardOpen
-            ? "h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[85vh] sm:rounded-3xl"
-            : "max-h-[85%] sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl"
+            ? "h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[85vh] sm:rounded-[var(--radius)]"
+            : "max-h-[85%] sm:max-h-[85vh] rounded-t-[var(--radius)] sm:rounded-[var(--radius)]"
         )}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-10 h-1 bg-outline/40 rounded-full" />
+          <div className="w-10 h-1 bg-line rounded-full" />
         </div>
 
         <div className="flex items-center justify-between px-5 py-3 flex-shrink-0">
-          <span className="font-semibold text-on-surface text-lg">
+          <span className="font-semibold text-fg text-lg lowercase">
             {placeholder || label || t("selectCity")}
           </span>
           <button
             type="button"
             onClick={handleClose}
-            className="p-2 rounded-full bg-surface-variant active:bg-surface-variant/80 touch-manipulation"
+            className="p-2 rounded-full bg-surface-2 active:bg-surface-2/80 touch-manipulation"
           >
-            <X size={18} className="text-on-surface-variant" />
+            <X size={18} strokeWidth={1.5} className="text-muted" />
           </button>
         </div>
 
         <div className="px-5 pb-3 flex-shrink-0">
-          <div className="flex items-center gap-3 bg-surface border border-outline/30 rounded-2xl px-4 py-3 focus-within:border-primary transition-colors">
-            <Search size={18} className="text-on-surface-variant flex-shrink-0" />
+          <div className="flex items-center gap-3 bg-surface-2 border border-line rounded-[var(--radius-sm)] px-4 py-3 focus-within:border-accent transition-colors">
+            <Search size={18} strokeWidth={1.5} className="text-muted flex-shrink-0" />
             <input
               ref={inputRef}
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("search") + "..."}
-              className="flex-1 bg-transparent text-on-surface placeholder:text-on-surface-variant focus:outline-none text-base"
+              className="flex-1 bg-transparent text-fg placeholder:text-dim outline-none focus:outline-none focus-visible:outline-none text-base"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch("")}
-                className="p-1 rounded-full hover:bg-surface-variant"
+                className="p-1 rounded-full hover:bg-surface-2"
               >
-                <X size={16} className="text-on-surface-variant" />
+                <X size={16} strokeWidth={1.5} className="text-muted" />
               </button>
             )}
           </div>
@@ -227,8 +227,8 @@ export function LocationCombobox({
           {search === "" && recentLocations.length > 0 && (
             <div className="px-5 mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <History size={14} className="text-primary" />
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary">Recenti</h4>
+                <History size={14} strokeWidth={1.5} className="text-muted" />
+                <h4 className="text-eyebrow">recenti</h4>
               </div>
               <div className="flex flex-wrap gap-2">
                 {recentLocations.map(loc => (
@@ -236,7 +236,7 @@ export function LocationCombobox({
                     key={`recent-${loc.id}`} 
                     type="button" 
                     onClick={() => handleSelect(loc)} 
-                    className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+                    className="px-3 py-1.5 rounded-full bg-surface-2 border border-line text-sm font-medium text-fg hover:border-line-strong transition-colors"
                   >
                     {loc.name}
                   </button>
@@ -247,14 +247,14 @@ export function LocationCombobox({
 
           {Object.entries(groupedResults).map(([type, items]) => (
             <div key={type} className="mb-4">
-              <div className="px-5 py-2 bg-surface-variant/30 sticky top-0 backdrop-blur-sm z-10 flex items-center gap-2">
+              <div className="px-5 py-2 bg-surface-2/50 sticky top-0 backdrop-blur-sm z-10 flex items-center gap-2">
                 {items[0] && TYPE_ICONS[type as keyof typeof TYPE_ICONS] && (
                   (() => {
                     const Icon = TYPE_ICONS[type as keyof typeof TYPE_ICONS];
-                    return <Icon size={12} className="text-on-surface-variant/70" />;
+                    return <Icon size={12} strokeWidth={1.5} className="text-dim" />;
                   })()
                 )}
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/70">
+                <h4 className="text-eyebrow">
                   {TYPE_LABELS[type as keyof typeof TYPE_LABELS] || type}
                 </h4>
               </div>
@@ -264,35 +264,35 @@ export function LocationCombobox({
                   type="button"
                   onClick={() => handleSelect(loc)}
                   className={cn(
-                    "w-full flex items-center gap-4 px-5 py-4 text-left transition-colors border-b border-outline/5 last:border-0 min-h-[56px] touch-manipulation",
+                    "w-full flex items-center gap-4 px-5 py-4 text-left transition-colors border-b border-line/50 last:border-0 min-h-[56px] touch-manipulation",
                     value === loc.name
-                      ? "bg-primary/10 text-primary font-semibold"
-                      : "text-on-surface active:bg-primary/20 hover:bg-surface-variant"
+                      ? "bg-accent-dim text-fg font-semibold"
+                      : "text-fg active:bg-surface-2 hover:bg-surface-2"
                   )}
                 >
                   <div className={cn(
-                    "p-2 rounded-xl flex-shrink-0",
-                    value === loc.name ? "bg-primary/20" : "bg-surface-variant/50"
+                    "p-2 rounded-[var(--radius-sm)] flex-shrink-0",
+                    value === loc.name ? "bg-accent-dim" : "bg-surface-2"
                   )}>
                     {(() => {
                       const Icon = TYPE_ICONS[loc.type as keyof typeof TYPE_ICONS] || MapPin;
-                      return <Icon size={20} className={value === loc.name ? "text-primary" : "text-on-surface-variant"} />;
+                      return <Icon size={20} strokeWidth={1.5} className={value === loc.name ? "text-accent" : "text-muted"} />;
                     })()}
                   </div>
                   <div className="flex-1 truncate">
                     <div className="text-base truncate">
                       {loc.name}
                       {loc.type === 'frazione' && loc.parent_municipality && (
-                        <span className="text-sm text-on-surface-variant/60 font-normal ml-1.5">
+                        <span className="text-sm text-muted font-normal ml-1.5">
                           ({loc.parent_municipality})
                         </span>
                       )}
                     </div>
-                    {loc.province && <div className="text-xs text-on-surface-variant opacity-70">{loc.province}</div>}
+                    {loc.province && <div className="text-xs text-dim">{loc.province}</div>}
                   </div>
-                  {loc.popular && !search && <Star size={14} className="text-primary/40 fill-primary/40" />}
+                  {loc.popular && !search && <Star size={14} strokeWidth={1.5} className="text-dim fill-dim/40" />}
                   {value === loc.name && (
-                    <Check size={20} className="ml-auto text-primary flex-shrink-0" />
+                    <Check size={20} strokeWidth={1.5} className="ml-auto text-accent flex-shrink-0" />
                   )}
                 </button>
               ))}
@@ -300,10 +300,10 @@ export function LocationCombobox({
           ))}
 
           {filtered.length === 0 && (
-            <div className="py-20 text-center text-on-surface-variant">
-              <MapPin size={48} className="mx-auto mb-4 opacity-20" />
+            <div className="py-20 text-center text-muted">
+              <MapPin size={48} strokeWidth={1.5} className="mx-auto mb-4 opacity-20" />
               <p className="text-lg font-medium">{t("noCityFound")}</p>
-              <p className="text-sm opacity-60">{t("retry")}</p>
+              <p className="text-sm text-dim">{t("retry")}</p>
             </div>
           )}
         </div>
@@ -318,31 +318,32 @@ export function LocationCombobox({
         onClick={handleOpen}
         disabled={disabled}
         className={cn(
-          "w-full flex items-center gap-3 bg-surface-container border border-outline/30 rounded-2xl px-4 py-4 text-left hover:border-primary transition-all min-h-[56px] touch-manipulation group",
+          "w-full flex items-center gap-3 border border-line rounded-[var(--radius-sm)] bg-surface-2 px-4 h-12 text-left transition-colors touch-manipulation group hover:border-line-strong",
           disabled && "opacity-50 cursor-not-allowed",
           buttonClassName
         )}
       >
-        <div className="p-2 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-          <MapPin size={20} className="text-primary flex-shrink-0" />
-        </div>
+        <MapPin size={20} strokeWidth={1.5} className="text-muted flex-shrink-0" />
         <div className="flex-1 flex flex-col min-w-0">
-          {label && <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 -mb-1">{label}</span>}
+          {label ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-dim -mb-1">{label}</span>
+          ) : null}
           <span
             className={cn(
               "text-base truncate font-medium",
-              selectedLocation || value ? "text-on-surface" : "text-on-surface-variant"
+              selectedLocation || value ? "text-fg" : "text-dim"
             )}
           >
             {displayValue}
           </span>
         </div>
         {allLocations.length === 0 && !disabled && (
-          <Loader2 size={16} className="text-primary animate-spin mr-1" />
+          <Loader2 size={16} strokeWidth={1.5} className="text-muted animate-spin mr-1" />
         )}
         <ChevronDown
           size={18}
-          className="text-on-surface-variant flex-shrink-0 opacity-40 group-hover:opacity-100 transition-opacity"
+          strokeWidth={1.5}
+          className="text-dim flex-shrink-0 group-hover:text-muted transition-colors"
         />
       </button>
 

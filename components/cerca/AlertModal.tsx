@@ -78,27 +78,27 @@ export function AlertModal({
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("fromLabel")}</label>
+              <label className="mb-1 block text-eyebrow lowercase">{t("fromLabel")}</label>
               <LocationCombobox
                 value={origin}
                 onChange={setOrigin}
                 placeholder={t("any")}
-                buttonClassName="bg-surface-container-high border-none h-12"
+                buttonClassName="w-full"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("toLabel")}</label>
+              <label className="mb-1 block text-eyebrow lowercase">{t("toLabel")}</label>
               <LocationCombobox
                 value={destination}
                 onChange={setDestination}
                 placeholder={t("any")}
-                buttonClassName="bg-surface-container-high border-none h-12"
+                buttonClassName="w-full"
               />
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("fromDateShort")}</label>
+              <label className="mb-1 block text-eyebrow lowercase">{t("fromDateShort")}</label>
               <PremiumDatePicker
                 date={startDate}
                 onSelect={setStartDate}
@@ -109,7 +109,7 @@ export function AlertModal({
               <input type="hidden" name="alertStartDate" value={startDate} />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("toDateShort")}</label>
+              <label className="mb-1 block text-eyebrow lowercase">{t("toDateShort")}</label>
               <PremiumDatePicker
                 date={endDate}
                 onSelect={setEndDate}
@@ -122,11 +122,11 @@ export function AlertModal({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("minSeatsLabel")}</label>
+              <label className="mb-1 block text-eyebrow lowercase">{t("minSeatsLabel")}</label>
               <input type="number" name="alertMinSeats" min="1" placeholder={t("any")} defaultValue={minSeats ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("maxPriceLabel")}</label>
+              <label className="mb-1 block text-eyebrow lowercase">{t("maxPriceLabel")}</label>
               <input type="number" name="alertMaxPrice" min="0" placeholder={t("any")} defaultValue={maxPrice ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
             </div>
           </div>
@@ -139,7 +139,7 @@ export function AlertModal({
             </button>
             <button type="submit"
               disabled={alertSaving}
-              className="flex-1 rounded-xl bg-primary py-3 text-sm font-semibold text-on-primary transition-colors hover:opacity-90 disabled:opacity-50"
+              className="flex-1 rounded-[var(--radius-sm)] bg-accent py-3 text-sm font-semibold lowercase text-accent-fg transition-colors hover:opacity-90 disabled:opacity-50"
             >
               {alertSaving ? t("saving") : t("saveAlert")}
             </button>

@@ -18,7 +18,7 @@ import { Suspense } from "react";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#e63946",
+  themeColor: "#0A0A0A",
   viewportFit: "cover",
   interactiveWidget: "resizes-content",
 };

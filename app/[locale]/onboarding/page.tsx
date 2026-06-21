@@ -28,8 +28,8 @@ const StepComplete = dynamic(() => import("./components/StepComplete"), {
 
 function StepLoader() {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 py-12">
-      <Loader2 className="w-8 h-8 animate-spin text-[#e63946]" />
+    <div className="flex flex-1 flex-col items-center justify-center py-12">
+      <Loader2 className="size-8 animate-spin text-accent" strokeWidth={1.5} />
     </div>
   );
 }
@@ -233,20 +233,19 @@ export default function OnboardingPage({ params }: { params: Promise<{ locale: s
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-[#e63946]" />
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <Loader2 className="size-12 animate-spin text-accent" strokeWidth={1.5} />
       </div>
     );
   }
 
   return (
-    <main className="min-h-[100dvh] bg-[#0a0a0a] text-white flex flex-col justify-between items-center relative overflow-hidden select-none">
-      {/* Progress Bar Container */}
+    <main className="relative flex min-h-[100dvh] select-none flex-col items-center justify-between overflow-hidden bg-bg text-fg">
       {step <= 4 && (
-        <div className="w-full max-w-md px-6 pt-6 flex flex-col gap-2">
-          <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-zinc-500 font-sans">
-            <span>Step {step} di 4</span>
-            <span>{Math.round((step / 4) * 100)}% Completato</span>
+        <div className="flex w-full max-w-md flex-col gap-2 px-6 pt-6">
+          <div className="flex items-center justify-between font-mono text-[10px] text-dim">
+            <span>step {step} di 4</span>
+            <span>{Math.round((step / 4) * 100)}% completato</span>
           </div>
           <ProgressBar currentStep={step} totalSteps={4} />
         </div>

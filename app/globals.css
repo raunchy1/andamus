@@ -40,8 +40,22 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-sardinian-red: #e63946;
-  --color-sardinian-red-hover: #c92a37;
+  /* Andamus editorial design tokens */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-elevated: var(--elevated);
+  --color-fg: var(--fg);
+  --color-dim: var(--dim);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent-brand: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-dim: var(--accent-dim);
+  --color-ok: var(--ok);
+  --color-pending: var(--pending);
+  --color-bad: var(--bad);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -98,111 +112,88 @@
 }
 
 /* ═══════════════════════════════════════════════
-   PREMIUM DARK THEME — Andamus Design System
-   Inspired by Linear, Revolut, Airbnb luxury
+   ANDAMUS EDITORIAL DESIGN SYSTEM — Phase 1
+   Monochrome + single accent (Sardinian sea-teal)
    ═══════════════════════════════════════════════ */
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-space: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  /* base surfaces */
+  --bg:         #0A0A0A;
+  --surface:    #121212;
+  --surface-2:  #1A1A1A;
+  --elevated:   #1F1F1F;
 
-  /* Core surfaces */
-  --background: #0a0a0a;
-  --foreground: #e5e2e1;
-  --card: #111111;
-  --card-foreground: #e5e2e1;
-  --popover: #141414;
-  --popover-foreground: #e5e2e1;
+  /* text */
+  --fg:    #EDEDEA;
+  --muted: #8C8C87;
+  --dim:   #5A5A55;
+  --faint: #3A3A36;
 
-  /* Primary accent — Sardinian Red */
-  --primary: #e63946;
-  --primary-foreground: #ffffff;
-  --primary-hover: #c92a37;
-  --primary-light: rgba(230, 57, 70, 0.12);
-  --primary-glow: rgba(230, 57, 70, 0.25);
+  /* lines */
+  --line:        #222220;
+  --line-strong: #2E2E2B;
 
-  /* Secondary — cool slate */
-  --secondary: #1a1a1a;
-  --secondary-foreground: #e5e2e1;
-  --secondary-light: rgba(255, 255, 255, 0.06);
+  /* single accent */
+  --accent:     #4FB3C9;
+  --accent-fg:  #06181C;
+  --accent-dim: rgba(79, 179, 201, 0.12);
 
-  /* Muted tones */
-  --muted: #1a1a1a;
-  --muted-foreground: #6b6b6b;
+  /* functional states */
+  --ok:      #5FA87A;
+  --pending: #C2A24E;
+  --bad:     #C2685E;
 
-  /* Accent — teal for eco/positive */
-  --accent: #2dd4bf;
-  --accent-foreground: #0a0a0a;
-  --accent-light: rgba(45, 212, 191, 0.12);
+  --radius:    14px;
+  --radius-sm: 10px;
 
-  /* Destructive */
-  --destructive: #e63946;
-  --destructive-foreground: #ffffff;
+  /* shadcn compatibility mappings */
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --card: var(--surface);
+  --card-foreground: var(--fg);
+  --popover: var(--elevated);
+  --popover-foreground: var(--fg);
 
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-strong: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.06);
-  --ring: #e63946;
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-fg);
+  --primary-hover: #3d9db3;
+  --primary-light: var(--accent-dim);
 
-  /* Charts */
-  --chart-1: #e63946;
-  --chart-2: #f4a261;
-  --chart-3: #2dd4bf;
-  --chart-4: #ab8987;
-  --chart-5: #353534;
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--fg);
 
-  --radius: 0.75rem;
+  --muted-foreground: var(--muted);
+  --accent-foreground: var(--accent-fg);
 
-  /* Sidebar */
-  --sidebar: #0a0a0a;
-  --sidebar-foreground: #e5e2e1;
-  --sidebar-primary: #e63946;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1a1a1a;
-  --sidebar-accent-foreground: #e5e2e1;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: #e63946;
+  --destructive: var(--bad);
+  --destructive-foreground: var(--fg);
 
-  /* Premium design tokens */
-  --bg-primary: #0a0a0a;
-  --bg-surface: #111111;
-  --bg-elevated: #1a1a1a;
-  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --border: var(--line);
+  --border-strong: var(--line-strong);
+  --input: var(--line);
+  --ring: var(--accent);
 
-  /* Text hierarchy */
-  --text-primary: #f8f8f8;
-  --text-secondary: #a0a0a0;
-  --text-muted: #6b6b6b;
-  --text-ghost: #444444;
+  --chart-1: var(--accent);
+  --chart-2: var(--pending);
+  --chart-3: var(--ok);
+  --chart-4: var(--muted);
+  --chart-5: var(--dim);
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #e63946 0%, #f4a261 100%);
-  --gradient-primary-btn: linear-gradient(135deg, #e63946 0%, #f4a261 100%);
-  --gradient-premium: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 40%, #2a2a2a 100%);
-  --gradient-hero: linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.85) 100%);
-  --gradient-card-glow: radial-gradient(ellipse at top, rgba(230,57,70,0.08) 0%, transparent 70%);
-  --gradient-surface: linear-gradient(180deg, #111111 0%, #0d0d0d 100%);
+  --sidebar: var(--bg);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: var(--accent-fg);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--fg);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--accent);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
-  --shadow-xl: 0 16px 48px rgba(0,0,0,0.6);
-  --shadow-glow: 0 0 40px rgba(230, 57, 70, 0.15);
-  --shadow-primary: 0 4px 16px rgba(230, 57, 70, 0.3);
-  --shadow-float: 0 20px 60px rgba(0,0,0,0.5);
+  --bg-overlay: rgba(0, 0, 0, 0.6);
 
-  /* Easing */
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Duration */
   --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
-  --duration-dramatic: 800ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
 }
 
 @layer base {
@@ -215,6 +206,11 @@
   }
   html {
     @apply font-sans;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  .font-mono {
+    font-family: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
   }
 
   /* Global spacing system - prevent overflow */
@@ -371,7 +367,7 @@
 html, body {
   overflow-x: hidden !important;
   max-width: 100vw !important;
-  background-color: #0a0a0a;
+  background-color: var(--bg);
 }
 
 /* Force proper box sizing */
@@ -560,18 +556,23 @@ img, video, svg {
    ACCESSIBILITY: KEYBOARD FOCUS
    ============================================ */
 :focus-visible {
-  outline: 2px solid var(--md-sys-color-primary, var(--primary));
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 button:focus-visible,
 a:focus-visible,
-input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--md-sys-color-primary, var(--primary));
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Bare inputs inside custom field wrappers manage focus on the container */
+input:focus,
+input:focus-visible {
+  outline: none;
 }
 
 /* Smooth scroll */
@@ -645,47 +646,58 @@ html {
    ═══════════════════════════════════════════════ */
 
 @layer utilities {
-  /* Typography — Space Grotesk headings */
+  /* Editorial typography */
   .font-heading {
-    font-family: var(--font-space), 'Space Grotesk', system-ui, sans-serif;
+    font-family: var(--font-sans), Inter, system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
 
   .font-hero {
-    font-family: var(--font-space), 'Space Grotesk', system-ui, sans-serif;
-    font-size: clamp(40px, 6vw, 72px);
+    font-size: clamp(32px, 5vw, 56px);
     line-height: 1.05;
     letter-spacing: -0.03em;
     font-weight: 700;
   }
 
   .font-h1 {
-    font-family: var(--font-space), 'Space Grotesk', system-ui, sans-serif;
-    font-size: clamp(32px, 4vw, 48px);
+    font-size: clamp(28px, 4vw, 40px);
     line-height: 1.1;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     font-weight: 700;
   }
 
   .font-h2 {
-    font-family: var(--font-space), 'Space Grotesk', system-ui, sans-serif;
-    font-size: clamp(24px, 3vw, 36px);
+    font-size: clamp(22px, 3vw, 32px);
     line-height: 1.15;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     font-weight: 600;
   }
 
   .font-h3 {
-    font-family: var(--font-space), 'Space Grotesk', system-ui, sans-serif;
-    font-size: clamp(20px, 2.5vw, 28px);
+    font-size: clamp(18px, 2.5vw, 24px);
     line-height: 1.2;
+    letter-spacing: -0.02em;
     font-weight: 600;
   }
 
   .font-h4 {
-    font-family: var(--font-space), 'Space Grotesk', system-ui, sans-serif;
-    font-size: clamp(18px, 2vw, 22px);
+    font-size: clamp(16px, 2vw, 20px);
     line-height: 1.3;
     font-weight: 600;
+  }
+
+  .text-eyebrow {
+    font-family: var(--font-mono), "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+  }
+
+  .heading-editorial {
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
   }
 
   .font-body-lg {

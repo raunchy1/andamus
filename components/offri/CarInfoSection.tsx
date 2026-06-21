@@ -2,6 +2,9 @@
 
 import { useTranslations } from "next-intl";
 
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+
 interface SavedCarInfo {
   car_model?: string | null;
   car_color?: string | null;
@@ -31,61 +34,63 @@ export function CarInfoSection({
   const t = useTranslations("offer");
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <label className="font-semibold uppercase tracking-widest text-[10px] text-outline block">
-        {t("vehicle")}
-      </label>
+    <section className={`space-y-4 ${className}`}>
+      <p className="text-eyebrow">{t("vehicle")}</p>
 
       {savedCarInfo?.car_model && (
-        <div className="flex items-center gap-3 mb-3">
+        <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-line bg-surface px-4 py-3">
           <input
             type="checkbox"
-            id="useSavedCar"
             checked={useSavedCar}
             onChange={(e) => onChange("useSavedCar", e.target.checked)}
-            className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary"
+            className="size-4 rounded border-line text-accent focus:ring-accent/30"
           />
-          <label htmlFor="useSavedCar" className="text-sm text-on-surface">
-            {t("useSavedCar")}: <span className="font-semibold">{savedCarInfo.car_model}</span>
-            {savedCarInfo.car_color && ` (${savedCarInfo.car_color})`}
-          </label>
-        </div>
+          <span className="text-sm text-fg">
+            {t("useSavedCar")}:{" "}
+            <span className="font-medium">{savedCarInfo.car_model}</span>
+            {savedCarInfo.car_color && (
+              <span className="text-muted"> ({savedCarInfo.car_color})</span>
+            )}
+          </span>
+        </label>
       )}
 
-      {!useSavedCar || !savedCarInfo?.car_model ? (
-        <div className="space-y-3 bg-surface-container-highest p-4 rounded-xl">
-          <input
-            type="text"
+      {(!useSavedCar || !savedCarInfo?.car_model) && (
+        <div className="space-y-3">
+          <Input
             placeholder={t("carModelPlaceholder")}
             value={carModel}
             onChange={(e) => onChange("carModel", e.target.value)}
-            className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold"
+            className="font-mono"
           />
           <div className="grid grid-cols-3 gap-2">
-            <input
-              type="text"
+            <Input
               placeholder={t("carColorPlaceholder")}
               value={carColor}
               onChange={(e) => onChange("carColor", e.target.value)}
-              className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+              className="font-mono text-sm"
             />
-            <input
-              type="text"
+            <Input
               placeholder={t("carYearPlaceholder")}
               value={carYear}
-              onChange={(e) => onChange("carYear", e.target.value.replace(/\D/g, "").slice(0, 4))}
-              className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary"
+              onChange={(e) =>
+                onChange("carYear", e.target.value.replace(/\D/g, "").slice(0, 4))
+              }
+              className="font-mono text-sm tabular-nums"
             />
-            <input
-              type="text"
+            <Input
               placeholder={t("carPlatePlaceholder")}
               value={carPlate}
-              onChange={(e) => onChange("carPlate", e.target.value.toUpperCase().slice(0, 7))}
-              className="bg-surface-container p-2 rounded-lg text-sm text-on-surface border-none focus:ring-1 focus:ring-primary font-mono"
+              onChange={(e) =>
+                onChange("carPlate", e.target.value.toUpperCase().slice(0, 7))
+              }
+              className="font-mono text-sm uppercase"
             />
           </div>
         </div>
-      ) : null}
-    </div>
+      )}
+
+      <Separator />
+    </section>
   );
 }

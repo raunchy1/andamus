@@ -138,8 +138,8 @@ export function PremiumCalendar({
       <div className="sm:w-52 p-5 sm:border-r border-white/5 flex flex-col justify-between bg-gradient-to-b from-white/[0.02] to-transparent">
         <div>
           <div className="flex items-center gap-2 mb-5">
-            <CalendarDays className="w-4 h-4 text-[#e63946]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6b6b6b]">{t("selectedDate")}</span>
+            <CalendarDays className="w-4 h-4 text-muted" strokeWidth={1.5} />
+            <span className="text-eyebrow">{t("selectedDate")}</span>
           </div>
 
           {selectedDayInfo ? (
@@ -171,7 +171,7 @@ export function PremiumCalendar({
         <div className="mt-6 pt-4 border-t border-white/5">
           {totalAvailable !== null && (
             <div className="flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#e63946]" />
+              <Sparkles className="w-3.5 h-3.5 text-accent" strokeWidth={1.5} />
               <span className="text-[11px] text-[#6b6b6b]">
                 {t("ridesAvailable", { count: totalAvailable })}
               </span>
@@ -191,7 +191,7 @@ export function PremiumCalendar({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => navigateMonth(-1)}
-            className="w-9 h-9 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-[#6b6b6b] hover:text-[#f8f8f8] hover:bg-white/[0.06] hover:border-[#e63946]/20 transition-all"
+            className="w-9 h-9 rounded-xl bg-surface-2 border border-line flex items-center justify-center text-muted hover:text-fg hover:bg-surface hover:border-line-strong transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
           </motion.button>
@@ -215,7 +215,7 @@ export function PremiumCalendar({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => navigateMonth(1)}
-            className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.08] hover:border-[#e63946]/30 transition-all"
+            className="w-9 h-9 rounded-xl bg-surface-2 border border-line flex items-center justify-center text-muted hover:text-fg hover:bg-surface hover:border-line-strong transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </motion.button>
@@ -265,16 +265,15 @@ export function PremiumCalendar({
                   disabled={isDisabled}
                   className={cn(
                     "relative h-11 rounded-xl flex flex-col items-center justify-center transition-colors duration-200",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e63946]/50",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
                     isSelected && [
-                      "bg-gradient-to-br from-[#e63946] to-[#c92a37]",
-                      "text-white shadow-[0_0_20px_rgba(230,57,70,0.3)]",
-                      "border border-[#e63946]/30"
+                      "bg-accent text-accent-fg",
+                      "border border-accent/30"
                     ],
                     !isSelected && isToday && [
-                      "border border-[#e63946]/50",
-                      "text-[#e63946] font-bold",
-                      "bg-[#e63946]/[0.06]"
+                      "border border-accent/50",
+                      "text-accent font-bold",
+                      "bg-accent-dim"
                     ],
                     !isSelected && !isToday && !isDisabled && [
                       "text-[#a0a0a0] hover:bg-white/[0.05] hover:text-[#f8f8f8]",
@@ -291,7 +290,7 @@ export function PremiumCalendar({
                     )} />
                   )}
                   {isToday && !isSelected && (
-                    <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#e63946] shadow-[0_0_6px_rgba(230,57,70,0.6)]" />
+                    <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent" />
                   )}
                 </motion.button>
               );
@@ -316,9 +315,9 @@ function QuickButton({ icon, label, onClick }: { icon: React.ReactNode; label: s
       whileHover={{ scale: 1.02, x: 2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.06] hover:border-[#e63946]/20 transition-all group"
+      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl bg-surface-2 border border-line hover:bg-surface hover:border-line-strong transition-all group"
     >
-      <span className="text-white/40 group-hover:text-[#e63946] transition-colors">{icon}</span>
+      <span className="text-muted group-hover:text-accent transition-colors">{icon}</span>
       <span className="text-xs font-medium text-white/60 group-hover:text-white transition-colors">{label}</span>
     </motion.button>
   );

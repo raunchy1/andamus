@@ -38,126 +38,46 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className={`flex flex-col items-center justify-center py-20 px-4 text-center ${className}`}
+      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
+      className={`flex flex-col items-center justify-center py-16 px-4 text-center border border-line rounded-[var(--radius)] bg-surface ${className}`}
     >
-      {/* Icon Container */}
-      <div className="relative mb-8">
-        <div
-          className="absolute inset-0 blur-3xl rounded-full"
-          style={{ background: "rgba(230, 57, 70, 0.15)" }}
-        />
-        <div
-          className="relative flex h-28 w-28 items-center justify-center rounded-[28px]"
-          style={{
-            background: "linear-gradient(180deg, #1a1a1a 0%, #111111 100%)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)",
-          }}
-        >
-          {icon || (
-            <svg
-              className="w-12 h-12 text-[#e63946]/60"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
-          )}
-        </div>
-      </div>
+      <p className="text-eyebrow mb-3">// nessun risultato</p>
+      <h3 className="font-h3 text-fg mb-3 max-w-md">{title}</h3>
+      <p className="text-muted max-w-md mb-8 leading-relaxed text-sm">{description}</p>
 
-      {/* Text Content */}
-      <h3 className="font-h4 text-[#f8f8f8] mb-3">{title}</h3>
-      <p className="text-[#a0a0a0] max-w-sm mb-8 leading-relaxed font-body-sm">{description}</p>
-
-      {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
         {action && (
           action.href ? (
             <Link href={action.href}>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant={action.variant || "default"}
-                  className={
-                    action.variant === "outline"
-                      ? "border-white/[0.08] text-white hover:bg-white/[0.05] rounded-xl h-12 px-6"
-                      : "rounded-xl h-12 px-6 text-white font-semibold"
-                  }
-                  style={
-                    action.variant !== "outline"
-                      ? {
-                          background: "linear-gradient(135deg, #e63946 0%, #f4a261 100%)",
-                          boxShadow: "0 4px 16px rgba(230, 57, 70, 0.25)",
-                        }
-                      : undefined
-                  }
-                >
-                  {action.label}
-                </Button>
-              </motion.div>
-            </Link>
-          ) : (
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                variant={action.variant || "default"}
-                onClick={action.onClick}
-                className={
-                  action.variant === "outline"
-                    ? "border-white/[0.08] text-white hover:bg-white/[0.05] rounded-xl h-12 px-6"
-                    : "rounded-xl h-12 px-6 text-white font-semibold"
-                }
-                style={
-                  action.variant !== "outline"
-                    ? {
-                        background: "linear-gradient(135deg, #e63946 0%, #f4a261 100%)",
-                        boxShadow: "0 4px 16px rgba(230, 57, 70, 0.25)",
-                      }
-                    : undefined
-                }
-              >
+              <Button variant={action.variant === "default" ? "primary" : "secondary"}>
                 {action.label}
               </Button>
-            </motion.div>
+            </Link>
+          ) : (
+            <Button
+              variant={action.variant === "default" ? "primary" : "secondary"}
+              onClick={action.onClick}
+            >
+              {action.label}
+            </Button>
           )
         )}
         {secondaryAction && (
           secondaryAction.href ? (
             <Link href={secondaryAction.href}>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant="outline"
-                  className="border-white/[0.08] text-white hover:bg-white/[0.05] rounded-xl h-12 px-6"
-                >
-                  {secondaryAction.label}
-                </Button>
-              </motion.div>
+              <Button variant="secondary">{secondaryAction.label}</Button>
             </Link>
           ) : (
-            <Button
-              variant="outline"
-              onClick={secondaryAction.onClick}
-              className="border-white/[0.08] text-white hover:bg-white/[0.05] rounded-xl h-12 px-6"
-            >
+            <Button variant="secondary" onClick={secondaryAction.onClick}>
               {secondaryAction.label}
             </Button>
           )
         )}
-        
+
         {tertiaryAction && (
-          <Button
-            variant="ghost"
-            onClick={tertiaryAction.onClick}
-            className="text-[#6b6b6b] hover:text-[#a0a0a0] hover:bg-white/[0.03] rounded-xl h-12 px-6"
-          >
+          <Button variant="ghost" onClick={tertiaryAction.onClick}>
             {tertiaryAction.label}
           </Button>
         )}
@@ -230,15 +150,10 @@ export function EmptyStateSearch({
             ? t("noRidesFiltered")
             : "Non ci sono ancora passaggi per questa rotta oggi, ma la community cresce in fretta! Salva la ricerca per ricevere una notifica appena qualcuno pubblica un passaggio."
         }
-        icon={
-          <svg className="w-12 h-12 text-[#e63946]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7m0 0L9.553 4.553A1 1 0 009 4.118v11.264c0 .415.255.788.647.927L15 16.5z" />
-          </svg>
-        }
         action={{
-          label: "Crea Alert",
+          label: "Salva alert",
           onClick: onCreateAlert,
-          variant: "default",
+          variant: "secondary",
         }}
         secondaryAction={{
           label: t("offerRide"),
@@ -270,7 +185,7 @@ export function EmptyStateSearch({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
           </span>
-          🔥 C&apos;è richiesta! Altri {recovery.otherSearchersCount} pendolari hanno cercato questa tratta oggi.
+          C&apos;è richiesta: altri {recovery.otherSearchersCount} pendolari hanno cercato questa tratta oggi.
         </motion.div>
       )}
 

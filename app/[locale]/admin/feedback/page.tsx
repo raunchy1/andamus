@@ -62,69 +62,81 @@ export default async function AdminFeedbackPage() {
     idea: MessageSquare,
   };
 
-  const typeColors = {
-    praise: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-    issue: "text-red-400 bg-red-400/10 border-red-400/20",
-    idea: "text-blue-400 bg-blue-400/10 border-blue-400/20",
+  const typeLabels = {
+    praise: "Mi piace",
+    issue: "Problema",
+    idea: "Idea",
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-bg text-fg">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Beta Feedback</h1>
-            <p className="text-white/40 mt-1">Raccolta feedback dagli utenti beta</p>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-dim">
+              admin / feedback
+            </p>
+            <h1 className="mt-1 text-3xl font-extrabold tracking-tight lowercase">
+              beta feedback
+            </h1>
+            <p className="mt-1 text-sm text-muted">
+              Raccolta feedback dagli utenti beta
+            </p>
           </div>
           <Link
             href="/admin"
-            className="px-4 py-2 rounded-xl bg-white/5 text-sm font-medium hover:bg-white/10 transition-colors"
+            className="rounded-[var(--radius-sm)] border border-line bg-surface px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-fg"
           >
-            ← Admin
+            ← admin
           </Link>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Totale</p>
-            <p className="text-3xl font-extrabold mt-1">{items.length}</p>
-          </div>
-          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Media</p>
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-              <p className="text-3xl font-extrabold">{avgRating}</p>
+        <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[
+            { label: "totale", value: items.length },
+            { label: "media", value: avgRating, showStar: true },
+            { label: "da risolvere", value: unresolved.length },
+            { label: "issue", value: typeStats.issue },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-[var(--radius)] border border-line bg-surface p-5"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
+                {stat.label}
+              </p>
+              <div className="mt-1 flex items-center gap-1">
+                {stat.showStar && (
+                  <Star
+                    className="size-5 text-accent"
+                    strokeWidth={1.5}
+                    fill="currentColor"
+                  />
+                )}
+                <p className="font-mono text-3xl font-semibold text-fg">
+                  {stat.value}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Da risolvere</p>
-            <p className="text-3xl font-extrabold mt-1 text-[#e63946]">{unresolved.length}</p>
-          </div>
-          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Issue</p>
-            <p className="text-3xl font-extrabold mt-1 text-red-400">{typeStats.issue}</p>
-          </div>
+          ))}
         </div>
 
-        {/* Type breakdown */}
-        <div className="flex gap-3 mb-8">
+        <div className="mb-8 flex flex-wrap gap-3">
           {(["praise", "issue", "idea"] as const).map((type) => {
             const Icon = typeIcons[type];
             return (
-              <div
+              <span
                 key={type}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium ${typeColors[type]}`}
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-[11px] text-muted"
               >
-                <Icon className="w-3.5 h-3.5" />
-                {type === "praise" ? "Mi piace" : type === "issue" ? "Problema" : "Idea"}
-                <span className="opacity-60">{typeStats[type]}</span>
-              </div>
+                <Icon className="size-3.5 text-dim" strokeWidth={1.5} />
+                {typeLabels[type]}
+                <span className="text-dim">{typeStats[type]}</span>
+              </span>
             );
           })}
         </div>
 
-        {/* Feedback list (client component) */}
         <FeedbackList initialItems={items} />
       </div>
     </div>

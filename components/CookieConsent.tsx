@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { ShieldCheck, X, ChevronDown, ChevronUp } from "lucide-react";
+import { ShieldCheck, X } from "lucide-react";
 import { Haptic } from "@/lib/haptic";
 
 export default function CookieConsent() {
@@ -65,58 +64,58 @@ export default function CookieConsent() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-50 animate-in slide-in-from-bottom-5 duration-300">
-      <div className="bg-[#121212] border border-white/[0.08] rounded-2xl p-5 shadow-2xl backdrop-blur-md">
+      <div className="bg-elevated border border-line rounded-[var(--radius)] p-5 shadow-2xl backdrop-blur-md">
         <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#e63946]/10 flex items-center justify-center flex-shrink-0">
-            <ShieldCheck className="w-5 h-5 text-[#e63946]" />
+          <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-surface-2 flex items-center justify-center flex-shrink-0">
+            <ShieldCheck className="w-5 h-5 text-muted" strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-white">Informativa sui Cookie & Privacy</h4>
-            <p className="text-xs text-white/60 mt-1.5 leading-relaxed">
+            <h4 className="text-sm font-semibold text-fg">Informativa sui Cookie & Privacy</h4>
+            <p className="text-xs text-muted mt-1.5 leading-relaxed">
               Andamus utilizza i cookie per migliorare la tua esperienza di carpooling, analizzare le prestazioni della piattaforma e mostrarti itinerari mirati in Sardegna.
             </p>
           </div>
           <button 
             onClick={handleNecessaryOnly} 
-            className="text-white/40 hover:text-white transition-colors"
+            className="text-dim hover:text-muted transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" strokeWidth={1.5} />
           </button>
         </div>
 
         {customizing && (
-          <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
+          <div className="mt-4 pt-4 border-t border-line space-y-3">
             <div className="flex items-center justify-between text-xs">
               <div>
-                <span className="font-semibold text-white block">Cookie Necessari</span>
-                <span className="text-white/40 text-[10px]">Essenziali per il funzionamento dell&apos;app (Supabase, Stripe).</span>
+                <span className="font-semibold text-fg block">Cookie Necessari</span>
+                <span className="text-dim text-[10px]">Essenziali per il funzionamento dell&apos;app (Supabase, Stripe).</span>
               </div>
-              <input type="checkbox" disabled checked className="accent-[#e63946]" />
+              <input type="checkbox" disabled checked className="accent-accent" />
             </div>
             
             <div className="flex items-center justify-between text-xs">
               <div>
-                <span className="font-semibold text-white block">Cookie Analitici</span>
-                <span className="text-white/40 text-[10px]">Analisi dei flussi di viaggio sardi e usabilità (PostHog).</span>
+                <span className="font-semibold text-fg block">Cookie Analitici</span>
+                <span className="text-dim text-[10px]">Analisi dei flussi di viaggio sardi e usabilità (PostHog).</span>
               </div>
               <input 
                 type="checkbox" 
                 checked={preferences.analytics}
                 onChange={(e) => setPreferences({...preferences, analytics: e.target.checked})}
-                className="accent-[#e63946] cursor-pointer" 
+                className="accent-accent cursor-pointer" 
               />
             </div>
             
             <div className="flex items-center justify-between text-xs">
               <div>
-                <span className="font-semibold text-white block">Cookie Funzionali</span>
-                <span className="text-white/40 text-[10px]">Salvataggio preferenze di lingua e filtri di ricerca.</span>
+                <span className="font-semibold text-fg block">Cookie Funzionali</span>
+                <span className="text-dim text-[10px]">Salvataggio preferenze di lingua e filtri di ricerca.</span>
               </div>
               <input 
                 type="checkbox" 
                 checked={preferences.functional}
                 onChange={(e) => setPreferences({...preferences, functional: e.target.checked})}
-                className="accent-[#e63946] cursor-pointer" 
+                className="accent-accent cursor-pointer" 
               />
             </div>
           </div>
@@ -127,13 +126,13 @@ export default function CookieConsent() {
             <>
               <button
                 onClick={() => setCustomizing(false)}
-                className="flex-1 py-2 text-center text-xs text-white/60 hover:text-white border border-white/5 hover:bg-white/5 rounded-xl transition-all"
+                className="flex-1 py-2 text-center text-xs lowercase text-muted hover:text-fg border border-line hover:bg-surface-2 rounded-[var(--radius-sm)] transition-all"
               >
                 Indietro
               </button>
               <button
                 onClick={handleSaveCustom}
-                className="flex-1 py-2 text-center text-xs bg-[#e63946] text-white font-semibold rounded-xl hover:bg-[#c92a37] transition-all"
+                className="flex-1 py-2 text-center text-xs lowercase bg-accent text-accent-fg font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-all"
               >
                 Salva Preferenze
               </button>
@@ -142,19 +141,19 @@ export default function CookieConsent() {
             <>
               <button
                 onClick={() => setCustomizing(true)}
-                className="flex-1 py-2 text-center text-xs text-white/60 hover:text-white border border-white/5 hover:bg-white/5 rounded-xl transition-all"
+                className="flex-1 py-2 text-center text-xs lowercase text-muted hover:text-fg rounded-[var(--radius-sm)] transition-all"
               >
                 Personalizza
               </button>
               <button
                 onClick={handleNecessaryOnly}
-                className="flex-1 py-2 text-center text-xs text-white/70 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all font-medium"
+                className="flex-1 py-2 text-center text-xs lowercase text-fg border border-line hover:bg-surface-2 rounded-[var(--radius-sm)] transition-all font-medium"
               >
                 Solo Necessari
               </button>
               <button
                 onClick={handleAcceptAll}
-                className="flex-1 py-2 text-center text-xs bg-[#e63946] text-white font-semibold rounded-xl hover:bg-[#c92a37] transition-all"
+                className="flex-1 py-2 text-center text-xs lowercase bg-accent text-accent-fg font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-all"
               >
                 Accetta Tutto
               </button>

@@ -60,8 +60,8 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-        <Loader2 className="w-10 h-10 animate-spin text-[#e63946]" />
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <Loader2 className="size-10 animate-spin text-accent" strokeWidth={1.5} />
       </div>
     }>
       <ChatWindow bookingId={bookingId} booking={booking} user={user} />

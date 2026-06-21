@@ -1,15 +1,22 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { headers } from "next/headers";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = {
-  variable: "font-sans",
-};
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
 
-const spaceGrotesk = {
-  variable: "font-space",
-};
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500", "600"],
+});
 
 const SUPPORTED_LOCALES = ["it", "en", "de"] as const;
 type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -111,7 +118,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -123,7 +130,7 @@ export default async function RootLayout({
           content="black-translucent"
         />
       </head>
-      <body className="min-h-full flex flex-col font-sans bg-[#0a0a0a] text-[#e5e2e1]">
+      <body className="min-h-full flex flex-col font-sans bg-bg text-fg">
         {children}
         <Script src="/sw-register.js" strategy="afterInteractive" />
       </body>

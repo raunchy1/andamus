@@ -592,7 +592,10 @@
     "chat": "Chat",
     "liveTracking": "LIVE TRACKING",
     "preview": "Anteprima",
-    "offline": "Sei offline — i messaggi verranno inviati quando la connessione tornerà"
+    "offline": "Sei offline — i messaggi verranno inviati quando la connessione tornerà",
+    "noConversations": "nessuna conversazione",
+    "inboxEyebrow": "messaggi",
+    "inboxTitle": "le tue chat"
   },
   "common": {
     "cancel": "Annulla",

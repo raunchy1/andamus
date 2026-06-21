@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarDays, X } from "lucide-react";
+import { Calendar, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PremiumCalendar } from "./premium-calendar";
 import { useDeviceType } from "@/components/view-mode";
 import { useLocale, useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 export interface PremiumDatePickerProps {
   date?: string; // YYYY-MM-DD
@@ -17,6 +18,7 @@ export interface PremiumDatePickerProps {
   placeholder?: string;
   className?: string;
   label?: string;
+  triggerClassName?: string;
   availabilityData?: Record<string, number>;
 }
 
@@ -42,6 +44,7 @@ export function PremiumDatePicker({
   placeholder = "Seleziona data",
   className,
   label = "Data",
+  triggerClassName,
   availabilityData,
 }: PremiumDatePickerProps) {
   const locale = useLocale();
@@ -116,28 +119,21 @@ export function PremiumDatePicker({
           }
         }}
         className={cn(
-          "flex items-center gap-4 w-full px-5 py-4 rounded-2xl",
-          "transition-all cursor-pointer min-w-0 text-left select-none outline-none focus-visible:ring-1 focus-visible:ring-[#e63946]/50"
+          "flex items-center gap-3 w-full h-12 px-4 rounded-[var(--radius-sm)] border border-line bg-surface-2 transition-colors cursor-pointer min-w-0 text-left select-none outline-none focus-visible:ring-2 focus-visible:ring-accent/30 hover:border-line-strong",
+          triggerClassName
         )}
-        style={{
-          background: "linear-gradient(180deg, #1a1a1a 0%, #141414 100%)",
-          border: "1px solid rgba(255,255,255,0.06)",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02)",
-        }}
       >
-        <div className="w-10 h-10 rounded-xl bg-[#e63946]/10 flex items-center justify-center flex-shrink-0">
-          <CalendarDays className="w-5 h-5 text-[#e63946]" />
-        </div>
+        <Calendar className="w-5 h-5 text-muted flex-shrink-0" strokeWidth={1.5} />
         <div className="flex flex-col w-full min-w-0">
-          {resolvedLabel && (
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6b6b6b] mb-0.5">
+          {resolvedLabel ? (
+            <span className="text-[10px] font-bold uppercase tracking-widest text-dim mb-0.5">
               {resolvedLabel}
             </span>
-          )}
+          ) : null}
           <span
             className={cn(
-              "text-sm font-semibold truncate",
-              selectedDate ? "text-[#f8f8f8]" : "text-[#444444]"
+              "text-base font-medium truncate",
+              selectedDate ? "text-fg" : "text-dim"
             )}
           >
             {displayDate}
@@ -146,9 +142,11 @@ export function PremiumDatePicker({
         {selectedDate && onClear && (
           <button
             onClick={(e) => { e.stopPropagation(); handleClear(); }}
-            className="p-1.5 rounded-lg hover:bg-white/[0.05] transition-colors flex-shrink-0"
+            className="p-1.5 rounded-lg hover:bg-surface transition-colors flex-shrink-0"
+            type="button"
+            aria-label="Clear date"
           >
-            <X className="w-3.5 h-3.5 text-[#444444] hover:text-[#a0a0a0]" />
+            <X className="w-3.5 h-3.5 text-dim hover:text-muted" strokeWidth={1.5} />
           </button>
         )}
       </motion.div>
@@ -163,10 +161,7 @@ export function PremiumDatePicker({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className={cn(
-                "fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm",
-                isMobile ? "" : ""
-              )}
+              className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm"
               onClick={() => setOpen(false)}
             />
 
@@ -182,8 +177,8 @@ export function PremiumDatePicker({
               className={cn(
                 "fixed z-[101] overflow-hidden",
                 isMobile
-                  ? "inset-x-0 bottom-0 rounded-t-3xl"
-                  : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl"
+                  ? "inset-x-0 bottom-0 rounded-t-[var(--radius)]"
+                  : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius)]"
               )}
               style={{
                 width: isMobile ? "100%" : "auto",
@@ -192,27 +187,26 @@ export function PremiumDatePicker({
             >
               <div
                 className={cn(
-                  "bg-[#0f0f12]/95 backdrop-blur-2xl",
-                  "border border-white/10",
-                  "shadow-[0_0_80px_rgba(230,57,70,0.12)]",
+                  "bg-elevated/95 backdrop-blur-2xl border border-line shadow-2xl",
                   isMobile ? "pb-[env(safe-area-inset-bottom)]" : ""
                 )}
               >
                 {/* Mobile drag handle */}
                 {isMobile && (
                   <div className="flex justify-center pt-3 pb-1">
-                    <div className="w-10 h-1 rounded-full bg-white/20" />
+                    <div className="w-10 h-1 rounded-full bg-line" />
                   </div>
                 )}
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                  <span className="text-sm font-bold text-white">{t("selectDate")}</span>
+                  <span className="text-sm font-semibold text-fg lowercase">{t("selectDate")}</span>
                   <button
                     onClick={() => setOpen(false)}
-                    className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-surface-2 transition-colors"
+                    type="button"
                   >
-                    <X className="w-4 h-4 text-white/40" />
+                    <X className="w-4 h-4 text-muted" strokeWidth={1.5} />
                   </button>
                 </div>
 
@@ -229,13 +223,15 @@ export function PremiumDatePicker({
 
                 {/* Mobile sticky action */}
                 {isMobile && (
-                  <div className="px-4 pb-4 pt-2 border-t border-white/5">
-                    <button
+                  <div className="px-4 pb-4 pt-2 border-t border-line">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      className="w-full"
                       onClick={() => setOpen(false)}
-                      className="w-full py-3.5 rounded-xl bg-[#e63946] text-white font-semibold text-sm hover:bg-[#c92a37] transition-colors"
                     >
                       {t("confirm")}
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>

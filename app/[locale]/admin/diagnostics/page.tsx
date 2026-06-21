@@ -15,6 +15,7 @@ import {
   Shield,
   Flag,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DiagnosticsData {
   totalUsers: number;
@@ -51,6 +52,40 @@ interface DiagnosticsData {
   }>;
 }
 
+function StatusBadge({
+  variant,
+  label,
+}: {
+  variant: "ok" | "pending" | "bad";
+  label: string;
+}) {
+  const styles = {
+    ok: { dot: "bg-ok/70", text: "text-ok" },
+    pending: { dot: "bg-pending/70", text: "text-pending" },
+    bad: { dot: "bg-bad/70", text: "text-bad" },
+  }[variant];
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border border-line px-2 py-0.5 font-mono text-[10px] lowercase",
+        styles.text
+      )}
+    >
+      <span className={cn("size-1.5 rounded-full", styles.dot)} />
+      {label}
+    </span>
+  );
+}
+
+function bookingStatusVariant(
+  status: string
+): "ok" | "pending" | "bad" {
+  if (status === "confirmed") return "ok";
+  if (status === "pending") return "pending";
+  return "bad";
+}
+
 export default function DiagnosticsPage() {
   const router = useRouter();
   const locale = useLocale();
@@ -79,7 +114,6 @@ export default function DiagnosticsPage() {
 
       setIsAdmin(true);
 
-      // Fetch diagnostics data
       const [usersRes, ridesRes, bookingsRes, pendingRes, feedbackRes, reportsRes, suspiciousRes] =
         await Promise.all([
           supabase.from("profiles").select("*", { count: "exact", head: true }),
@@ -135,8 +169,11 @@ export default function DiagnosticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <Loader2
+          className="size-10 animate-spin text-accent"
+          strokeWidth={1.5}
+        />
       </div>
     );
   }
@@ -144,73 +181,61 @@ export default function DiagnosticsPage() {
   if (!isAdmin) return null;
 
   const stats = [
-    {
-      label: "Utenti Totali",
-      value: data?.totalUsers || 0,
-      icon: Users,
-      color: "text-blue-400",
-    },
-    {
-      label: "Corse Attive",
-      value: data?.activeRides || 0,
-      icon: Car,
-      color: "text-green-400",
-    },
-    {
-      label: "Prenotazioni",
-      value: data?.totalBookings || 0,
-      icon: TrendingUp,
-      color: "text-purple-400",
-    },
-    {
-      label: "In Attesa",
-      value: data?.pendingBookings || 0,
-      icon: Clock,
-      color: "text-yellow-400",
-    },
+    { label: "utenti totali", value: data?.totalUsers || 0, icon: Users },
+    { label: "corse attive", value: data?.activeRides || 0, icon: Car },
+    { label: "prenotazioni", value: data?.totalBookings || 0, icon: TrendingUp },
+    { label: "in attesa", value: data?.pendingBookings || 0, icon: Clock },
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <h1 className="text-3xl font-extrabold tracking-tighter mb-8">
-          Beta Diagnostics
+    <div className="min-h-screen bg-bg text-fg">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-dim">
+          admin / diagnostics
+        </p>
+        <h1 className="mb-8 mt-1 text-3xl font-extrabold tracking-tighter lowercase">
+          beta diagnostics
         </h1>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="bg-white/[0.03] border border-white/10 rounded-2xl p-5"
+              className="rounded-[var(--radius)] border border-line bg-surface p-5"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                <span className="text-white/50 text-sm">{stat.label}</span>
+              <div className="mb-3 flex items-center gap-3">
+                <stat.icon
+                  className="size-5 text-muted"
+                  strokeWidth={1.5}
+                />
+                <span className="text-sm text-muted">{stat.label}</span>
               </div>
-              <p className="text-3xl font-extrabold">{stat.value}</p>
+              <p className="font-mono text-3xl font-semibold text-fg">
+                {stat.value}
+              </p>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Feedback */}
-          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-5 h-5 text-[#e63946]" />
-              <h2 className="font-bold text-lg">Feedback Recenti</h2>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <AlertTriangle
+                className="size-5 text-muted"
+                strokeWidth={1.5}
+              />
+              <h2 className="text-lg font-bold lowercase text-fg">
+                feedback recenti
+              </h2>
             </div>
             {data?.recentFeedback.length === 0 ? (
-              <p className="text-white/40 text-sm">Nessun feedback aperto</p>
+              <p className="text-sm text-muted">Nessun feedback aperto</p>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-line">
                 {data?.recentFeedback.map((f) => (
-                  <div
-                    key={f.id}
-                    className="bg-white/[0.03] rounded-xl p-3 text-sm"
-                  >
-                    <p className="text-white/80 mb-1 line-clamp-2">{f.text}</p>
-                    <div className="flex items-center gap-3 text-white/30 text-xs">
+                  <div key={f.id} className="py-3 text-sm first:pt-0 last:pb-0">
+                    <p className="mb-1 line-clamp-2 text-fg">{f.text}</p>
+                    <div className="flex items-center gap-3 font-mono text-xs text-dim">
                       <span>{f.route || "/"}</span>
                       <span>{f.device_type}</span>
                       <span>
@@ -223,44 +248,41 @@ export default function DiagnosticsPage() {
             )}
           </div>
 
-          {/* Recent Bookings */}
-          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="w-5 h-5 text-blue-400" />
-              <h2 className="font-bold text-lg">Prenotazioni Recenti</h2>
+          <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <MessageSquare
+                className="size-5 text-muted"
+                strokeWidth={1.5}
+              />
+              <h2 className="text-lg font-bold lowercase text-fg">
+                prenotazioni recenti
+              </h2>
             </div>
             {data?.recentBookings.length === 0 ? (
-              <p className="text-white/40 text-sm">
+              <p className="text-sm text-muted">
                 Nessuna prenotazione recente
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-line">
                 {data?.recentBookings.map((b) => (
                   <div
                     key={b.id}
-                    className="bg-white/[0.03] rounded-xl p-3 text-sm flex items-center justify-between"
+                    className="flex items-center justify-between py-3 text-sm first:pt-0 last:pb-0"
                   >
                     <div>
-                      <p className="text-white/80">
+                      <p className="text-fg">
                         {b.rides
                           ? `${b.rides.from_city} → ${b.rides.to_city}`
                           : "Corsa"}
                       </p>
-                      <p className="text-white/30 text-xs">
+                      <p className="font-mono text-xs text-dim">
                         {new Date(b.created_at).toLocaleDateString("it-IT")}
                       </p>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        b.status === "confirmed"
-                          ? "bg-green-500/20 text-green-400"
-                          : b.status === "pending"
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : "bg-red-500/20 text-red-400"
-                      }`}
-                    >
-                      {b.status}
-                    </span>
+                    <StatusBadge
+                      variant={bookingStatusVariant(b.status)}
+                      label={b.status}
+                    />
                   </div>
                 ))}
               </div>
@@ -268,34 +290,32 @@ export default function DiagnosticsPage() {
           </div>
         </div>
 
-        {/* Safety & Moderation */}
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Safety Reports */}
-          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Flag className="w-5 h-5 text-red-400" />
-              <h2 className="font-bold text-lg">Segnalazioni di Sicurezza</h2>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <Flag className="size-5 text-muted" strokeWidth={1.5} />
+              <h2 className="text-lg font-bold lowercase text-fg">
+                segnalazioni di sicurezza
+              </h2>
             </div>
             {data?.recentReports.length === 0 ? (
-              <p className="text-white/40 text-sm">Nessuna segnalazione recente</p>
+              <p className="text-sm text-muted">Nessuna segnalazione recente</p>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-line">
                 {data?.recentReports.map((r) => (
-                  <div
-                    key={r.id}
-                    className="bg-white/[0.03] rounded-xl p-3 text-sm"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 text-xs font-medium uppercase">
-                        {r.type}
-                      </span>
-                      <span className="text-white/30 text-xs">
+                  <div key={r.id} className="py-3 text-sm first:pt-0 last:pb-0">
+                    <div className="mb-1 flex items-center gap-2">
+                      <StatusBadge variant="bad" label={r.type} />
+                      <span className="font-mono text-xs text-dim">
                         {new Date(r.created_at).toLocaleDateString("it-IT")}
                       </span>
                     </div>
-                    <p className="text-white/80 line-clamp-2">{r.description || "Nessuna descrizione"}</p>
-                    <p className="text-white/20 text-xs mt-1">
-                      Reporter: {r.reporter_id.slice(0, 8)}… · Segnalato: {r.reported_id.slice(0, 8)}…
+                    <p className="line-clamp-2 text-muted">
+                      {r.description || "Nessuna descrizione"}
+                    </p>
+                    <p className="mt-1 font-mono text-xs text-dim">
+                      Reporter: {r.reporter_id.slice(0, 8)}… · Segnalato:{" "}
+                      {r.reported_id.slice(0, 8)}…
                     </p>
                   </div>
                 ))}
@@ -303,34 +323,32 @@ export default function DiagnosticsPage() {
             )}
           </div>
 
-          {/* Suspicious Activity */}
-          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-yellow-400" />
-              <h2 className="font-bold text-lg">Attività Sospetta</h2>
+          <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <Shield className="size-5 text-muted" strokeWidth={1.5} />
+              <h2 className="text-lg font-bold lowercase text-fg">
+                attività sospetta
+              </h2>
             </div>
             {data?.suspiciousActivity.length === 0 ? (
-              <p className="text-white/40 text-sm">Nessuna attività sospetta rilevata</p>
+              <p className="text-sm text-muted">
+                Nessuna attività sospetta rilevata
+              </p>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-line">
                 {data?.suspiciousActivity.map((a) => (
-                  <div
-                    key={a.id}
-                    className="bg-white/[0.03] rounded-xl p-3 text-sm"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 text-xs font-medium uppercase">
-                        {a.action}
-                      </span>
-                      <span className="text-white/30 text-xs">
+                  <div key={a.id} className="py-3 text-sm first:pt-0 last:pb-0">
+                    <div className="mb-1 flex items-center gap-2">
+                      <StatusBadge variant="pending" label={a.action} />
+                      <span className="font-mono text-xs text-dim">
                         {new Date(a.created_at).toLocaleDateString("it-IT")}
                       </span>
                     </div>
-                    <p className="text-white/80 text-xs font-mono">
+                    <p className="font-mono text-xs text-muted">
                       User: {a.user_id.slice(0, 8)}…
                     </p>
                     {a.metadata && (
-                      <p className="text-white/30 text-xs mt-1 font-mono line-clamp-2">
+                      <p className="mt-1 line-clamp-2 font-mono text-xs text-dim">
                         {JSON.stringify(a.metadata)}
                       </p>
                     )}

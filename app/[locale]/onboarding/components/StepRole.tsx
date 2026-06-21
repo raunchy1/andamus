@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { Haptic } from "@/lib/haptic";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface StepRoleProps {
   initialData: {
@@ -17,6 +20,12 @@ interface StepRoleProps {
   onSkip: () => void;
 }
 
+const fadeUp = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as const },
+};
+
 export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRoleProps) {
   const [selectedRole, setSelectedRole] = useState<"driver" | "passenger" | "both" | "">(initialData.role || "");
   const [selectedZones, setSelectedZones] = useState<string[]>(initialData.preferredZones || []);
@@ -24,27 +33,24 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
 
   const roles = [
     {
-      id: "driver",
-      emoji: "🚗",
-      title: "Offro Passaggi",
-      desc: "Pubblico le mie tratte e guadagno condividendo i costi",
-      tag: "Più comune tra pendolari",
+      id: "driver" as const,
+      title: "offro passaggi",
+      desc: "pubblico le mie tratte e condivido i costi",
+      tag: "più comune tra pendolari",
     },
     {
-      id: "passenger",
-      emoji: "🎒",
-      title: "Cerco Passaggi",
-      desc: "Trovo passaggi sicuri e verificati per i miei spostamenti",
+      id: "passenger" as const,
+      title: "cerco passaggi",
+      desc: "trovo passaggi sicuri e verificati per i miei spostamenti",
       tag: null,
     },
     {
-      id: "both",
-      emoji: "⚡",
-      title: "Entrambi",
-      desc: "A volte guido, a volte sono passeggero",
-      tag: "Consigliato",
+      id: "both" as const,
+      title: "entrambi",
+      desc: "a volte guido, a volte sono passeggero",
+      tag: "consigliato",
     },
-  ] as const;
+  ];
 
   const zones = ["Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Alghero", "Iglesias", "Altra"];
 
@@ -55,13 +61,9 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
 
   const handleZoneToggle = (zone: string) => {
     Haptic.light();
-    setSelectedZones((prev) => {
-      if (prev.includes(zone)) {
-        return prev.filter((z) => z !== zone);
-      } else {
-        return [...prev, zone];
-      }
-    });
+    setSelectedZones((prev) =>
+      prev.includes(zone) ? prev.filter((z) => z !== zone) : [...prev, zone]
+    );
   };
 
   const handleNext = async () => {
@@ -83,19 +85,16 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
   const isValid = selectedRole && selectedZones.length > 0;
 
   return (
-    <div className="flex flex-col flex-1 justify-between h-full w-full">
-      <div className="space-y-6 overflow-y-auto max-h-[70vh] pb-4 px-1 scrollbar-none">
-        {/* Title */}
+    <div className="flex h-full w-full flex-1 flex-col justify-between">
+      <motion.div
+        {...fadeUp}
+        className="scrollbar-none max-h-[70vh] space-y-6 overflow-y-auto px-1 pb-4"
+      >
         <div className="text-center">
-          <h2 className="text-2xl font-extrabold text-white tracking-tight font-display">
-            Come usi Andamus?
-          </h2>
-          <p className="text-zinc-400 text-xs font-sans mt-1">
-            Puoi modificare questa scelta in qualsiasi momento
-          </p>
+          <h2 className="heading-editorial text-2xl text-fg">come usi andamus?</h2>
+          <p className="mt-1 text-xs text-muted">puoi modificare questa scelta in qualsiasi momento</p>
         </div>
 
-        {/* Roles List */}
         <div className="space-y-3">
           {roles.map((r) => {
             const isSelected = selectedRole === r.id;
@@ -110,41 +109,38 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
                     handleRoleSelect(r.id);
                   }
                 }}
-                className={`relative border cursor-pointer rounded-2xl p-4 flex gap-4 transition-all duration-200 active:scale-[0.98] outline-none ${
+                className={cn(
+                  "relative flex cursor-pointer gap-4 rounded-[var(--radius)] border p-4 outline-none transition-all duration-200 active:scale-[0.98]",
                   isSelected
-                    ? "border-[#e63946] bg-[#e63946]/10"
-                    : "border-white/[0.06] bg-[#121212] hover:border-white/[0.12]"
-                }`}
+                    ? "border-accent bg-accent-dim"
+                    : "border-line bg-surface hover:border-line-strong"
+                )}
               >
                 {r.tag && (
-                  <span className={`absolute top-3 right-3 text-[9px] font-bold rounded-full px-2 py-0.5 uppercase tracking-wide ${
-                    isSelected ? "bg-[#e63946] text-white" : "bg-white/[0.06] text-zinc-400"
-                  }`}>
+                  <span
+                    className={cn(
+                      "absolute right-3 top-3 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide",
+                      isSelected ? "bg-accent text-accent-fg" : "bg-surface-2 text-dim"
+                    )}
+                  >
                     {r.tag}
                   </span>
                 )}
-                
-                <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-2xl flex-shrink-0">
-                  {r.emoji}
-                </div>
 
-                <div className="space-y-0.5 text-left pr-16">
-                  <h3 className="font-bold text-white text-base font-display flex items-center gap-2">
+                <div className="space-y-0.5 pr-16 text-left">
+                  <h3 className="flex items-center gap-2 text-base font-semibold lowercase text-fg">
                     {r.title}
-                    {isSelected && <Check className="w-4 h-4 text-[#e63946]" />}
+                    {isSelected && <Check className="size-4 text-accent" strokeWidth={1.5} />}
                   </h3>
-                  <p className="text-zinc-400 text-xs leading-relaxed font-sans">
-                    {r.desc}
-                  </p>
+                  <p className="text-xs leading-relaxed text-muted">{r.desc}</p>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Zones Selection */}
         <div className="space-y-3 text-left">
-          <label className="text-xs font-bold text-zinc-300 block">Le tue zone di viaggio principali</label>
+          <label className="text-eyebrow lowercase">le tue zone di viaggio principali</label>
           <div className="flex flex-wrap gap-2">
             {zones.map((zone) => {
               const isSelected = selectedZones.includes(zone);
@@ -153,54 +149,46 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
                   type="button"
                   key={zone}
                   onClick={() => handleZoneToggle(zone)}
-                  className={`px-4 py-2.5 rounded-full text-xs font-bold font-sans border transition-all active:scale-[0.95] ${
+                  className={cn(
+                    "rounded-full border px-4 py-2 font-mono text-xs lowercase transition-all active:scale-[0.95]",
                     isSelected
-                      ? "bg-[#e63946] text-white border-[#e63946]"
-                      : "bg-[#121212] text-zinc-400 border-white/[0.06] hover:border-white/[0.12]"
-                  }`}
+                      ? "border-accent bg-accent-dim text-fg"
+                      : "border-line bg-surface text-muted hover:border-line-strong"
+                  )}
                 >
-                  {zone}
+                  {zone.toLowerCase()}
                 </button>
               );
             })}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Action Buttons */}
-      <div className="pt-6 space-y-3">
+      <motion.div
+        {...fadeUp}
+        transition={{ ...fadeUp.transition, delay: 0.06 }}
+        className="space-y-3 pt-6"
+      >
         <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              Haptic.light();
-              onBack();
-            }}
-            className="flex-1 py-4 border border-white/5 bg-white/5 text-white font-bold rounded-xl text-base transition-all active:scale-[0.99]"
-          >
-            Indietro
-          </button>
-          <button
-            type="button"
-            disabled={!isValid || submitting}
-            onClick={handleNext}
-            className="flex-1 py-4 bg-[#e63946] text-white font-bold rounded-xl text-base transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center"
-          >
-            Continua →
-          </button>
+          <Button type="button" variant="outline" onClick={() => { Haptic.light(); onBack(); }} className="flex-1">
+            indietro
+          </Button>
+          <Button type="button" disabled={!isValid || submitting} onClick={handleNext} className="flex-1">
+            continua
+          </Button>
         </div>
-        
+
         <button
           type="button"
           onClick={() => {
             Haptic.light();
             onSkip();
           }}
-          className="w-full text-zinc-500 hover:text-white font-semibold text-xs py-2 transition-colors"
+          className="w-full py-2 text-xs font-medium text-dim transition-colors hover:text-fg"
         >
-          Salta per ora
+          salta per ora
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 }

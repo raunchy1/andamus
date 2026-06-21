@@ -314,46 +314,38 @@ export function calculateCO2Saved(distanceKm: number, passengers: number = 1): n
   return Math.round(distanceKm * emissionPerKm * passengers * 10) / 10;
 }
 
-// Dark map styles for Google Maps
+/** Map accent — matches --accent token */
+export const MAP_ACCENT = "#4FB3C9";
+export const MAP_MUTED = "#8C8C87";
+
+// Dark map styles for Google Maps (tile + static)
 export const darkMapStyles = [
-  {
-    featureType: "all",
-    elementType: "geometry",
-    stylers: [{ color: "#1a1a2e" }],
-  },
-  {
-    featureType: "all",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#1a1a2e" }],
-  },
-  {
-    featureType: "all",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#ffffff" }],
-  },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#0f1729" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#2d3748" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#4a5568" }],
-  },
-  {
-    featureType: "poi",
-    elementType: "geometry",
-    stylers: [{ color: "#1e2a4a" }],
-  },
-  {
-    featureType: "transit",
-    elementType: "geometry",
-    stylers: [{ color: "#1e2a4a" }],
-  },
+  { elementType: "geometry", stylers: [{ color: "#0a0a0a" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#8c8c87" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#0a0a0a" }] },
+  { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#222220" }] },
+  { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#0f0f0f" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", stylers: [{ visibility: "off" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#1a1a1a" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#222220" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2e2e2b" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#050505" }] },
 ];
+
+/** Query-string fragment for Google Static Maps dark styling */
+export const staticMapDarkStyleQuery = [
+  "element:geometry|color:0x0a0a0a",
+  "element:labels.text.fill|color:0x8c8c87",
+  "element:labels.text.stroke|color:0x0a0a0a",
+  "feature:administrative|element:geometry|color:0x222220",
+  "feature:landscape|element:geometry|color:0x0f0f0f",
+  "feature:poi|visibility:off",
+  "feature:transit|visibility:off",
+  "feature:road|element:geometry|color:0x1a1a1a",
+  "feature:road|element:geometry.stroke|color:0x222220",
+  "feature:road.highway|element:geometry|color:0x2e2e2b",
+  "feature:water|element:geometry|color:0x050505",
+]
+  .map((s) => `style=feature:${s}`)
+  .join("&");

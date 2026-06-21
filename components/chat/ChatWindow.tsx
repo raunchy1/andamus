@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { sendMessage, markMessagesAsRead } from "@/lib/chat-actions";
+import { staticMapDarkStyleQuery } from "@/lib/sardinia-cities";
 import {
   Loader2,
   X,
@@ -21,15 +22,16 @@ import {
   Play,
   Pause,
   MapPin,
-  SlidersHorizontal,
-  User,
   Plus,
   Send,
   Check,
   CheckCheck,
   RotateCcw,
   WifiOff,
+  ChevronLeft,
 } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { notifyNewMessage } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
@@ -126,15 +128,15 @@ const ReadIndicator = memo(function ReadIndicator({
   const t = useTranslations("chat");
   if (!isMyMessage(message.sender_id, currentUserId)) return null;
   return (
-    <span className="text-[9px] font-medium text-primary/60 flex items-center gap-0.5 mt-0.5">
+    <span className="mt-0.5 flex items-center gap-1 font-mono text-[10px] text-dim">
       {message.read ? (
         <>
-          <CheckCheck className="w-3 h-3" />
+          <CheckCheck className="size-3" strokeWidth={1.5} />
           {t("read")}
         </>
       ) : (
         <>
-          <Check className="w-3 h-3" />
+          <Check className="size-3" strokeWidth={1.5} />
           {t("sent")}
         </>
       )}
@@ -175,13 +177,11 @@ const MessageBubble = memo(function MessageBubble({
       } max-w-[85%] gap-1`}
     >
       <div
-        className={`relative ${
+        className={`relative rounded-[var(--radius-sm)] p-3.5 text-base leading-relaxed text-fg ${
           mine
-            ? "bg-primary/10 border border-primary/20 rounded-xl rounded-br-none"
-            : "bg-surface-container-low rounded-xl rounded-bl-none"
-        } p-4 text-sm leading-relaxed text-on-surface ${
-          isPending ? "opacity-70" : ""
-        } ${isFailed ? "border-error/30 bg-error/5" : ""}`}
+            ? "bg-surface-2"
+            : "border border-line bg-surface"
+        } ${isPending ? "opacity-70" : ""} ${isFailed ? "border-bad/40 bg-bad/10" : ""}`}
       >
         {/* Pending overlay */}
         {isPending && (
@@ -249,7 +249,7 @@ const MessageBubble = memo(function MessageBubble({
                 {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
                   <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
                     <Image
-                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&markers=color:red%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapDarkStyleQuery}&markers=color:0x4FB3C9%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
                       alt={t("locationMapAlt")}
                       fill
                       className="object-cover grayscale opacity-60"
@@ -300,16 +300,14 @@ const MessageBubble = memo(function MessageBubble({
         )}
 
         {message.content && message.type === "text" && (
-          <p className={mine ? "text-primary" : "text-on-surface"}>
-            {message.content}
-          </p>
+          <p className="text-fg">{message.content}</p>
         )}
         {message.content && message.type !== "text" && (
-          <p className="text-on-surface/60 text-xs mt-2">{message.content}</p>
+          <p className="mt-2 text-xs text-muted">{message.content}</p>
         )}
       </div>
-      <div className="flex items-center gap-1 px-1">
-        <span className="text-[10px] font-medium text-on-surface/40">
+      <div className="flex items-center gap-1.5 px-1">
+        <span className="font-mono text-[11px] text-dim">
           {formatTime(message.created_at)}
         </span>
         {!isLocal && <ReadIndicator message={message as Message} currentUserId={currentUserId} />}
@@ -363,17 +361,12 @@ const ChatInput = memo(function ChatInput({
   const t = useTranslations("chat");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const inputClasses = mobile
-    ? "flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-on-surface/30 text-on-surface disabled:opacity-50"
-    : "flex-1 bg-transparent border-none focus:ring-0 text-base placeholder:text-on-surface/30 text-on-surface disabled:opacity-50";
+  const inputClasses =
+    "flex-1 border-none bg-transparent text-base text-fg placeholder:text-dim focus:outline-none focus:ring-0 disabled:opacity-50";
 
   const containerClasses = mobile
-    ? "flex items-center gap-4 bg-surface-container-highest rounded-2xl px-4 py-3 border-b-2 border-primary"
-    : "flex items-center gap-4 bg-surface-container-highest rounded-3xl px-6 py-4 border-b-2 border-primary";
-
-  const sendBtnClasses = mobile
-    ? "w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50"
-    : "w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary transform active:scale-90 transition-all disabled:opacity-50";
+    ? "flex items-center gap-3 rounded-[var(--radius-sm)] border border-line bg-surface-2 px-3 py-2.5"
+    : "flex items-center gap-3 rounded-[var(--radius-sm)] border border-line bg-surface-2 px-4 py-3";
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -414,9 +407,9 @@ const ChatInput = memo(function ChatInput({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isRecording || uploadingImage}
-          className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
+          className="text-muted transition-colors hover:text-accent disabled:opacity-50"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="size-5" strokeWidth={1.5} />
         </button>
 
         <input
@@ -436,9 +429,9 @@ const ChatInput = memo(function ChatInput({
             type="button"
             onClick={onSendLocation}
             disabled={isRecording || sending}
-            className="text-on-surface/60 hover:text-primary transition-colors disabled:opacity-50"
+            className="text-muted transition-colors hover:text-accent disabled:opacity-50"
           >
-            <MapPin className="w-5 h-5" />
+            <MapPin className="size-5" strokeWidth={1.5} />
           </button>
           <button
             type="button"
@@ -448,21 +441,21 @@ const ChatInput = memo(function ChatInput({
             onTouchEnd={onStopRecording}
             onMouseLeave={isRecording ? onStopRecording : undefined}
             disabled={!!newMessage.trim() || sending}
-            className={`text-on-surface/60 hover:text-primary transition-colors disabled:opacity-0 ${
-              isRecording ? "text-error" : ""
+            className={`text-muted transition-colors hover:text-accent disabled:opacity-0 ${
+              isRecording ? "text-bad" : ""
             }`}
           >
-            <Mic className="w-5 h-5" />
+            <Mic className="size-5" strokeWidth={1.5} />
           </button>
           <button
             onClick={onSend}
             disabled={sending || !newMessage.trim() || isRecording}
-            className={sendBtnClasses}
+            className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-accent transition-all hover:bg-accent-dim active:scale-95 disabled:opacity-40"
           >
             {sending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="size-4 animate-spin" strokeWidth={1.5} />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="size-4" strokeWidth={1.5} />
             )}
           </button>
         </div>
@@ -1220,8 +1213,8 @@ export default function ChatWindow({
   // -- Loading / Error states --
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <Loader2 className="size-10 animate-spin text-accent" strokeWidth={1.5} />
       </div>
     );
   }
@@ -1239,79 +1232,58 @@ export default function ChatWindow({
   function ChatMobile() {
     return (
       <div 
-        className="flex h-[100dvh] flex-col bg-[#0a0a0a]"
+        className="fixed inset-x-0 bottom-0 top-16 z-10 flex flex-col bg-bg"
         style={viewportHeight ? { height: `${viewportHeight}px` } : undefined}
       >
         {/* Header */}
-        <header className="bg-[#0e0e0e] flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4 shrink-0">
-          <div className="flex flex-col">
-            <span className="font-semibold uppercase tracking-widest text-[11px] text-primary">
-              {t("andamusLive")}
-            </span>
-            <h1 className="font-extrabold tracking-tighter text-2xl uppercase text-on-surface">
+        <header className="flex w-full shrink-0 items-center gap-3 border-b border-line bg-bg px-4 py-3 sm:px-6">
+          <Link
+            href={`/${locale}/chat`}
+            className="inline-flex size-10 items-center justify-center rounded-[var(--radius-sm)] text-fg transition-colors hover:bg-surface-2"
+          >
+            <ChevronLeft className="size-5" strokeWidth={1.5} />
+          </Link>
+          <div className="relative shrink-0">
+            <Avatar
+              src={otherParticipant?.avatar_url}
+              name={otherParticipant?.name}
+              size="md"
+            />
+            <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-bg bg-accent" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-base font-semibold text-fg">
               {otherParticipant?.name || t("chat")}
             </h1>
-          </div>
-          <div className="flex items-center gap-4 pb-1">
-            <button className="text-on-surface hover:opacity-80 transition-opacity">
-              <SlidersHorizontal className="w-5 h-5" />
-            </button>
-            <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
-              {otherParticipant?.avatar_url ? (
-                <Image
-                  src={otherParticipant.avatar_url}
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <User className="w-5 h-5 text-on-surface-variant" />
-              )}
-            </div>
+            <p className="truncate text-xs text-muted">
+              {booking?.rides.from_city} → {booking?.rides.to_city}
+            </p>
           </div>
         </header>
 
         {/* Offline banner */}
         {!isOnline && (
-          <div className="bg-error/10 px-4 py-2 flex items-center gap-2 shrink-0">
-            <WifiOff className="w-4 h-4 text-error" />
-            <span className="text-xs text-error font-medium">{t("offline")}</span>
+          <div className="flex shrink-0 items-center gap-2 border-b border-line bg-bad/10 px-4 py-2">
+            <WifiOff className="size-4 text-bad" strokeWidth={1.5} />
+            <span className="text-xs font-medium text-bad">{t("offline")}</span>
           </div>
         )}
 
-        {/* Route info */}
-        <div className="bg-[#131313] px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col items-center">
-              <div className="w-2 h-2 rounded-full bg-primary" />
-              <div className="w-[1px] h-4 bg-outline-variant/30" />
-              <div className="w-2 h-2 rounded-full bg-outline" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80">
-                {booking?.rides.from_city} → {booking?.rides.to_city}
-              </span>
-              <span className="text-xs text-on-surface/60">
-                {booking?.rides.date} · {booking?.rides.time.slice(0, 5)}
-              </span>
-            </div>
+        {/* Route meta */}
+        <div className="flex shrink-0 items-center justify-between border-b border-line bg-surface px-4 py-3 sm:px-6">
+          <div className="flex flex-col">
+            <span className="font-mono text-[11px] text-dim">
+              {booking?.rides.date} · {booking?.rides.time.slice(0, 5)}
+            </span>
           </div>
-          <div className="flex items-center gap-2">
-            {booking?.status !== "cancelled" && (
-              <Link
-                href={`/cancella/${bookingId}`}
-                className="px-3 py-2 rounded-lg bg-error/10 text-error text-xs font-bold hover:bg-error/20 transition-colors"
-              >
-                {t("cancel")}
-              </Link>
-            )}
-            <div className="bg-surface-container-high px-3 py-2 rounded-lg">
-              <span className="text-[10px] font-extrabold text-primary">
-                {t("liveTracking")}
-              </span>
-            </div>
-          </div>
+          {booking?.status !== "cancelled" && (
+            <Link
+              href={`/cancella/${bookingId}`}
+              className="text-xs font-medium lowercase text-[var(--bad)] transition-colors hover:text-[var(--bad)]/80"
+            >
+              {t("cancel")}
+            </Link>
+          )}
         </div>
 
         {/* Messages */}
@@ -1319,17 +1291,16 @@ export default function ChatWindow({
           className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-8 chat-scroll flex flex-col gap-8"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          <div className="flex justify-center">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface/40">
-              {t("today")}
-            </span>
+          <div className="flex items-center gap-3 py-1">
+            <div className="h-px flex-1 bg-line" />
+            <span className="font-mono text-[11px] text-dim">{t("today")}</span>
+            <div className="h-px flex-1 bg-line" />
           </div>
 
           {displayMessages.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-on-surface-variant">
-                {t("startConversation")}
-              </p>
+              <p className="heading-editorial text-lg text-fg">{t("noMessages")}</p>
+              <p className="mt-2 text-sm text-muted">{t("startConversation")}</p>
             </div>
           ) : (
             displayMessages.map((message) => (
@@ -1349,7 +1320,7 @@ export default function ChatWindow({
         </div>
 
         {/* Input */}
-        <footer className="bg-[#131313] px-4 sm:px-6 pb-10 pt-6 shrink-0 safe-area-pb">
+        <footer className="shrink-0 border-t border-line bg-bg px-4 pt-4 safe-area-pb sm:px-6">
           <ChatInput
             mobile
             isOnline={isOnline}
@@ -1372,88 +1343,57 @@ export default function ChatWindow({
 
   function ChatDesktop() {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center">
-        <div className="w-full max-w-4xl flex flex-col h-screen">
+      <div className="fixed inset-x-0 bottom-0 top-20 z-10 flex justify-center bg-bg">
+        <div className="flex h-full w-full max-w-4xl flex-col">
           {/* Header */}
-          <header className="bg-[#0e0e0e] flex justify-between items-center w-full px-8 pt-10 pb-6 shrink-0">
-            <div className="flex flex-col">
-              <span className="font-semibold uppercase tracking-widest text-xs text-primary mb-1">
-                {t("andamusLive")}
-              </span>
-              <h1 className="font-extrabold tracking-tighter text-3xl uppercase text-on-surface">
+          <header className="flex w-full shrink-0 items-center gap-4 border-b border-line px-8 py-6">
+            <Link
+              href={`/${locale}/chat`}
+              className="inline-flex size-10 items-center justify-center rounded-[var(--radius-sm)] text-fg transition-colors hover:bg-surface-2"
+            >
+              <ChevronLeft className="size-5" strokeWidth={1.5} />
+            </Link>
+            <div className="relative shrink-0">
+              <Avatar
+                src={otherParticipant?.avatar_url}
+                name={otherParticipant?.name}
+                size="lg"
+              />
+              <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-bg bg-accent" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-lg font-semibold text-fg">
                 {otherParticipant?.name || t("chat")}
               </h1>
+              <p className="truncate text-sm text-muted">
+                {booking?.rides.from_city} → {booking?.rides.to_city} · {booking?.rides.date}
+              </p>
             </div>
-            <div className="flex items-center gap-6">
-              <button className="text-on-surface hover:opacity-80 transition-opacity">
-                <SlidersHorizontal className="w-6 h-6" />
-              </button>
-              <div className="w-14 h-14 rounded-2xl bg-surface-container-highest flex items-center justify-center overflow-hidden">
-                {otherParticipant?.avatar_url ? (
-                  <Image
-                    src={otherParticipant.avatar_url}
-                    alt=""
-                    width={56}
-                    height={56}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-6 h-6 text-on-surface-variant" />
-                )}
-              </div>
-            </div>
+            {booking?.status !== "cancelled" && (
+              <Link
+                href={`/cancella/${bookingId}`}
+                className="text-sm font-medium lowercase text-[var(--bad)] transition-colors hover:text-[var(--bad)]/80"
+              >
+                {t("cancelBooking")}
+              </Link>
+            )}
           </header>
-
-          {/* Route info */}
-          <div className="bg-[#131313] px-8 py-5 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col items-center">
-                <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                <div className="w-[1.5px] h-5 bg-outline-variant/30" />
-                <div className="w-2.5 h-2.5 rounded-full bg-outline" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-widest text-primary/80">
-                  {booking?.rides.from_city} → {booking?.rides.to_city}
-                </span>
-                <span className="text-sm text-on-surface/60">
-                  {booking?.rides.date} · {booking?.rides.time.slice(0, 5)}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {booking?.status !== "cancelled" && (
-                <Link
-                  href={`/cancella/${bookingId}`}
-                  className="px-4 py-2 rounded-lg bg-error/10 text-error text-sm font-bold hover:bg-error/20 transition-colors"
-                >
-                  {t("cancelBooking")}
-                </Link>
-              )}
-              <div className="bg-surface-container-high px-4 py-2 rounded-lg">
-                <span className="text-xs font-extrabold text-primary">
-                  {t("liveTracking")}
-                </span>
-              </div>
-            </div>
-          </div>
 
           {/* Messages */}
           <div
             className="flex-1 overflow-y-auto px-8 py-10 chat-scroll flex flex-col gap-10"
             style={{ WebkitOverflowScrolling: "touch" }}
           >
-            <div className="flex justify-center">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-on-surface/40">
-                {t("today")}
-              </span>
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-px flex-1 bg-line" />
+              <span className="font-mono text-[11px] text-dim">{t("today")}</span>
+              <div className="h-px flex-1 bg-line" />
             </div>
 
             {displayMessages.length === 0 ? (
               <div className="py-16 text-center">
-                <p className="text-on-surface-variant text-lg">
-                  {t("startConversation")}
-                </p>
+                <p className="heading-editorial text-lg text-fg">{t("noMessages")}</p>
+                <p className="mt-2 text-sm text-muted">{t("startConversation")}</p>
               </div>
             ) : (
               displayMessages.map((message) => (
@@ -1473,7 +1413,7 @@ export default function ChatWindow({
           </div>
 
           {/* Input */}
-          <footer className="bg-[#131313] px-8 pb-8 pt-6 shrink-0">
+          <footer className="shrink-0 border-t border-line bg-bg px-8 pb-8 pt-4">
             <ChatInput
               isOnline={isOnline}
               isRecording={isRecording}
@@ -1516,23 +1456,26 @@ export default function ChatWindow({
               className="w-full rounded-lg"
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setImagePreview(null)}
-                className="flex-1 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20"
+                className="flex-1"
               >
                 {t("cancel")}
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
                 onClick={sendImage}
                 disabled={uploadingImage}
-                className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-medium hover:opacity-90 disabled:opacity-50"
+                className="flex-1"
               >
                 {uploadingImage ? (
                   <Loader2 className="h-5 w-5 animate-spin mx-auto" />
                 ) : (
                   t("send")
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -1,9 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Check, Camera, AlertCircle, Loader2 } from "lucide-react";
 import { Haptic } from "@/lib/haptic";
 import { toast } from "sonner";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface StepProfileProps {
   userId: string;
@@ -190,43 +194,41 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
     }
   };
 
-  const getInitials = () => {
-    if (!fullName) return "U";
-    return fullName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
-  };
+  const fieldClass = (field: string, validWhen?: boolean) =>
+    cn(
+      "w-full rounded-[var(--radius-sm)] border bg-surface-2 px-4 py-3.5 text-base text-fg placeholder:text-dim focus:outline-none focus:border-accent",
+      touched[field] && errors[field]
+        ? "border-bad"
+        : touched[field] && (validWhen ?? true)
+          ? "border-ok/50"
+          : "border-line"
+    );
 
   return (
-    <form onSubmit={handleNext} className="flex flex-col flex-1 justify-between h-full w-full">
-      <div className="space-y-6 overflow-y-auto max-h-[70vh] pb-4 px-1 scrollbar-none">
-        {/* Title */}
+    <form onSubmit={handleNext} className="flex h-full w-full flex-1 flex-col justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="scrollbar-none max-h-[70vh] space-y-6 overflow-y-auto px-1 pb-4"
+      >
         <div className="text-center">
-          <h2 className="text-2xl font-extrabold text-white tracking-tight font-display">
-            Completa il Profilo
-          </h2>
-          <p className="text-zinc-400 text-xs font-sans mt-1">
-            Gli altri pendolari ti vedranno così
-          </p>
+          <h2 className="heading-editorial text-2xl text-fg">completa il profilo</h2>
+          <p className="mt-1 text-xs text-muted">gli altri pendolari ti vedranno così</p>
         </div>
 
-        {/* Avatar Upload */}
         <div className="flex flex-col items-center gap-2">
-          <div 
+          <div
             onClick={handleAvatarClick}
-            className="w-24 h-24 rounded-full relative cursor-pointer group active:scale-95 transition-all overflow-hidden border-2 border-white/[0.08] bg-zinc-900 flex items-center justify-center"
+            className="group relative cursor-pointer transition-transform active:scale-95"
           >
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-2xl font-bold text-white tracking-wide font-display">{getInitials()}</span>
-            )}
-            
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-              <Camera className="w-5 h-5 text-white" />
+            <Avatar src={avatarUrl} name={fullName} size="lg" className="size-24 text-xl" />
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-bg/50 opacity-0 transition-opacity group-hover:opacity-100">
+              <Camera className="size-5 text-fg" strokeWidth={1.5} />
             </div>
-
             {avatarLoading && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <Loader2 className="w-6 h-6 animate-spin text-white" />
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-bg/70">
+                <Loader2 className="size-6 animate-spin text-accent" strokeWidth={1.5} />
               </div>
             )}
           </div>
@@ -237,14 +239,12 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
             accept="image/*"
             className="hidden"
           />
-          <span className="text-[10px] text-zinc-500 font-medium">Tocca per caricare una foto (Max 5MB)</span>
+          <span className="text-[10px] font-medium text-dim">tocca per caricare una foto (max 5mb)</span>
         </div>
 
-        {/* Fields */}
         <div className="space-y-4">
-          {/* Nome */}
-          <div className="space-y-1 text-left">
-            <label className="text-xs font-bold text-zinc-300 block">Nome Completo</label>
+          <div className="space-y-1.5 text-left">
+            <label className="text-eyebrow lowercase">nome completo</label>
             <div className="relative">
               <input
                 type="text"
@@ -252,30 +252,23 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
                 onChange={(e) => setFullName(e.target.value)}
                 onBlur={() => handleBlur("fullName", fullName)}
                 aria-describedby={errors.fullName ? "fullName-error" : undefined}
-                className={`w-full bg-[#121212] border ${
-                  touched.fullName && errors.fullName
-                    ? "border-[#e63946]"
-                    : touched.fullName
-                    ? "border-green-500"
-                    : "border-white/[0.08]"
-                } rounded-xl px-4 py-3.5 text-base text-white focus:outline-none focus:border-[#e63946] placeholder:text-zinc-600 font-sans`}
-                placeholder="es. Mario Rossi"
+                className={fieldClass("fullName")}
+                placeholder="es. mario rossi"
               />
               {touched.fullName && !errors.fullName && (
-                <Check className="w-5 h-5 text-green-500 absolute right-4 top-4" />
+                <Check className="absolute right-4 top-4 size-5 text-ok" strokeWidth={1.5} />
               )}
             </div>
             {touched.fullName && errors.fullName && (
-              <p id="fullName-error" className="text-xs text-[#e63946] flex items-center gap-1 font-sans mt-1">
-                <AlertCircle className="w-3.5 h-3.5" />
+              <p id="fullName-error" className="mt-1 flex items-center gap-1 text-xs text-bad">
+                <AlertCircle className="size-3.5" strokeWidth={1.5} />
                 {errors.fullName}
               </p>
             )}
           </div>
 
-          {/* Telefono */}
-          <div className="space-y-1 text-left">
-            <label className="text-xs font-bold text-zinc-300 block">Numero di Cellulare</label>
+          <div className="space-y-1.5 text-left">
+            <label className="text-eyebrow lowercase">numero di cellulare</label>
             <div className="relative">
               <input
                 type="tel"
@@ -283,103 +276,79 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
                 onChange={(e) => setPhone(e.target.value)}
                 onBlur={() => handleBlur("phone", phone)}
                 aria-describedby={errors.phone ? "phone-error" : undefined}
-                className={`w-full bg-[#121212] border ${
-                  touched.phone && errors.phone
-                    ? "border-[#e63946]"
-                    : touched.phone
-                    ? "border-green-500"
-                    : "border-white/[0.08]"
-                } rounded-xl px-4 py-3.5 text-base text-white focus:outline-none focus:border-[#e63946] placeholder:text-zinc-600 font-sans`}
+                className={fieldClass("phone")}
                 placeholder="+39 333 000 0000"
               />
               {touched.phone && !errors.phone && (
-                <Check className="w-5 h-5 text-green-500 absolute right-4 top-4" />
+                <Check className="absolute right-4 top-4 size-5 text-ok" strokeWidth={1.5} />
               )}
             </div>
             {touched.phone && errors.phone && (
-              <p id="phone-error" className="text-xs text-[#e63946] flex items-center gap-1 font-sans mt-1">
-                <AlertCircle className="w-3.5 h-3.5" />
+              <p id="phone-error" className="mt-1 flex items-center gap-1 text-xs text-bad">
+                <AlertCircle className="size-3.5" strokeWidth={1.5} />
                 {errors.phone}
               </p>
             )}
           </div>
 
-          {/* Anno di nascita */}
-          <div className="space-y-1 text-left">
-            <label className="text-xs font-bold text-zinc-300 block">Anno di Nascita</label>
-            <div className="relative">
-              <select
-                value={birthYear || ""}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  setBirthYear(val);
-                  validateField("birthYear", val);
-                }}
-                onBlur={() => handleBlur("birthYear", birthYear)}
-                aria-describedby={errors.birthYear ? "birthYear-error" : undefined}
-                className={`w-full bg-[#121212] border ${
-                  touched.birthYear && errors.birthYear
-                    ? "border-[#e63946]"
-                    : touched.birthYear && birthYear > 0
-                    ? "border-green-500"
-                    : "border-white/[0.08]"
-                } rounded-xl px-4 py-3.5 text-base text-white focus:outline-none focus:border-[#e63946] font-sans`}
-              >
-                <option value="">Seleziona anno</option>
-                {years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
-            </div>
+          <div className="space-y-1.5 text-left">
+            <label className="text-eyebrow lowercase">anno di nascita</label>
+            <select
+              value={birthYear || ""}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setBirthYear(val);
+                validateField("birthYear", val);
+              }}
+              onBlur={() => handleBlur("birthYear", birthYear)}
+              aria-describedby={errors.birthYear ? "birthYear-error" : undefined}
+              className={fieldClass("birthYear", birthYear > 0)}
+            >
+              <option value="">seleziona anno</option>
+              {years.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
             {touched.birthYear && errors.birthYear && (
-              <p id="birthYear-error" className="text-xs text-[#e63946] flex items-center gap-1 font-sans mt-1">
-                <AlertCircle className="w-3.5 h-3.5" />
+              <p id="birthYear-error" className="mt-1 flex items-center gap-1 text-xs text-bad">
+                <AlertCircle className="size-3.5" strokeWidth={1.5} />
                 {errors.birthYear}
               </p>
             )}
           </div>
 
-          {/* Bio */}
-          <div className="space-y-1 text-left">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-zinc-300 block">Bio Breve (opzionale)</label>
-              <span className="text-[10px] text-zinc-500 font-sans">{bio.length}/120</span>
+          <div className="space-y-1.5 text-left">
+            <div className="flex items-center justify-between">
+              <label className="text-eyebrow lowercase">bio breve (opzionale)</label>
+              <span className="font-mono text-[10px] text-dim">{bio.length}/120</span>
             </div>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value.substring(0, 120))}
               maxLength={120}
               rows={2}
-              className="w-full bg-[#121212] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#e63946] placeholder:text-zinc-600 font-sans resize-none"
-              placeholder="es. Pendolare Cagliari-Sassari ogni venerdì 🚗"
+              className="w-full resize-none rounded-[var(--radius-sm)] border border-line bg-surface-2 px-4 py-3 text-sm text-fg placeholder:text-dim focus:border-accent focus:outline-none"
+              placeholder="es. pendolare cagliari-sassari ogni venerdì"
             />
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Buttons */}
-      <div className="pt-6 flex gap-3">
-        <button
+      <div className="flex gap-3 pt-6">
+        <Button
           type="button"
+          variant="outline"
           onClick={() => {
             Haptic.light();
             onBack();
           }}
-          className="flex-1 py-4 border border-white/5 bg-white/5 text-white font-bold rounded-xl text-base transition-all active:scale-[0.99]"
+          className="flex-1"
         >
-          Indietro
-        </button>
-        <button
-          type="submit"
-          disabled={!isValid || submitting}
-          className="flex-1 py-4 bg-[#e63946] text-white font-bold rounded-xl text-base transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {submitting ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            "Continua →"
-          )}
-        </button>
+          indietro
+        </Button>
+        <Button type="submit" disabled={!isValid || submitting} className="flex-1">
+          {submitting ? <Loader2 className="size-5 animate-spin" strokeWidth={1.5} /> : "continua"}
+        </Button>
       </div>
     </form>
   );

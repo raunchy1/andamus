@@ -3,12 +3,16 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, Phone, MapPin, X, Shield, Siren, Bug } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 import { ReportModal } from "./ReportModal";
 
 export function SafetyButton() {
   const t = useTranslations("safety");
+  const pathname = usePathname();
+  const isChatThread = /\/chat\/[^/]+/.test(pathname ?? "");
   const [isOpen, setIsOpen] = useState(false);
   const [showSOS, setShowSOS] = useState(false);
   const [showReport, setShowReport] = useState(false);
@@ -79,16 +83,16 @@ export function SafetyButton() {
 
   return (
     <>
-      {/* FAB — positioned just above bottom nav on mobile, bottom-right on desktop */}
+      {/* FAB — above bottom nav on most screens; lower on full-screen chat thread */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-24 right-4 z-40 flex h-9 w-9 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 md:bottom-8 md:right-8 md:h-11 md:w-11"
-        style={{
-          background: isOpen ? "rgba(230, 57, 70, 0.95)" : "rgba(20, 20, 20, 0.75)",
-          backdropFilter: "blur(16px)",
-          border: isOpen ? "1px solid rgba(230, 57, 70, 0.4)" : "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
-        }}
+        className={cn(
+          "fixed right-4 z-40 flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-md transition-all hover:scale-105 active:scale-95 md:bottom-8 md:right-8 md:h-11 md:w-11",
+          isChatThread ? "bottom-4" : "bottom-24",
+          isOpen
+            ? "border-[var(--bad)]/40 bg-[var(--bad)]"
+            : "border-line bg-surface/90"
+        )}
         aria-label={isOpen ? t("cancel") : t("sosSafety")}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -110,7 +114,7 @@ export function SafetyButton() {
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              <Shield className="h-4 w-4 text-red-400/80" />
+              <Shield className="h-4 w-4 text-[var(--bad)]" strokeWidth={1.5} />
             </motion.span>
           )}
         </AnimatePresence>

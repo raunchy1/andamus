@@ -1,6 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import {
+  Cigarette,
+  PawPrint,
+  Luggage,
+  UserCircle,
+  Music,
+  VolumeX,
+  MessageCircle,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 interface FormData {
   smokingAllowed: boolean;
@@ -18,71 +30,100 @@ interface PreferencesSectionProps {
   errors?: { musicPreference?: string };
 }
 
+const toggles = [
+  { key: "smokingAllowed", icon: Cigarette },
+  { key: "petsAllowed", icon: PawPrint },
+  { key: "largeLuggage", icon: Luggage },
+  { key: "womenOnly", icon: UserCircle },
+] as const;
+
+const musicOptions = [
+  { value: "", icon: Music },
+  { value: "quiet", icon: VolumeX },
+  { value: "music", icon: Music },
+  { value: "talk", icon: MessageCircle },
+] as const;
+
 export function PreferencesSection({
   formData,
   onChange,
-  variant = "mobile",
   className = "",
   errors,
 }: PreferencesSectionProps) {
   const t = useTranslations("offer");
-  const isDesktop = variant === "desktop";
 
-  const labelSize = isDesktop ? "text-[11px]" : "text-[10px]";
-  const pSize = isDesktop ? "p-5" : "p-4";
-  const musicPadding = isDesktop ? "p-5 rounded-2xl focus-within:ring-1 ring-primary transition-all" : "p-4 rounded-xl";
-
-  const toggles = [
-    { key: "smokingAllowed", label: t("smokersAllowed") },
-    { key: "petsAllowed", label: t("petsAllowed") },
-    { key: "largeLuggage", label: t("largeLuggage") },
-    { key: "womenOnly", label: t("womenOnly") },
-  ];
+  const musicLabels: Record<string, string> = {
+    "": t("musicAny"),
+    quiet: t("musicQuiet"),
+    music: t("musicMusic"),
+    talk: t("musicTalk"),
+  };
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <label className={`font-semibold uppercase tracking-widest ${labelSize} text-outline block`}>
-        {t("travelPreferences")}
-      </label>
+    <section className={cn("space-y-4", className)}>
+      <p className="text-eyebrow">{t("travelPreferences")}</p>
 
-      <div className="grid grid-cols-2 gap-3">
-        {toggles.map(({ key, label }) => {
+      <div className="flex flex-wrap gap-2">
+        {toggles.map(({ key, icon: Icon }) => {
           const active = formData[key as keyof FormData] as boolean;
+          const label =
+            key === "smokingAllowed"
+              ? t("smokersAllowed")
+              : key === "petsAllowed"
+                ? t("petsAllowed")
+                : key === "largeLuggage"
+                  ? t("largeLuggage")
+                  : t("womenOnly");
+
           return (
-            <label
+            <button
               key={key}
-              className={`flex cursor-pointer items-center gap-3 rounded-xl ${pSize} transition-colors ${
-                active ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface"
-              }`}
+              type="button"
+              onClick={() => onChange(key, !active)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border px-3 py-2 font-mono text-xs transition-colors",
+                active
+                  ? "border-accent text-accent"
+                  : "border-line text-muted hover:border-line-strong hover:text-fg"
+              )}
             >
-              <input
-                type="checkbox"
-                checked={active}
-                onChange={(e) => onChange(key, e.target.checked)}
-                className="hidden"
-              />
-              <span className="text-sm font-semibold">{label}</span>
-            </label>
+              <Icon className="size-4" strokeWidth={1.5} />
+              {label}
+            </button>
           );
         })}
       </div>
 
-      <div className={`bg-surface-container-highest ${musicPadding}`}>
-        <label className={`font-semibold uppercase tracking-widest ${labelSize} text-outline block mb-2`}>
-          {t("music")}
-        </label>
-        <select
-          value={formData.musicPreference}
-          onChange={(e) => onChange("musicPreference", e.target.value)}
-          className="bg-transparent border-none focus:ring-0 w-full text-on-surface font-semibold appearance-none cursor-pointer"
-        >
-          <option value="" className="bg-surface-container-highest">{t("musicAny")}</option>
-          <option value="quiet" className="bg-surface-container-highest">{t("musicQuiet")}</option>
-          <option value="music" className="bg-surface-container-highest">{t("musicMusic")}</option>
-          <option value="talk" className="bg-surface-container-highest">{t("musicTalk")}</option>
-        </select>
+      <Separator />
+
+      <div className="space-y-2">
+        <p className="text-eyebrow">{t("music")}</p>
+        <div className="flex flex-wrap gap-2">
+          {musicOptions.map(({ value, icon: Icon }) => {
+            const active = formData.musicPreference === value;
+            return (
+              <button
+                key={value || "any"}
+                type="button"
+                onClick={() => onChange("musicPreference", value)}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full border px-3 py-2 font-mono text-xs transition-colors",
+                  active
+                    ? "border-accent text-accent"
+                    : "border-line text-muted hover:border-line-strong hover:text-fg"
+                )}
+              >
+                <Icon className="size-4" strokeWidth={1.5} />
+                {musicLabels[value]}
+              </button>
+            );
+          })}
+        </div>
       </div>
-      {errors?.musicPreference && <p className="text-sm text-error">{errors.musicPreference}</p>}
-    </div>
+
+      {errors?.musicPreference && (
+        <p className="text-sm text-bad">{errors.musicPreference}</p>
+      )}
+    </section>
   );
 }
