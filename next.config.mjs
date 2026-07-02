@@ -31,8 +31,8 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       isDev
-        ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com"
-        : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com",
+        ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com https://browser.sentry-cdn.com"
+        : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com https://browser.sentry-cdn.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://images.unsplash.com https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
       "font-src 'self' https://fonts.gstatic.com",

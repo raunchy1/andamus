@@ -45,13 +45,30 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   };
 
   let todayRides: any[] = [];
-  let user: any = null;
+  let savedRoutes: any[] = [];
+  let claims: any = null;
 
   try {
     const supabase = await createClient();
-    const [ridesRes, userRes] = await Promise.allSettled([
+    // Identity comes from the JWT via getClaims() — local verification, no
+    // Auth API round trip. This lets the rides and saved-routes queries run
+    // in a single parallel batch instead of two sequential ones.
+    const { data: claimsData } = await supabase.auth.getClaims();
+    claims = claimsData?.claims ?? null;
+    const userId = typeof claims?.sub === "string" ? claims.sub : null;
+
+    const [ridesRes, savedRes] = await Promise.allSettled([
       getTodayRides(5),
-      supabase.auth.getUser(),
+      userId
+        ? supabase
+            .from("ride_alerts")
+            .select("id, from_city, to_city, created_at")
+            .eq("user_id", userId)
+            .is("start_date", null)
+            .is("end_date", null)
+            .order("created_at", { ascending: false })
+            .limit(20)
+        : Promise.resolve({ data: [] as any[] }),
     ]);
 
     if (ridesRes.status === "fulfilled") {
@@ -60,31 +77,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       console.error("[home] Failed to fetch today rides:", ridesRes.reason);
     }
 
-    if (userRes.status === "fulfilled") {
-      user = userRes.value.data?.user || null;
+    if (savedRes.status === "fulfilled") {
+      savedRoutes = (savedRes.value as { data: any[] | null }).data || [];
     } else {
-      console.error("[home] Failed to fetch user:", userRes.reason);
+      console.error("[home] Failed to fetch saved routes:", savedRes.reason);
     }
   } catch (err) {
     console.error("[home] Unexpected error in Server Component:", err);
   }
 
-  let savedRoutes: any[] = [];
-  if (user) {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("ride_alerts")
-      .select("id, from_city, to_city, created_at")
-      .eq("user_id", user.id)
-      .is("start_date", null)
-      .is("end_date", null)
-      .order("created_at", { ascending: false })
-      .limit(20);
-    savedRoutes = data || [];
-  }
-
-  const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
-  const userAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
+  const meta = claims?.user_metadata ?? {};
+  const userName = meta.name || meta.full_name || (typeof claims?.email === "string" ? claims.email.split("@")[0] : "") || "";
+  const userAvatar = meta.avatar_url || meta.picture || null;
 
   return (
     <HomePageClient
