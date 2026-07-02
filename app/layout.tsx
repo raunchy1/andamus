@@ -122,6 +122,16 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <>
+            <link
+              rel="preconnect"
+              href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+              crossOrigin="anonymous"
+            />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+          </>
+        )}
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
 
         <meta name="apple-mobile-web-app-capable" content="yes" />

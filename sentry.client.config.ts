@@ -54,20 +54,7 @@ Sentry.init({
     return event;
   },
 
-  integrations: [
-    Sentry.replayIntegration({
-      // Mask sensitive input fields
-      maskAllText: false,
-      maskAllInputs: true,
-      blockAllMedia: true,
-      // Unmask specific non-sensitive areas
-      unmask: ["[data-sentry-unmask]"],
-      // Network details
-      networkDetailAllowUrls: [window.location.origin],
-      networkCaptureBodies: false, // Never capture request/response bodies
-    }),
-    Sentry.browserTracingIntegration(),
-  ],
+  integrations: [Sentry.browserTracingIntegration()],
 
   // Attach stack traces for better debugging
   attachStacktrace: true,
@@ -75,3 +62,25 @@ Sentry.init({
   // Normalize depth for deeply nested objects
   normalizeDepth: 5,
 });
+
+// Session Replay is loaded lazily from the Sentry CDN after startup so its
+// ~50KB+ (gzipped) recorder never blocks the critical bundle or hydration.
+Sentry.lazyLoadIntegration("replayIntegration")
+  .then((replayIntegration) => {
+    Sentry.getClient()?.addIntegration(
+      replayIntegration({
+        // Mask sensitive input fields
+        maskAllText: false,
+        maskAllInputs: true,
+        blockAllMedia: true,
+        // Unmask specific non-sensitive areas
+        unmask: ["[data-sentry-unmask]"],
+        // Network details
+        networkDetailAllowUrls: [window.location.origin],
+        networkCaptureBodies: false, // Never capture request/response bodies
+      })
+    );
+  })
+  .catch(() => {
+    // CDN blocked/offline — errors are still reported, only replay is skipped
+  });
