@@ -632,11 +632,11 @@ export default function ProfilePage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "confirmed": return "text-tertiary";
+      case "confirmed": return "text-ok";
       case "pending": return "text-primary";
-      case "rejected": return "text-error";
-      case "cancelled": return "text-error";
-      default: return "text-on-surface-variant";
+      case "rejected": return "text-bad";
+      case "cancelled": return "text-bad";
+      default: return "text-muted";
     }
   };
 
@@ -706,13 +706,13 @@ export default function ProfilePage() {
 
   function ProfileMobile() {
     return (
-      <div className="min-h-screen bg-surface-container-lowest">
+      <div className="min-h-screen bg-bg">
         {/* Pull to refresh indicator */}
         <div
           className="flex justify-center items-center h-0 overflow-visible transition-all duration-200 fixed top-0 left-0 right-0 z-50 pointer-events-none"
           style={{ height: pullDistance > 0 ? pullDistance : 0, opacity: pullDistance > 0 ? 1 : 0 }}
         >
-          <div className={`flex items-center gap-2 text-on-surface/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
+          <div className={`flex items-center gap-2 text-fg/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
             <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 2}deg)` }} />
             <span className="text-sm">{pullDistance > 60 ? t("releaseToRefresh") : t("pullToRefresh")}</span>
           </div>
@@ -745,10 +745,10 @@ export default function ProfilePage() {
                   />
                 ) : null}
                 <div className={`w-full h-full items-center justify-center ${userAvatar ? 'hidden' : 'flex'}`}>
-                  <User className="w-5 h-5 text-on-surface-variant" />
+                  <User className="w-5 h-5 text-muted" />
                 </div>
               </Link>
-              <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface uppercase"><GradientText>Andamus</GradientText></h1>
+              <h1 className="text-2xl font-extrabold tracking-tighter text-fg uppercase"><GradientText>Andamus</GradientText></h1>
             </div>
             <div className="flex items-center gap-2">
               <div className="text-primary p-2">
@@ -785,15 +785,15 @@ export default function ProfilePage() {
               </svg>
               <div className="text-center z-10">
                 <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-1">{t("level")}</span>
-                <span className="text-4xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
+                <span className="text-4xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
               <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
                 {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
             <div className="mt-8 text-center">
-              <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-on-surface">{userName}</h2>
-              <p className="text-on-surface-variant text-sm font-medium opacity-80 uppercase tracking-widest">
+              <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-fg">{userName}</h2>
+              <p className="text-muted text-sm font-medium opacity-80 uppercase tracking-widest">
                 {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
               {streak && streak.current > 1 && (
@@ -831,10 +831,10 @@ export default function ProfilePage() {
                   <Car className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">
+                  <p className="text-2xl font-extrabold text-fg">
                     <AnimatedCounter value={myRides.length + myBookings.length} />
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("trips")}</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -844,10 +844,10 @@ export default function ProfilePage() {
                   <Route className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">
+                  <p className="text-2xl font-extrabold text-fg">
                     <GradientText><AnimatedCounter value={Math.round(totalKm)} suffix="km" /></GradientText>
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("totalKm")}</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -857,10 +857,10 @@ export default function ProfilePage() {
                   <Star className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">
+                  <p className="text-2xl font-extrabold text-fg">
                     <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -870,7 +870,7 @@ export default function ProfilePage() {
                   <Shield className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">
+                  <p className="text-2xl font-extrabold text-fg">
                     <AnimatedCounter value={trustScore} suffix="%" />
                   </p>
                   <p className={`text-[10px] font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
@@ -883,10 +883,10 @@ export default function ProfilePage() {
                   <Repeat className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
-                  <p className="text-2xl font-extrabold text-on-surface">
+                  <p className="text-2xl font-extrabold text-fg">
                     <AnimatedCounter value={completionRate} suffix="%" />
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Affidabilità</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Affidabilità</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -896,10 +896,10 @@ export default function ProfilePage() {
                   <MessageCircle className="w-5 h-5 text-[#4FB3C9]" />
                 </div>
                 <div>
-                  <p className="text-sm font-extrabold text-on-surface truncate max-w-[140px]">
+                  <p className="text-sm font-extrabold text-fg truncate max-w-[140px]">
                     {responseSpeed}
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Risposta</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Risposta</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -907,8 +907,8 @@ export default function ProfilePage() {
           </section>
 
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-container p-4 rounded-xl space-y-4">
-              <h3 className="text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+            <div className="bg-surface-2 p-4 rounded-xl space-y-4">
+              <h3 className="text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                 <Shield className="w-5 h-5 text-primary" />
                 {t("verificationAndSecurity")}
               </h3>
@@ -916,8 +916,8 @@ export default function ProfilePage() {
               {/* Phone Verification */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-on-surface">{t("phoneNumber")}</p>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-sm font-medium text-fg">{t("phoneNumber")}</p>
+                  <p className="text-xs text-muted">
                     {user?.phone ? user.phone : t("notVerified")}
                   </p>
                 </div>
@@ -942,8 +942,8 @@ export default function ProfilePage() {
 
           {/* Stripe Connect */}
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-container p-4 rounded-xl">
-              <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+            <div className="bg-surface-2 p-4 rounded-xl">
+              <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                 <CreditCard className="w-5 h-5 text-primary" />
                 {t("payments")}
               </h3>
@@ -960,11 +960,11 @@ export default function ProfilePage() {
                   <Car className="w-7 h-7 text-[#4FB3C9]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-headline font-bold text-lg text-on-surface">I tuoi Veicoli</p>
-                  <p className="text-sm text-on-surface/50 truncate">Gestisci il tuo garage, aggiungi foto e comfort</p>
+                  <p className="font-headline font-bold text-lg text-fg">I tuoi Veicoli</p>
+                  <p className="text-sm text-fg/50 truncate">Gestisci il tuo garage, aggiungi foto e comfort</p>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9] mt-1">Nuovo ✨</p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-on-surface/30 group-hover:text-[#4FB3C9] group-hover:translate-x-1 transition-all flex-shrink-0" />
+                <ChevronRight className="w-6 h-6 text-fg/30 group-hover:text-[#4FB3C9] group-hover:translate-x-1 transition-all flex-shrink-0" />
               </div>
             </Link>
             </Reveal>
@@ -972,8 +972,8 @@ export default function ProfilePage() {
 
           {/* Car Info Section (legacy — preserved for backward compat) */}
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-container p-4 rounded-xl">
-              <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+            <div className="bg-surface-2 p-4 rounded-xl">
+              <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                 <Car className="w-5 h-5 text-primary" />
                 {t("yourVehicle")}
               </h3>
@@ -991,8 +991,8 @@ export default function ProfilePage() {
 
 
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-container p-4 rounded-xl">
-              <h3 className="mb-3 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+            <div className="bg-surface-2 p-4 rounded-xl">
+              <h3 className="mb-3 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                 <Bell className="w-5 h-5 text-primary" />
                 {t("pushNotifications")}
               </h3>
@@ -1010,18 +1010,18 @@ export default function ProfilePage() {
 
           {profile && levelInfo && (
             <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-              <div className="bg-surface-container p-4 rounded-xl">
+              <div className="bg-surface-2 p-4 rounded-xl">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                    <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
+                    <p className="font-extrabold text-fg">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("points")}</p>
                     <p className="font-extrabold text-primary text-xl">{profile.points}</p>
                   </div>
                 </div>
-                <div className="relative h-2 bg-surface-container-highest rounded-full overflow-hidden">
+                <div className="relative h-2 bg-elevated rounded-full overflow-hidden">
                   <div 
                     className="absolute inset-y-0 left-0 bg-primary rounded-full"
                     style={{ width: `${(() => {
@@ -1031,7 +1031,7 @@ export default function ProfilePage() {
                     })()}%` }}
                   />
                 </div>
-                <p className="text-xs text-on-surface-variant mt-2">
+                <p className="text-xs text-muted mt-2">
                   {levelInfo.next
                     ? t("pointsToNextLevel", { points: levelInfo.next.min - profile.points })
                     : t("maxLevelReached")}
@@ -1042,27 +1042,27 @@ export default function ProfilePage() {
 
           {bookingRequests.length > 0 && (
             <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-              <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
+              <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-fg">
                 {t("pendingRequestsCount", { count: bookingRequests.length })}
               </h3>
               <div className="space-y-3">
                 {bookingRequests.map((request) => (
-                  <div key={request.id} className="rounded-xl bg-surface-container p-4">
+                  <div key={request.id} className="rounded-xl bg-surface-2 p-4">
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+                        <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center overflow-hidden">
                           {request.passenger.avatar_url ? (
                             <Image src={request.passenger.avatar_url} alt={request.passenger.name} width={40} height={40} className="w-full h-full object-cover rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                           ) : (
-                            <User className="w-5 h-5 text-on-surface-variant" />
+                            <User className="w-5 h-5 text-muted" />
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-on-surface">{request.passenger.name}</p>
-                          <p className="text-sm text-on-surface-variant">
+                          <p className="font-bold text-fg">{request.passenger.name}</p>
+                          <p className="text-sm text-muted">
                             {request.ride.from_city} → {request.ride.to_city}
                           </p>
-                          <p className="text-xs text-on-surface-variant">
+                          <p className="text-xs text-muted">
                             {t("dateAtTime", { date: formatDate(request.ride.date), time: request.ride.time.slice(0, 5) })}
                           </p>
                         </div>
@@ -1071,7 +1071,7 @@ export default function ProfilePage() {
                         <button
                           onClick={() => handleRejectBooking(request)}
                           disabled={processingBooking === request.id}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-2 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
+                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-elevated px-4 py-2 text-sm font-semibold text-fg hover:bg-elevated disabled:opacity-50"
                         >
                           <X className="h-4 w-4" />
                           {t("reject")}
@@ -1079,7 +1079,7 @@ export default function ProfilePage() {
                         <button
                           onClick={() => handleAcceptBooking(request)}
                           disabled={processingBooking === request.id}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
+                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-accent-fg hover:opacity-90 disabled:opacity-50"
                         >
                           {processingBooking === request.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1097,7 +1097,7 @@ export default function ProfilePage() {
           )}
 
           <section className="px-4 sm:px-6 mb-6 overflow-x-hidden">
-            <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
+            <div className="flex border-b border-elevated overflow-x-auto no-scrollbar">
               {[
                 { id: "rides", label: t("tabRides") },
                 { id: "bookings", label: t("tabBookings") },
@@ -1108,7 +1108,7 @@ export default function ProfilePage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`pb-4 px-4 text-xs font-bold uppercase tracking-widest relative whitespace-nowrap ${
-                    activeTab === tab.id ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
+                    activeTab === tab.id ? "text-primary" : "text-muted hover:text-fg"
                   } transition-colors`}
                 >
                   {tab.label}
@@ -1137,20 +1137,20 @@ export default function ProfilePage() {
                           <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">
                             {formatDate(ride.date)} · {ride.time.slice(0, 5)}
                           </span>
-                          <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
+                          <h3 className="text-xl font-extrabold tracking-tight text-fg">{ride.from_city} — {ride.to_city}</h3>
                         </div>
                         <div className="text-right">
-                          <span className="text-xl font-extrabold text-on-surface">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
-                          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">
+                          <span className="text-xl font-extrabold text-fg">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
+                          <p className="text-[10px] font-bold text-muted uppercase tracking-tighter">
                             {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                          <User className="w-3.5 h-3.5 text-on-surface-variant" />
+                        <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
+                          <User className="w-3.5 h-3.5 text-muted" />
                         </div>
-                        <span className="text-[11px] font-semibold text-on-surface-variant">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
+                        <span className="text-[11px] font-semibold text-muted">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
                       </div>
                     </Link>
                   ))
@@ -1166,25 +1166,25 @@ export default function ProfilePage() {
                   myBookings.map((booking) => {
                     const completed = isRideCompleted(booking.rides.date);
                     return (
-                      <div key={booking.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                      <div key={booking.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-elevated">
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col">
                             <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
                               {getStatusLabel(booking.status)}
                             </span>
-                            <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
+                            <h3 className="text-xl font-extrabold tracking-tight text-fg">{booking.rides.from_city} — {booking.rides.to_city}</h3>
                           </div>
                           <div className="text-right">
-                            <span className="text-xl font-extrabold text-on-surface">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
-                            {completed && <p className="text-[10px] font-bold text-tertiary uppercase tracking-tighter">{t("rideCompleted")}</p>}
+                            <span className="text-xl font-extrabold text-fg">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
+                            {completed && <p className="text-[10px] font-bold text-ok uppercase tracking-tighter">{t("rideCompleted")}</p>}
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                              <User className="w-3.5 h-3.5 text-on-surface-variant" />
+                            <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
+                              <User className="w-3.5 h-3.5 text-muted" />
                             </div>
-                            <span className="text-[11px] font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
+                            <span className="text-[11px] font-semibold text-muted">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             {completed && !reviewedRides.has(booking.rides.id) ? (
@@ -1203,13 +1203,13 @@ export default function ProfilePage() {
                               <>
                                 {booking.status !== "cancelled" && (
                                   <>
-                                    <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-on-primary">
+                                    <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-accent-fg">
                                       <MessageCircle className="h-3 w-3" />
                                       {t("chat")}
                                     </Link>
                                     <Link
                                       href={`/${locale}/cancella/${booking.id}`}
-                                      className="flex items-center gap-1 rounded-full bg-error/20 px-3 py-1.5 text-sm font-bold text-error"
+                                      className="flex items-center gap-1 rounded-full bg-bad/20 px-3 py-1.5 text-sm font-bold text-bad"
                                     >
                                       {t("cancel")}
                                     </Link>
@@ -1237,14 +1237,14 @@ export default function ProfilePage() {
                   />
                 ) : (
                   rideTemplates.map((template) => (
-                    <div key={template.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                    <div key={template.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-elevated">
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col">
-                          <h3 className="text-xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
-                          <p className="text-sm text-on-surface-variant mt-1">
+                          <h3 className="text-xl font-extrabold tracking-tight text-fg">{template.from_city} — {template.to_city}</h3>
+                          <p className="text-sm text-muted mt-1">
                             {template.time.slice(0, 5)} · {template.seats} {t("seats")} · {template.price === 0 ? t("free") : `€${template.price}`}
                           </p>
-                          <p className="text-xs text-on-surface-variant mt-1">
+                          <p className="text-xs text-muted mt-1">
                             {template.recurrence_days.map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" })).join(", ")}
                           </p>
                         </div>
@@ -1252,14 +1252,14 @@ export default function ProfilePage() {
                           <button
                             onClick={() => handleToggleTemplate(template)}
                             disabled={togglingTemplateId === template.id}
-                            className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'} disabled:opacity-50`}
+                            className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-elevated text-fg' : 'bg-primary text-accent-fg'} disabled:opacity-50`}
                           >
                             {togglingTemplateId === template.id ? <Loader2 className="h-3 w-3 animate-spin" /> : (template.is_active ? t("suspend") : t("activate"))}
                           </button>
                           <button
                             onClick={() => handleDeleteTemplate(template.id)}
                             disabled={deletingTemplateId === template.id}
-                            className="p-2 rounded-full bg-error/20 text-error disabled:opacity-50"
+                            className="p-2 rounded-full bg-bad/20 text-bad disabled:opacity-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -1282,10 +1282,10 @@ export default function ProfilePage() {
                   />
                 ) : (
                   rideAlerts.map((alert) => (
-                    <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-surface-container-highest">
+                    <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-elevated">
                       <div>
-                        <h3 className="font-bold text-on-surface">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
-                        <p className="text-sm text-on-surface-variant">
+                        <h3 className="font-bold text-fg">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
+                        <p className="text-sm text-muted">
                           {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
                           {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
                           {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats} ${t("seats")}`}
@@ -1295,7 +1295,7 @@ export default function ProfilePage() {
                       <button
                         onClick={() => handleDeleteAlert(alert.id)}
                         disabled={deletingAlertId === alert.id}
-                        className="p-2 rounded-full bg-error/20 text-error disabled:opacity-50"
+                        className="p-2 rounded-full bg-bad/20 text-bad disabled:opacity-50"
                       >
                         {deletingAlertId === alert.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                       </button>
@@ -1309,20 +1309,20 @@ export default function ProfilePage() {
 
         {showLogoutConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("wantToLeave")}</h3>
-              <p className="text-sm text-on-surface-variant mb-6">{t("loginAgainToUseApp")}</p>
+            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
+              <h3 className="text-lg font-extrabold text-fg mb-2">{t("wantToLeave")}</h3>
+              <p className="text-sm text-muted mb-6">{t("loginAgainToUseApp")}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
                   {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("logout")}
                 </button>
@@ -1333,27 +1333,27 @@ export default function ProfilePage() {
 
         {cancelBookingId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("cancelBookingTitle")}</h3>
-              <p className="text-sm text-on-surface-variant mb-4">{t("enterCancellationReason")}</p>
+            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
+              <h3 className="text-lg font-extrabold text-fg mb-2">{t("cancelBookingTitle")}</h3>
+              <p className="text-sm text-muted mb-4">{t("enterCancellationReason")}</p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
+                className="w-full bg-elevated rounded-xl p-3 text-sm text-fg border-none focus:ring-1 focus:ring-primary resize-none"
                 rows={3}
                 placeholder={t("reasonPlaceholder")}
               />
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
-                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   onClick={handleCancelBooking}
                   disabled={!cancelReason.trim() || isCancelling}
-                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
                   {isCancelling ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("confirm")}
                 </button>
@@ -1388,7 +1388,7 @@ export default function ProfilePage() {
   }
   function ProfileDesktop() {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-on-surface pb-16 relative">
+      <div className="min-h-screen bg-[#0a0a0a] text-fg pb-16 relative">
         <AuroraBackground className="absolute inset-x-0 top-0 h-[520px] -z-10 pointer-events-none" showRadialMask={false}>
           <OrbGlow className="-top-20 -left-20" color="#4FB3C9" size={340} opacity={0.30} />
         </AuroraBackground>
@@ -1413,17 +1413,17 @@ export default function ProfilePage() {
               </svg>
               <div className="text-center z-10">
                 <span className="block text-xs font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-1">{t("level")}</span>
-                <span className="text-5xl font-extrabold tracking-tighter text-on-surface">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
+                <span className="text-5xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
               <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
                 {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
               </div>
             </div>
             <div>
-              <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight mb-2 text-on-surface">
+              <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight mb-2 text-fg">
                 <GradientText>{userName}</GradientText>
               </h2>
-              <p className="text-on-surface-variant text-base font-medium opacity-80 uppercase tracking-widest">
+              <p className="text-muted text-base font-medium opacity-80 uppercase tracking-widest">
                 {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
               </p>
               {streak && streak.current > 1 && (
@@ -1442,10 +1442,10 @@ export default function ProfilePage() {
                 <Car className="w-6 h-6 text-[#4FB3C9]" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-on-surface">
+                <p className="text-4xl font-extrabold text-fg">
                   <AnimatedCounter value={myRides.length + myBookings.length} />
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("trips")}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("trips")}</p>
               </div>
             </TiltCard>
             </RevealItem>
@@ -1458,7 +1458,7 @@ export default function ProfilePage() {
                 <p className="text-4xl font-extrabold">
                   <GradientText><AnimatedCounter value={Math.round(totalKm)} suffix="km" /></GradientText>
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("totalKm")}</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("totalKm")}</p>
               </div>
             </TiltCard>
             </RevealItem>
@@ -1468,10 +1468,10 @@ export default function ProfilePage() {
                 <Star className="w-6 h-6 text-[#4FB3C9]" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-on-surface">
+                <p className="text-4xl font-extrabold text-fg">
                   <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
+                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
               </div>
             </TiltCard>
             </RevealItem>
@@ -1481,7 +1481,7 @@ export default function ProfilePage() {
                 <Shield className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-4xl font-extrabold text-on-surface">
+                <p className="text-4xl font-extrabold text-fg">
                   <AnimatedCounter value={trustScore} suffix="%" />
                 </p>
                 <p className={`text-xs font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
@@ -1494,27 +1494,27 @@ export default function ProfilePage() {
             <div className="lg:col-span-2 space-y-8">
               {bookingRequests.length > 0 && (
                 <section>
-                  <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-on-surface">
+                  <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-fg">
                     {t("pendingRequestsCount", { count: bookingRequests.length })}
                   </h3>
                   <div className="grid grid-cols-1 gap-4">
                     {bookingRequests.map((request) => (
-                      <div key={request.id} className="rounded-2xl bg-surface-container p-6">
+                      <div key={request.id} className="rounded-2xl bg-surface-2 p-6">
                         <div className="flex flex-col gap-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+                            <div className="w-12 h-12 rounded-full bg-elevated flex items-center justify-center overflow-hidden">
                               {request.passenger.avatar_url ? (
                                 <Image src={request.passenger.avatar_url} alt="" width={48} height={48} className="w-full h-full object-cover" />
                               ) : (
-                                <User className="w-5 h-5 text-on-surface-variant" />
+                                <User className="w-5 h-5 text-muted" />
                               )}
                             </div>
                             <div>
-                              <p className="font-bold text-lg text-on-surface">{request.passenger.name}</p>
-                              <p className="text-sm text-on-surface-variant">
+                              <p className="font-bold text-lg text-fg">{request.passenger.name}</p>
+                              <p className="text-sm text-muted">
                                 {request.ride.from_city} → {request.ride.to_city}
                               </p>
-                              <p className="text-xs text-on-surface-variant">
+                              <p className="text-xs text-muted">
                                 {t("dateAtTime", { date: formatDate(request.ride.date), time: request.ride.time.slice(0, 5) })}
                               </p>
                             </div>
@@ -1523,7 +1523,7 @@ export default function ProfilePage() {
                             <button
                               onClick={() => handleRejectBooking(request)}
                               disabled={processingBooking === request.id}
-                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high px-4 py-3 text-sm font-semibold text-on-surface hover:bg-surface-container-highest disabled:opacity-50"
+                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-elevated px-4 py-3 text-sm font-semibold text-fg hover:bg-elevated disabled:opacity-50"
                             >
                               <X className="h-4 w-4" />
                               {t("reject")}
@@ -1531,7 +1531,7 @@ export default function ProfilePage() {
                             <button
                               onClick={() => handleAcceptBooking(request)}
                               disabled={processingBooking === request.id}
-                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
+                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-accent-fg hover:opacity-90 disabled:opacity-50"
                             >
                               {processingBooking === request.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -1549,7 +1549,7 @@ export default function ProfilePage() {
               )}
 
               <section>
-                <div className="flex border-b border-surface-container-highest overflow-x-auto no-scrollbar">
+                <div className="flex border-b border-elevated overflow-x-auto no-scrollbar">
                   {[
                     { id: "rides", label: t("tabRides") },
                     { id: "bookings", label: t("tabBookings") },
@@ -1560,7 +1560,7 @@ export default function ProfilePage() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`pb-4 px-6 text-sm font-bold uppercase tracking-widest relative whitespace-nowrap ${
-                        activeTab === tab.id ? "text-primary" : "text-on-surface-variant hover:text-on-surface"
+                        activeTab === tab.id ? "text-primary" : "text-muted hover:text-fg"
                       } transition-colors`}
                     >
                       {tab.label}
@@ -1590,20 +1590,20 @@ export default function ProfilePage() {
                                 <span className="text-xs font-bold text-primary uppercase tracking-widest mb-1">
                                   {formatDate(ride.date)} · {ride.time.slice(0, 5)}
                                 </span>
-                                <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{ride.from_city} — {ride.to_city}</h3>
+                                <h3 className="text-2xl font-extrabold tracking-tight text-fg">{ride.from_city} — {ride.to_city}</h3>
                               </div>
                               <div className="text-right">
-                                <span className="text-2xl font-extrabold text-on-surface">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
-                                <p className="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">
+                                <span className="text-2xl font-extrabold text-fg">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
+                                <p className="text-xs font-bold text-muted uppercase tracking-tighter">
                                   {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
                                 </p>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                                <User className="w-3.5 h-3.5 text-on-surface-variant" />
+                              <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
+                                <User className="w-3.5 h-3.5 text-muted" />
                               </div>
-                              <span className="text-sm font-semibold text-on-surface-variant">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
+                              <span className="text-sm font-semibold text-muted">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
                             </div>
                           </Link>
                         ))}
@@ -1621,25 +1621,25 @@ export default function ProfilePage() {
                         {myBookings.map((booking) => {
                           const completed = isRideCompleted(booking.rides.date);
                           return (
-                            <div key={booking.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                            <div key={booking.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-elevated">
                               <div className="flex justify-between items-start">
                                 <div className="flex flex-col">
                                   <span className={`text-xs font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
                                     {getStatusLabel(booking.status)}
                                   </span>
-                                  <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{booking.rides.from_city} — {booking.rides.to_city}</h3>
+                                  <h3 className="text-2xl font-extrabold tracking-tight text-fg">{booking.rides.from_city} — {booking.rides.to_city}</h3>
                                 </div>
                                 <div className="text-right">
-                                  <span className="text-2xl font-extrabold text-on-surface">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
-                                  {completed && <p className="text-xs font-bold text-tertiary uppercase tracking-tighter">{t("rideCompleted")}</p>}
+                                  <span className="text-2xl font-extrabold text-fg">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
+                                  {completed && <p className="text-xs font-bold text-ok uppercase tracking-tighter">{t("rideCompleted")}</p>}
                                 </div>
                               </div>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center">
-                                    <User className="w-3.5 h-3.5 text-on-surface-variant" />
+                                  <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
+                                    <User className="w-3.5 h-3.5 text-muted" />
                                   </div>
-                                  <span className="text-sm font-semibold text-on-surface-variant">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
+                                  <span className="text-sm font-semibold text-muted">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   {completed && !reviewedRides.has(booking.rides.id) ? (
@@ -1658,13 +1658,13 @@ export default function ProfilePage() {
                                     <>
                                       {booking.status !== "cancelled" && (
                                         <>
-                                          <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-on-primary">
+                                          <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-accent-fg">
                                             <MessageCircle className="h-4 w-4" />
                                             {t("chat")}
                                           </Link>
                                           <Link
                                             href={`/${locale}/cancella/${booking.id}`}
-                                            className="flex items-center gap-1 rounded-full bg-error/20 px-4 py-2 text-sm font-bold text-error"
+                                            className="flex items-center gap-1 rounded-full bg-bad/20 px-4 py-2 text-sm font-bold text-bad"
                                           >
                                             {t("cancel")}
                                           </Link>
@@ -1694,27 +1694,27 @@ export default function ProfilePage() {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {rideTemplates.map((template) => (
-                          <div key={template.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-surface-container-highest">
+                          <div key={template.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-elevated">
                             <div className="flex justify-between items-start">
                               <div className="flex flex-col">
-                                <h3 className="text-2xl font-extrabold tracking-tight text-on-surface">{template.from_city} — {template.to_city}</h3>
-                                <p className="text-sm text-on-surface-variant mt-1">
+                                <h3 className="text-2xl font-extrabold tracking-tight text-fg">{template.from_city} — {template.to_city}</h3>
+                                <p className="text-sm text-muted mt-1">
                                   {template.time.slice(0, 5)} · {template.seats} {t("seats")} · {template.price === 0 ? t("free") : `€${template.price}`}
                                 </p>
-                                <p className="text-xs text-on-surface-variant mt-1">
+                                <p className="text-xs text-muted mt-1">
                                   {template.recurrence_days.map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" })).join(", ")}
                                 </p>
                               </div>
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => handleToggleTemplate(template)}
-                                  className={`rounded-full px-4 py-2 text-sm font-bold ${template.is_active ? 'bg-surface-container-high text-on-surface' : 'bg-primary text-on-primary'}`}
+                                  className={`rounded-full px-4 py-2 text-sm font-bold ${template.is_active ? 'bg-elevated text-fg' : 'bg-primary text-accent-fg'}`}
                                 >
                                   {template.is_active ? t("suspend") : t("activate")}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteTemplate(template.id)}
-                                  className="p-2 rounded-full bg-error/20 text-error"
+                                  className="p-2 rounded-full bg-bad/20 text-bad"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </button>
@@ -1739,10 +1739,10 @@ export default function ProfilePage() {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {rideAlerts.map((alert) => (
-                          <div key={alert.id} className="bg-surface p-6 rounded-2xl flex items-center justify-between border-l-4 border-surface-container-highest">
+                          <div key={alert.id} className="bg-surface p-6 rounded-2xl flex items-center justify-between border-l-4 border-elevated">
                             <div>
-                              <h3 className="font-bold text-lg text-on-surface">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
-                              <p className="text-sm text-on-surface-variant">
+                              <h3 className="font-bold text-lg text-fg">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
+                              <p className="text-sm text-muted">
                                 {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
                                 {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
                                 {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats} ${t("seats")}`}
@@ -1752,7 +1752,7 @@ export default function ProfilePage() {
                             <button
                               onClick={() => handleDeleteAlert(alert.id)}
                               disabled={deletingAlertId === alert.id}
-                              className="p-3 rounded-full bg-error/20 text-error disabled:opacity-50"
+                              className="p-3 rounded-full bg-bad/20 text-bad disabled:opacity-50"
                             >
                               {deletingAlertId === alert.id ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                             </button>
@@ -1766,8 +1766,8 @@ export default function ProfilePage() {
             </div>
 
             <div className="lg:col-span-1 space-y-8">
-              <div className="bg-surface-container p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+              <div className="bg-surface-2 p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                   <Shield className="w-5 h-5 text-primary" />
                   {t("verificationAndSecurity")}
                 </h3>
@@ -1776,8 +1776,8 @@ export default function ProfilePage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-on-surface">{t("phoneNumber")}</p>
-                      <p className="text-xs text-on-surface-variant">
+                      <p className="text-sm font-medium text-fg">{t("phoneNumber")}</p>
+                      <p className="text-xs text-muted">
                         {user?.phone ? user.phone : t("notVerified")}
                       </p>
                     </div>
@@ -1801,8 +1801,8 @@ export default function ProfilePage() {
               </div>
 
               {/* Stripe Connect - Desktop */}
-              <div className="bg-surface-container p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+              <div className="bg-surface-2 p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                   <CreditCard className="w-5 h-5 text-primary" />
                   {t("payments")}
                 </h3>
@@ -1810,8 +1810,8 @@ export default function ProfilePage() {
               </div>
 
               {/* Car Info - Desktop */}
-              <div className="bg-surface-container p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+              <div className="bg-surface-2 p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                   <Car className="w-5 h-5 text-primary" />
                   {t("yourVehicle")}
                 </h3>
@@ -1826,8 +1826,8 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <div className="bg-surface-container p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-on-surface flex items-center gap-2 uppercase tracking-wider">
+              <div className="bg-surface-2 p-6 rounded-2xl">
+                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
                   <Bell className="w-5 h-5 text-primary" />
                   {t("pushNotifications")}
                 </h3>
@@ -1835,24 +1835,24 @@ export default function ProfilePage() {
               </div>
 
               {user && (
-                <div className="bg-surface-container p-6 rounded-2xl">
+                <div className="bg-surface-2 p-6 rounded-2xl">
                   <EmailPreferences userId={user.id} />
                 </div>
               )}
 
               {profile && levelInfo && (
-                <div className="bg-surface-container p-6 rounded-2xl">
+                <div className="bg-surface-2 p-6 rounded-2xl">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                      <p className="font-extrabold text-on-surface">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
+                      <p className="font-extrabold text-fg">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("points")}</p>
                       <p className="font-extrabold text-primary text-2xl">{profile.points}</p>
                     </div>
                   </div>
-                  <div className="relative h-3 bg-surface-container-highest rounded-full overflow-hidden">
+                  <div className="relative h-3 bg-elevated rounded-full overflow-hidden">
                     <div 
                       className="absolute inset-y-0 left-0 bg-primary rounded-full"
                       style={{ width: `${(() => {
@@ -1862,7 +1862,7 @@ export default function ProfilePage() {
                       })()}%` }}
                     />
                   </div>
-                  <p className="text-sm text-on-surface-variant mt-3">
+                  <p className="text-sm text-muted mt-3">
                     {levelInfo.next
                       ? t("pointsToNextLevel", { points: levelInfo.next.min - profile.points })
                       : t("maxLevelReached")}
@@ -1874,7 +1874,7 @@ export default function ProfilePage() {
 
               <button
                 onClick={() => setShowLogoutConfirm(true)}
-                className="w-full bg-error/10 text-error rounded-2xl p-4 font-bold uppercase tracking-widest text-sm hover:bg-error/20 transition-colors"
+                className="w-full bg-bad/10 text-bad rounded-2xl p-4 font-bold uppercase tracking-widest text-sm hover:bg-bad/20 transition-colors"
               >
                 {t("logout")}
               </button>
@@ -1884,20 +1884,20 @@ export default function ProfilePage() {
 
         {showLogoutConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("wantToLeave")}</h3>
-              <p className="text-sm text-on-surface-variant mb-6">{t("loginAgainToUseApp")}</p>
+            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
+              <h3 className="text-lg font-extrabold text-fg mb-2">{t("wantToLeave")}</h3>
+              <p className="text-sm text-muted mb-6">{t("loginAgainToUseApp")}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
                   {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("logout")}
                 </button>
@@ -1908,27 +1908,27 @@ export default function ProfilePage() {
 
         {cancelBookingId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface-container-low p-6">
-              <h3 className="text-lg font-extrabold text-on-surface mb-2">{t("cancelBookingTitle")}</h3>
-              <p className="text-sm text-on-surface-variant mb-4">{t("enterCancellationReason")}</p>
+            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
+              <h3 className="text-lg font-extrabold text-fg mb-2">{t("cancelBookingTitle")}</h3>
+              <p className="text-sm text-muted mb-4">{t("enterCancellationReason")}</p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                className="w-full bg-surface-container-high rounded-xl p-3 text-sm text-on-surface border-none focus:ring-1 focus:ring-primary resize-none"
+                className="w-full bg-elevated rounded-xl p-3 text-sm text-fg border-none focus:ring-1 focus:ring-primary resize-none"
                 rows={3}
                 placeholder={t("reasonPlaceholder")}
               />
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
-                  className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-bold text-on-surface"
+                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   onClick={handleCancelBooking}
                   disabled={!cancelReason.trim()}
-                  className="flex-1 rounded-xl bg-error py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
                 >
                   {t("confirm")}
                 </button>

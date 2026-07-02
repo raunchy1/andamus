@@ -137,7 +137,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
           <X className="w-4 h-4" />
         </button>
 
-        <div className="relative overflow-hidden rounded-3xl bg-[#131313] border border-white/10 shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl bg-surface border border-white/10 shadow-2xl">
           <div className={`absolute inset-0 bg-gradient-to-br ${currentColor} opacity-8`} />
 
           <div className="relative p-6 sm:p-8">

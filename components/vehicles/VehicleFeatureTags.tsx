@@ -45,7 +45,7 @@ export function VehicleFeatureTags({
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 select-none ${
                 isActive
                   ? "bg-primary/20 border border-primary/40 text-primary"
-                  : "bg-surface-container-high border border-outline-variant/30 text-on-surface/60 hover:border-primary/30 hover:text-on-surface"
+                  : "bg-elevated border border-line/30 text-fg/60 hover:border-primary/30 hover:text-fg"
               }`}
             >
               <span
@@ -64,7 +64,7 @@ export function VehicleFeatureTags({
         return (
           <span
             key={feature.key}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface/70 text-sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-elevated border border-line/20 text-fg/70 text-sm"
           >
             <span aria-hidden="true">{feature.icon}</span>
             <span>{label}</span>

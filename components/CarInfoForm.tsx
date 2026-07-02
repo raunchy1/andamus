@@ -66,17 +66,17 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
   if (!isEditing && initialData?.car_model) {
     return (
-      <div className="bg-surface-container-low rounded-2xl p-5">
+      <div className="bg-surface rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 w-10 h-10 rounded-xl flex items-center justify-center">
               <Car className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="font-label font-bold text-[10px] uppercase tracking-wider text-on-surface/40">
+              <p className="font-label font-bold text-[10px] uppercase tracking-wider text-fg/40">
                 {t("vehicle")}
               </p>
-              <p className="font-semibold text-on-surface">{initialData.car_model}</p>
+              <p className="font-semibold text-fg">{initialData.car_model}</p>
             </div>
           </div>
           <button
@@ -89,19 +89,19 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
         
         <div className="grid grid-cols-2 gap-2 text-sm">
           {initialData.car_color && (
-            <div className="flex items-center gap-2 text-on-surface/70">
+            <div className="flex items-center gap-2 text-fg/70">
               <Palette className="w-4 h-4" />
               <span>{initialData.car_color}</span>
             </div>
           )}
           {initialData.car_year && (
-            <div className="flex items-center gap-2 text-on-surface/70">
+            <div className="flex items-center gap-2 text-fg/70">
               <Calendar className="w-4 h-4" />
               <span>{initialData.car_year}</span>
             </div>
           )}
           {initialData.car_plate && (
-            <div className="col-span-2 flex items-center gap-2 text-on-surface/70">
+            <div className="col-span-2 flex items-center gap-2 text-fg/70">
               <Hash className="w-4 h-4" />
               <span className="font-mono tracking-wider">{initialData.car_plate}</span>
             </div>
@@ -112,16 +112,16 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-surface-container-low rounded-2xl p-5 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-surface rounded-2xl p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-headline font-bold text-lg text-on-surface">
+        <h3 className="font-headline font-bold text-lg text-fg">
           {initialData?.car_model ? t("editVehicle") : t("addVehicle")}
         </h3>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="p-2 rounded-full hover:bg-surface-container-highest text-on-surface/60"
+            className="p-2 rounded-full hover:bg-elevated text-fg/60"
           >
             <X className="w-5 h-5" />
           </button>
@@ -130,17 +130,17 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
       {/* Model */}
       <div>
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-fg/40 mb-2">
           {t("carModelLabel")}
         </label>
         <div className="relative">
-          <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface/30" />
+          <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-fg/30" />
           <input
             type="text"
             value={model}
             onChange={(e) => setModel(e.target.value)}
             placeholder={t("carModelPlaceholder")}
-            className="w-full bg-surface-container-highest rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-on-surface/30 border border-transparent focus:border-primary/50 focus:outline-none transition-all"
+            className="w-full bg-elevated rounded-xl py-3 pl-12 pr-4 text-fg placeholder:text-fg/30 border border-transparent focus:border-primary/50 focus:outline-none transition-all"
             required
           />
         </div>
@@ -148,7 +148,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
       {/* Color */}
       <div>
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-fg/40 mb-2">
           {t("colorLabel")}
         </label>
         <div className="flex flex-wrap gap-2">
@@ -161,8 +161,8 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
                 onClick={() => setColor(italianValue)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                   color === italianValue
-                    ? "bg-primary text-on-primary"
-                    : "bg-surface-container-highest text-on-surface/70 hover:bg-surface-container-high"
+                    ? "bg-primary text-accent-fg"
+                    : "bg-elevated text-fg/70 hover:bg-elevated"
                 }`}
               >
                 {t("colors." + key)}
@@ -175,15 +175,15 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
       <div className="grid grid-cols-2 gap-3">
         {/* Year */}
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-fg/40 mb-2">
             {t("yearLabel")}
           </label>
           <div className="relative">
-            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface/30" />
+            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-fg/30" />
             <select
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="w-full bg-surface-container-highest rounded-xl py-3 pl-12 pr-4 text-on-surface border border-transparent focus:border-primary/50 focus:outline-none transition-all appearance-none"
+              className="w-full bg-elevated rounded-xl py-3 pl-12 pr-4 text-fg border border-transparent focus:border-primary/50 focus:outline-none transition-all appearance-none"
             >
               <option value="">{t("selectYear")}</option>
               {years.map((y) => (
@@ -195,18 +195,18 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
         {/* Plate */}
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-on-surface/40 mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-fg/40 mb-2">
             {t("plateLabel")}
           </label>
           <div className="relative">
-            <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface/30" />
+            <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-fg/30" />
             <input
               type="text"
               value={plate}
               onChange={(e) => setPlate(formatPlate(e.target.value))}
               placeholder="AB123CD"
               maxLength={7}
-              className="w-full bg-surface-container-highest rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-on-surface/30 border border-transparent focus:border-primary/50 focus:outline-none transition-all font-mono uppercase"
+              className="w-full bg-elevated rounded-xl py-3 pl-12 pr-4 text-fg placeholder:text-fg/30 border border-transparent focus:border-primary/50 focus:outline-none transition-all font-mono uppercase"
             />
           </div>
         </div>
@@ -214,7 +214,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
       <button
         type="submit"
-        className="w-full bg-primary hover:bg-primary/90 text-on-primary py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+        className="w-full bg-primary hover:bg-primary/90 text-accent-fg py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-[0.98] flex items-center justify-center gap-2"
       >
         <Save className="w-4 h-4" />
         {t("saveVehicle")}

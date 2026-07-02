@@ -63,7 +63,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%)",
+          background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)",
           padding: 60,
           fontFamily: "system-ui, -apple-system, sans-serif",
           position: "relative",

@@ -42,7 +42,7 @@ function PremiumSuccessContent() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
-          <p className="text-error mb-4">{t("verificationFailed")}</p>
+          <p className="text-bad mb-4">{t("verificationFailed")}</p>
           <Link href={`/${locale}`} className="inline-flex items-center justify-center rounded-xl bg-[#4FB3C9] px-6 py-3 text-white font-medium hover:bg-[#3d9db3] transition-colors">
             {t("backToHome")}
           </Link>

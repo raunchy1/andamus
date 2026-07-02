@@ -196,7 +196,7 @@ const MessageBubble = memo(function MessageBubble({
             <button
               onClick={() => onRetry(message.tempId)}
               disabled={retryingId === message.tempId}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-error text-error-foreground text-xs font-bold hover:bg-error/90 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bad text-bad-foreground text-xs font-bold hover:bg-bad/90 transition-colors disabled:opacity-50"
             >
               {retryingId === message.tempId ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -247,7 +247,7 @@ const MessageBubble = memo(function MessageBubble({
                 className="block"
               >
                 {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
-                  <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high relative">
+                  <div className="w-full h-32 rounded-lg overflow-hidden bg-elevated relative">
                     <Image
                       src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapDarkStyleQuery}&markers=color:0x4FB3C9%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
                       alt={t("locationMapAlt")}
@@ -256,8 +256,8 @@ const MessageBubble = memo(function MessageBubble({
                     />
                   </div>
                 ) : (
-                  <div className="w-full h-32 rounded-lg overflow-hidden bg-surface-container-high flex items-center justify-center">
-                    <div className="text-center text-on-surface-variant">
+                  <div className="w-full h-32 rounded-lg overflow-hidden bg-elevated flex items-center justify-center">
+                    <div className="text-center text-muted">
                       <MapPin className="w-8 h-8 mx-auto mb-2" />
                       <span className="text-xs">{t("sharedLocation")}</span>
                     </div>
@@ -276,7 +276,7 @@ const MessageBubble = memo(function MessageBubble({
             <button
               onClick={() => onToggleAudio(message.media_url!)}
               disabled={isPending || isFailed}
-              className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary disabled:opacity-50"
+              className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-accent-fg disabled:opacity-50"
             >
               {playingAudio === message.media_url ? (
                 <Pause className="w-5 h-5" />
@@ -317,7 +317,7 @@ const MessageBubble = memo(function MessageBubble({
           </span>
         )}
         {isFailed && (
-          <span className="text-[9px] font-medium text-error/80">
+          <span className="text-[9px] font-medium text-bad/80">
             {t("failed")}
           </span>
         )}
@@ -379,17 +379,17 @@ const ChatInput = memo(function ChatInput({
     <>
       {isRecording && (
         <div
-          className={`mb-3 flex items-center justify-between bg-error/10 border border-error/20 rounded-full px-4 py-2 text-sm truncate ${
+          className={`mb-3 flex items-center justify-between bg-bad/10 border border-bad/20 rounded-full px-4 py-2 text-sm truncate ${
             mobile ? "" : "mb-4 px-5 py-3"
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
-            <span className="text-error text-sm font-medium">
+            <div className="w-2 h-2 rounded-full bg-bad animate-pulse" />
+            <span className="text-bad text-sm font-medium">
               {t("recording")}
             </span>
           </div>
-          <span className="text-error font-mono text-sm">
+          <span className="text-bad font-mono text-sm">
             {formatDuration(recordingTime)}
           </span>
         </div>

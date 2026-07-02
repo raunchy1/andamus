@@ -187,7 +187,7 @@ export default function VerificationPage() {
   };
 
   if (error) {
-    return <div className="p-8 text-center text-error">Errore nel caricamento. Riprova.</div>;
+    return <div className="p-8 text-center text-bad">Errore nel caricamento. Riprova.</div>;
   }
 
   if (loading) {
@@ -243,7 +243,7 @@ export default function VerificationPage() {
           {/* TODO: Phone verification — implement Supabase OTP or Twilio when ready */}
 
           {/* Email Verification */}
-          <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6">
+          <div className="rounded-2xl border border-white/10 bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
@@ -275,7 +275,7 @@ export default function VerificationPage() {
           </div>
 
           {/* ID Document Verification */}
-          <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6">
+          <div className="rounded-2xl border border-white/10 bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
@@ -328,7 +328,7 @@ export default function VerificationPage() {
           </div>
 
           {/* Driver License Verification */}
-          <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6">
+          <div className="rounded-2xl border border-white/10 bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${

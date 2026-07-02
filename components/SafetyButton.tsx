@@ -141,7 +141,7 @@ export function SafetyButton() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-[151] max-h-[85vh] overflow-y-auto rounded-t-3xl bg-[#131313] shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-[151] max-h-[85vh] overflow-y-auto rounded-t-3xl bg-surface shadow-2xl"
             >
               {/* Handle bar */}
               <div className="flex justify-center pb-1 pt-3">
@@ -269,7 +269,7 @@ export function SafetyButton() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm rounded-3xl border border-bad/30 bg-[#131313] p-6 text-center"
+              className="w-full max-w-sm rounded-3xl border border-bad/30 bg-surface p-6 text-center"
             >
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-bad/20">
                 <AlertTriangle className="h-10 w-10 text-bad" />

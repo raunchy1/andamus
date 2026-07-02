@@ -99,15 +99,15 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
       <div className="sticky top-0 z-20 bg-surface/95 backdrop-blur-xl border-b border-white/8 px-5 py-4 flex items-center gap-4">
         <button
           onClick={onClose}
-          className="p-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface/70 transition-all"
+          className="p-2.5 rounded-xl bg-elevated hover:bg-elevated text-fg/70 transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-on-surface truncate">
+          <h2 className="font-bold text-fg truncate">
             {vehicle.make_name} {vehicle.model_name}
           </h2>
-          <p className="text-xs text-on-surface/50">{vehicle.year}</p>
+          <p className="text-xs text-fg/50">{vehicle.year}</p>
         </div>
         <VehicleTrustScore vehicle={vehicle} size="sm" />
       </div>
@@ -118,8 +118,8 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
         <section>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-bold text-lg text-on-surface">Foto del veicolo</h3>
-              <p className="text-xs text-on-surface/50">{images.length}/10 foto · Tocca per eliminare</p>
+              <h3 className="font-bold text-lg text-fg">Foto del veicolo</h3>
+              <p className="text-xs text-fg/50">{images.length}/10 foto · Tocca per eliminare</p>
             </div>
             <button
               onClick={() => fileInputRef.current?.click()}
@@ -147,7 +147,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
           {images.length > 0 ? (
             <div className="grid grid-cols-3 gap-2">
               {images.map((img, idx) => (
-                <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden bg-surface-container-high group">
+                <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden bg-elevated group">
                   <Image
                     src={img.url}
                     alt={`Foto ${idx + 1}`}
@@ -180,10 +180,10 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="aspect-square rounded-2xl border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center gap-1 hover:border-primary/40 hover:bg-primary/5 transition-all"
+                  className="aspect-square rounded-2xl border-2 border-dashed border-line/30 flex flex-col items-center justify-center gap-1 hover:border-primary/40 hover:bg-primary/5 transition-all"
                 >
-                  <Upload className="w-5 h-5 text-on-surface/30" />
-                  <span className="text-[10px] text-on-surface/30">Aggiungi</span>
+                  <Upload className="w-5 h-5 text-fg/30" />
+                  <span className="text-[10px] text-fg/30">Aggiungi</span>
                 </button>
               )}
             </div>
@@ -192,20 +192,20 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="w-full border-2 border-dashed border-outline-variant/30 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 hover:border-primary/40 hover:bg-primary/5 transition-all"
+              className="w-full border-2 border-dashed border-line/30 rounded-2xl p-10 flex flex-col items-center justify-center gap-3 hover:border-primary/40 hover:bg-primary/5 transition-all"
             >
-              <div className="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl bg-elevated flex items-center justify-center">
                 {uploading ? (
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 ) : (
-                  <Camera className="w-8 h-8 text-on-surface/30" />
+                  <Camera className="w-8 h-8 text-fg/30" />
                 )}
               </div>
               <div className="text-center">
-                <p className="font-semibold text-on-surface">
+                <p className="font-semibold text-fg">
                   {uploading ? "Caricamento in corso..." : "Aggiungi le prime foto"}
                 </p>
-                <p className="text-xs text-on-surface/40 mt-0.5">
+                <p className="text-xs text-fg/40 mt-0.5">
                   JPG, PNG o WebP · Max 5MB per foto
                 </p>
               </div>
@@ -225,16 +225,16 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
 
         {/* ── DESCRIZIONE SECTION ── */}
         <section>
-          <h3 className="font-bold text-lg text-on-surface mb-3">Descrizione</h3>
+          <h3 className="font-bold text-lg text-fg mb-3">Descrizione</h3>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value.slice(0, 500))}
             placeholder="Es. Auto comoda e climatizzata, perfetta per lunghi tragitti. Bagagliaio ampio..."
             rows={4}
-            className="w-full bg-surface-container-highest rounded-2xl py-4 px-5 text-on-surface placeholder:text-on-surface/30 border border-transparent focus:border-primary/50 focus:outline-none resize-none transition-all"
+            className="w-full bg-elevated rounded-2xl py-4 px-5 text-fg placeholder:text-fg/30 border border-transparent focus:border-primary/50 focus:outline-none resize-none transition-all"
           />
           <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-on-surface/40">{description.length}/500</span>
+            <span className="text-xs text-fg/40">{description.length}/500</span>
             <button
               onClick={handleSaveDescription}
               disabled={savingDesc || description === (vehicle.description ?? "")}
@@ -248,7 +248,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
 
         {/* ── COMFORT SECTION ── */}
         <section>
-          <h3 className="font-bold text-lg text-on-surface mb-3">Comfort e caratteristiche</h3>
+          <h3 className="font-bold text-lg text-fg mb-3">Comfort e caratteristiche</h3>
           <div className="grid grid-cols-2 gap-2">
             {VEHICLE_FEATURES.map((feature) => {
               const active = vehicle.features?.includes(feature.key) ?? false;
@@ -258,7 +258,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
                   className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
                     active
                       ? "border-primary/30 bg-primary/5 text-primary"
-                      : "border-outline-variant/20 bg-surface-container-low text-on-surface/60"
+                      : "border-line/20 bg-surface text-fg/60"
                   }`}
                 >
                   <span className="text-xl">{feature.icon}</span>
@@ -268,15 +268,15 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
               );
             })}
           </div>
-          <p className="text-xs text-on-surface/40 mt-3 text-center">
+          <p className="text-xs text-fg/40 mt-3 text-center">
             Per modificare i comfort, usa il wizard per creare una nuova configurazione
           </p>
         </section>
 
         {/* ── INFO SECTION ── */}
         <section>
-          <h3 className="font-bold text-lg text-on-surface mb-3">Dettagli veicolo</h3>
-          <div className="bg-surface-container-low rounded-2xl divide-y divide-white/5">
+          <h3 className="font-bold text-lg text-fg mb-3">Dettagli veicolo</h3>
+          <div className="bg-surface rounded-2xl divide-y divide-white/5">
             {[
               { label: "Marca", value: vehicle.make_name },
               { label: "Modello", value: vehicle.model_name },
@@ -288,12 +288,12 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
               { label: "Posti passeggeri", value: vehicle.seats_available ?? "—" },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between px-5 py-3.5">
-                <span className="text-sm text-on-surface/50">{label}</span>
-                <span className="text-sm font-semibold text-on-surface capitalize">{String(value)}</span>
+                <span className="text-sm text-fg/50">{label}</span>
+                <span className="text-sm font-semibold text-fg capitalize">{String(value)}</span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-on-surface/40 mt-3 text-center">
+          <p className="text-xs text-fg/40 mt-3 text-center">
             Per modificare i dati del veicolo, crea un nuovo veicolo dal wizard
           </p>
         </section>
