@@ -320,7 +320,7 @@ export default function StatisticsPage() {
   };
 
   if (error) {
-    return <div className="p-8 text-center text-error">Errore nel caricamento. Riprova.</div>;
+    return <div className="p-8 text-center text-bad">Errore nel caricamento. Riprova.</div>;
   }
 
   if (loading) {
@@ -430,7 +430,7 @@ export default function StatisticsPage() {
                     <div className={`
                       w-10 h-10 rounded-full flex items-center justify-center font-bold
                       ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' : 
-                        index === 1 ? 'bg-gray-400/20 text-on-surface-variant' : 
+                        index === 1 ? 'bg-gray-400/20 text-muted' : 
                         'bg-orange-600/20 text-orange-400'}
                     `}>
                       {index + 1}
@@ -463,7 +463,7 @@ export default function StatisticsPage() {
             {/* Export Button */}
             <button
               onClick={generatePDFReport}
-              className="flex items-center justify-center gap-2 bg-primary text-on-primary rounded-full px-6 py-3 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex items-center justify-center gap-2 bg-primary text-accent-fg rounded-full px-6 py-3 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               {t('downloadReport')}
@@ -697,6 +697,6 @@ function getBadgeDetails(type: string, translate: ReturnType<typeof useTranslati
     name: type,
     description: "",
     icon: "🏅",
-    color: "bg-surface-variant",
+    color: "bg-elevated",
   };
 }

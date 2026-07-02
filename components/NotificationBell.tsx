@@ -267,11 +267,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
             fetchNotifications().finally(() => setDropdownLoading(false));
           }
         }}
-        className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-          isHome
-            ? "text-white/70 hover:bg-white/10 hover:text-white"
-            : "text-gray-500 hover:bg-gray-100 hover:text-[#1a1a2e]"
-        }`}
+        className="relative flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
         aria-label={t("notifications")}
       >
         <Bell className="h-5 w-5" />
@@ -284,7 +280,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 overflow-hidden rounded-2xl border border-white/10 bg-[#1e2a4a] shadow-2xl">
+        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 overflow-hidden rounded-2xl border border-white/10 bg-elevated shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
             <h3 className="font-semibold text-white">{t("notifications")}</h3>

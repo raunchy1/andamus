@@ -12,7 +12,7 @@ export function RideDetailSkeleton() {
         </div>
 
         {/* Driver card */}
-        <div className="bg-surface-container-high rounded-3xl p-6 flex items-center gap-4">
+        <div className="bg-elevated rounded-3xl p-6 flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-white/10" />
           <div className="flex-1 space-y-2">
             <div className="h-4 w-32 bg-white/10 rounded" />
@@ -22,8 +22,8 @@ export function RideDetailSkeleton() {
 
         {/* Info cards */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="h-32 bg-surface-container-high rounded-2xl" />
-          <div className="h-32 bg-surface-container-high rounded-2xl" />
+          <div className="h-32 bg-elevated rounded-2xl" />
+          <div className="h-32 bg-elevated rounded-2xl" />
         </div>
 
         {/* Amenities */}

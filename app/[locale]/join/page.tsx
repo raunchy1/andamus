@@ -133,16 +133,16 @@ function JoinContent() {
           className="max-w-md w-full text-center"
         >
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-6">
-            <Gift className="w-10 h-10 text-on-primary" />
+            <Gift className="w-10 h-10 text-accent-fg" />
           </div>
           
-          <h1 className="text-2xl font-bold text-on-surface mb-2">
+          <h1 className="text-2xl font-bold text-fg mb-2">
             {referralApplied ? t("welcome") : t("alreadyRegistered")}
           </h1>
           
           {referralApplied ? (
             <>
-              <p className="text-on-surface-variant mb-6">
+              <p className="text-muted mb-6">
                 {t("referralBonusText")}
               </p>
               <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
@@ -151,14 +151,14 @@ function JoinContent() {
               </div>
             </>
           ) : (
-            <p className="text-on-surface-variant mb-6">
+            <p className="text-muted mb-6">
               {t("alreadyRegisteredText")}
             </p>
           )}
           
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-on-primary transition-all hover:opacity-90"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-accent-fg transition-all hover:opacity-90"
           >
             {t("goHome")}
           </Link>
@@ -176,7 +176,7 @@ function JoinContent() {
       >
         <Link 
           href="/"
-          className="inline-flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-muted hover:text-fg transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
           {t("backToHome")}
@@ -184,36 +184,36 @@ function JoinContent() {
 
         <div className="text-center mb-8">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-6">
-            <Gift className="w-10 h-10 text-on-primary" />
+            <Gift className="w-10 h-10 text-accent-fg" />
           </div>
           
-          <h1 className="text-3xl font-bold text-on-surface mb-2">
+          <h1 className="text-3xl font-bold text-fg mb-2">
             {t("joinTitle")}
           </h1>
           
           {referralCode ? (
-            <p className="text-on-surface-variant">
+            <p className="text-muted">
               {t("referralPrompt")}
             </p>
           ) : (
-            <p className="text-on-surface-variant">
+            <p className="text-muted">
               {t("tagline")}
             </p>
           )}
         </div>
 
-        <div className="bg-surface-container border border-outline/20 rounded-2xl p-6 mb-8">
-          <h2 className="text-on-surface font-semibold mb-4">{t("benefitsTitle")}</h2>
+        <div className="bg-surface-2 border border-line rounded-2xl p-6 mb-8">
+          <h2 className="text-fg font-semibold mb-4">{t("benefitsTitle")}</h2>
           <ul className="space-y-3">
-            <li className="flex items-center gap-3 text-on-surface-variant">
+            <li className="flex items-center gap-3 text-muted">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span>{t("benefit1")}</span>
             </li>
-            <li className="flex items-center gap-3 text-on-surface-variant">
+            <li className="flex items-center gap-3 text-muted">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span>{t("benefit2")}</span>
             </li>
-            <li className="flex items-center gap-3 text-on-surface-variant">
+            <li className="flex items-center gap-3 text-muted">
               <CheckCircle className="w-5 h-5 text-green-400" />
               <span>{t("benefit3")}</span>
             </li>
@@ -232,9 +232,9 @@ function JoinContent() {
             type="checkbox"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-outline/30 bg-surface-container accent-primary cursor-pointer"
+            className="mt-1 h-4 w-4 rounded border-line-strong bg-surface-2 accent-primary cursor-pointer"
           />
-          <label htmlFor="terms-checkbox" className="text-xs text-on-surface-variant leading-relaxed cursor-pointer select-none">
+          <label htmlFor="terms-checkbox" className="text-xs text-muted leading-relaxed cursor-pointer select-none">
             Accetto i{" "}
             <Link href={`/${locale}/termini-e-condizioni`} className="text-primary hover:underline font-medium">
               Termini di Servizio
@@ -249,7 +249,7 @@ function JoinContent() {
 
         <Button
           onClick={handleLogin}
-          className="w-full bg-primary hover:opacity-90 text-on-primary py-6 text-lg font-semibold rounded-xl"
+          className="w-full bg-primary hover:opacity-90 text-accent-fg py-6 text-lg font-semibold rounded-xl"
         >
           <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -260,7 +260,7 @@ function JoinContent() {
           {t("signInGoogle")}
         </Button>
 
-        <p className="text-center text-on-surface-variant text-sm mt-6">
+        <p className="text-center text-muted text-sm mt-6">
           {t("termsNotice")}
         </p>
       </motion.div>

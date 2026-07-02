@@ -81,11 +81,11 @@ export function VehicleCard({
         } ${
           selected
             ? "border-primary/50 bg-primary/5"
-            : "border-outline-variant/20 bg-surface-container-low hover:border-outline-variant/40"
+            : "border-line/20 bg-surface hover:border-line/40"
         }`}
       >
         {/* Thumbnail */}
-        <div className="w-16 h-14 rounded-xl overflow-hidden bg-surface-container-high flex-shrink-0">
+        <div className="w-16 h-14 rounded-xl overflow-hidden bg-elevated flex-shrink-0">
           {primaryImage ? (
             <Image
               src={primaryImage.url}
@@ -97,7 +97,7 @@ export function VehicleCard({
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Car
-                className="w-6 h-6 text-on-surface/30"
+                className="w-6 h-6 text-fg/30"
                 aria-hidden="true"
               />
             </div>
@@ -106,10 +106,10 @@ export function VehicleCard({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-on-surface truncate">
+          <p className="font-bold text-fg truncate">
             {vehicle.make_name} {vehicle.model_name}
           </p>
-          <p className="text-sm text-on-surface/50">
+          <p className="text-sm text-fg/50">
             {vehicle.year}
             {vehicle.color ? ` · ${vehicle.color}` : ""}
             {fuelLabel ? ` · ${fuelLabel}` : ""}
@@ -132,7 +132,7 @@ export function VehicleCard({
       className={`rounded-3xl border overflow-hidden transition-all ${
         selected
           ? "border-primary/50 bg-gradient-to-br from-primary/5 to-transparent"
-          : "border-outline-variant/20 bg-surface-container-low"
+          : "border-line/20 bg-surface"
       } ${selectable ? "cursor-pointer hover:border-primary/30" : ""}`}
       onClick={handleClick}
       role={selectable ? "button" : undefined}
@@ -147,7 +147,7 @@ export function VehicleCard({
       aria-pressed={selectable ? selected : undefined}
     >
       {/* ── Photo strip ── */}
-      <div className="relative h-48 bg-surface-container-high">
+      <div className="relative h-48 bg-elevated">
         {primaryImage ? (
           <Image
             src={primaryImage.url}
@@ -159,10 +159,10 @@ export function VehicleCard({
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <Car
-              className="w-12 h-12 text-on-surface/20"
+              className="w-12 h-12 text-fg/20"
               aria-hidden="true"
             />
-            <p className="text-xs text-on-surface/30">Nessuna foto</p>
+            <p className="text-xs text-fg/30">Nessuna foto</p>
           </div>
         )}
 
@@ -199,10 +199,10 @@ export function VehicleCard({
         {/* Title + action buttons */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
-            <h3 className="font-bold text-xl text-on-surface">
+            <h3 className="font-bold text-xl text-fg">
               {vehicle.make_name} {vehicle.model_name}
             </h3>
-            <p className="text-sm text-on-surface/50 mt-0.5">
+            <p className="text-sm text-fg/50 mt-0.5">
               {vehicle.year}
               {vehicle.color ? ` · ${vehicle.color}` : ""}
             </p>
@@ -217,7 +217,7 @@ export function VehicleCard({
                     onEdit(vehicle);
                   }}
                   aria-label="Modifica veicolo"
-                  className="p-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface/60 hover:text-on-surface transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="p-2 rounded-xl bg-elevated hover:bg-elevated text-fg/60 hover:text-fg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <Edit3 className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -229,7 +229,7 @@ export function VehicleCard({
                     onDelete(vehicle.id);
                   }}
                   aria-label="Elimina veicolo"
-                  className="p-2 rounded-xl bg-surface-container-high hover:bg-bad/20 text-on-surface/60 hover:text-bad transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bad"
+                  className="p-2 rounded-xl bg-elevated hover:bg-bad/20 text-fg/60 hover:text-bad transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bad"
                 >
                   <Trash2 className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -241,22 +241,22 @@ export function VehicleCard({
         {/* Spec pills */}
         <div className="flex items-center gap-2 flex-wrap mb-3">
           {fuelLabel && (
-            <span className="text-[11px] font-bold uppercase tracking-wider bg-surface-container-high px-2 py-1 rounded-lg text-on-surface/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider bg-elevated px-2 py-1 rounded-lg text-fg/60">
               {fuelLabel}
             </span>
           )}
           {transLabel && (
-            <span className="text-[11px] font-bold uppercase tracking-wider bg-surface-container-high px-2 py-1 rounded-lg text-on-surface/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider bg-elevated px-2 py-1 rounded-lg text-fg/60">
               {transLabel}
             </span>
           )}
           {vehicle.seats_available != null && (
-            <span className="text-[11px] font-bold uppercase tracking-wider bg-surface-container-high px-2 py-1 rounded-lg text-on-surface/60">
+            <span className="text-[11px] font-bold uppercase tracking-wider bg-elevated px-2 py-1 rounded-lg text-fg/60">
               {vehicle.seats_available} posti
             </span>
           )}
           {vehicle.rides_count > 0 && (
-            <span className="text-[11px] font-bold uppercase tracking-wider bg-surface-container-high px-2 py-1 rounded-lg text-primary">
+            <span className="text-[11px] font-bold uppercase tracking-wider bg-elevated px-2 py-1 rounded-lg text-primary">
               {vehicle.rides_count} corse
             </span>
           )}
@@ -276,7 +276,7 @@ export function VehicleCard({
               </span>
             ))}
             {(vehicle.features?.length ?? 0) > 4 && (
-              <span className="text-[11px] text-on-surface/40 self-center">
+              <span className="text-[11px] text-fg/40 self-center">
                 +{(vehicle.features?.length ?? 0) - 4}
               </span>
             )}
@@ -290,7 +290,7 @@ export function VehicleCard({
               e.stopPropagation();
               onSetPrimary(vehicle.id);
             }}
-            className="mt-4 w-full flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-on-surface/50 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg py-1"
+            className="mt-4 w-full flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-fg/50 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg py-1"
           >
             <Star className="w-3.5 h-3.5" aria-hidden="true" />
             Imposta come principale

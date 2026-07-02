@@ -70,7 +70,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2a4a] p-6">
+          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-elevated p-6">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -129,7 +129,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("describeWhatHappened")}
                 rows={3}
-                className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-3 text-sm text-white outline-none focus:border-[#4FB3C9] placeholder:text-white/30"
+                className="w-full rounded-xl border border-white/10 bg-bg p-3 text-sm text-white outline-none focus:border-[#4FB3C9] placeholder:text-white/30"
               />
             </div>
 

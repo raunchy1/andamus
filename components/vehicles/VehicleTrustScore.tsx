@@ -47,7 +47,7 @@ export function VehicleTrustScore({
             fill="none"
             stroke="currentColor"
             strokeWidth={stroke}
-            className="text-surface-container-highest"
+            className="text-elevated"
           />
           {/* Progress */}
           <circle
@@ -91,7 +91,7 @@ export function VehicleTrustScore({
           >
             {label}
           </p>
-          <p className="text-[11px] text-on-surface/40 mt-0.5">
+          <p className="text-[11px] text-fg/40 mt-0.5">
             Profilo veicolo
           </p>
         </div>
@@ -103,7 +103,7 @@ export function VehicleTrustScore({
           {score.suggestions.map((tip, i) => (
             <div
               key={i}
-              className="flex items-start gap-2 text-xs text-on-surface/60 bg-surface-container-high px-3 py-2 rounded-xl"
+              className="flex items-start gap-2 text-xs text-fg/60 bg-elevated px-3 py-2 rounded-xl"
             >
               <span className="text-amber-400 shrink-0" aria-hidden="true">
                 💡

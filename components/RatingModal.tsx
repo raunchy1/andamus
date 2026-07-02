@@ -122,7 +122,7 @@ export function RatingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2a4a] p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-elevated p-6 shadow-2xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-xl font-bold text-white">{t("leaveReview")}</h3>
@@ -215,7 +215,7 @@ export function RatingModal({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder={t("describeExperience")}
                 rows={3}
-                className="w-full rounded-xl border border-white/10 bg-[#0f1729] p-4 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[#4FB3C9]"
+                className="w-full rounded-xl border border-white/10 bg-bg p-4 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[#4FB3C9]"
               />
             </div>
 

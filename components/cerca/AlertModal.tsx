@@ -42,9 +42,9 @@ export function AlertModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-outline-variant bg-surface-container-low p-6">
-        <h3 className="mb-1 text-xl font-extrabold tracking-tight text-on-surface">{t("saveAlert")}</h3>
-        <p className="mb-4 text-sm text-on-surface-variant">{t("alertDescription")}</p>
+      <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6">
+        <h3 className="mb-1 text-xl font-extrabold tracking-tight text-fg">{t("saveAlert")}</h3>
+        <p className="mb-4 text-sm text-muted">{t("alertDescription")}</p>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -123,17 +123,17 @@ export function AlertModal({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-eyebrow lowercase">{t("minSeatsLabel")}</label>
-              <input type="number" name="alertMinSeats" min="1" placeholder={t("any")} defaultValue={minSeats ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
+              <input type="number" name="alertMinSeats" min="1" placeholder={t("any")} defaultValue={minSeats ?? ""} className="h-12 w-full rounded-xl border-none bg-elevated px-3 text-sm text-fg outline-none focus:ring-1 focus:ring-primary" />
             </div>
             <div>
               <label className="mb-1 block text-eyebrow lowercase">{t("maxPriceLabel")}</label>
-              <input type="number" name="alertMaxPrice" min="0" placeholder={t("any")} defaultValue={maxPrice ?? ""} className="h-12 w-full rounded-xl border-none bg-surface-container-high px-3 text-sm text-on-surface outline-none focus:ring-1 focus:ring-primary" />
+              <input type="number" name="alertMaxPrice" min="0" placeholder={t("any")} defaultValue={maxPrice ?? ""} className="h-12 w-full rounded-xl border-none bg-elevated px-3 text-sm text-fg outline-none focus:ring-1 focus:ring-primary" />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
             <button type="button"
               onClick={() => setShowAlertModal(false)}
-              className="flex-1 rounded-xl bg-surface-container-high py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-highest"
+              className="flex-1 rounded-xl bg-elevated py-3 text-sm font-semibold text-fg transition-colors hover:bg-elevated"
             >
               {t("cancel")}
             </button>

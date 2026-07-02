@@ -1,6 +1,6 @@
 export function ProfileSkeleton() {
   return (
-    <div className="min-h-screen bg-surface-container-lowest animate-pulse">
+    <div className="min-h-screen bg-bg animate-pulse">
       {/* Header */}
       <div className="h-16 bg-white/5" />
 

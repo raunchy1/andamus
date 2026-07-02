@@ -144,12 +144,12 @@ export function PhoneVerification({
 
   if (isVerified) {
     return (
-      <div className="flex items-center gap-2 text-sm text-tertiary">
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-tertiary/20">
-          <Check className="w-3 h-3 text-tertiary" />
+      <div className="flex items-center gap-2 text-sm text-ok">
+        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-ok/20">
+          <Check className="w-3 h-3 text-ok" />
         </div>
         <span>{t("phoneVerified")}</span>
-        <span className="text-on-surface-variant">{currentPhone}</span>
+        <span className="text-muted">{currentPhone}</span>
       </div>
     );
   }
@@ -159,7 +159,7 @@ export function PhoneVerification({
       {/* Trigger Button */}
       <button
         onClick={() => setShowModal(true)}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container-highest text-on-surface hover:bg-surface-container-high transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-elevated text-fg hover:bg-elevated transition-colors text-sm font-medium"
       >
         <Shield className="w-4 h-4 text-primary" />
         <span>{t("verifyPhone")}</span>
@@ -168,18 +168,18 @@ export function PhoneVerification({
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="relative w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-outline-variant overflow-hidden">
+          <div className="relative w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-line overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-outline-variant">
+            <div className="flex items-center justify-between p-6 border-b border-line">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-on-surface">
+                  <h3 className="text-lg font-bold text-fg">
                     {isOtpSent ? t("enterOtpTitle") : t("verifyYourNumber")}
                   </h3>
-                  <p className="text-sm text-on-surface-variant">
+                  <p className="text-sm text-muted">
                     {isOtpSent 
                       ? t("receivedSmsCode") 
                       : t("addSecurityToProfile")}
@@ -188,9 +188,9 @@ export function PhoneVerification({
               </div>
               <button
                 onClick={handleClose}
-                className="p-2 rounded-full hover:bg-surface-container-highest transition-colors"
+                className="p-2 rounded-full hover:bg-elevated transition-colors"
               >
-                <X className="w-5 h-5 text-on-surface-variant" />
+                <X className="w-5 h-5 text-muted" />
               </button>
             </div>
 
@@ -200,7 +200,7 @@ export function PhoneVerification({
                 // Step 1: Phone Input
                 <>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-on-surface">
+                    <label className="text-sm font-medium text-fg">
                       {t("phoneNumber")}
                     </label>
                     <div className="relative">
@@ -209,11 +209,11 @@ export function PhoneVerification({
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+39 340 1234567"
-                        className="w-full h-12 px-4 rounded-xl bg-surface-container-highest border-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant"
+                        className="w-full h-12 px-4 rounded-xl bg-elevated border-none focus:ring-2 focus:ring-primary text-fg placeholder:text-muted"
                       />
-                      <Phone className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" />
+                      <Phone className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                     </div>
-                    <p className="text-xs text-on-surface-variant">
+                    <p className="text-xs text-muted">
                       {t("enterPhoneWithPrefix")}
                     </p>
                   </div>
@@ -221,7 +221,7 @@ export function PhoneVerification({
                   <button
                     onClick={sendOtp}
                     disabled={isLoading}
-                    className="w-full h-12 bg-primary text-on-primary font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full h-12 bg-primary text-accent-fg font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isLoading ? (
                       <>
@@ -240,7 +240,7 @@ export function PhoneVerification({
                 // Step 2: OTP Input
                 <>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-on-surface">
+                    <label className="text-sm font-medium text-fg">
                       {t("otpCode")}
                     </label>
                     <input
@@ -249,9 +249,9 @@ export function PhoneVerification({
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder="000000"
                       maxLength={6}
-                      className="w-full h-12 px-4 text-center text-2xl tracking-widest rounded-xl bg-surface-container-highest border-none focus:ring-2 focus:ring-primary text-on-surface placeholder:text-on-surface-variant"
+                      className="w-full h-12 px-4 text-center text-2xl tracking-widest rounded-xl bg-elevated border-none focus:ring-2 focus:ring-primary text-fg placeholder:text-muted"
                     />
-                    <p className="text-xs text-on-surface-variant text-center">
+                    <p className="text-xs text-muted text-center">
                       {t("enter6DigitCode")}
                     </p>
                   </div>
@@ -260,7 +260,7 @@ export function PhoneVerification({
                     <button
                       onClick={verifyOtp}
                       disabled={isLoading || otp.length !== 6}
-                      className="w-full h-12 bg-primary text-on-primary font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full h-12 bg-primary text-accent-fg font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {isLoading ? (
                         <>
@@ -278,7 +278,7 @@ export function PhoneVerification({
                     <button
                       onClick={() => setIsOtpSent(false)}
                       disabled={isLoading}
-                      className="w-full h-12 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors"
+                      className="w-full h-12 text-sm font-medium text-muted hover:text-fg transition-colors"
                     >
                       {t("changeNumber")}
                     </button>
@@ -288,8 +288,8 @@ export function PhoneVerification({
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 bg-surface-container-low rounded-b-2xl">
-              <p className="text-xs text-center text-on-surface-variant">
+            <div className="px-6 py-4 bg-surface rounded-b-2xl">
+              <p className="text-xs text-center text-muted">
                 {t("phoneVerificationFooter")}
               </p>
             </div>
