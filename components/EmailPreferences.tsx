@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, Check, Loader2 } from "lucide-react";
+import { Mail, Check, Loader2, Inbox, CalendarCheck, MessageCircle, Bell, Megaphone } from "lucide-react";
 import { toast } from "sonner";
 
 interface EmailPreferencesProps {
@@ -18,11 +18,11 @@ interface Preferences {
 }
 
 const preferenceOptions = [
-  { key: "email_booking_requests", label: "Richieste di passaggio", icon: "✉️" },
-  { key: "email_booking_confirmed", label: "Conferme prenotazione", icon: "✅" },
-  { key: "email_new_messages", label: "Nuovi messaggi", icon: "💬" },
-  { key: "email_ride_reminders", label: "Promemoria corse", icon: "⏰" },
-  { key: "email_marketing", label: "Aggiornamenti Andamus", icon: "📢" },
+  { key: "email_booking_requests", label: "Richieste di passaggio", Icon: Inbox },
+  { key: "email_booking_confirmed", label: "Conferme di prenotazione", Icon: CalendarCheck },
+  { key: "email_new_messages", label: "Nuovi messaggi", Icon: MessageCircle },
+  { key: "email_ride_reminders", label: "Promemoria corse", Icon: Bell },
+  { key: "email_marketing", label: "Novità da Andamus", Icon: Megaphone },
 ] as const;
 
 export function EmailPreferences({ userId }: EmailPreferencesProps) {
@@ -94,7 +94,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
       <div className="bg-surface-2 rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <Mail className="w-5 h-5 text-primary" />
-          <h3 className="font-bold text-fg">Preferenze Notifiche Email</h3>
+          <h3 className="font-bold text-fg">Notifiche email</h3>
         </div>
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
@@ -109,7 +109,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
     <div className="bg-surface-2 rounded-2xl p-6">
       <div className="flex items-center gap-3 mb-6">
         <Mail className="w-5 h-5 text-primary" />
-        <h3 className="font-bold text-fg">Preferenze Notifiche Email</h3>
+        <h3 className="font-bold text-fg">Notifiche email</h3>
       </div>
 
       <div className="space-y-3 mb-6">
@@ -119,7 +119,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
             className="flex items-center justify-between p-4 bg-elevated rounded-xl cursor-pointer hover:bg-elevated transition-colors"
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">{option.icon}</span>
+              <option.Icon className="w-5 h-5 text-muted" />
               <span className="text-fg">{option.label}</span>
             </div>
             <div

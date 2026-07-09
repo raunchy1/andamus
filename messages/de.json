@@ -545,7 +545,9 @@
     "verifying": "Wird überprüft...",
     "verify": "Verifizieren",
     "changeNumber": "Nummer ändern",
-    "streakActive": "🔥 Aktive Serie: {count} Wochen"
+    "streakActive": "🔥 Aktive Serie: {count} Wochen",
+    "memberSince": "Mitglied seit {age}",
+    "pointsBadge": "{points} Punkte"
   },
   "chat": {
     "messagePlaceholder": "Nachricht schreiben...",
@@ -1061,7 +1063,9 @@
     "subtitle": "Beide sammeln 25 Bonuspunkte!",
     "title": "Freunde einladen",
     "userFallback": "Benutzer",
-    "yourLink": "Dein persönlicher Link"
+    "yourLink": "Dein persönlicher Link",
+    "inviteFriends": "Freunde einladen",
+    "share": "Teilen"
   },
   "onboarding": {
     "checklist": {
