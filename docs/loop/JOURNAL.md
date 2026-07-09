@@ -10,6 +10,19 @@
 
 ---
 
+## 2026-07-09 — iteration 0.1 (manual session, post-restore)
+
+**Picked:** DB restore verification + marketplace recovery.
+**Shipped:** Migration 045 (`fix_refresh_seed_rides`) — `refresh_expired_seed_rides()`
+referenced the nonexistent `rides.updated_at` column, so every nightly
+`/api/admin/refresh-rides` cron call failed with 42703 and the seeded marketplace went
+stale. Function recreated without the phantom column, applied to production, and executed:
+45 expired seed rides pushed to future dates (0 → 45 active future rides).
+**Verification:** project status ACTIVE_HEALTHY; sanity counts (14 profiles, 50 rides,
+3 bookings); post-fix `active_future_rides = 45`.
+**Discovered:** cron routes fail silently — added Sentry-capture item already in P0 backlog.
+**Owner actions needed:** none — Supabase project was restored by owner today.
+
 ## 2026-07-02 — iteration 0 (bootstrap, manual session)
 
 **Picked:** loop scaffolding.
