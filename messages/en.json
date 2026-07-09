@@ -545,7 +545,9 @@
     "verifying": "Verifying...",
     "verify": "Verify",
     "changeNumber": "Change number",
-    "streakActive": "🔥 Active streak: {count} weeks"
+    "streakActive": "🔥 Active streak: {count} weeks",
+    "memberSince": "Member for {age}",
+    "pointsBadge": "{points} points"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -1061,7 +1063,9 @@
     "subtitle": "Both earn 25 bonus points!",
     "title": "Invite Friends",
     "userFallback": "User",
-    "yourLink": "Your personal link"
+    "yourLink": "Your personal link",
+    "inviteFriends": "Invite your friends",
+    "share": "Share"
   },
   "onboarding": {
     "checklist": {

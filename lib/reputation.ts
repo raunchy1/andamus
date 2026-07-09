@@ -65,14 +65,14 @@ export function getTrustLevel(score: number): {
   emoji: string;
 } {
   if (score >= 80)
-    return { label: "Molto affidabile", color: "text-emerald-400", emoji: "🛡️" };
+    return { label: "Molto affidabile", color: "text-emerald-400", emoji: "" };
   if (score >= 60)
-    return { label: "Affidabile", color: "text-green-400", emoji: "✅" };
+    return { label: "Affidabile", color: "text-green-400", emoji: "" };
   if (score >= 40)
-    return { label: "Nuovo", color: "text-yellow-400", emoji: "🌱" };
+    return { label: "In crescita", color: "text-yellow-400", emoji: "" };
   if (score >= 20)
-    return { label: "Alle prime armi", color: "text-orange-400", emoji: "👋" };
-  return { label: "Appena arrivato", color: "text-white/50", emoji: "👶" };
+    return { label: "Nuovo membro", color: "text-[#4FB3C9]", emoji: "" };
+  return { label: "Nuovo profilo", color: "text-white/50", emoji: "" };
 }
 
 /**
@@ -105,9 +105,9 @@ export function isEstablishedUser(profile: Partial<ReputationProfile>): boolean 
  */
 export function getResponseSpeed(rating: number | null): string {
   const r = rating || 5.0;
-  if (r >= 4.8) return "Risponde subito (~5 min)";
-  if (r >= 4.5) return "Risponde in pochi minuti";
-  return "Risponde in un'ora";
+  if (r >= 4.8) return "Entro 5 min";
+  if (r >= 4.5) return "Entro 30 min";
+  return "Entro 1 ora";
 }
 
 /**

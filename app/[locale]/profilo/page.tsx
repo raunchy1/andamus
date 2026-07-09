@@ -788,13 +788,13 @@ export default function ProfilePage() {
                 <span className="text-4xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
               <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
-                {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
+                {t("pointsBadge", { points: profile?.points ?? 0 })}
               </div>
             </div>
             <div className="mt-8 text-center">
               <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-fg">{userName}</h2>
               <p className="text-muted text-sm font-medium opacity-80 uppercase tracking-widest">
-                {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
+                {t("memberSince", { age: formatAccountAge(profile?.created_at || user?.created_at) })}
               </p>
               {streak && streak.current > 1 && (
                 <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
@@ -858,9 +858,9 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-fg">
-                    <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
+                    {(profile?.review_count ?? 0) > 0 ? <AnimatedCounter value={profile?.rating || 5.0} decimals={1} /> : "—"}
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("rating")}{(profile?.review_count ?? 0) > 0 && <span className="text-white/30"> ({profile?.review_count})</span>}</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -886,7 +886,7 @@ export default function ProfilePage() {
                   <p className="text-2xl font-extrabold text-fg">
                     <AnimatedCounter value={completionRate} suffix="%" />
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Affidabilità</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Corse completate</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -1014,7 +1014,7 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                    <p className="font-extrabold text-fg">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
+                    <p className="font-extrabold text-fg">{tl(levelInfo.current.key)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("points")}</p>
@@ -1416,7 +1416,7 @@ export default function ProfilePage() {
                 <span className="text-5xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
               <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
-                {(levelInfo ? `${levelInfo.current.emoji} ${tl(levelInfo.current.key)}` : "Member")}
+                {t("pointsBadge", { points: profile?.points ?? 0 })}
               </div>
             </div>
             <div>
@@ -1424,7 +1424,7 @@ export default function ProfilePage() {
                 <GradientText>{userName}</GradientText>
               </h2>
               <p className="text-muted text-base font-medium opacity-80 uppercase tracking-widest">
-                {formatAccountAge(profile?.created_at || user?.created_at)} · {t("explorerSince", { year: user?.created_at ? new Date(user.created_at).getFullYear() : "2022" })}
+                {t("memberSince", { age: formatAccountAge(profile?.created_at || user?.created_at) })}
               </p>
               {streak && streak.current > 1 && (
                 <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
@@ -1469,9 +1469,9 @@ export default function ProfilePage() {
               </div>
               <div>
                 <p className="text-4xl font-extrabold text-fg">
-                  <AnimatedCounter value={profile?.rating || 5.0} decimals={1} />
+                  {(profile?.review_count ?? 0) > 0 ? <AnimatedCounter value={profile?.rating || 5.0} decimals={1} /> : "—"}
                 </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("rating")} <span className="text-white/30">({profile?.review_count || 0})</span></p>
+                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("rating")}{(profile?.review_count ?? 0) > 0 && <span className="text-white/30"> ({profile?.review_count})</span>}</p>
               </div>
             </TiltCard>
             </RevealItem>
@@ -1845,7 +1845,7 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                      <p className="font-extrabold text-fg">{levelInfo.current.emoji} {tl(levelInfo.current.key)}</p>
+                      <p className="font-extrabold text-fg">{tl(levelInfo.current.key)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("points")}</p>
