@@ -52,6 +52,23 @@ June security remediation (OAuth/RLS/rate-limits/XSS), visual redesign v2 (dark 
 phases 1→2H, 100% coverage as of Jul 2), and a July performance overhaul (middleware getClaims,
 parallel home fetch, preconnect, lazy Sentry Replay). 239 commits total.
 
+## Access & tooling in loop sessions
+
+Headless/scheduled sessions may lack the interactive MCP connectors (Vercel, Supabase).
+Use these equivalents — check what exists before declaring yourself blocked:
+
+- **Git/GitHub**: the repo is the session source (clone + push available). PRs/merges via the
+  GitHub MCP tools if present; otherwise plain git push and note the PR step for the report.
+- **Production deploys need NO Vercel access**: merging to main triggers the deploy via the
+  Vercel git integration. The PR commit status (context "Vercel") tells you preview success.
+- **Supabase**: if `SUPABASE_ACCESS_TOKEN` is set in the environment, use the CLI:
+  `npx supabase migration list/push --project-ref ntcofaxoxjvzovkqgypy` (never `db reset`).
+  If no token and no MCP, ship migration files in the repo and list them under
+  "owner actions" in the report instead of applying them.
+- **Vercel**: if `VERCEL_TOKEN` is set, `npx vercel ls/inspect/logs --token $VERCEL_TOKEN`
+  for build logs; otherwise rely on the GitHub commit status.
+- Never echo tokens into logs, commits, or reports.
+
 ## Known context for prioritization
 
 - Supabase free tier auto-pauses the DB after ~7 days inactivity → the app hangs entirely. Restore requires owner action in the dashboard.
