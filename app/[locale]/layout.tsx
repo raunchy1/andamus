@@ -14,6 +14,7 @@ import { PostHogProvider } from "@/components/PostHogProvider";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import CookieConsent from "@/components/CookieConsent";
 import { Suspense } from "react";
+import { locales as SUPPORTED_LOCALES } from "@/i18n/config";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -128,10 +129,8 @@ export async function generateMetadata({
   };
 }
 
-const SUPPORTED_LOCALES = ["it", "en"] as const;
-
 /**
- * Enable static generation for all 3 locale variants.
+ * Enable static generation for all locale variants.
  * Without this, Next.js treats every page under [locale] as fully dynamic.
  */
 export function generateStaticParams() {
