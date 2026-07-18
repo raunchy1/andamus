@@ -41,6 +41,8 @@
   "home": {
     "heroBadge": "ANDAMUS",
     "heroTitle": "Rides in Sardinia.",
+    "heroEyebrow": "Rides in Sardinia",
+    "heroHeadline": "Find a ride.",
     "heroTitleHighlight": "together.",
     "heroDescription": "Find or offer a ride anywhere on the island. Save money, travel together and cut emissions.",
     "heroFree": "Free.",
@@ -104,6 +106,7 @@
     "yourTrips": "Your trips",
     "departuresConfirmed": "Confirmed departures for",
     "savedRoutes": "Saved routes",
+    "gotIt": "Got it",
     "routeRemoved": "Route removed",
     "routeRemoveError": "Error removing the route",
     "feature1Title": "Save",
@@ -113,7 +116,8 @@
     "feature3Title": "Direct",
     "feature3Description": "Talk directly with the driver and passengers, no middlemen.",
     "ctaTitle": "Got free seats in your car?",
-    "ctaDescription": "Publish a ride and split travel costs."
+    "ctaDescription": "Publish a ride and split travel costs.",
+    "quickGuide": "Quick guide"
   },
   "search": {
     "title": "Find a ride",

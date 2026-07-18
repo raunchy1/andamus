@@ -46,6 +46,8 @@ interface HomeTranslations {
   badge: string;
   heroTitle: string;
   heroTitleHighlight: string;
+  heroEyebrow: string;
+  heroHeadline: string;
   heroSubtitle: string;
   heroDescription: string;
   heroFree: string;
@@ -74,6 +76,16 @@ interface HomeTranslations {
   ctaTitle: string;
   ctaDescription: string;
   welcomeBack: string;
+  savedRoutes: string;
+  routeRemoved: string;
+  routeRemoveError: string;
+  gotIt: string;
+  quickGuide: string;
+  howItWorksTitle: string;
+  howItWorksStep1: string;
+  howItWorksStep2: string;
+  howItWorksStep3: string;
+  close: string;
 }
 
 interface HomeViewProps extends HomeUIProps {

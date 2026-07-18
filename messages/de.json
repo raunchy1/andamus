@@ -41,6 +41,8 @@
   "home": {
     "heroBadge": "ANDAMUS",
     "heroTitle": "Mitfahrgelegenheiten in Sardinien.",
+    "heroEyebrow": "Mitfahrgelegenheiten in Sardinien",
+    "heroHeadline": "Mitfahrgelegenheit finden.",
     "heroTitleHighlight": "Gemeinsam.",
     "heroDescription": "Finde oder biete eine Mitfahrgelegenheit auf der ganzen Insel. Du sparst, reist in Gesellschaft und reduzierst Emissionen.",
     "heroFree": "Kostenlos.",
@@ -104,6 +106,7 @@
     "yourTrips": "Deine Fahrten",
     "departuresConfirmed": "Bestätigte Abfahrten für den",
     "savedRoutes": "Gespeicherte Strecken",
+    "gotIt": "Verstanden",
     "routeRemoved": "Strecke entfernt",
     "routeRemoveError": "Fehler beim Entfernen",
     "feature1Title": "Spare",
@@ -113,7 +116,8 @@
     "feature3Title": "Direkt",
     "feature3Description": "Du sprichst direkt mit Fahrer und Mitfahrern, ohne Zwischenhändler.",
     "ctaTitle": "Hast du freie Plätze im Auto?",
-    "ctaDescription": "Veröffentliche eine Mitfahrgelegenheit und teile die Reisekosten."
+    "ctaDescription": "Veröffentliche eine Mitfahrgelegenheit und teile die Reisekosten.",
+    "quickGuide": "Kurzanleitung"
   },
   "search": {
     "title": "Mitfahrgelegenheit suchen",

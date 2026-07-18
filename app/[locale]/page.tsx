@@ -9,11 +9,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'home' });
+  const tCommon = await getTranslations({ locale, namespace: 'common' });
 
   const translations = {
     badge: t('heroBadge'),
     heroTitle: t('heroTitle'),
     heroTitleHighlight: t('heroTitleHighlight'),
+    heroEyebrow: t('heroEyebrow'),
+    heroHeadline: t('heroHeadline'),
     heroSubtitle: t('heroSubtitle'),
     heroDescription: t('heroDescription'),
     heroFree: t('heroFree'),
@@ -31,6 +34,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     noRidesToday: t('noRidesToday'),
     searchOtherDates: t('searchOtherDates'),
     offerRide: t('offerRide'),
+    savedRoutes: t('savedRoutes'),
+    routeRemoved: t('routeRemoved'),
+    routeRemoveError: t('routeRemoveError'),
+    gotIt: t('gotIt'),
+    quickGuide: t('quickGuide'),
+    howItWorksTitle: t('howItWorks.title'),
+    howItWorksStep1: t('howItWorks.step1.title'),
+    howItWorksStep2: t('howItWorks.step2.title'),
+    howItWorksStep3: t('howItWorks.step3.title'),
+    close: tCommon('close'),
     yourTrips: t('yourTrips'),
     departuresConfirmed: t('departuresConfirmed'),
     feature1Title: t('feature1Title'),

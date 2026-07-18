@@ -41,6 +41,8 @@
   "home": {
     "heroBadge": "ANDAMUS",
     "heroTitle": "Passaggi in Sardegna.",
+    "heroEyebrow": "Passaggi in Sardegna",
+    "heroHeadline": "Trova un passaggio.",
     "heroTitleHighlight": "insieme.",
     "heroDescription": "Trova o offri un passaggio in tutta l'isola. Risparmi, viaggi in compagnia e riduci le emissioni.",
     "heroFree": "Gratis.",
@@ -104,6 +106,7 @@
     "yourTrips": "I tuoi viaggi",
     "departuresConfirmed": "Partenze confermate per il",
     "savedRoutes": "Tratte salvate",
+    "gotIt": "Ho capito",
     "routeRemoved": "Tratta rimossa",
     "routeRemoveError": "Errore durante la rimozione",
     "feature1Title": "Risparmia",
@@ -113,7 +116,8 @@
     "feature3Title": "Diretto",
     "feature3Description": "Parli direttamente con conducente e passeggeri, senza intermediari.",
     "ctaTitle": "Hai posti liberi in auto?",
-    "ctaDescription": "Pubblica un passaggio e dividi le spese di viaggio."
+    "ctaDescription": "Pubblica un passaggio e dividi le spese di viaggio.",
+    "quickGuide": "Guida rapida"
   },
   "search": {
     "title": "Cerca un passaggio",

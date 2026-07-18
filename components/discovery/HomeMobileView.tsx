@@ -36,6 +36,8 @@ interface HomeMobileViewProps {
   loading: boolean
   locale: string
   translations: {
+    heroEyebrow: string
+    heroHeadline: string
     heroFrom: string
     heroTo: string
     heroDate: string
@@ -43,11 +45,22 @@ interface HomeMobileViewProps {
     heroCityPlaceholder: string
     heroFromPlaceholder: string
     todayRides: string
+    today: string
     seeAll: string
     free: string
     noRidesToday: string
     searchOtherDates: string
     offerRide: string
+    savedRoutes: string
+    routeRemoved: string
+    routeRemoveError: string
+    gotIt: string
+    quickGuide: string
+    howItWorksTitle: string
+    howItWorksStep1: string
+    howItWorksStep2: string
+    howItWorksStep3: string
+    close: string
   }
   savedRoutes: Array<{ id: string; from_city: string; to_city: string }>
   router: { push: (url: string) => void; refresh: () => void }
@@ -87,8 +100,8 @@ function HomeMobileView({
     <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
       <main className="flex-1 overflow-x-hidden px-4 sm:px-6 pb-8">
         <header className="pt-6 pb-8">
-          <p className="text-eyebrow">// passaggi in sardegna</p>
-          <h1 className="mt-3 font-h2 heading-editorial text-fg">trova un passaggio.</h1>
+          <p className="text-eyebrow">{"// "}{t.heroEyebrow}</p>
+          <h1 className="mt-3 font-h2 heading-editorial text-fg">{t.heroHeadline}</h1>
         </header>
 
         <form onSubmit={onSubmit} className="space-y-3 border border-line rounded-[var(--radius)] bg-surface p-5">
@@ -138,16 +151,16 @@ function HomeMobileView({
                 Analytics.trackEvent("onboarding_skipped")
               }}
               className="float-right text-dim hover:text-muted transition-colors"
-              aria-label="Chiudi"
+              aria-label={t.close}
             >
               <X size={18} strokeWidth={1.5} />
             </button>
-            <p className="text-eyebrow mb-2">// guida rapida</p>
-            <h3 className="font-semibold text-fg mb-3">come funziona andamus</h3>
+            <p className="text-eyebrow mb-2">{"// "}{t.quickGuide}</p>
+            <h3 className="font-semibold text-fg mb-3">{t.howItWorksTitle}</h3>
             <ol className="space-y-2 text-sm text-muted list-decimal list-inside">
-              <li>cerca partenza e destinazione</li>
-              <li>prenota e scrivi in chat</li>
-              <li>condividi le spese del viaggio</li>
+              <li>{t.howItWorksStep1}</li>
+              <li>{t.howItWorksStep2}</li>
+              <li>{t.howItWorksStep3}</li>
             </ol>
             <Button
               type="button"
@@ -160,14 +173,14 @@ function HomeMobileView({
                 Analytics.trackEvent("onboarding_completed")
               }}
             >
-              ho capito
+              {t.gotIt}
             </Button>
           </section>
         )}
 
         {savedRoutes.length > 0 && (
           <section className="mt-8">
-            <p className="text-eyebrow mb-3">// le tue tratte</p>
+            <p className="text-eyebrow mb-3">{"// "}{t.savedRoutes}</p>
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {savedRoutes.map((route) => (
                 <div
@@ -196,11 +209,11 @@ function HomeMobileView({
                       try {
                         const res = await deleteSavedRoute(route.id)
                         if (res.success) {
-                          toast.success("Tratta rimossa")
+                          toast.success(t.routeRemoved)
                           router.refresh()
                         }
                       } catch {
-                        toast.error("Errore durante la rimozione")
+                        toast.error(t.routeRemoveError)
                       }
                     }}
                     className="text-dim hover:text-bad transition-colors"
@@ -243,7 +256,7 @@ function HomeMobileView({
         <section className="mt-10">
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-eyebrow">// oggi</p>
+              <p className="text-eyebrow">{"// "}{t.today}</p>
               <h2 className="mt-1 font-semibold text-fg">{t.todayRides}</h2>
             </div>
             <Link
