@@ -255,7 +255,7 @@ export function PostActionModal({
               <div className="w-10 h-1 rounded-full bg-white/20" />
             </div>
 
-            <div className="bg-[#131313] border border-white/10 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            <div className="bg-surface border border-white/10 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
               {/* Header */}
               <div className="relative px-6 pt-5 pb-4">
                 <button

@@ -41,7 +41,7 @@
   "home": {
     "heroBadge": "ANDAMUS",
     "heroTitle": "Passaggi in Sardegna.",
-    "heroTitleHighlight": "",
+    "heroTitleHighlight": "insieme.",
     "heroDescription": "Trova o offri un passaggio in tutta l'isola. Risparmi, viaggi in compagnia e riduci le emissioni.",
     "heroFree": "Gratis.",
     "heroFrom": "Da",
@@ -51,7 +51,7 @@
     "heroToday": "Oggi",
     "heroTomorrow": "Domani",
     "heroThisWeek": "Questa settimana",
-    "heroSubtitle": "",
+    "heroSubtitle": "Il carpooling dei sardi: risparmi, viaggi in compagnia e riduci le emissioni.",
     "heroFromPlaceholder": "Partenza",
     "heroCityPlaceholder": "Seleziona città",
     "welcomeBack": "Bentornato",
@@ -553,7 +553,9 @@
     "verifying": "Verifica in corso...",
     "verify": "Verifica",
     "changeNumber": "Cambia numero",
-    "streakActive": "🔥 Serie attiva: {count} settimane"
+    "streakActive": "🔥 Serie attiva: {count} settimane",
+    "memberSince": "Membro da {age}",
+    "pointsBadge": "{points} punti"
   },
   "chat": {
     "messagePlaceholder": "Scrivi un messaggio...",
@@ -1086,7 +1088,9 @@
     "subtitle": "Guadagnate entrambi 25 punti bonus!",
     "title": "Invita amici",
     "userFallback": "Utente",
-    "yourLink": "Il tuo link personale"
+    "yourLink": "Il tuo link personale",
+    "inviteFriends": "Invita i tuoi amici",
+    "share": "Condividi"
   },
   "onboarding": {
     "flow": {

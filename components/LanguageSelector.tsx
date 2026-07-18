@@ -47,13 +47,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
 
   if (!mounted) {
     return (
-      <button
-        className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-          isHome
-            ? "text-white/70"
-            : "text-gray-500"
-        }`}
-      >
+      <button className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors">
         <span className="text-lg">🇮🇹</span>
       </button>
     );
@@ -63,11 +57,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-          isHome
-            ? "text-white/70 hover:bg-white/10 hover:text-white"
-            : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-        }`}
+        className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
         title="Cambia lingua / Change language / Sprache ändern"
       >
         <span className="text-lg">{currentLanguage.flag}</span>
@@ -88,11 +78,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className={`absolute right-0 z-50 mt-2 w-48 rounded-xl border shadow-lg ${
-                isHome
-                  ? "border-white/10 bg-[#111111]"
-                  : "border-gray-200 bg-white"
-              }`}
+              className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-white/10 bg-elevated shadow-lg"
             >
               <div className="py-2">
                 {languages.map((language) => (
@@ -100,11 +86,7 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
                     key={language.code}
                     href={getHref(language.code)}
                     onClick={() => handleLanguageChange(language.code)}
-                    className={`flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors ${
-                      isHome
-                        ? "text-white hover:bg-white/10"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
+                    className="flex w-full items-center justify-between px-4 py-2.5 text-sm text-fg transition-colors hover:bg-white/10"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">{language.flag}</span>

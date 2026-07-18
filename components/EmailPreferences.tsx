@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, Check, Loader2 } from "lucide-react";
+import { Mail, Check, Loader2, Inbox, CalendarCheck, MessageCircle, Bell, Megaphone } from "lucide-react";
 import { toast } from "sonner";
 
 interface EmailPreferencesProps {
@@ -18,11 +18,11 @@ interface Preferences {
 }
 
 const preferenceOptions = [
-  { key: "email_booking_requests", label: "Richieste di passaggio", icon: "✉️" },
-  { key: "email_booking_confirmed", label: "Conferme prenotazione", icon: "✅" },
-  { key: "email_new_messages", label: "Nuovi messaggi", icon: "💬" },
-  { key: "email_ride_reminders", label: "Promemoria corse", icon: "⏰" },
-  { key: "email_marketing", label: "Aggiornamenti Andamus", icon: "📢" },
+  { key: "email_booking_requests", label: "Richieste di passaggio", Icon: Inbox },
+  { key: "email_booking_confirmed", label: "Conferme di prenotazione", Icon: CalendarCheck },
+  { key: "email_new_messages", label: "Nuovi messaggi", Icon: MessageCircle },
+  { key: "email_ride_reminders", label: "Promemoria corse", Icon: Bell },
+  { key: "email_marketing", label: "Novità da Andamus", Icon: Megaphone },
 ] as const;
 
 export function EmailPreferences({ userId }: EmailPreferencesProps) {
@@ -91,10 +91,10 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
 
   if (loading) {
     return (
-      <div className="bg-surface-container rounded-2xl p-6">
+      <div className="bg-surface-2 rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <Mail className="w-5 h-5 text-primary" />
-          <h3 className="font-bold text-on-surface">Preferenze Notifiche Email</h3>
+          <h3 className="font-bold text-fg">Notifiche email</h3>
         </div>
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
@@ -106,21 +106,21 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
   }
 
   return (
-    <div className="bg-surface-container rounded-2xl p-6">
+    <div className="bg-surface-2 rounded-2xl p-6">
       <div className="flex items-center gap-3 mb-6">
         <Mail className="w-5 h-5 text-primary" />
-        <h3 className="font-bold text-on-surface">Preferenze Notifiche Email</h3>
+        <h3 className="font-bold text-fg">Notifiche email</h3>
       </div>
 
       <div className="space-y-3 mb-6">
         {preferenceOptions.map((option) => (
           <label
             key={option.key}
-            className="flex items-center justify-between p-4 bg-surface-container-high rounded-xl cursor-pointer hover:bg-surface-container-highest transition-colors"
+            className="flex items-center justify-between p-4 bg-elevated rounded-xl cursor-pointer hover:bg-elevated transition-colors"
           >
             <div className="flex items-center gap-3">
-              <span className="text-xl">{option.icon}</span>
-              <span className="text-on-surface">{option.label}</span>
+              <option.Icon className="w-5 h-5 text-muted" />
+              <span className="text-fg">{option.label}</span>
             </div>
             <div
               className={`w-12 h-6 rounded-full relative transition-colors ${
@@ -141,7 +141,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="w-full py-3 bg-primary text-on-primary font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full py-3 bg-primary text-accent-fg font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {saving ? (
           <>

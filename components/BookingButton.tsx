@@ -193,7 +193,7 @@ export function BookingButton({
     return (
       <button
         disabled
-        className="w-full h-14 bg-surface-container-highest text-on-surface-variant rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70"
+        className="w-full h-14 bg-elevated text-muted rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70"
       >
         <Loader2 className="w-5 h-5 animate-spin" />
         <span>{t('checking')}</span>
@@ -204,7 +204,7 @@ export function BookingButton({
   // Driver viewing their own ride
   if (currentUserId === driverId) {
     return (
-      <div className="w-full h-14 bg-surface-container-highest/50 text-on-surface-variant rounded-2xl font-bold flex items-center justify-center gap-2 border-2 border-dashed border-outline-variant">
+      <div className="w-full h-14 bg-elevated/50 text-muted rounded-2xl font-bold flex items-center justify-center gap-2 border-2 border-dashed border-line">
         <Car className="w-5 h-5" />
         <span>{t('yourRide')}</span>
       </div>
@@ -216,7 +216,7 @@ export function BookingButton({
     return (
       <button
         disabled
-        className="w-full h-14 bg-error/10 text-error rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70"
+        className="w-full h-14 bg-bad/10 text-bad rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-70"
       >
         <XCircle className="w-5 h-5" />
         <span>{t('seatsFull')}</span>
@@ -241,7 +241,7 @@ export function BookingButton({
       return (
         <Link
           href={`/${locale}/chat/${bookingId}`}
-          className="w-full h-14 bg-tertiary/10 text-tertiary border-2 border-tertiary/30 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-tertiary/20 transition-colors"
+          className="w-full h-14 bg-ok/10 text-ok border-2 border-ok/30 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-ok/20 transition-colors"
         >
           <CheckCircle2 className="w-5 h-5" />
           <span>{t('bookingConfirmed')}</span>
@@ -252,7 +252,7 @@ export function BookingButton({
       return (
         <button
           disabled
-          className="w-full h-14 bg-error/10 text-error/60 rounded-2xl font-bold flex items-center justify-center gap-2"
+          className="w-full h-14 bg-bad/10 text-bad/60 rounded-2xl font-bold flex items-center justify-center gap-2"
         >
           <XCircle className="w-5 h-5" />
           <span>{t('requestRejected')}</span>
@@ -269,8 +269,8 @@ export function BookingButton({
             w-full h-14 rounded-2xl font-bold flex items-center justify-center gap-2
             transition-all duration-300 transform active:scale-95
             ${variant === "mobile" 
-              ? "bg-primary text-on-primary shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02]" 
-              : "bg-primary text-on-primary shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
+              ? "bg-primary text-accent-fg shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02]" 
+              : "bg-primary text-accent-fg shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
             }
             disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none
           `}

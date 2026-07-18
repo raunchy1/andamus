@@ -61,10 +61,10 @@ export function MeetYourRide({
             <Sparkles className="w-4 h-4 text-[#4FB3C9]" />
           </div>
           <div>
-            <h3 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40">
+            <h3 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-fg/40">
               Il tuo viaggio
             </h3>
-            <p className="font-headline font-bold text-xl text-on-surface">
+            <p className="font-headline font-bold text-xl text-fg">
               <GradientText>Ecco la tua auto</GradientText>
             </p>
           </div>
@@ -84,9 +84,9 @@ export function MeetYourRide({
               />
             </div>
           ) : (
-            <div className="mx-5 mt-5 h-40 rounded-2xl bg-surface-container-high flex flex-col items-center justify-center gap-2">
-              <Car className="w-10 h-10 text-on-surface/20" />
-              <p className="text-xs text-on-surface/30">Nessuna foto disponibile</p>
+            <div className="mx-5 mt-5 h-40 rounded-2xl bg-elevated flex flex-col items-center justify-center gap-2">
+              <Car className="w-10 h-10 text-fg/20" />
+              <p className="text-xs text-fg/30">Nessuna foto disponibile</p>
             </div>
           )}
 
@@ -94,14 +94,14 @@ export function MeetYourRide({
           <div className="p-5">
             {/* Name + specs row */}
             <div className="mb-4">
-              <h4 className="font-headline font-bold text-2xl text-on-surface mb-1">
+              <h4 className="font-headline font-bold text-2xl text-fg mb-1">
                 {vehicle.make_name} {vehicle.model_name}
               </h4>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-semibold text-on-surface/60">{vehicle.year}</span>
+                <span className="text-sm font-semibold text-fg/60">{vehicle.year}</span>
                 {vehicle.color && (
                   <>
-                    <span className="text-on-surface/30">·</span>
+                    <span className="text-fg/30">·</span>
                     <div className="flex items-center gap-1.5">
                       {vehicle.color_hex && (
                         <div
@@ -109,20 +109,20 @@ export function MeetYourRide({
                           style={{ backgroundColor: vehicle.color_hex }}
                         />
                       )}
-                      <span className="text-sm font-semibold text-on-surface/60">{vehicle.color}</span>
+                      <span className="text-sm font-semibold text-fg/60">{vehicle.color}</span>
                     </div>
                   </>
                 )}
                 {fuelLabel && (
                   <>
-                    <span className="text-on-surface/30">·</span>
-                    <span className="text-sm font-semibold text-on-surface/60">{fuelLabel}</span>
+                    <span className="text-fg/30">·</span>
+                    <span className="text-sm font-semibold text-fg/60">{fuelLabel}</span>
                   </>
                 )}
                 {transLabel && (
                   <>
-                    <span className="text-on-surface/30">·</span>
-                    <span className="text-sm font-semibold text-on-surface/60">{transLabel}</span>
+                    <span className="text-fg/30">·</span>
+                    <span className="text-sm font-semibold text-fg/60">{transLabel}</span>
                   </>
                 )}
               </div>
@@ -133,22 +133,22 @@ export function MeetYourRide({
               {vehicle.seats_available && (
                 <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
                   <Users className="w-5 h-5 text-[#4FB3C9]" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40">Posti</p>
-                  <p className="font-bold text-on-surface">{vehicle.seats_available}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Posti</p>
+                  <p className="font-bold text-fg">{vehicle.seats_available}</p>
                 </div>
               )}
               {vehicle.fuel_type && (
                 <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
                   <Fuel className="w-5 h-5 text-[#4FB3C9]" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40">Motore</p>
-                  <p className="font-bold text-on-surface text-center text-sm">{fuelLabel}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Motore</p>
+                  <p className="font-bold text-fg text-center text-sm">{fuelLabel}</p>
                 </div>
               )}
               {vehicle.transmission && (
                 <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
                   <Settings className="w-5 h-5 text-[#4FB3C9]" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface/40">Cambio</p>
-                  <p className="font-bold text-on-surface text-center text-sm">{transLabel}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Cambio</p>
+                  <p className="font-bold text-fg text-center text-sm">{transLabel}</p>
                 </div>
               )}
             </div>
@@ -173,8 +173,8 @@ export function MeetYourRide({
               )}
               {vehicle.rides_count > 0 && (
                 <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-                  <Car className="w-3.5 h-3.5 text-on-surface/50" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface/50">
+                  <Car className="w-3.5 h-3.5 text-fg/50" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-fg/50">
                     {vehicle.rides_count} corse effettuate
                   </span>
                 </div>
@@ -184,7 +184,7 @@ export function MeetYourRide({
             {/* Description */}
             {vehicle.description && (
               <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 mb-4">
-                <p className="text-sm text-on-surface/70 leading-relaxed italic">
+                <p className="text-sm text-fg/70 leading-relaxed italic">
                   &ldquo;{vehicle.description}&rdquo;
                 </p>
               </div>
@@ -193,14 +193,14 @@ export function MeetYourRide({
             {/* Comfort features */}
             {featureIcons.length > 0 && (
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface/40 mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-2">
                   Comfort e dotazioni
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {featureIcons.map((feature) => (
                     <span
                       key={feature.key}
-                      className="inline-flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-3 py-1.5 rounded-full text-sm text-on-surface/70"
+                      className="inline-flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-3 py-1.5 rounded-full text-sm text-fg/70"
                     >
                       <span>{feature.icon}</span>
                       <span className="text-xs font-medium">
@@ -229,7 +229,7 @@ interface VehicleBadgeProps {
 
 export function VehicleBadge({ makeName, modelName, year, color }: VehicleBadgeProps) {
   return (
-    <div className="flex items-center gap-1.5 text-on-surface/60 text-sm">
+    <div className="flex items-center gap-1.5 text-fg/60 text-sm">
       <Car className="w-3.5 h-3.5" />
       <span>
         {makeName} {modelName} {year}

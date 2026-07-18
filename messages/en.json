@@ -41,7 +41,7 @@
   "home": {
     "heroBadge": "ANDAMUS",
     "heroTitle": "Rides in Sardinia.",
-    "heroTitleHighlight": "",
+    "heroTitleHighlight": "together.",
     "heroDescription": "Find or offer a ride anywhere on the island. Save money, travel together and cut emissions.",
     "heroFree": "Free.",
     "heroFrom": "From",
@@ -51,7 +51,7 @@
     "heroToday": "Today",
     "heroTomorrow": "Tomorrow",
     "heroThisWeek": "This week",
-    "heroSubtitle": "",
+    "heroSubtitle": "Sardinia's own carpooling: save money, travel together, cut emissions.",
     "heroFromPlaceholder": "Departure",
     "heroCityPlaceholder": "Select a city",
     "welcomeBack": "Welcome back",
@@ -553,7 +553,9 @@
     "verifying": "Verifying...",
     "verify": "Verify",
     "changeNumber": "Change number",
-    "streakActive": "🔥 Active streak: {count} weeks"
+    "streakActive": "🔥 Active streak: {count} weeks",
+    "memberSince": "Member for {age}",
+    "pointsBadge": "{points} points"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -1086,7 +1088,9 @@
     "subtitle": "You both get 25 bonus points!",
     "title": "Invite friends",
     "userFallback": "User",
-    "yourLink": "Your personal link"
+    "yourLink": "Your personal link",
+    "inviteFriends": "Invite your friends",
+    "share": "Share"
   },
   "onboarding": {
     "flow": {

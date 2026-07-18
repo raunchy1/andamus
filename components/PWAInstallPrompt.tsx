@@ -99,7 +99,7 @@ export function PWAInstallPrompt() {
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed bottom-20 sm:bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
       >
-        <div className="bg-[#131313]/90 border border-white/10 rounded-3xl p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl flex items-center gap-4">
+        <div className="bg-surface/90 border border-white/10 rounded-3xl p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl flex items-center gap-4">
           <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 flex items-center justify-center border border-[#4FB3C9]/20">
             <Smartphone className="w-6 h-6 text-[#4FB3C9]" />
           </div>

@@ -46,7 +46,7 @@ export function StripeConnectBanner() {
     return (
       <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 flex items-center gap-3">
         <Loader2 className="w-5 h-5 animate-spin text-[#4FB3C9]" />
-        <span className="text-sm text-on-surface/60">Verifica pagamenti...</span>
+        <span className="text-sm text-fg/60">Verifica pagamenti...</span>
       </div>
     );
   }
@@ -56,8 +56,8 @@ export function StripeConnectBanner() {
       <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-5 flex items-center gap-3">
         <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0" />
         <div>
-          <p className="text-sm font-semibold text-on-surface">Pagamenti attivi</p>
-          <p className="text-xs text-on-surface/50">Puoi ricevere pagamenti per le tue corse a pagamento.</p>
+          <p className="text-sm font-semibold text-fg">Pagamenti attivi</p>
+          <p className="text-xs text-fg/50">Puoi ricevere pagamenti per le tue corse a pagamento.</p>
         </div>
       </div>
     );
@@ -68,10 +68,10 @@ export function StripeConnectBanner() {
       <div className="flex items-start gap-3">
         <CreditCard className="w-5 h-5 text-[#4FB3C9] shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-semibold text-on-surface">
+          <p className="text-sm font-semibold text-fg">
             {status === "pending" ? "Completa la configurazione pagamenti" : "Attiva i pagamenti per le tue corse"}
           </p>
-          <p className="text-xs text-on-surface/50 mt-1">
+          <p className="text-xs text-fg/50 mt-1">
             {status === "pending"
               ? "Hai iniziato l'attivazione ma non l'hai completata. Clicca per continuare."
               : "Connetti il tuo conto Stripe per ricevere pagamenti dai passeggeri (Andamusu trattiene il 10%)."}

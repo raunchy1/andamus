@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const SUPPORTED_LOCALES = ["it", "en"] as const;
+const SUPPORTED_LOCALES = ["it", "en", "de"] as const;
 type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 function isSupportedLocale(value: string): value is SupportedLocale {
@@ -28,16 +28,17 @@ function isSupportedLocale(value: string): value is SupportedLocale {
 export const metadata: Metadata = {
   title: "Andamus - Carpooling in Sardegna",
   description:
-    "Trova e offri passaggi in Sardegna. Semplice, diretto, tra sardi.",
+    "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme, risparmiare e ridurre le emissioni.",
   keywords: [
     "carpooling",
-    "passaggi",
     "Sardegna",
-    "Sardinia",
-    "autostop",
+    "passaggi",
     "viaggi",
+    "condivisione",
+    "auto",
+    "trasporto",
   ],
-  authors: [{ name: "Andamus" }],
+  authors: [{ name: "Andamus Team" }],
   openGraph: {
     type: "website",
     locale: "it_IT",
@@ -45,10 +46,10 @@ export const metadata: Metadata = {
     siteName: "Andamus",
     title: "Andamus - Carpooling in Sardegna",
     description:
-      "Trova e offri passaggi in Sardegna. Semplice e diretto.",
+      "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme.",
     images: [
       {
-        url: "https://andamus.it/og-image.png",
+        url: "https://andamus.it/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Andamus - Carpooling in Sardegna",
@@ -59,8 +60,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Andamus - Carpooling in Sardegna",
     description:
-      "Trova e offri passaggi in Sardegna.",
-    images: ["https://andamus.it/og-image.png"],
+      "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme.",
+    images: ["https://andamus.it/og-image.jpg"],
   },
   appleWebApp: {
     capable: true,
@@ -96,8 +97,8 @@ async function getLocaleFromPath(): Promise<SupportedLocale> {
     const invokedPath = headersList.get("x-invoke-path");
     const pathname = nextUrl || invokedPath || "";
 
-    // Match /it/..., /en/...
-    const match = pathname.match(/^\/(it|en)(?:\/|$)/);
+    // Match /it/..., /en/..., /de/...
+    const match = pathname.match(/^\/(it|en|de)(?:\/|$)/);
     if (match && isSupportedLocale(match[1])) {
       return match[1];
     }
@@ -121,6 +122,16 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <>
+            <link
+              rel="preconnect"
+              href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+              crossOrigin="anonymous"
+            />
+            <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+          </>
+        )}
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
 
         <meta name="apple-mobile-web-app-capable" content="yes" />

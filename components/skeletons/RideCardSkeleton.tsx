@@ -1,6 +1,6 @@
 export function RideCardSkeleton() {
   return (
-    <div className="bg-surface-container-high rounded-2xl p-4 animate-pulse">
+    <div className="bg-elevated rounded-2xl p-4 animate-pulse">
       <div className="flex items-center gap-3 mb-3">
         <div className="w-10 h-10 rounded-full bg-white/10" />
         <div className="flex-1 space-y-2">

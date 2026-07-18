@@ -48,21 +48,12 @@ interface HomeMobileViewProps {
     noRidesToday: string
     searchOtherDates: string
     offerRide: string
-    headline: string
-    close: string
-    savedRoutes: string
-    routeRemoved: string
-    routeRemoveError: string
-    howItWorksTitle: string
-    howItWorksStep1: string
-    howItWorksStep2: string
-    howItWorksStep3: string
   }
-  savedRoutes?: Array<{ id: string; from_city: string; to_city: string }>
+  savedRoutes: Array<{ id: string; from_city: string; to_city: string }>
   router: { push: (url: string) => void; refresh: () => void }
-  suggestion?: { from: string; to: string; reason: string } | null
-  showInlineOnboarding?: boolean
-  setShowInlineOnboarding?: (value: boolean) => void
+  suggestion: { from: string; to: string; reason: string } | null
+  showInlineOnboarding: boolean
+  setShowInlineOnboarding: (value: boolean) => void
 }
 
 function HomeMobileView({
@@ -74,11 +65,11 @@ function HomeMobileView({
   loading,
   locale,
   translations: t,
-  savedRoutes = [],
+  savedRoutes,
   router,
-  suggestion = null,
-  showInlineOnboarding = false,
-  setShowInlineOnboarding = () => {},
+  suggestion,
+  showInlineOnboarding,
+  setShowInlineOnboarding,
 }: HomeMobileViewProps) {
   const today = new Date().toISOString().split("T")[0]
   const [date, setDate] = useState(today)
@@ -96,8 +87,8 @@ function HomeMobileView({
     <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
       <main className="flex-1 overflow-x-hidden px-4 sm:px-6 pb-8">
         <header className="pt-6 pb-8">
-          <p className="text-eyebrow">ANDAMUS</p>
-          <h1 className="mt-3 font-h2 heading-editorial text-fg">{t.headline}</h1>
+          <p className="text-eyebrow">// passaggi in sardegna</p>
+          <h1 className="mt-3 font-h2 heading-editorial text-fg">trova un passaggio.</h1>
         </header>
 
         <form onSubmit={onSubmit} className="space-y-3 border border-line rounded-[var(--radius)] bg-surface p-5">
@@ -147,16 +138,16 @@ function HomeMobileView({
                 Analytics.trackEvent("onboarding_skipped")
               }}
               className="float-right text-dim hover:text-muted transition-colors"
-              aria-label={t.close}
+              aria-label="Chiudi"
             >
               <X size={18} strokeWidth={1.5} />
             </button>
-            <p className="text-eyebrow mb-2">{t.howItWorksTitle}</p>
-            <h3 className="font-semibold text-fg mb-3">In tre passi</h3>
+            <p className="text-eyebrow mb-2">// guida rapida</p>
+            <h3 className="font-semibold text-fg mb-3">come funziona andamus</h3>
             <ol className="space-y-2 text-sm text-muted list-decimal list-inside">
-              <li>{t.howItWorksStep1}</li>
-              <li>{t.howItWorksStep2}</li>
-              <li>{t.howItWorksStep3}</li>
+              <li>cerca partenza e destinazione</li>
+              <li>prenota e scrivi in chat</li>
+              <li>condividi le spese del viaggio</li>
             </ol>
             <Button
               type="button"
@@ -169,14 +160,14 @@ function HomeMobileView({
                 Analytics.trackEvent("onboarding_completed")
               }}
             >
-              Capito
+              ho capito
             </Button>
           </section>
         )}
 
         {savedRoutes.length > 0 && (
           <section className="mt-8">
-            <p className="text-eyebrow mb-3">{t.savedRoutes}</p>
+            <p className="text-eyebrow mb-3">// le tue tratte</p>
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {savedRoutes.map((route) => (
                 <div
@@ -205,11 +196,11 @@ function HomeMobileView({
                       try {
                         const res = await deleteSavedRoute(route.id)
                         if (res.success) {
-                          toast.success(t.routeRemoved)
+                          toast.success("Tratta rimossa")
                           router.refresh()
                         }
                       } catch {
-                        toast.error(t.routeRemoveError)
+                        toast.error("Errore durante la rimozione")
                       }
                     }}
                     className="text-dim hover:text-bad transition-colors"
@@ -314,7 +305,7 @@ function HomeMobileView({
             href={`/${locale}/profilo`}
             className="border border-line rounded-[var(--radius-sm)] bg-surface px-4 py-5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-fg transition-colors"
           >
-            Profilo
+            profilo
           </Link>
         </div>
       </main>

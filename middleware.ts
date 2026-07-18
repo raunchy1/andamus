@@ -7,12 +7,12 @@ import { createServerClient } from "@supabase/ssr";
 import { isAdmin } from "@/lib/server/guards/admin";
 
 const intlMiddleware = createMiddleware({
-  locales: ["it", "en"],
+  locales: ["it", "en", "de"],
   defaultLocale: "it",
   localePrefix: "always",
 });
 
-const ADMIN_PAGE_REGEX = /^\/(?:it|en)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
+const ADMIN_PAGE_REGEX = /^\/(?:it|en|de)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
 const ADMIN_API_REGEX = /^\/api\/admin(?:\/|$)/;
 const PUSH_API_REGEX = /^\/api\/push(?:\/|$)/;
 // Auth callback must bypass updateSession and intlMiddleware — the Route Handler
@@ -21,19 +21,19 @@ const PUSH_API_REGEX = /^\/api\/push(?:\/|$)/;
 const AUTH_CALLBACK_REGEX = /^\/auth\/callback(\/|$)/;
 
 const WAITLIST_MODE = process.env.NEXT_PUBLIC_WAITLIST_MODE === "true";
-const LOCALE_ROOT_REGEX = /^\/(?:it|en)?\/?$/;
+const LOCALE_ROOT_REGEX = /^\/(?:it|en|de)?\/?$/;
 
 const COMING_SOON_BYPASS = [
   "/dashboard", "/admin", "/login",
-  "/it/join", "/en/join",
-  "/it/admin", "/en/admin",
-  "/it/auth", "/en/auth",
-  "/it/verifica", "/en/verifica",
-  "/it/profilo", "/en/profilo",
-  "/it/corsa", "/en/corsa",
-  "/it/offri", "/en/offri",
-  "/it/cerca", "/en/cerca",
-  "/it/premium", "/en/premium",
+  "/it/join", "/en/join", "/de/join",
+  "/it/admin", "/en/admin", "/de/admin",
+  "/it/auth", "/en/auth", "/de/auth",
+  "/it/verifica", "/en/verifica", "/de/verifica",
+  "/it/profilo", "/en/profilo", "/de/profilo",
+  "/it/corsa", "/en/corsa", "/de/corsa",
+  "/it/offri", "/en/offri", "/de/offri",
+  "/it/cerca", "/en/cerca", "/de/cerca",
+  "/it/premium", "/en/premium", "/de/premium",
 ];
 
 function hasSupabaseAuthCookie(request: NextRequest): boolean {
@@ -79,9 +79,13 @@ export default async function middleware(request: NextRequest) {
 
   const needsSupabase = needsAuthCheck || hasSupabaseAuthCookie(request);
 
-  // ── 3. Supabase session refresh & User retrieval (ONE CALL) ──
+  // ── 3. Supabase session refresh & claims retrieval (LOCAL, no network) ──
+  // getClaims() verifies the JWT locally against cached JWKS (asymmetric keys)
+  // and only hits the network to refresh an expired session. getUser() made a
+  // full Auth API round trip on EVERY request, which dominated TTFB.
   let supabaseResponse = NextResponse.next({ request });
-  let user: import("@supabase/supabase-js").User | null = null;
+  let userId: string | null = null;
+  let userEmail: string | undefined;
 
   if (needsSupabase) {
     // We use a dedicated client for the middleware to manage cookies correctly
@@ -107,19 +111,21 @@ export default async function middleware(request: NextRequest) {
         },
       }
     );
-    
-    const { data } = await supabase.auth.getUser();
-    user = data?.user || null;
+
+    const { data } = await supabase.auth.getClaims();
+    const claims = data?.claims ?? null;
+    userId = typeof claims?.sub === "string" ? claims.sub : null;
+    userEmail = typeof claims?.email === "string" ? claims.email : undefined;
   }
 
   // ── 4. API route protection ──
   if (isAdminApi || isPushApi) {
-    if (!user?.id) {
+    if (!userId) {
       return jsonError("Authentication required", "UNAUTHORIZED", 401);
     }
 
     if (isAdminApi) {
-      const userIsAdmin = await isAdmin(user.id, user.email);
+      const userIsAdmin = await isAdmin(userId, userEmail);
       if (!userIsAdmin) {
         return jsonError("Admin access required", "FORBIDDEN", 403);
       }
@@ -130,7 +136,7 @@ export default async function middleware(request: NextRequest) {
 
   // ── 5. Admin page protection ──
   if (isAdminPage) {
-    const userIsAdmin = user?.id ? await isAdmin(user.id, user.email) : false;
+    const userIsAdmin = userId ? await isAdmin(userId, userEmail) : false;
 
     if (!userIsAdmin) {
       const locale = pathname.split("/")[1] || "it";
@@ -150,47 +156,65 @@ export default async function middleware(request: NextRequest) {
   }
 
   // ── 5.5. Onboarding flow check ──
-  if (user && !pathname.startsWith("/api/") && !AUTH_CALLBACK_REGEX.test(pathname)) {
-    try {
-      // Create a temporary client for DB check (not auth) to avoid extragetUser
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            getAll() {
-              return request.cookies.getAll();
-            },
-            setAll() {},
-          },
-        }
-      );
+  // The completed state is cached in a per-user cookie so the profiles query
+  // runs at most once per user instead of on every navigation.
+  if (userId && !pathname.startsWith("/api/") && !AUTH_CALLBACK_REGEX.test(pathname)) {
+    const localeMatch = pathname.match(/^\/(it|en|de)(?:\/|$)/);
+    const currentLocale = localeMatch ? localeMatch[1] : "it";
+    const isOnboardingPage = /^\/(?:it|en|de)?\/onboarding(?:\/|$)/.test(pathname);
+    const onboardingDone = request.cookies.get("anb_onb")?.value === userId;
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_completed")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      const localeMatch = pathname.match(/^\/(it|en)(?:\/|$)/);
-      const currentLocale = localeMatch ? localeMatch[1] : "it";
-      const isOnboardingPage = /^\/(?:it|en|de)?\/onboarding(?:\/|$)/.test(pathname);
-
-      if (profile && !profile.onboarding_completed) {
-        if (!isOnboardingPage) {
-          const redirect = NextResponse.redirect(new URL(`/${currentLocale}/onboarding`, request.url));
-          supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
-          return redirect;
-        }
-      } else if (profile && profile.onboarding_completed) {
-        if (isOnboardingPage) {
-          const redirect = NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
-          supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
-          return redirect;
-        }
+    if (onboardingDone) {
+      if (isOnboardingPage) {
+        const redirect = NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
+        supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
+        return redirect;
       }
-    } catch (onboardingErr) {
-      console.error("[middleware] Onboarding check failed:", onboardingErr);
+    } else {
+      try {
+        // Create a temporary client for DB check (not auth)
+        const supabase = createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            cookies: {
+              getAll() {
+                return request.cookies.getAll();
+              },
+              setAll() {},
+            },
+          }
+        );
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", userId)
+          .maybeSingle();
+
+        if (profile && !profile.onboarding_completed) {
+          if (!isOnboardingPage) {
+            const redirect = NextResponse.redirect(new URL(`/${currentLocale}/onboarding`, request.url));
+            supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
+            return redirect;
+          }
+        } else if (profile && profile.onboarding_completed) {
+          supabaseResponse.cookies.set("anb_onb", userId, {
+            maxAge: 60 * 60 * 24 * 30,
+            path: "/",
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+            httpOnly: true,
+          });
+          if (isOnboardingPage) {
+            const redirect = NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
+            supabaseResponse.cookies.getAll().forEach((c) => redirect.cookies.set(c.name, c.value, c));
+            return redirect;
+          }
+        }
+      } catch (onboardingErr) {
+        console.error("[middleware] Onboarding check failed:", onboardingErr);
+      }
     }
   }
 
@@ -244,7 +268,7 @@ export default async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/(it|en)/:path*",
+    "/(it|en|de)/:path*",
     "/api/admin/:path*",
     "/api/push/:path*",
     "/((?!api|_next|_vercel|monitoring|sw\.js|manifest\.json|offline|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|css|js|map|txt|xml)$).*)",

@@ -230,7 +230,7 @@ function ShareModal({
             className="relative w-full max-w-sm mx-4 mb-4 sm:mb-0"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
-            <div className="bg-[#131313] border border-white/10 rounded-2xl p-5 shadow-2xl">
+            <div className="bg-surface border border-white/10 rounded-2xl p-5 shadow-2xl">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-white">{ts("title")}</h3>
                 <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/5 transition-colors">

@@ -127,7 +127,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
               <X className="w-5 h-5" />
             </button>
 
-            <div className="relative overflow-hidden rounded-3xl bg-[#131313] border border-white/10 shadow-2xl p-8 text-center">
+            <div className="relative overflow-hidden rounded-3xl bg-surface border border-white/10 shadow-2xl p-8 text-center">
               <div className="absolute inset-0 bg-gradient-to-br from-[#4FB3C9]/10 to-transparent" />
 
               <motion.div

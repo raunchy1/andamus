@@ -65,9 +65,9 @@ export function VehicleGallery({
   // ── Empty state ──────────────────────────────────────────────────────────
   if (sortedImages.length === 0) {
     return (
-      <div className="h-48 rounded-2xl bg-surface-container-high flex flex-col items-center justify-center gap-2">
-        <Car className="w-10 h-10 text-on-surface/20" aria-hidden="true" />
-        <p className="text-xs text-on-surface/40">Nessuna foto disponibile</p>
+      <div className="h-48 rounded-2xl bg-elevated flex flex-col items-center justify-center gap-2">
+        <Car className="w-10 h-10 text-fg/20" aria-hidden="true" />
+        <p className="text-xs text-fg/40">Nessuna foto disponibile</p>
       </div>
     );
   }

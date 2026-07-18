@@ -208,7 +208,7 @@ export default function CancelBookingPage() {
           <p className="text-white/60">{t("subtitle")}</p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6 mb-6">
+        <div className="rounded-2xl border border-white/10 bg-elevated p-6 mb-6">
           <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
             {t("rideDetails")}
           </h3>
@@ -237,7 +237,7 @@ export default function CancelBookingPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#1e2a4a] p-6 mb-6">
+        <div className="rounded-2xl border border-white/10 bg-elevated p-6 mb-6">
           <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
             {t("reasonTitle")}
           </h3>
@@ -283,7 +283,7 @@ export default function CancelBookingPage() {
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder={t("detailsPlaceholder")}
-                className="w-full h-24 px-4 py-3 rounded-xl border border-white/10 bg-[#0f1729] text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-[#4FB3C9]"
+                className="w-full h-24 px-4 py-3 rounded-xl border border-white/10 bg-bg text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-[#4FB3C9]"
               />
             </div>
           )}

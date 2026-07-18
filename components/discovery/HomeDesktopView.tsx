@@ -40,14 +40,12 @@ interface HomeDesktopViewProps {
     heroCityPlaceholder: string
     heroFromPlaceholder: string
     todayRides: string
-    today: string
     seeAll: string
     departuresConfirmed: string
     free: string
     noRidesToday: string
     searchOtherDates: string
     offerRide: string
-    headline: string
   }
   router: { push: (url: string) => void }
 }
@@ -72,8 +70,9 @@ function HomeDesktopView({
       day: "numeric",
       month: "short",
     })
-    if (locale === "it") return `partenze confermate · ${formatted}`
-    return `confirmed departures · ${formatted}`
+    if (locale === "it") return `partenze confermate per ${formatted}`
+    if (locale === "de") return `bestätigte abfahrten für ${formatted}`
+    return `confirmed departures for ${formatted}`
   })()
 
   const onSubmit = (e: React.FormEvent) => {
@@ -88,8 +87,8 @@ function HomeDesktopView({
   return (
     <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
       <section className="max-w-5xl mx-auto px-6 lg:px-10 pt-12 pb-16">
-        <p className="text-eyebrow">ANDAMUS</p>
-        <h1 className="mt-4 font-hero heading-editorial text-fg">{t.headline}</h1>
+        <p className="text-eyebrow">// passaggi in sardegna</p>
+        <h1 className="mt-4 font-hero heading-editorial text-fg">trova un passaggio.</h1>
         <p className="mt-4 max-w-xl text-muted lowercase">{departuresSubtitle}</p>
 
         <form
@@ -136,7 +135,7 @@ function HomeDesktopView({
       <section className="max-w-5xl mx-auto px-6 lg:px-10 pb-20">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <p className="text-eyebrow">{t.today}</p>
+            <p className="text-eyebrow">// oggi</p>
             <h2 className="mt-2 font-h2 text-fg">{t.todayRides}</h2>
           </div>
           <Link

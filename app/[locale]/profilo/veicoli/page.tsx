@@ -123,7 +123,7 @@ export default function VehiclesPage() {
         <div className="absolute inset-x-0 top-0 px-5 pt-14 flex items-center justify-between">
           <Link
             href={`/${locale}/profilo`}
-            className="p-3 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-on-surface hover:bg-white/[0.1] transition-all"
+            className="p-3 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-fg hover:bg-white/[0.1] transition-all"
           >
             <ArrowLeft className="w-6 h-6" />
           </Link>
@@ -141,14 +141,14 @@ export default function VehiclesPage() {
         {/* Title */}
         <Reveal>
           <div className="mb-6">
-            <p className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-on-surface/40">
+            <p className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-fg/40">
               Il tuo garage
             </p>
-            <h1 className="font-headline font-extrabold text-4xl text-on-surface">
+            <h1 className="font-headline font-extrabold text-4xl text-fg">
               I tuoi <GradientText>Veicoli</GradientText>
             </h1>
             {vehicles.length > 0 && (
-              <p className="text-sm text-on-surface/50 mt-1">
+              <p className="text-sm text-fg/50 mt-1">
                 {vehicles.length} veicolo{vehicles.length !== 1 ? "i" : ""} nel tuo profilo
               </p>
             )}
@@ -174,13 +174,13 @@ export default function VehiclesPage() {
         {!loading && vehicles.length === 0 && !error && (
           <Reveal>
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-24 h-24 rounded-3xl bg-surface-container-high flex items-center justify-center mb-6">
-                <Car className="w-12 h-12 text-on-surface/20" />
+              <div className="w-24 h-24 rounded-3xl bg-elevated flex items-center justify-center mb-6">
+                <Car className="w-12 h-12 text-fg/20" />
               </div>
-              <h2 className="font-headline font-bold text-2xl text-on-surface mb-2">
+              <h2 className="font-headline font-bold text-2xl text-fg mb-2">
                 Nessun veicolo
               </h2>
-              <p className="text-on-surface/50 text-sm mb-8 max-w-xs">
+              <p className="text-fg/50 text-sm mb-8 max-w-xs">
                 Aggiungi il tuo veicolo per aumentare la fiducia dei passeggeri e personalizzare il tuo profilo.
               </p>
               <button
@@ -198,11 +198,11 @@ export default function VehiclesPage() {
                   { icon: "📈", title: "Più prenotazioni", desc: "I profili con veicolo ricevono il 40% di prenotazioni in più" },
                   { icon: "⭐", title: "Profilo completo", desc: "Raggiungi il 100% di completamento del profilo" },
                 ].map((benefit) => (
-                  <div key={benefit.icon} className="flex items-start gap-4 bg-surface-container-low rounded-2xl p-4">
+                  <div key={benefit.icon} className="flex items-start gap-4 bg-surface rounded-2xl p-4">
                     <span className="text-2xl">{benefit.icon}</span>
                     <div>
-                      <p className="font-bold text-on-surface">{benefit.title}</p>
-                      <p className="text-sm text-on-surface/50">{benefit.desc}</p>
+                      <p className="font-bold text-fg">{benefit.title}</p>
+                      <p className="text-sm text-fg/50">{benefit.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -235,7 +235,7 @@ export default function VehiclesPage() {
           <Reveal>
             <button
               onClick={() => setShowWizard(true)}
-              className="w-full mt-5 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-outline-variant/30 rounded-2xl text-on-surface/50 hover:border-primary/30 hover:text-primary transition-all"
+              className="w-full mt-5 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-line/30 rounded-2xl text-fg/50 hover:border-primary/30 hover:text-primary transition-all"
             >
               <Plus className="w-5 h-5" />
               <span className="font-semibold">Aggiungi un altro veicolo</span>
@@ -246,9 +246,9 @@ export default function VehiclesPage() {
         {/* Trust info */}
         {!loading && vehicles.length > 0 && (
           <Reveal>
-            <div className="mt-8 bg-surface-container-low rounded-3xl p-5">
-              <p className="font-bold text-sm text-on-surface mb-1">💡 Suggerimento</p>
-              <p className="text-sm text-on-surface/60">
+            <div className="mt-8 bg-surface rounded-3xl p-5">
+              <p className="font-bold text-sm text-fg mb-1">💡 Suggerimento</p>
+              <p className="text-sm text-fg/60">
                 Aggiungi almeno 3 foto del tuo veicolo e una descrizione per raggiungere
                 il <span className="font-bold text-primary">punteggio massimo</span> e aumentare la fiducia dei passeggeri.
               </p>

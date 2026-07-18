@@ -140,7 +140,7 @@ export default function LaunchPage() {
             <span className="text-sm font-medium text-[#e5e2e1]/70">{t("progress")}</span>
             <span className="text-sm font-bold text-[#4FB3C9]">{progress}%</span>
           </div>
-          <div className="h-3 bg-[#1c1b1b] rounded-full overflow-hidden">
+          <div className="h-3 bg-surface-2 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
@@ -169,8 +169,8 @@ export default function LaunchPage() {
                 transition={{ delay: 0.5 + index * 0.1 }}
                 className={`relative p-5 rounded-2xl border transition-all ${
                   isCompleted
-                    ? "bg-[#1c1b1b]/50 border-[#4FB3C9]/30"
-                    : "bg-[#1c1b1b] border-[#2a2a2a] hover:border-[#3a3a3a]"
+                    ? "bg-surface-2/50 border-[#4FB3C9]/30"
+                    : "bg-surface-2 border-line-strong hover:border-faint"
                 }`}
               >
                 <div className="flex items-start gap-4">
