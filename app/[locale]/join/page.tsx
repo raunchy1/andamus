@@ -98,7 +98,7 @@ function JoinContent() {
 
   const handleLogin = async () => {
     if (!agreed) {
-      toast.error("Devi accettare i Termini di Servizio e la Privacy Policy per continuare.");
+      toast.error(t("termsRequired"));
       return;
     }
 
@@ -235,15 +235,18 @@ function JoinContent() {
             className="mt-1 h-4 w-4 rounded border-outline/30 bg-surface-container accent-primary cursor-pointer"
           />
           <label htmlFor="terms-checkbox" className="text-xs text-on-surface-variant leading-relaxed cursor-pointer select-none">
-            Accetto i{" "}
-            <Link href={`/${locale}/termini-e-condizioni`} className="text-primary hover:underline font-medium">
-              Termini di Servizio
-            </Link>{" "}
-            e la{" "}
-            <Link href={`/${locale}/privacy-policy`} className="text-primary hover:underline font-medium">
-              Privacy Policy
-            </Link>{" "}
-            di Andamus.
+            {t.rich("termsCheckbox", {
+              terms: (chunks) => (
+                <Link href={`/${locale}/termini-e-condizioni`} className="text-primary hover:underline font-medium">
+                  {chunks}
+                </Link>
+              ),
+              privacy: (chunks) => (
+                <Link href={`/${locale}/privacy-policy`} className="text-primary hover:underline font-medium">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </label>
         </div>
 

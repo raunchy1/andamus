@@ -49,34 +49,34 @@ export default async function AuthCodeErrorPage({
   let solutionText = "";
 
   if (reason === "oauth_error") {
-    errorTitle = locale === "it" ? "Errore di Google OAuth" : locale === "en" ? "Google OAuth Error" : "Google OAuth-Fehler";
-    errorDescription = locale === "it" 
-      ? `Google ha restituito un errore durante l'autenticazione: "${rawErrorMessage}"`
-      : `Google returned an authentication error: "${rawErrorMessage}"`;
+    errorTitle = locale === "it" ? "Accesso con Google non riuscito" : locale === "en" ? "Google sign-in failed" : "Google OAuth-Fehler";
+    errorDescription = locale === "it"
+      ? `Google ha restituito un errore durante l'accesso: "${rawErrorMessage}"`
+      : `Google returned an error while signing you in: "${rawErrorMessage}"`;
     solutionText = locale === "it"
-      ? "Verifica le impostazioni del tuo account Google o le credenziali della console Google Cloud."
-      : "Check your Google account settings or Google Cloud Console client credentials.";
+      ? "Controlla le impostazioni del tuo account Google e riprova."
+      : "Check your Google account settings and try again.";
   } else if (reason === "missing_code") {
-    errorTitle = locale === "it" ? "Codice mancante" : locale === "en" ? "Missing Auth Code" : "Autorisierungscode fehlt";
+    errorTitle = locale === "it" ? "Codice di autorizzazione mancante" : locale === "en" ? "Missing authorization code" : "Autorisierungscode fehlt";
     errorDescription = locale === "it"
       ? "Il server di autenticazione non ha fornito un codice di autorizzazione valido."
       : "The authentication server did not provide a valid authorization code.";
     solutionText = locale === "it"
-      ? "Questo accade se si accede alla pagina direttamente o se il flusso OAuth è stato interrotto prematuramente."
-      : "This happens if you access the callback page directly or the OAuth flow was terminated early.";
+      ? "Succede se apri questa pagina direttamente o se l'accesso è stato interrotto prima del completamento."
+      : "This happens if you open this page directly or the sign-in flow was interrupted before completing.";
   } else if (reason === "exchange_failed") {
-    errorTitle = locale === "it" ? "Scambio di sessione fallito" : locale === "en" ? "Session Exchange Failed" : "Sitzungsaustausch fehlgeschlagen";
+    errorTitle = locale === "it" ? "Scambio di sessione non riuscito" : locale === "en" ? "Session exchange failed" : "Sitzungsaustausch fehlgeschlagen";
     errorDescription = locale === "it"
-      ? `Non è stato possibile completare lo scambio PKCE: ${rawErrorMessage}`
-      : `The server could not verify your login verifier cookie: ${rawErrorMessage}`;
+      ? `Non è stato possibile completare la verifica della sessione: ${rawErrorMessage}`
+      : `The server could not verify your sign-in session: ${rawErrorMessage}`;
     solutionText = locale === "it"
-      ? "Questo è causato di solito da cookie bloccati, browser in incognito, o conflitti di reindirizzamento in standalone PWA. Assicurati che i cookie di terze parti siano abilitati."
-      : "This is usually caused by blocked cookies, private browsing mode, or PWA standalone redirects. Ensure third-party cookies are permitted.";
+      ? "Di solito è causato da cookie bloccati, navigazione in incognito o reindirizzamenti dell'app installata. Assicurati che i cookie siano abilitati e riprova."
+      : "This is usually caused by blocked cookies, private browsing, or redirects from the installed app. Make sure cookies are enabled and try again.";
   } else if (reason === "server_exception") {
-    errorTitle = locale === "it" ? "Eccezione interna" : locale === "en" ? "Server Exception" : "Serverausnahme";
+    errorTitle = locale === "it" ? "Errore interno del server" : locale === "en" ? "Unexpected server error" : "Serverausnahme";
     errorDescription = locale === "it"
-      ? `Si è verificato un errore inaspettato sul server durante lo scambio di token: ${rawErrorMessage}`
-      : `An unexpected server exception occurred during token exchange: ${rawErrorMessage}`;
+      ? `Si è verificato un errore imprevisto durante l'accesso: ${rawErrorMessage}`
+      : `An unexpected error occurred while signing you in: ${rawErrorMessage}`;
   }
 
   return (
@@ -125,7 +125,7 @@ export default async function AuthCodeErrorPage({
             className="flex items-center justify-center gap-2 rounded-xl bg-[#4FB3C9] px-6 py-4 text-sm font-bold text-white hover:bg-[#3d9db3] transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(79, 179, 201,0.4)]"
           >
             <RefreshCw className="w-4 h-4" />
-            <span>{locale === "it" ? "Riprova l'accesso" : locale === "en" ? "Retry Login" : "Erneut versuchen"}</span>
+            <span>{locale === "it" ? "Riprova ad accedere" : locale === "en" ? "Try signing in again" : "Erneut versuchen"}</span>
           </Link>
 
           <Link

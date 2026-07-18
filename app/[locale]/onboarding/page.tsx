@@ -3,6 +3,7 @@
 import { useState, useEffect, useTransition, use } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Loader2 } from "lucide-react";
@@ -48,6 +49,7 @@ interface OnboardingData {
 export default function OnboardingPage({ params }: { params: Promise<{ locale: string }> }) {
   const router = useRouter();
   const { locale } = use(params);
+  const t = useTranslations("onboarding.flow");
   const supabase = createClient();
   const [isPending, startTransition] = useTransition();
 
@@ -159,7 +161,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ locale: s
 
     if (error) {
       console.error("Supabase Profile Update Error:", error.message);
-      toast.error("Salvataggio non riuscito. Controlla la connessione.");
+      toast.error(t("saveError"));
       return;
     }
 
@@ -185,7 +187,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ locale: s
 
     if (error) {
       console.error("Supabase Role Update Error:", error.message);
-      toast.error("Salvataggio non riuscito. Controlla la connessione.");
+      toast.error(t("saveError"));
       return;
     }
 
@@ -208,7 +210,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ locale: s
 
     if (error) {
       console.error("Supabase Notifications Update Error:", error.message);
-      toast.error("Salvataggio non riuscito. Controlla la connessione.");
+      toast.error(t("saveError"));
       return;
     }
 
@@ -244,8 +246,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ locale: s
       {step <= 4 && (
         <div className="flex w-full max-w-md flex-col gap-2 px-6 pt-6">
           <div className="flex items-center justify-between font-mono text-[10px] text-dim">
-            <span>step {step} di 4</span>
-            <span>{Math.round((step / 4) * 100)}% completato</span>
+            <span>{t("stepIndicator", { step, total: 4 })}</span>
+            <span>{t("percentComplete", { percent: Math.round((step / 4) * 100) })}</span>
           </div>
           <ProgressBar currentStep={step} totalSteps={4} />
         </div>

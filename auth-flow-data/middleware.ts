@@ -6,21 +6,21 @@ import { createServerClient } from "@supabase/ssr";
 import { isAdmin } from "@/lib/server/guards/admin";
 
 const intlMiddleware = createMiddleware({
-  locales: ["it", "en", "de"],
+  locales: ["it", "en"],
   defaultLocale: "it",
   localePrefix: "always",
 });
 
-const ADMIN_PAGE_REGEX = /^\/(?:it|en|de)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
+const ADMIN_PAGE_REGEX = /^\/(?:it|en)\/admin(?:\/|$)|^\/admin(?:\/|$)/;
 const ADMIN_API_REGEX = /^\/api\/admin(?:\/|$)/;
 const PUSH_API_REGEX = /^\/api\/push(?:\/|$)/;
 // Auth callback must bypass updateSession and intlMiddleware — the Route Handler
 // exchanges the PKCE code server-side; any middleware cookie mutation before that
 // would consume or invalidate the code-verifier cookie.
-const AUTH_CALLBACK_REGEX = /^\/(it|en|de)\/auth\/callback(\/|$)/;
+const AUTH_CALLBACK_REGEX = /^\/(it|en)\/auth\/callback(\/|$)/;
 
 const WAITLIST_MODE = process.env.NEXT_PUBLIC_WAITLIST_MODE === "true";
-const LOCALE_ROOT_REGEX = /^\/(?:it|en|de)?\/?$/;
+const LOCALE_ROOT_REGEX = /^\/(?:it|en)?\/?$/;
 
 const COMING_SOON_BYPASS = [
   "/dashboard", "/admin", "/login",
@@ -214,7 +214,7 @@ export default async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/(it|en|de)/:path*",
+    "/(it|en)/:path*",
     "/api/admin/:path*",
     "/api/push/:path*",
     "/((?!api|_next|_vercel|monitoring|sw\.js|manifest\.json|offline|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|css|js|map|txt|xml)$).*)",

@@ -65,7 +65,7 @@ export function MeetYourRide({
               Il tuo viaggio
             </h3>
             <p className="font-headline font-bold text-xl text-on-surface">
-              <GradientText>Meet Your Ride</GradientText>
+              <GradientText>Ecco la tua auto</GradientText>
             </p>
           </div>
         </div>

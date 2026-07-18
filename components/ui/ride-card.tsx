@@ -72,7 +72,7 @@ function RideCard({
           <Avatar src={driverAvatar} name={driverName} size="sm" />
           <div className="flex min-w-0 items-center gap-2">
             <span className="truncate font-medium text-fg">{driverName}</span>
-            {verified && <Badge verified>verificato</Badge>}
+            {verified && <Badge verified>Verificato</Badge>}
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 font-mono text-sm text-muted">

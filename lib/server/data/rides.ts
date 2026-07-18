@@ -120,14 +120,6 @@ function applyFilters(query: any, filters: SearchFilters) {
   return query;
 }
 
-function getDeterministicHash(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return Math.abs(hash);
-}
-
 /**
  * Get a single ride by ID with driver profile.
  */
@@ -135,7 +127,7 @@ export async function getRideById(rideId: string): Promise<Ride | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("rides")
-    .select(`*, profiles(name, avatar_url, rating, rides_count, review_count)`)
+    .select(`*, profiles(name, avatar_url, rating, rides_count, review_count, phone_verified, id_verified)`)
     .eq("id", rideId)
     .maybeSingle();
 
@@ -144,132 +136,36 @@ export async function getRideById(rideId: string): Promise<Ride | null> {
     return null;
   }
   if (!data) {
-    console.warn("[data/rides] getRideById: ride not found | rideId:", rideId, "-> Triggering Zero-Fail Deterministic Fallback");
-    const hash = getDeterministicHash(rideId);
-    const sardinianCities = [
-      "Cagliari",
-      "Sassari",
-      "Olbia",
-      "Alghero",
-      "Nuoro",
-      "Oristano",
-      "Iglesias",
-      "Carbonia",
-      "Tortolì",
-      "Tempio Pausania"
-    ];
-    const originIdx = hash % sardinianCities.length;
-    let destIdx = (hash + 1) % sardinianCities.length;
-    if (originIdx === destIdx) {
-      destIdx = (destIdx + 1) % sardinianCities.length;
-    }
-    const from_city = sardinianCities[originIdx];
-    const to_city = sardinianCities[destIdx];
-    const driverNames = [
-      "Nicola Carta",
-      "Giuseppe Melis",
-      "Francesca Piras",
-      "Matteo Pinna",
-      "Marco Floris",
-      "Giovanni Sanna",
-      "Antonio Usai",
-      "Sara Serra",
-      "Chiara Loi",
-      "Alessandro Cabras"
-    ];
-    const driverName = driverNames[hash % driverNames.length];
-    const carModels = ["Fiat Panda", "Volkswagen Golf", "Ford Fiesta", "Lancia Ypsilon"];
-    const carModel = carModels[hash % carModels.length];
-    const carColors = ["Grigia", "Nera", "Bianca", "Rossa"];
-    const carColor = carColors[hash % carColors.length];
-
-    // Departure date: (hash % 5) + 1 days in the future
-    const departureDate = new Date();
-    departureDate.setDate(departureDate.getDate() + (hash % 5) + 1);
-    const dateStr = departureDate.toISOString().split("T")[0];
-    
-    // Departure hour: between 07:00 and 21:00
-    const hour = 7 + (hash % 15);
-    const minute = (hash % 2) === 0 ? "00" : "30";
-    const timeStr = `${hour.toString().padStart(2, "0")}:${minute}:00`;
-    
-    // Price: between €5 and €25
-    const price = 5 + (hash % 21);
-    
-    // Meeting point
-    const meetingPoints: Record<string, string> = {
-      Cagliari: "Piazza Matteotti (Fronte Stazione ARST)",
-      Sassari: "Via Padre Zirano (Autostazione)",
-      Olbia: "Parcheggio Molo Brin",
-      Alghero: "Via Catalogna (Fronte Giardini)",
-      Nuoro: "Stazione FS (Piazza Stazione)",
-      Oristano: "Stazione FS (Piazza Ungheria)",
-      Iglesias: "Stazione FS",
-      Carbonia: "Stazione Intermodale",
-    };
-    const meeting_point = meetingPoints[from_city] || "Piazza Principale (Fronte Municipio)";
-
-    const fallbackRide: Ride = {
-      id: rideId,
-      driver_id: "00000000-0000-0000-0000-000000000000",
-      from_city,
-      to_city,
-      date: dateStr,
-      time: timeStr,
-      seats: 3,
-      price,
-      meeting_point,
-      notes: "Viaggio ad andatura tranquilla, musica a scelta e spazio per bagagli medi nel bagagliaio.",
-      status: "active",
-      created_at: new Date().toISOString(),
-      smoking_allowed: false,
-      pets_allowed: (hash % 3) === 0,
-      large_luggage: (hash % 2) === 0,
-      music_preference: "music",
-      women_only: false,
-      students_only: false,
-      car_model: carModel,
-      car_color: carColor,
-      car_plate: `ZA ${100 + (hash % 900)} ${String.fromCharCode(65 + (hash % 26))}${String.fromCharCode(65 + ((hash + 3) % 26))}`,
-      car_year: 2015 + (hash % 10),
-      profiles: {
-        name: driverName,
-        avatar_url: null,
-        rating: 4.5 + ((hash % 6) / 10),
-        rides_count: 10 + (hash % 110),
-        review_count: 5 + (hash % 25),
-        phone_verified: true,
-        id_verified: true,
-      },
-    };
-    return fallbackRide;
+    console.warn("[data/rides] getRideById: ride not found | rideId:", rideId);
+    return null;
   }
 
-  // Handle profiles returned as array or single object robustly
-  let profileObj: Record<string, any> | null = null;
-  if (Array.isArray(data.profiles)) {
-    profileObj = data.profiles[0] || null;
-  } else {
-    profileObj = (data.profiles as Record<string, any>) || null;
-  }
+  // Handle profiles returned as an array or a single object robustly.
+  const profileData = (data as { profiles?: unknown }).profiles;
+  const profileCandidate = Array.isArray(profileData) ? profileData[0] : profileData;
+  const profileObj = profileCandidate && typeof profileCandidate === "object"
+    ? profileCandidate as Record<string, unknown>
+    : null;
 
   if (!profileObj) {
     console.warn("[data/rides] getRideById: missing or empty profile for driver_id:", data.driver_id);
-    profileObj = {
-      name: "Conducente Certificato",
-      avatar_url: null,
-      rating: 5.0,
-      rides_count: 0,
-      review_count: 0,
-    };
   }
 
-  // Set default verified statuses to ensure they exist for downstream usage
-  profileObj.phone_verified = true;
-  profileObj.id_verified = true;
+  // Keep the fallback anonymous and neutral. Verification is only true when
+  // explicitly returned by the profile record.
+  const profile: RideProfile = {
+    name: typeof profileObj?.name === "string" && profileObj.name.trim()
+      ? profileObj.name
+      : "Profilo non disponibile",
+    avatar_url: typeof profileObj?.avatar_url === "string" ? profileObj.avatar_url : null,
+    rating: typeof profileObj?.rating === "number" ? profileObj.rating : 0,
+    rides_count: typeof profileObj?.rides_count === "number" ? profileObj.rides_count : 0,
+    review_count: typeof profileObj?.review_count === "number" ? profileObj.review_count : null,
+    phone_verified: profileObj?.phone_verified === true,
+    id_verified: profileObj?.id_verified === true,
+  };
 
-  (data as Record<string, unknown>).profiles = profileObj as any;
-  return data as Ride;
+  return { ...(data as Record<string, unknown>), profiles: profile } as Ride;
 }
 
 /**
@@ -535,4 +431,3 @@ export async function getUpcomingActiveRides(limit = 3): Promise<Ride[]> {
   }
   return (data || []) as unknown as Ride[];
 }
-

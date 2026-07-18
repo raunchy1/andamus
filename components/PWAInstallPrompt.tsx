@@ -107,7 +107,7 @@ export function PWAInstallPrompt() {
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-extrabold text-white">Ricevi notifiche sui tragitti</h4>
             <p className="text-[11px] text-white/50 mt-1 leading-relaxed">
-              Aggiungi Andamus per trovare passaggi più velocemente ed essere avvisato sulle corse di tuo interesse.
+              Aggiungi Andamus per trovare passaggi più velocemente.
             </p>
           </div>
 

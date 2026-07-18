@@ -72,7 +72,7 @@ export default function CookieConsent() {
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-semibold text-fg">Informativa sui Cookie & Privacy</h4>
             <p className="text-xs text-muted mt-1.5 leading-relaxed">
-              Andamus utilizza i cookie per migliorare la tua esperienza di carpooling, analizzare le prestazioni della piattaforma e mostrarti itinerari mirati in Sardegna.
+              Andamus usa i cookie per migliorare l'esperienza di carpooling.
             </p>
           </div>
           <button 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Haptic } from "@/lib/haptic";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,8 @@ const fadeUp = {
 };
 
 export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRoleProps) {
+  const t = useTranslations("onboarding.flow");
+  const tCommon = useTranslations("common");
   const [selectedRole, setSelectedRole] = useState<"driver" | "passenger" | "both" | "">(initialData.role || "");
   const [selectedZones, setSelectedZones] = useState<string[]>(initialData.preferredZones || []);
   const [submitting, setSubmitting] = useState(false);
@@ -34,25 +37,25 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
   const roles = [
     {
       id: "driver" as const,
-      title: "offro passaggi",
-      desc: "pubblico le mie tratte e condivido i costi",
-      tag: "più comune tra pendolari",
+      title: t("roleDriver"),
+      desc: t("roleDriverDesc"),
+      tag: t("tagCommuters"),
     },
     {
       id: "passenger" as const,
-      title: "cerco passaggi",
-      desc: "trovo passaggi sicuri e verificati per i miei spostamenti",
+      title: t("rolePassenger"),
+      desc: t("rolePassengerDesc"),
       tag: null,
     },
     {
       id: "both" as const,
-      title: "entrambi",
-      desc: "a volte guido, a volte sono passeggero",
-      tag: "consigliato",
+      title: t("roleBoth"),
+      desc: t("roleBothDesc"),
+      tag: t("tagRecommended"),
     },
   ];
 
-  const zones = ["Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Alghero", "Iglesias", "Altra"];
+  const zones = ["Cagliari", "Sassari", "Olbia", "Nuoro", "Oristano", "Alghero", "Iglesias", t("zoneOther")];
 
   const handleRoleSelect = (roleId: "driver" | "passenger" | "both") => {
     Haptic.light();
@@ -91,8 +94,8 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
         className="scrollbar-none max-h-[70vh] space-y-6 overflow-y-auto px-1 pb-4"
       >
         <div className="text-center">
-          <h2 className="heading-editorial text-2xl text-fg">come usi andamus?</h2>
-          <p className="mt-1 text-xs text-muted">puoi modificare questa scelta in qualsiasi momento</p>
+          <h2 className="heading-editorial text-2xl text-fg">{t("roleTitle")}</h2>
+          <p className="mt-1 text-xs text-muted">{t("roleSubtitle")}</p>
         </div>
 
         <div className="space-y-3">
@@ -140,7 +143,7 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
         </div>
 
         <div className="space-y-3 text-left">
-          <label className="text-eyebrow lowercase">le tue zone di viaggio principali</label>
+          <label className="text-eyebrow lowercase">{t("zonesLabel")}</label>
           <div className="flex flex-wrap gap-2">
             {zones.map((zone) => {
               const isSelected = selectedZones.includes(zone);
@@ -171,10 +174,10 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
       >
         <div className="flex gap-3">
           <Button type="button" variant="outline" onClick={() => { Haptic.light(); onBack(); }} className="flex-1">
-            indietro
+            {tCommon("back")}
           </Button>
           <Button type="button" disabled={!isValid || submitting} onClick={handleNext} className="flex-1">
-            continua
+            {tCommon("continue")}
           </Button>
         </div>
 
@@ -186,7 +189,7 @@ export default function StepRole({ initialData, onNext, onBack, onSkip }: StepRo
           }}
           className="w-full py-2 text-xs font-medium text-dim transition-colors hover:text-fg"
         >
-          salta per ora
+          {t("skipForNow")}
         </button>
       </motion.div>
     </div>

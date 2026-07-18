@@ -9,9 +9,9 @@ import { Compass, Route, Car, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", icon: Compass, labelKey: "explore" },
-  { href: "/cerca", icon: Route, labelKey: "routes" },
-  { href: "/offri", icon: Car, labelKey: "trips" },
+  { href: "/", icon: Compass, labelKey: "home" },
+  { href: "/cerca", icon: Route, labelKey: "search" },
+  { href: "/offri", icon: Car, labelKey: "offer" },
   { href: "/profilo", icon: User, labelKey: "profile" },
 ];
 

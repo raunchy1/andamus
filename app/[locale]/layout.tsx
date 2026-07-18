@@ -33,15 +33,13 @@ export async function generateMetadata({
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it";
   
   const titles: Record<string, string> = {
-    it: "Andamus - Carpooling gratuito in Sardegna",
-    en: "Andamus - Free Carpooling in Sardinia",
-    de: "Andamus - Kostenlose Fahrgemeinschaft in Sardinien",
+    it: "Andamus - Carpooling in Sardegna",
+    en: "Andamus - Carpooling in Sardinia",
   };
   
   const descriptions: Record<string, string> = {
-    it: "Trova o offri un passaggio in tutta la Sardegna. Gratuito, sicuro e pensato per i sardi. Risparmia sui costi del carburante e riduci le emissioni di CO2.",
-    en: "Find or offer a ride across Sardinia. Free, safe, and built for Sardinians. Save on fuel costs and reduce CO2 emissions.",
-    de: "Finden oder bieten Sie eine Mitfahrgelegenheit in ganz Sardinien. Kostenlos, sicher und für Sardinien entwickelt. Sparen Sie Benzinkosten und reduzieren Sie CO2-Emissionen.",
+    it: "Trova e offri passaggi in Sardegna. Semplice, diretto, tra sardi.",
+    en: "Find or offer rides in Sardinia. Simple and direct.",
   };
 
   const title = titles[locale] || titles.it;
@@ -59,12 +57,7 @@ export async function generateMetadata({
       "Sardegna",
       "Sardinia",
       "autostop",
-      "viaggi",
-      "condivisione",
-      "sostenibilità",
-      "CO2",
-      "car sharing",
-      "mobilità",
+      "viaggi condivisi",
     ],
     authors: [{ name: "Andamus Team" }],
     creator: "Andamus",
@@ -75,7 +68,6 @@ export async function generateMetadata({
       languages: {
         it: "/it",
         en: "/en",
-        de: "/de",
       },
     },
     openGraph: {
@@ -136,7 +128,7 @@ export async function generateMetadata({
   };
 }
 
-const SUPPORTED_LOCALES = ["it", "en", "de"] as const;
+const SUPPORTED_LOCALES = ["it", "en"] as const;
 
 /**
  * Enable static generation for all 3 locale variants.

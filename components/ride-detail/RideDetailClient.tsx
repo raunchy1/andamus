@@ -317,7 +317,7 @@ function RideDetailDriverTrust({
                   <h3 className="font-semibold text-fg tracking-[-0.02em]">
                     {ride.profiles.name}
                   </h3>
-                  {verified && <Badge verified>verificato</Badge>}
+                  {verified && <Badge verified>Verificato</Badge>}
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-sm">
                   <span className="tabular-nums text-fg">
@@ -329,7 +329,7 @@ function RideDetailDriverTrust({
                 </div>
                 {speaksSardo && (
                   <span className="mt-2 inline-flex rounded-full border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted">
-                    parla sardo
+                    Parla sardo
                   </span>
                 )}
               </div>

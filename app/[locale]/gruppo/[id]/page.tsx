@@ -73,13 +73,13 @@ export default function GroupDetailPage() {
 
   const handleJoin = async () => {
     if (!user) {
-      toast.error("Devi essere loggato per unirti");
+      toast.error("Accedi per unirti al gruppo");
       return;
     }
     setJoining(true);
     const { error } = await supabase.from("group_memberships").insert({ group_id: groupId, user_id: user.id });
     if (error) {
-      toast.error("Errore nell'unione al gruppo");
+      toast.error("Errore durante l'iscrizione al gruppo");
     } else {
       setIsMember(true);
       setMembers((prev) => [...prev, { id: "temp", profiles: { name: user.user_metadata?.name || "Tu", avatar_url: null } }]);
@@ -100,7 +100,7 @@ export default function GroupDetailPage() {
     return (
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-bad mb-4" strokeWidth={1.5} />
-        <h1 className="text-2xl font-bold text-fg heading-editorial">gruppo non trovato</h1>
+        <h1 className="text-2xl font-bold text-fg heading-editorial">Gruppo non trovato</h1>
         <Link href="/gruppi" className="mt-6 flex items-center gap-2 text-accent">
           <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> Torna ai gruppi
         </Link>
@@ -148,7 +148,7 @@ export default function GroupDetailPage() {
               disabled={joining}
               className="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 text-sm font-semibold text-fg hover:bg-surface-2 disabled:opacity-50"
             >
-              {joining ? "Unione..." : "Unisciti al gruppo"}
+              {joining ? "Iscrizione in corso..." : "Unisciti al gruppo"}
             </button>
           ) : (
             <Badge variant="ok" className="px-5 py-3 text-sm font-semibold">

@@ -256,7 +256,7 @@ async function getSuggestedUsersForFeed(
       reasons.push("Autista eccellente");
     } else if (rating >= 4.5) {
       score += 10;
-      reasons.push("Autista affidabile");
+      reasons.push("Șofer verificat");
     }
 
     if (ridesCount >= 50) {

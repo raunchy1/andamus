@@ -36,6 +36,7 @@ export function EmptyState({
   tertiaryAction,
   className = "",
 }: EmptyStateProps) {
+  const tBase = useTranslations("emptyState");
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -43,7 +44,7 @@ export function EmptyState({
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
       className={`flex flex-col items-center justify-center py-16 px-4 text-center border border-line rounded-[var(--radius)] bg-surface ${className}`}
     >
-      <p className="text-eyebrow mb-3">// nessun risultato</p>
+      <p className="text-eyebrow mb-3">{"// "}{tBase("eyebrow")}</p>
       <h3 className="font-h3 text-fg mb-3 max-w-md">{title}</h3>
       <p className="text-muted max-w-md mb-8 leading-relaxed text-sm">{description}</p>
 
@@ -112,6 +113,7 @@ export function EmptyStateSearch({
   onSelectSuggestion?: (from?: string, to?: string, date?: string | null) => void;
 }) {
   const t = useTranslations("emptyState");
+  const tSearch = useTranslations("search");
   const locale = useLocale();
   const [recovery, setRecovery] = useState<{
     nearbySuggestions: any[];
@@ -144,14 +146,14 @@ export function EmptyStateSearch({
   return (
     <div className="w-full space-y-8">
       <EmptyState
-        title={hasFilters ? t("noRidesFound") : "Nessun passaggio oggi"}
+        title={hasFilters ? t("noRidesFound") : t("noRidesTodayTitle")}
         description={
           hasFilters
             ? t("noRidesFiltered")
-            : "Non ci sono ancora passaggi per questa rotta oggi, ma la community cresce in fretta! Salva la ricerca per ricevere una notifica appena qualcuno pubblica un passaggio."
+            : t("noRidesOnRoute")
         }
         action={{
-          label: "Salva alert",
+          label: tSearch("saveAlert"),
           onClick: onCreateAlert,
           variant: "secondary",
         }}
@@ -167,7 +169,7 @@ export function EmptyStateSearch({
               }
             : onCreateRequest
             ? {
-                label: "Chiedi un passaggio alla community",
+                label: t("askRide"),
                 onClick: onCreateRequest,
               }
             : undefined
@@ -185,7 +187,7 @@ export function EmptyStateSearch({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
           </span>
-          C&apos;è richiesta: altri {recovery.otherSearchersCount} pendolari hanno cercato questa tratta oggi.
+          {t("othersSearching", { count: recovery.otherSearchersCount })}
         </motion.div>
       )}
 
@@ -204,9 +206,9 @@ export function EmptyStateSearch({
                 <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Date flessibili disponibili
+                {t("flexibleDatesAvailable")}
               </h4>
-              <p className="text-xs text-white/50 mb-4">Abbiamo trovato passaggi attivi su questa rotta in date vicine:</p>
+              <p className="text-xs text-white/50 mb-4">{t("nearbyRoutesTitle")}</p>
               <div className="flex flex-col gap-2">
                 {recovery.flexibleDates.map((item, idx) => (
                   <button
@@ -225,7 +227,7 @@ export function EmptyStateSearch({
                       })}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-                      {item.ride_count} {item.ride_count === 1 ? "passaggio" : "passaggi"}
+                      {item.ride_count} {item.ride_count === 1 ? t("rideSingular") : t("ridePlural")}
                     </span>
                   </button>
                 ))}
@@ -241,9 +243,9 @@ export function EmptyStateSearch({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                Rotte vicine consigliate
+                {t("recommendedNearbyRoutes")}
               </h4>
-              <p className="text-xs text-white/50 mb-4">Controlla i passaggi attivi nei nodi di trasporto principali limitrofi:</p>
+              <p className="text-xs text-white/50 mb-4">{t("nearbyZonesTitle")}</p>
               <div className="flex flex-col gap-2">
                 {recovery.nearbySuggestions.map((item, idx) => (
                   <button
@@ -274,9 +276,9 @@ export function EmptyStateSearch({
                 <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
-                Passeggeri in cerca di passaggio su questa tratta
+                {t("peopleLookingTitle")}
               </h4>
-              <p className="text-xs text-white/50 mb-4">Offri un passaggio a questi pendolari per avviare il viaggio insieme:</p>
+              <p className="text-xs text-white/50 mb-4">{t("offerToSeekersTitle")}</p>
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {recovery.matchingRequests.map((req, idx) => (
                   <div
@@ -292,7 +294,7 @@ export function EmptyStateSearch({
                         </div>
                       )}
                       <div>
-                        <div className="font-bold text-white/90 truncate max-w-[120px]">{req.user?.full_name || "Pendolare"}</div>
+                        <div className="font-bold text-white/90 truncate max-w-[120px]">{req.user?.full_name || t("commuterFallback")}</div>
                         <div className="text-[10px] text-white/40">
                           {new Date(req.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
                             day: "numeric",
@@ -302,10 +304,10 @@ export function EmptyStateSearch({
                       </div>
                     </div>
                     <div className="flex justify-between items-center text-[10px] text-purple-300">
-                      <span>Posti: {req.seats_needed}</span>
+                      <span>{t("seatsLabel", { count: req.seats_needed })}</span>
                       <Link href={`/${locale}/offri?from=${req.from_city}&to=${req.to_city}&date=${req.date}`}>
                         <span className="px-2 py-1 rounded bg-purple-500/15 border border-purple-500/25 hover:bg-purple-500/30 transition font-semibold text-purple-200">
-                          Offri passaggio
+                          {t("offerRide")}
                         </span>
                       </Link>
                     </div>

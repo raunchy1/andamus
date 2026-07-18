@@ -11,7 +11,7 @@ function getCallbackPath(redirectTo?: string): string {
 
   const origin = window.location.origin;
   const locale = window.location.pathname.split("/")[1];
-  const safeLocale = ["it", "en", "de"].includes(locale) ? locale : "it";
+  const safeLocale = ["it", "en"].includes(locale) ? locale : "it";
 
   let targetPath = redirectTo || `${window.location.pathname}${window.location.search}`;
 
@@ -20,7 +20,7 @@ function getCallbackPath(redirectTo?: string): string {
   }
 
   // Prepend locale prefix if not already present in the target path
-  if (!/^\/(it|en|de)(\/|$)/.test(targetPath)) {
+  if (!/^\/(it|en)(\/|$)/.test(targetPath)) {
     targetPath = `/${safeLocale}${targetPath}`;
   }
 

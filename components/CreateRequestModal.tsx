@@ -135,7 +135,7 @@ export function CreateRequestModal({
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4FB3C9]/30 bg-[#4FB3C9]/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-2">
               <Sparkles className="h-3 w-3" />
-              Cerco Passaggio
+              Cerco passaggio
             </span>
             <h3 className="text-2xl font-black tracking-tight text-white">Chiedi un passaggio</h3>
             <p className="text-xs text-white/50 mt-1">
@@ -183,7 +183,7 @@ export function CreateRequestModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
-                Data del Viaggio
+                Data del viaggio
               </label>
               <div className="relative">
                 <Calendar className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-white/30" />
@@ -218,7 +218,7 @@ export function CreateRequestModal({
           {time && (
             <div>
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
-                Flessibilità Oraria
+                Flessibilità oraria
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {[
@@ -248,7 +248,7 @@ export function CreateRequestModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
-                Posti Richiesti
+                Posti richiesti
               </label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4].map((num) => (
@@ -310,7 +310,7 @@ export function CreateRequestModal({
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <>
-                Pubblica Richiesta
+                Pubblica richiesta
                 <ArrowRight className="h-4.5 w-4.5" />
               </>
             )}

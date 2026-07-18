@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Car } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Haptic } from "@/lib/haptic";
 import { Button } from "@/components/ui/button";
 
@@ -18,24 +19,25 @@ const fadeUp = {
 };
 
 export default function StepWelcome({ displayName, onNext }: StepWelcomeProps) {
+  const t = useTranslations("onboarding.flow");
   const firstName = useMemo(() => {
-    if (!displayName) return "viaggiatore";
-    return displayName.split(" ")[0].toLowerCase();
-  }, [displayName]);
+    if (!displayName) return t("travelerFallback");
+    return displayName.split(" ")[0];
+  }, [displayName, t]);
 
   const benefits = [
     {
       icon: Car,
-      title: "conduci",
-      description: "pubblica i tuoi passaggi e condividi i costi.",
+      title: t("benefitDriveTitle"),
+      description: t("benefitDriveDesc"),
     },
     {
-      title: "viaggia",
-      description: "trova passaggi sicuri e verificati in tutta la sardegna.",
+      title: t("benefitTravelTitle"),
+      description: t("benefitTravelDesc"),
     },
     {
-      title: "risparmia",
-      description: "fino a €200 al mese di carburante riducendo le emissioni.",
+      title: t("benefitSaveTitle"),
+      description: t("benefitSaveDesc"),
     },
   ];
 
@@ -48,10 +50,10 @@ export default function StepWelcome({ displayName, onNext }: StepWelcomeProps) {
     <div className="flex h-full w-full flex-1 flex-col justify-between">
       <motion.div {...fadeUp} className="pt-8 text-center">
         <h1 className="heading-editorial text-3xl text-fg md:text-4xl">
-          ciao, {firstName}!
+          {t("greeting", { name: firstName })}
         </h1>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
-          sei pronto a condividere i passaggi in tutta la sardegna?
+          {t("welcomeTitle")}
         </p>
       </motion.div>
 
@@ -86,9 +88,9 @@ export default function StepWelcome({ displayName, onNext }: StepWelcomeProps) {
         className="space-y-3 pb-8 text-center"
       >
         <Button type="button" onClick={handleStart} className="w-full">
-          iniziamo
+          {t("startButton")}
         </Button>
-        <p className="text-xs text-dim">ci vogliono meno di 2 minuti per iniziare</p>
+        <p className="text-xs text-dim">{t("startHint")}</p>
       </motion.div>
     </div>
   );

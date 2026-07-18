@@ -144,7 +144,7 @@ export function PremiumDatePicker({
             onClick={(e) => { e.stopPropagation(); handleClear(); }}
             className="p-1.5 rounded-lg hover:bg-surface transition-colors flex-shrink-0"
             type="button"
-            aria-label="Clear date"
+            aria-label="Cancella data"
           >
             <X className="w-3.5 h-3.5 text-dim hover:text-muted" strokeWidth={1.5} />
           </button>

@@ -50,16 +50,15 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
     }
   })();
 
-  const shareText = `🚗 *Passaggio su Andamus* 🚗
+  const shareText = `🚗 *Passaggio su Andamus*
 
 📍 *Da:* ${ride.from_city}
 🏁 *A:* ${ride.to_city}
-📅 *Quando:* ${formattedDate} alle ${ride.time.slice(0, 5)}
-💰 *Contributo:* ${ride.price > 0 ? `€${ride.price}` : "Gratis!"}
-${ride.driverName ? `👤 *Conducente:* ${ride.driverName}` : ""}
-${ride.trustScore ? `🛡️ *Punteggio Affidabilità:* ${ride.trustScore}%` : ""}
+📅 *Quando:* ${formattedDate} ${ride.time.slice(0, 5)}
+💰 *Contributo:* ${ride.price > 0 ? `€${ride.price}` : "Gratis"}
+${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
 
-👇 *Vedi i dettagli e prenota qui:*`;
+👇 *Vedi e prenota qui:*`;
 
   const handleShareNative = useCallback(async () => {
     Haptic.light();

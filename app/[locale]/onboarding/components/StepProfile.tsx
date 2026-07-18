@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, Camera, AlertCircle, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Haptic } from "@/lib/haptic";
 import { toast } from "sonner";
 import { Avatar } from "@/components/ui/avatar";
@@ -29,12 +30,14 @@ interface StepProfileProps {
 }
 
 export default function StepProfile({ userId, initialData, onNext, onBack }: StepProfileProps) {
+  const t = useTranslations("onboarding.flow");
+  const tCommon = useTranslations("common");
   const [fullName, setFullName] = useState(initialData.fullName || "");
   const [phone, setPhone] = useState(initialData.phone || "");
   const [bio, setBio] = useState(initialData.bio || "");
   const [birthYear, setBirthYear] = useState<number>(initialData.birthYear || 0);
   const [avatarUrl, setAvatarUrl] = useState(initialData.avatarUrl || "");
-  
+
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,32 +54,32 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
     let err = "";
     if (name === "fullName") {
       if (!value.trim()) {
-        err = "Il nome completo è richiesto";
+        err = t("nameRequired");
       } else if (value.trim().length < 3) {
-        err = "Inserisci almeno nome e cognome";
+        err = t("nameTooShort");
       }
     } else if (name === "phone") {
       // Italian validation: start with +39 or 3, 10 digits
       const phoneDigits = value.replace(/\s+/g, "");
       const cleanPhone = phoneDigits.startsWith("+39") ? phoneDigits.substring(3) : phoneDigits;
-      
+
       if (!value.trim()) {
-        err = "Il numero di telefono è richiesto per la prenotazione";
+        err = t("phoneRequired");
       } else if (!/^[0-9]+$/.test(cleanPhone)) {
-        err = "Il numero può contenere solo cifre";
+        err = t("phoneDigitsOnly");
       } else if (cleanPhone.length !== 10) {
-        err = "Il numero deve essere composto da 10 cifre (escluso +39)";
+        err = t("phoneLength");
       } else if (!cleanPhone.startsWith("3")) {
-        err = "Il numero di cellulare italiano deve iniziare con 3";
+        err = t("phonePrefix");
       }
     } else if (name === "birthYear") {
       if (!value || value === 0) {
-        err = "Anno di nascita richiesto";
+        err = t("birthYearRequired");
       } else if (currentYear - value < 18) {
-        err = "Devi avere almeno 18 anni per iscriverti";
+        err = t("ageRequirement");
       }
     }
-    
+
     setErrors((prev) => {
       const updated = { ...prev };
       if (err) {
@@ -94,7 +97,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
   };
 
   // Check form validity
-  const isValid = 
+  const isValid =
     fullName.trim().length >= 3 &&
     phone.trim().length >= 9 &&
     birthYear >= currentYear - 70 &&
@@ -112,7 +115,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("L'immagine supera il limite massimo di 5MB");
+      toast.error(t("photoSizeError"));
       return;
     }
 
@@ -128,14 +131,14 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
         const size = Math.min(img.width, img.height);
         canvas.width = 300;
         canvas.height = 300;
-        
+
         const ctx = canvas.getContext("2d");
         if (ctx) {
           // Center square crop
           const sx = (img.width - size) / 2;
           const sy = (img.height - size) / 2;
           ctx.drawImage(img, sx, sy, size, size, 0, 0, 300, 300);
-          
+
           canvas.toBlob(async (blob) => {
             if (blob) {
               try {
@@ -143,7 +146,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
                 const { createClient } = await import("@/lib/supabase/client");
                 const supabase = createClient();
                 const path = `${userId}/avatar.jpg`;
-                
+
                 const { error: uploadError } = await supabase.storage
                   .from("avatars")
                   .upload(path, blob, {
@@ -213,8 +216,8 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
         className="scrollbar-none max-h-[70vh] space-y-6 overflow-y-auto px-1 pb-4"
       >
         <div className="text-center">
-          <h2 className="heading-editorial text-2xl text-fg">completa il profilo</h2>
-          <p className="mt-1 text-xs text-muted">gli altri pendolari ti vedranno così</p>
+          <h2 className="heading-editorial text-2xl text-fg">{t("profileTitle")}</h2>
+          <p className="mt-1 text-xs text-muted">{t("profileSubtitle")}</p>
         </div>
 
         <div className="flex flex-col items-center gap-2">
@@ -232,19 +235,19 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
               </div>
             )}
           </div>
-          <input 
+          <input
             type="file"
             ref={fileInputRef}
             onChange={handleFileChange}
             accept="image/*"
             className="hidden"
           />
-          <span className="text-[10px] font-medium text-dim">tocca per caricare una foto (max 5mb)</span>
+          <span className="text-[10px] font-medium text-dim">{t("photoHint")}</span>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-1.5 text-left">
-            <label className="text-eyebrow lowercase">nome completo</label>
+            <label className="text-eyebrow lowercase">{t("nameLabel")}</label>
             <div className="relative">
               <input
                 type="text"
@@ -253,7 +256,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
                 onBlur={() => handleBlur("fullName", fullName)}
                 aria-describedby={errors.fullName ? "fullName-error" : undefined}
                 className={fieldClass("fullName")}
-                placeholder="es. mario rossi"
+                placeholder={t("namePlaceholder")}
               />
               {touched.fullName && !errors.fullName && (
                 <Check className="absolute right-4 top-4 size-5 text-ok" strokeWidth={1.5} />
@@ -268,7 +271,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
           </div>
 
           <div className="space-y-1.5 text-left">
-            <label className="text-eyebrow lowercase">numero di cellulare</label>
+            <label className="text-eyebrow lowercase">{t("phoneLabel")}</label>
             <div className="relative">
               <input
                 type="tel"
@@ -277,7 +280,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
                 onBlur={() => handleBlur("phone", phone)}
                 aria-describedby={errors.phone ? "phone-error" : undefined}
                 className={fieldClass("phone")}
-                placeholder="+39 333 000 0000"
+                placeholder={t("phonePlaceholder")}
               />
               {touched.phone && !errors.phone && (
                 <Check className="absolute right-4 top-4 size-5 text-ok" strokeWidth={1.5} />
@@ -292,7 +295,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
           </div>
 
           <div className="space-y-1.5 text-left">
-            <label className="text-eyebrow lowercase">anno di nascita</label>
+            <label className="text-eyebrow lowercase">{t("birthYearLabel")}</label>
             <select
               value={birthYear || ""}
               onChange={(e) => {
@@ -304,7 +307,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
               aria-describedby={errors.birthYear ? "birthYear-error" : undefined}
               className={fieldClass("birthYear", birthYear > 0)}
             >
-              <option value="">seleziona anno</option>
+              <option value="">{t("birthYearPlaceholder")}</option>
               {years.map((y) => (
                 <option key={y} value={y}>{y}</option>
               ))}
@@ -319,7 +322,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
 
           <div className="space-y-1.5 text-left">
             <div className="flex items-center justify-between">
-              <label className="text-eyebrow lowercase">bio breve (opzionale)</label>
+              <label className="text-eyebrow lowercase">{t("bioLabel")}</label>
               <span className="font-mono text-[10px] text-dim">{bio.length}/120</span>
             </div>
             <textarea
@@ -328,7 +331,7 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
               maxLength={120}
               rows={2}
               className="w-full resize-none rounded-[var(--radius-sm)] border border-line bg-surface-2 px-4 py-3 text-sm text-fg placeholder:text-dim focus:border-accent focus:outline-none"
-              placeholder="es. pendolare cagliari-sassari ogni venerdì"
+              placeholder={t("bioPlaceholder")}
             />
           </div>
         </div>
@@ -344,10 +347,10 @@ export default function StepProfile({ userId, initialData, onNext, onBack }: Ste
           }}
           className="flex-1"
         >
-          indietro
+          {tCommon("back")}
         </Button>
         <Button type="submit" disabled={!isValid || submitting} className="flex-1">
-          {submitting ? <Loader2 className="size-5 animate-spin" strokeWidth={1.5} /> : "continua"}
+          {submitting ? <Loader2 className="size-5 animate-spin" strokeWidth={1.5} /> : tCommon("continue")}
         </Button>
       </div>
     </form>

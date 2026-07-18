@@ -91,7 +91,7 @@ function generateExplanation(factors: RankingFactors, weights = DEFAULT_WEIGHTS)
   const explanations: string[] = [];
 
   if (factors.routeMatch > 0.7) explanations.push("percorso preferito");
-  if (factors.driverTrust > 0.8) explanations.push("autista affidabile");
+  if (factors.driverTrust > 0.8) explanations.push("șofer de încredere");
   if (factors.timeProximity > 0.7) explanations.push("orario adatto");
   if (factors.priceAttractiveness > 0.7) explanations.push("ottimo prezzo");
   if (factors.urgency > 0.8) explanations.push("partenza imminente");

@@ -85,7 +85,7 @@ export function SearchDesktopView(props: SearchViewProps) {
     <div className="text-fg max-w-5xl mx-auto w-full">
       <header className="mb-8 pt-2">
         <p className="text-eyebrow">// {t("resultsCount", { count: rides.length })}</p>
-        <h1 className="mt-3 font-hero heading-editorial text-fg">cerca</h1>
+        <h1 className="mt-3 font-hero heading-editorial text-fg">{t("title")}</h1>
       </header>
 
       <form
@@ -148,7 +148,7 @@ export function SearchDesktopView(props: SearchViewProps) {
         </Button>
         <Button type="button" variant="secondary" size="sm" onClick={() => setShowFilters(true)}>
           <SlidersHorizontal size={16} strokeWidth={1.5} />
-          filtri
+          {t("advancedFilters")}
           {activeFiltersCount > 0 && (
             <span className="ml-1 font-mono text-[10px] text-accent">{activeFiltersCount}</span>
           )}

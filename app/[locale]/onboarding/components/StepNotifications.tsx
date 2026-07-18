@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, CheckCheck, Loader2, MessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Haptic } from "@/lib/haptic";
 import { Button } from "@/components/ui/button";
 
@@ -18,6 +19,8 @@ const fadeUp = {
 };
 
 export default function StepNotifications({ onNext, onBack }: StepNotificationsProps) {
+  const t = useTranslations("onboarding.flow");
+  const tCommon = useTranslations("common");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -85,9 +88,9 @@ export default function StepNotifications({ onNext, onBack }: StepNotificationsP
   };
 
   const benefits = [
-    { icon: Bell, text: "nuovi passaggi sulla tua tratta preferita" },
-    { icon: CheckCheck, text: "notifica istantanea quando un viaggio viene accettato" },
-    { icon: MessageSquare, text: "messaggi e coordinamento chat in tempo reale" },
+    { icon: Bell, text: t("notifBenefitNewRides") },
+    { icon: CheckCheck, text: t("notifBenefitAccepted") },
+    { icon: MessageSquare, text: t("notifBenefitMessages") },
   ];
 
   return (
@@ -97,9 +100,9 @@ export default function StepNotifications({ onNext, onBack }: StepNotificationsP
         className="scrollbar-none max-h-[70vh] space-y-8 overflow-y-auto px-1 pb-4 text-center"
       >
         <div>
-          <h2 className="heading-editorial text-2xl text-fg">resta aggiornato</h2>
+          <h2 className="heading-editorial text-2xl text-fg">{t("notifTitle")}</h2>
           <p className="mt-1 text-xs text-muted">
-            ti avvisiamo subito quando ricevi una prenotazione o un messaggio
+            {t("notifSubtitle")}
           </p>
         </div>
 
@@ -135,7 +138,7 @@ export default function StepNotifications({ onNext, onBack }: StepNotificationsP
             disabled={submitting}
             className="flex-1"
           >
-            indietro
+            {tCommon("back")}
           </Button>
 
           <Button
@@ -144,7 +147,7 @@ export default function StepNotifications({ onNext, onBack }: StepNotificationsP
             disabled={submitting}
             className="flex-1"
           >
-            {submitting ? <Loader2 className="size-5 animate-spin" strokeWidth={1.5} /> : "attiva notifiche"}
+            {submitting ? <Loader2 className="size-5 animate-spin" strokeWidth={1.5} /> : t("enableNotifications")}
           </Button>
         </div>
 
@@ -154,7 +157,7 @@ export default function StepNotifications({ onNext, onBack }: StepNotificationsP
           disabled={submitting}
           className="w-full py-2 text-xs font-medium text-dim transition-colors hover:text-fg disabled:opacity-50"
         >
-          non ora
+          {t("notNow")}
         </button>
       </motion.div>
     </div>

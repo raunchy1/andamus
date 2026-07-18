@@ -85,7 +85,7 @@ export function SearchMobileView(props: SearchViewProps) {
     <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
       <header className="px-4 sm:px-6 pt-6 pb-4 border-b border-line">
         <p className="text-eyebrow">// {t("resultsCount", { count: rides.length })}</p>
-        <h1 className="mt-2 font-h2 heading-editorial text-fg">cerca</h1>
+        <h1 className="mt-2 font-h2 heading-editorial text-fg">{t("title")}</h1>
       </header>
 
       <main
@@ -157,7 +157,7 @@ export function SearchMobileView(props: SearchViewProps) {
             </Button>
             <Button type="button" variant="secondary" size="sm" className="h-9 px-3 text-xs" onClick={() => setShowFilters(true)}>
               <SlidersHorizontal size={14} strokeWidth={1.5} />
-              filtri
+              {t("advancedFilters")}
               {activeFiltersCount > 0 && (
                 <span className="ml-1 font-mono text-[10px] text-accent">{activeFiltersCount}</span>
               )}

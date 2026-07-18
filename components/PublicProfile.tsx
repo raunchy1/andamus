@@ -162,7 +162,7 @@ export function PublicProfileView({
                 <h1 className="text-2xl font-bold tracking-[-0.03em] text-fg sm:text-3xl">
                   {profile.name}
                 </h1>
-                {verified && <Badge verified>verificato</Badge>}
+                {verified && <Badge verified>Verificato</Badge>}
               </div>
 
               <div className="mt-2 flex flex-wrap items-center justify-center gap-2 font-mono text-sm sm:justify-start">
@@ -174,7 +174,7 @@ export function PublicProfileView({
 
               {speaksSardo && (
                 <span className="mt-3 inline-flex rounded-full border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted">
-                  parla sardo
+                  Parla sardo
                 </span>
               )}
 

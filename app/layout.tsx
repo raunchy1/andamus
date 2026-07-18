@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const SUPPORTED_LOCALES = ["it", "en", "de"] as const;
+const SUPPORTED_LOCALES = ["it", "en"] as const;
 type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 function isSupportedLocale(value: string): value is SupportedLocale {
@@ -28,17 +28,16 @@ function isSupportedLocale(value: string): value is SupportedLocale {
 export const metadata: Metadata = {
   title: "Andamus - Carpooling in Sardegna",
   description:
-    "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme, risparmiare e ridurre le emissioni.",
+    "Trova e offri passaggi in Sardegna. Semplice, diretto, tra sardi.",
   keywords: [
     "carpooling",
-    "Sardegna",
     "passaggi",
+    "Sardegna",
+    "Sardinia",
+    "autostop",
     "viaggi",
-    "condivisione",
-    "auto",
-    "trasporto",
   ],
-  authors: [{ name: "Andamus Team" }],
+  authors: [{ name: "Andamus" }],
   openGraph: {
     type: "website",
     locale: "it_IT",
@@ -46,10 +45,10 @@ export const metadata: Metadata = {
     siteName: "Andamus",
     title: "Andamus - Carpooling in Sardegna",
     description:
-      "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme.",
+      "Trova e offri passaggi in Sardegna. Semplice e diretto.",
     images: [
       {
-        url: "https://andamus.it/og-image.jpg",
+        url: "https://andamus.it/og-image.png",
         width: 1200,
         height: 630,
         alt: "Andamus - Carpooling in Sardegna",
@@ -60,8 +59,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Andamus - Carpooling in Sardegna",
     description:
-      "Trova e offri passaggi in Sardegna. Il carpooling sardo per viaggiare insieme.",
-    images: ["https://andamus.it/og-image.jpg"],
+      "Trova e offri passaggi in Sardegna.",
+    images: ["https://andamus.it/og-image.png"],
   },
   appleWebApp: {
     capable: true,
@@ -97,8 +96,8 @@ async function getLocaleFromPath(): Promise<SupportedLocale> {
     const invokedPath = headersList.get("x-invoke-path");
     const pathname = nextUrl || invokedPath || "";
 
-    // Match /it/..., /en/..., /de/...
-    const match = pathname.match(/^\/(it|en|de)(?:\/|$)/);
+    // Match /it/..., /en/...
+    const match = pathname.match(/^\/(it|en)(?:\/|$)/);
     if (match && isSupportedLocale(match[1])) {
       return match[1];
     }

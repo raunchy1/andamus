@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Download, Share } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Haptic } from "@/lib/haptic";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +18,7 @@ const fadeUp = {
 };
 
 export default function StepComplete({ locale }: StepCompleteProps) {
+  const t = useTranslations("onboarding.flow");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isIOS, setIsIOS] = useState(false);
 
@@ -67,9 +69,9 @@ export default function StepComplete({ locale }: StepCompleteProps) {
         className="scrollbar-none max-h-[70vh] space-y-8 overflow-y-auto px-1 pb-4 text-center"
       >
         <div className="py-6">
-          <p className="heading-editorial text-3xl text-fg">sei pronto a partire.</p>
+          <p className="heading-editorial text-3xl text-fg">{t("completeTitle")}</p>
           <p className="mx-auto mt-3 max-w-xs text-xs text-muted">
-            andamus ti dà il benvenuto nella community del carpooling sardo. viaggia, condividi, risparmia.
+            {t("completeSubtitle")}
           </p>
         </div>
 
@@ -79,12 +81,12 @@ export default function StepComplete({ locale }: StepCompleteProps) {
               <Download className="size-5 text-accent" strokeWidth={1.5} />
             </div>
             <div className="flex-1 space-y-2">
-              <h4 className="text-eyebrow">installa andamus</h4>
+              <h4 className="text-eyebrow">{t("installTitle")}</h4>
               <p className="text-[11px] leading-relaxed text-muted">
-                salva andamus sulla schermata iniziale per viaggiare offline e ricevere avvisi in tempo reale.
+                {t("installDesc")}
               </p>
               <Button type="button" size="sm" onClick={handleInstallClick}>
-                installa ora
+                {t("installNow")}
               </Button>
             </div>
           </div>
@@ -96,10 +98,11 @@ export default function StepComplete({ locale }: StepCompleteProps) {
               <Share className="size-5 text-muted" strokeWidth={1.5} />
             </div>
             <div className="space-y-1">
-              <h4 className="text-eyebrow">aggiungi a home</h4>
+              <h4 className="text-eyebrow">{t("addToHome")}</h4>
               <p className="text-[11px] leading-relaxed text-muted">
-                premi <strong className="text-fg">condividi</strong> in basso nel browser safari, poi seleziona{" "}
-                <strong className="text-fg">aggiungi alla schermata home</strong>.
+                {t.rich("installIosDesc", {
+                  strong: (chunks) => <strong className="text-fg">{chunks}</strong>,
+                })}
               </p>
             </div>
           </div>
@@ -112,10 +115,10 @@ export default function StepComplete({ locale }: StepCompleteProps) {
         className="space-y-3 pt-6"
       >
         <Button type="button" onClick={handleCerca} className="w-full">
-          cerca un passaggio
+          {t("searchRide")}
         </Button>
         <Button type="button" variant="outline" onClick={handleOffri} className="w-full">
-          offri un passaggio
+          {t("offerRide")}
         </Button>
       </motion.div>
     </div>

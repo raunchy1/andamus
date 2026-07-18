@@ -14,7 +14,6 @@ interface LanguageSelectorProps {
 const languages = [
   { code: "it", name: "Italiano", flag: "🇮🇹" },
   { code: "en", name: "English", flag: "🇬🇧" },
-  { code: "de", name: "Deutsch", flag: "🇩🇪" },
 ];
 
 export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
