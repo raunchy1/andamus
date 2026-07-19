@@ -109,6 +109,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     }
   };
 
+  const handleGoogle = async () => {
+    setLoading(true);
+    try {
+      ProductAnalytics.signupStarted("google");
+      await signInWithGoogle();
+      // On success the browser is redirected by Supabase; no further action needed.
+    } catch (error: any) {
+      toast.error(error instanceof Error ? error.message : t("googleLoginError"));
+      setLoading(false);
+    }
+  };
+
   const handleRegister = async () => {
     if (!email || !password || !name) return toast.error(t("fillAllFields"));
     if (password !== confirmPassword) return toast.error(t("passwordsDoNotMatch"));
@@ -316,8 +328,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           </div>
 
           <button
-            onClick={() => signInWithGoogle(supabase)}
-            className="w-full bg-white text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/90 transition-all active:scale-[0.98]"
+            onClick={handleGoogle}
+            disabled={loading}
+            className="w-full bg-white text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

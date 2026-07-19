@@ -1,11 +1,11 @@
 /**
  * Distributed rate limiting with Upstash Redis.
- * Falls back to Supabase-based rate limiting if Redis is unavailable.
+ * Falls back to an in-memory fixed-window limiter if Redis is unavailable.
+ * (Per-serverless-instance, best-effort — configure Upstash for strict limits.)
  */
 
 import { Ratelimit } from "@upstash/ratelimit";
 import { getRedis } from "@/lib/redis";
-import { checkServerRateLimit as supabaseRateLimit } from "./supabase";
 
 export type RateLimitConfig = {
   identifier: string;
@@ -55,7 +55,46 @@ function parseWindow(window: RateLimitConfig["window"]): number {
 }
 
 /**
- * Check rate limit using Upstash Redis with Supabase fallback.
+ * In-memory fixed-window fallback limiter.
+ * Works with any string identifier (e.g. `rl:ip:<ip>`), honors the real
+ * window in milliseconds, and never touches the database — the previous
+ * Supabase fallback wrote IP keys into the UUID `user_actions.user_id`
+ * column and fail-closed every request with a 429.
+ */
+const _fallbackBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimitInMemory(
+  identifier: string,
+  limit: number,
+  windowMs: number
+): RateLimitResult {
+  const now = Date.now();
+
+  // Bound memory usage: lazily drop expired buckets when the map grows.
+  if (_fallbackBuckets.size > 5000) {
+    for (const [key, bucket] of _fallbackBuckets) {
+      if (bucket.resetAt <= now) _fallbackBuckets.delete(key);
+    }
+  }
+
+  const bucket = _fallbackBuckets.get(identifier);
+  if (!bucket || bucket.resetAt <= now) {
+    const resetAt = now + windowMs;
+    _fallbackBuckets.set(identifier, { count: 1, resetAt });
+    return { success: true, limit, remaining: limit - 1, reset: resetAt };
+  }
+
+  bucket.count += 1;
+  return {
+    success: bucket.count <= limit,
+    limit,
+    remaining: Math.max(0, limit - bucket.count),
+    reset: bucket.resetAt,
+  };
+}
+
+/**
+ * Check rate limit using Upstash Redis with in-memory fallback.
  */
 export async function checkRateLimit(config: RateLimitConfig): Promise<RateLimitResult> {
   const windowMs = parseWindow(config.window);
@@ -66,24 +105,22 @@ export async function checkRateLimit(config: RateLimitConfig): Promise<RateLimit
       const { success, limit, remaining, reset } = await ratelimiter.limit(config.identifier);
       return { success, limit, remaining, reset };
     } catch (err) {
-      console.error("[rate-limit] Redis error, falling back to Supabase:", err instanceof Error ? err.message : err);
+      console.error("[rate-limit] Redis error, falling back to in-memory:", err instanceof Error ? err.message : err);
     }
   }
 
-  const hours = Math.ceil(windowMs / 3_600_000);
-  const { allowed, remaining } = await supabaseRateLimit(
-    config.identifier,
-    "api",
-    config.limit,
-    hours
-  );
-
-  return {
-    success: allowed,
-    limit: config.limit,
-    remaining: Math.max(0, remaining),
-    reset: Date.now() + windowMs,
-  };
+  try {
+    return checkRateLimitInMemory(config.identifier, config.limit, windowMs);
+  } catch (err) {
+    // Rate limiting must never block legitimate traffic (e.g. OAuth login).
+    console.error("[rate-limit] In-memory fallback error, allowing request:", err instanceof Error ? err.message : err);
+    return {
+      success: true,
+      limit: config.limit,
+      remaining: config.limit,
+      reset: Date.now() + windowMs,
+    };
+  }
 }
 
 export const rateLimitPresets = {
