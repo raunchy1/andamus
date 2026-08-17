@@ -427,7 +427,8 @@
     "fileTooLarge": "File too large. Maximum 5 MB.",
     "invalidFileType": "Invalid format. Use JPG, PNG, WebP or PDF.",
     "pullToRefresh": "Pull to refresh",
-    "releaseToRefresh": "Release to refresh"
+    "releaseToRefresh": "Release to refresh",
+    "completedRidesLabel": "Completed rides"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -1398,5 +1399,27 @@
     "trustDesc2": "Meet others who share your interests and start the event on the way there.",
     "trustTitle3": "Shared costs",
     "trustDesc3": "Offer your empty seats or book one, splitting fuel and tolls fairly."
+  },
+  "reputation": {
+    "trust": {
+      "veryReliable": "Very reliable",
+      "reliable": "Reliable",
+      "growing": "Building trust",
+      "newMember": "New member",
+      "newProfile": "New profile"
+    },
+    "age": {
+      "justArrived": "Just joined",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "days": "{count} days",
+      "weeks": "{count} weeks",
+      "months": "{count} months",
+      "years": "{count} years"
+    },
+    "noCompletionRate": "—",
+    "trustScoreLabel": "Trust score",
+    "reviewCount": "{count, plural, one {# review} other {# reviews}}",
+    "rideCount": "{count, plural, one {# ride} other {# rides}}"
   }
 }

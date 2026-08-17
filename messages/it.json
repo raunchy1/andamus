@@ -427,7 +427,8 @@
     "fileTooLarge": "File troppo grande. Massimo 5 MB.",
     "invalidFileType": "Formato non valido. Usa JPG, PNG, WebP o PDF.",
     "pullToRefresh": "Trascina per aggiornare",
-    "releaseToRefresh": "Rilascia per aggiornare"
+    "releaseToRefresh": "Rilascia per aggiornare",
+    "completedRidesLabel": "Corse completate"
   },
   "chat": {
     "messagePlaceholder": "Scrivi un messaggio...",
@@ -1398,5 +1399,27 @@
     "trustDesc2": "Incontra chi condivide i tuoi interessi e inizia l’evento già dal viaggio.",
     "trustTitle3": "Spese divise",
     "trustDesc3": "Offri i posti liberi in auto o prenota il tuo posto, dividendo carburante e pedaggi."
+  },
+  "reputation": {
+    "trust": {
+      "veryReliable": "Molto affidabile",
+      "reliable": "Affidabile",
+      "growing": "In crescita",
+      "newMember": "Nuovo membro",
+      "newProfile": "Nuovo profilo"
+    },
+    "age": {
+      "justArrived": "Appena arrivato",
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "days": "{count} giorni",
+      "weeks": "{count} settimane",
+      "months": "{count} mesi",
+      "years": "{count} anni"
+    },
+    "noCompletionRate": "—",
+    "trustScoreLabel": "Affidabilità",
+    "reviewCount": "{count, plural, one {# recensione} other {# recensioni}}",
+    "rideCount": "{count, plural, one {# corsa} other {# corse}}"
   }
 }

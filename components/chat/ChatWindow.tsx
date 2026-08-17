@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { sendMessage, markMessagesAsRead } from "@/lib/chat-actions";
-import { staticMapDarkStyleQuery } from "@/lib/sardinia-cities";
+import { staticMapStyleQuery } from "@/lib/sardinia-cities";
 import {
   Loader2,
   X,
@@ -249,7 +249,7 @@ const MessageBubble = memo(function MessageBubble({
                 {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
                   <div className="w-full h-32 rounded-lg overflow-hidden bg-elevated relative">
                     <Image
-                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapDarkStyleQuery}&markers=color:0x4FB3C9%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapStyleQuery}&markers=color:0x2D6A4F%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
                       alt={t("locationMapAlt")}
                       fill
                       className="object-cover grayscale opacity-60"

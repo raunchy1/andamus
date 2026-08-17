@@ -427,7 +427,8 @@
     "fileTooLarge": "Datei zu groß. Maximal 5 MB.",
     "invalidFileType": "Ungültiges Format. JPG, PNG, WebP oder PDF.",
     "pullToRefresh": "Zum Aktualisieren ziehen",
-    "releaseToRefresh": "Loslassen zum Aktualisieren"
+    "releaseToRefresh": "Loslassen zum Aktualisieren",
+    "completedRidesLabel": "Abgeschlossene Fahrten"
   },
   "chat": {
     "messagePlaceholder": "Nachricht schreiben...",
@@ -1398,5 +1399,27 @@
     "trustDesc2": "Triff Gleichgesinnte — das Event beginnt schon auf der Hinfahrt.",
     "trustTitle3": "Geteilte Kosten",
     "trustDesc3": "Biete freie Plätze an oder buche einen — Sprit und Maut werden fair geteilt."
+  },
+  "reputation": {
+    "trust": {
+      "veryReliable": "Sehr zuverlässig",
+      "reliable": "Zuverlässig",
+      "growing": "Baut Vertrauen auf",
+      "newMember": "Neues Mitglied",
+      "newProfile": "Neues Profil"
+    },
+    "age": {
+      "justArrived": "Gerade beigetreten",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "days": "{count} Tage",
+      "weeks": "{count} Wochen",
+      "months": "{count} Monate",
+      "years": "{count} Jahre"
+    },
+    "noCompletionRate": "—",
+    "trustScoreLabel": "Vertrauenswert",
+    "reviewCount": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+    "rideCount": "{count, plural, one {# Fahrt} other {# Fahrten}}"
   }
 }

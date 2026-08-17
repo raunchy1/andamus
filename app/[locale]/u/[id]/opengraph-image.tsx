@@ -51,6 +51,16 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
   const trustLevel = getTrustLevel(trustScore);
   const initial = name ? name.charAt(0).toUpperCase() : "?";
 
+  // getTrustLevel returns a dictionary key; this route generates an image
+  // outside the next-intl context, so it resolves the key inline like the
+  // other labels in this file.
+  const TRUST_TEXT: Record<string, Record<string, string>> = {
+    it: { veryReliable: "Molto affidabile", reliable: "Affidabile", growing: "In crescita", newMember: "Nuovo membro", newProfile: "Nuovo profilo" },
+    en: { veryReliable: "Very reliable", reliable: "Reliable", growing: "Building trust", newMember: "New member", newProfile: "New profile" },
+    de: { veryReliable: "Sehr zuverlässig", reliable: "Zuverlässig", growing: "Baut Vertrauen auf", newMember: "Neues Mitglied", newProfile: "Neues Profil" },
+  };
+  const trustText = (TRUST_TEXT[locale] ?? TRUST_TEXT.it)[trustLevel.label] ?? "";
+
   const titleText = locale === "it" ? "Profilo su Andamus" : locale === "de" ? "Profil bei Andamus" : "Profile on Andamus";
   const ridesLabel = locale === "it" ? "corse" : locale === "de" ? "Fahrten" : "rides";
   const reviewsLabel = locale === "it" ? "recensioni" : locale === "de" ? "Bewertungen" : "reviews";
@@ -187,7 +197,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
                     color: trustScore >= 60 ? "#34d399" : trustScore >= 40 ? "#fbbf24" : "rgba(255,255,255,0.5)",
                   }}
                 >
-                  {trustLevel.label}
+                  {trustText}
                 </span>
                 <span style={{ fontSize: 18, color: "rgba(255,255,255,0.3)" }}>{trustScore}/100</span>
               </div>

@@ -24,7 +24,7 @@ import { EmailPreferences } from "@/components/EmailPreferences";
 import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
-import { computeTrustScore, getTrustLevel, formatAccountAge, getResponseSpeed, getCompletionRate } from "@/lib/reputation";
+import { computeTrustScore, getTrustLevel, getAccountAge, getCompletionRate } from "@/lib/reputation";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -206,6 +206,7 @@ export default function ProfilePage() {
   const deviceType = useDeviceType();
   const t = useTranslations("profile");
   const tl = useTranslations("levels");
+  const tRep = useTranslations("reputation");
   const locale = useLocale();
 
   useEffect(() => {
@@ -659,7 +660,7 @@ export default function ProfilePage() {
     return date < new Date();
   };
 
-  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel, responseSpeed, completionRate } = useMemo(() => {
+  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel, completionRate } = useMemo(() => {
     const cRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
     const cBookings = myBookings.filter(b => b.status === 'confirmed');
     let km = 0;
@@ -680,8 +681,7 @@ export default function ProfilePage() {
 
     const score = profile ? computeTrustScore(profile) : 0;
     const label = getTrustLevel(score);
-    const speed = profile ? getResponseSpeed(profile.rating) : "Risponde subito";
-    const rate = profile ? getCompletionRate(profile.completed_rides_count ?? null, profile.rides_count ?? null) : 100;
+    const rate = profile ? getCompletionRate(profile.completed_rides_count ?? null, profile.rides_count ?? null) : null;
 
     return {
       completedRides: cRides,
@@ -691,7 +691,6 @@ export default function ProfilePage() {
       levelInfo: profile ? getLevelInfo(profile.points) : null,
       trustScore: score,
       trustLabel: label,
-      responseSpeed: speed,
       completionRate: rate,
     };
   }, [myRides, myBookings, profile]);
@@ -726,7 +725,7 @@ export default function ProfilePage() {
           onTouchCancel={handleTouchCancel}
         >
         <AuroraBackground className="border-b border-white/5">
-          <OrbGlow className="-top-10 -right-20" color="#4FB3C9" size={260} opacity={0.32} />
+          <OrbGlow className="-top-10 -right-20" color="var(--accent)" size={260} opacity={0.32} />
           <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
             <div className="flex items-center gap-3">
               <Link href={`/${locale}/profilo`} className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
@@ -756,7 +755,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={() => setShowLogoutConfirm(true)}
-                className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-[#4FB3C9] hover:bg-white/[0.08] transition-all active:scale-95"
+                className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-accent hover:bg-white/[0.08] transition-all active:scale-95"
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -769,9 +768,9 @@ export default function ProfilePage() {
           <section className="px-4 sm:px-6 py-8 flex flex-col items-center overflow-x-hidden">
             <div className="relative w-40 h-40 flex items-center justify-center">
               <svg className="custom-ring w-full h-full absolute">
-                <circle className="text-white/8" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
+                <circle className="text-line" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
                 <circle
-                  className="text-[#4FB3C9]"
+                  className="text-accent"
                   cx="80"
                   cy="80"
                   fill="transparent"
@@ -784,17 +783,22 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-1">{t("level")}</span>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-1">{t("level")}</span>
                 <span className="text-4xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
-              <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
+              <div className="absolute -bottom-2 bg-accent text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-accent/40">
                 {t("pointsBadge", { points: profile?.points ?? 0 })}
               </div>
             </div>
             <div className="mt-8 text-center">
               <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-fg">{userName}</h2>
               <p className="text-muted text-sm font-medium opacity-80 uppercase tracking-widest">
-                {t("memberSince", { age: formatAccountAge(profile?.created_at || user?.created_at) })}
+                {t("memberSince", {
+                  age: (() => {
+                    const a = getAccountAge(profile?.created_at || user?.created_at);
+                    return tRep(`age.${a.unit}`, { count: a.count });
+                  })(),
+                })}
               </p>
               {streak && streak.current > 1 && (
                 <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
@@ -806,7 +810,7 @@ export default function ProfilePage() {
             {/* Onboarding Milestone Banner */}
             {profile && (!profile.avatar_url || !profile.car_model || !profile.phone_verified) && (
               <div 
-                className="w-full mt-6 bg-gradient-to-br from-[#4FB3C9]/20 to-[#4FB3C9]/10 border border-[#4FB3C9]/30 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
+                className="w-full mt-6 bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
                 onClick={() => document.getElementById("profile-settings")?.scrollIntoView({ behavior: "smooth" })}
               >
                 <div className="flex-1">
@@ -815,8 +819,8 @@ export default function ProfilePage() {
                     Aggiungi {!profile.avatar_url ? "una foto" : !profile.phone_verified ? "il tuo numero" : "la tua auto"} per aumentare la fiducia e ricevere più prenotazioni.
                   </p>
                 </div>
-                <div className="ml-4 shrink-0 bg-[#4FB3C9]/20 p-2 rounded-full">
-                  <ChevronRight className="w-4 h-4 text-[#4FB3C9]" />
+                <div className="ml-4 shrink-0 bg-accent/20 p-2 rounded-full">
+                  <ChevronRight className="w-4 h-4 text-accent" />
                 </div>
               </div>
             )}
@@ -826,9 +830,9 @@ export default function ProfilePage() {
           <section className="px-4 sm:px-6 mb-12">
             <RevealStagger className="grid grid-cols-2 gap-3">
               <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                  <Car className="w-5 h-5 text-[#4FB3C9]" />
+              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
+                  <Car className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-fg">
@@ -839,9 +843,9 @@ export default function ProfilePage() {
               </TiltCard>
               </RevealItem>
               <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                  <Route className="w-5 h-5 text-[#4FB3C9]" />
+              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
+                  <Route className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-fg">
@@ -852,9 +856,9 @@ export default function ProfilePage() {
               </TiltCard>
               </RevealItem>
               <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                  <Star className="w-5 h-5 text-[#4FB3C9]" />
+              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
+                  <Star className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-fg">
@@ -873,33 +877,22 @@ export default function ProfilePage() {
                   <p className="text-2xl font-extrabold text-fg">
                     <AnimatedCounter value={trustScore} suffix="%" />
                   </p>
-                  <p className={`text-[10px] font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
+                  <p className={`text-[10px] font-bold uppercase tracking-wider ${trustLabel.color}`}>{tRep(`trust.${trustLabel.label}`)}</p>
                 </div>
               </TiltCard>
               </RevealItem>
               <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                  <Repeat className="w-5 h-5 text-[#4FB3C9]" />
+              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
+                  <Repeat className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-fg">
-                    <AnimatedCounter value={completionRate} suffix="%" />
+                    {completionRate === null
+                      ? tRep("noCompletionRate")
+                      : <AnimatedCounter value={completionRate} suffix="%" />}
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Corse completate</p>
-                </div>
-              </TiltCard>
-              </RevealItem>
-              <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-white/[0.025] border border-white/8 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                  <MessageCircle className="w-5 h-5 text-[#4FB3C9]" />
-                </div>
-                <div>
-                  <p className="text-sm font-extrabold text-fg truncate max-w-[140px]">
-                    {responseSpeed}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Risposta</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("completedRidesLabel")}</p>
                 </div>
               </TiltCard>
               </RevealItem>
@@ -955,16 +948,16 @@ export default function ProfilePage() {
           <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
             <Reveal>
             <Link href={`/${locale}/profilo/veicoli`} className="block">
-              <div className="bg-gradient-to-br from-[#4FB3C9]/[0.08] to-transparent border border-[#4FB3C9]/20 rounded-2xl p-5 flex items-center gap-4 hover:border-[#4FB3C9]/40 hover:from-[#4FB3C9]/[0.12] transition-all group">
-                <div className="w-14 h-14 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <Car className="w-7 h-7 text-[#4FB3C9]" />
+              <div className="bg-gradient-to-br from-accent/[0.08] to-transparent border border-accent/20 rounded-2xl p-5 flex items-center gap-4 hover:border-accent/40 hover:from-accent/[0.12] transition-all group">
+                <div className="w-14 h-14 rounded-2xl bg-accent-dim ring-1 ring-accent/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Car className="w-7 h-7 text-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-headline font-bold text-lg text-fg">I tuoi Veicoli</p>
                   <p className="text-sm text-fg/50 truncate">Gestisci il tuo garage, aggiungi foto e comfort</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9] mt-1">Nuovo ✨</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-accent mt-1">Nuovo ✨</p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-fg/30 group-hover:text-[#4FB3C9] group-hover:translate-x-1 transition-all flex-shrink-0" />
+                <ChevronRight className="w-6 h-6 text-fg/30 group-hover:text-accent group-hover:translate-x-1 transition-all flex-shrink-0" />
               </div>
             </Link>
             </Reveal>
@@ -1232,7 +1225,7 @@ export default function ProfilePage() {
                   <EmptyState
                     title={t("noRecurringRides")}
                     description={t("noRecurringRidesDescription")}
-                    icon={<Repeat className="w-12 h-12 text-[#4FB3C9]" />}
+                    icon={<Repeat className="w-12 h-12 text-accent" />}
                     action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
                   />
                 ) : (
@@ -1277,7 +1270,7 @@ export default function ProfilePage() {
                   <EmptyState
                     title={t("noAlerts")}
                     description={t("noAlertsDescription")}
-                    icon={<Bell className="w-12 h-12 text-[#4FB3C9]" />}
+                    icon={<Bell className="w-12 h-12 text-accent" />}
                     action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
                   />
                 ) : (
@@ -1388,18 +1381,18 @@ export default function ProfilePage() {
   }
   function ProfileDesktop() {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-fg pb-16 relative">
+      <div className="min-h-screen bg-bg text-fg pb-16 relative">
         <AuroraBackground className="absolute inset-x-0 top-0 h-[520px] -z-10 pointer-events-none" showRadialMask={false}>
-          <OrbGlow className="-top-20 -left-20" color="#4FB3C9" size={340} opacity={0.30} />
+          <OrbGlow className="-top-20 -left-20" color="var(--accent)" size={340} opacity={0.30} />
         </AuroraBackground>
         <div className="max-w-6xl mx-auto px-8 py-10 relative">
           <Reveal>
           <section className="flex items-center gap-10 mb-12">
             <div className="relative w-48 h-48 flex items-center justify-center">
               <svg className="custom-ring w-full h-full absolute">
-                <circle className="text-white/8" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
+                <circle className="text-line" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
                 <circle
-                  className="text-[#4FB3C9]"
+                  className="text-accent"
                   cx="96"
                   cy="96"
                   fill="transparent"
@@ -1412,10 +1405,10 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="text-center z-10">
-                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-1">{t("level")}</span>
+                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-accent mb-1">{t("level")}</span>
                 <span className="text-5xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
               </div>
-              <div className="absolute -bottom-2 bg-[#4FB3C9] text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-[#4FB3C9]/40">
+              <div className="absolute -bottom-2 bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-accent/40">
                 {t("pointsBadge", { points: profile?.points ?? 0 })}
               </div>
             </div>
@@ -1424,7 +1417,12 @@ export default function ProfilePage() {
                 <GradientText>{userName}</GradientText>
               </h2>
               <p className="text-muted text-base font-medium opacity-80 uppercase tracking-widest">
-                {t("memberSince", { age: formatAccountAge(profile?.created_at || user?.created_at) })}
+                {t("memberSince", {
+                  age: (() => {
+                    const a = getAccountAge(profile?.created_at || user?.created_at);
+                    return tRep(`age.${a.unit}`, { count: a.count });
+                  })(),
+                })}
               </p>
               {streak && streak.current > 1 && (
                 <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
@@ -1437,9 +1435,9 @@ export default function ProfilePage() {
 
           <RevealStagger className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
             <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                <Car className="w-6 h-6 text-[#4FB3C9]" />
+            <TiltCard tiltStrength={6} className="bg-surface border border-line p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-dim ring-1 ring-accent/20">
+                <Car className="w-6 h-6 text-accent" />
               </div>
               <div>
                 <p className="text-4xl font-extrabold text-fg">
@@ -1450,9 +1448,9 @@ export default function ProfilePage() {
             </TiltCard>
             </RevealItem>
             <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                <Route className="w-6 h-6 text-[#4FB3C9]" />
+            <TiltCard tiltStrength={6} className="bg-surface border border-line p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-dim ring-1 ring-accent/20">
+                <Route className="w-6 h-6 text-accent" />
               </div>
               <div>
                 <p className="text-4xl font-extrabold">
@@ -1463,9 +1461,9 @@ export default function ProfilePage() {
             </TiltCard>
             </RevealItem>
             <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-white/[0.025] border border-white/8 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 ring-1 ring-[#4FB3C9]/20">
-                <Star className="w-6 h-6 text-[#4FB3C9]" />
+            <TiltCard tiltStrength={6} className="bg-surface border border-line p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-dim ring-1 ring-accent/20">
+                <Star className="w-6 h-6 text-accent" />
               </div>
               <div>
                 <p className="text-4xl font-extrabold text-fg">
@@ -1484,7 +1482,7 @@ export default function ProfilePage() {
                 <p className="text-4xl font-extrabold text-fg">
                   <AnimatedCounter value={trustScore} suffix="%" />
                 </p>
-                <p className={`text-xs font-bold uppercase tracking-wider ${trustLabel.color}`}>{trustLabel.label}</p>
+                <p className={`text-xs font-bold uppercase tracking-wider ${trustLabel.color}`}>{tRep(`trust.${trustLabel.label}`)}</p>
               </div>
             </TiltCard>
             </RevealItem>
@@ -1688,7 +1686,7 @@ export default function ProfilePage() {
                       <EmptyState
                         title={t("noRecurringRides")}
                         description={t("noRecurringRidesDescription")}
-                        icon={<Repeat className="w-12 h-12 text-[#4FB3C9]" />}
+                        icon={<Repeat className="w-12 h-12 text-accent" />}
                         action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
                       />
                     ) : (
@@ -1733,7 +1731,7 @@ export default function ProfilePage() {
                       <EmptyState
                         title={t("noAlerts")}
                         description={t("noAlertsDescription")}
-                        icon={<Bell className="w-12 h-12 text-[#4FB3C9]" />}
+                        icon={<Bell className="w-12 h-12 text-accent" />}
                         action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
                       />
                     ) : (
