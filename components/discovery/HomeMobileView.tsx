@@ -63,6 +63,12 @@ interface HomeMobileViewProps {
     howItWorksStep3: string
     close: string
     welcomeBack?: string
+    greetingMorning: string
+    greetingAfternoon: string
+    greetingEvening: string
+    featuredToday: string
+    withDriver: string
+    driverFallback: string
   }
   savedRoutes: Array<{ id: string; from_city: string; to_city: string }>
   router: ReturnType<typeof useRouter>
@@ -71,12 +77,11 @@ interface HomeMobileViewProps {
   setShowInlineOnboarding: (value: boolean) => void
 }
 
-const FREQUENT_ROUTES = [
-  { from: "Cagliari", to: "Olbia",   count: 8, minPrice: 14 },
-  { from: "Sassari",  to: "Alghero", count: 12, minPrice: 4 },
-  { from: "Nuoro",    to: "Cagliari",count: 5,  minPrice: 11 },
-  { from: "Oristano", to: "Bosa",    count: 3,  minPrice: 6 },
-]
+function formatRideDate(date: string, locale: string) {
+  const d = new Date(date)
+  if (Number.isNaN(d.getTime())) return date
+  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(d)
+}
 
 function getInitials(name?: string) {
   if (!name) return "?"
@@ -88,11 +93,11 @@ function getInitials(name?: string) {
     .toUpperCase()
 }
 
-function greeting() {
+function greeting(t: HomeMobileViewProps["translations"]) {
   const h = new Date().getHours()
-  if (h < 12) return "Buongiorno"
-  if (h < 18) return "Buonasera"
-  return "Buonanotte"
+  if (h < 12) return t.greetingMorning
+  if (h < 18) return t.greetingAfternoon
+  return t.greetingEvening
 }
 
 export function HomeMobileView({
@@ -143,7 +148,7 @@ export function HomeMobileView({
       >
         <div>
           <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 2 }}>
-            {greeting()}
+            {greeting(t)}
           </p>
           <h1
             style={{
@@ -392,7 +397,7 @@ export function HomeMobileView({
             }}
           >
             <Search size={18} strokeWidth={2} />
-            Cerca passaggi
+            {t.heroSearchButton}
           </button>
         </div>
       </form>
@@ -433,7 +438,7 @@ export function HomeMobileView({
                   marginBottom: 8,
                 }}
               >
-                Il tuo prossimo viaggio
+                {t.featuredToday}
               </p>
               <p
                 style={{
@@ -442,7 +447,7 @@ export function HomeMobileView({
                   marginBottom: 4,
                 }}
               >
-                {nextRide.date === today ? "Oggi" : nextRide.date} · {nextRide.time?.slice(0, 5)}
+                {nextRide.date === today ? t.today : formatRideDate(nextRide.date, locale)} · {nextRide.time?.slice(0, 5)}
               </p>
               <h3
                 style={{
@@ -456,7 +461,7 @@ export function HomeMobileView({
                 {nextRide.from_city} → {nextRide.to_city}
               </h3>
               <p style={{ fontSize: 13, color: "rgba(244,241,234,.6)", margin: 0 }}>
-                con {nextRide.profiles?.name ?? "Conducente"}
+                {t.withDriver.replace("{name}", nextRide.profiles?.name ?? t.driverFallback)}
               </p>
               {/* arrow */}
               <div
@@ -648,63 +653,6 @@ export function HomeMobileView({
         </section>
       )}
 
-      {/* ── Tratte frequenti ──────────────────────────── */}
-      <section style={{ padding: "28px 0 0" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 22px",
-            marginBottom: 14,
-          }}
-        >
-          <h2 style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.3px", color: "var(--ink)", margin: 0 }}>
-            Tratte frequenti
-          </h2>
-          <Link
-            href={`/${locale}/cerca`}
-            style={{ fontSize: 13, color: "var(--green)", fontWeight: 500 }}
-          >
-            Vedi tutte
-          </Link>
-        </div>
-        <div
-          style={{ display: "flex", gap: 10, overflowX: "auto", padding: "0 16px 4px" }}
-          className="no-scrollbar"
-        >
-          {FREQUENT_ROUTES.map((r) => (
-            <button
-              key={`${r.from}-${r.to}`}
-              type="button"
-              onClick={() => {
-                setOrigin(r.from)
-                setDestination(r.to)
-                router.push(`/${locale}/cerca?from=${encodeURIComponent(r.from)}&to=${encodeURIComponent(r.to)}`)
-              }}
-              style={{
-                flexShrink: 0,
-                width: 172,
-                background: "var(--surface)",
-                borderRadius: 20,
-                padding: "16px 16px",
-                border: "1px solid var(--line)",
-                textAlign: "left",
-                cursor: "pointer",
-                transition: "border-color 0.2s",
-              }}
-            >
-              <p style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", margin: "0 0 4px" }}>
-                {r.from} → {r.to}
-              </p>
-              <p style={{ fontSize: 12.5, color: "var(--muted)", margin: 0 }}>
-                {r.count} oggi · da {r.minPrice} €
-              </p>
-            </button>
-          ))}
-        </div>
-      </section>
-
       {/* ── Passaggi di oggi ──────────────────────────── */}
       <section style={{ padding: "28px 16px 0" }}>
         <div
@@ -775,42 +723,6 @@ export function HomeMobileView({
         )}
       </section>
 
-      {/* ── CO2 banner ────────────────────────────────── */}
-      <section style={{ padding: "24px 16px 0" }}>
-        <div
-          style={{
-            background: "var(--sand-deep)",
-            borderRadius: 22,
-            padding: "18px 18px",
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-          }}
-        >
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 14,
-              background: "var(--green)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <MapPin size={20} strokeWidth={1.7} color="#fff" />
-          </div>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)", margin: "0 0 2px" }}>
-              2.140 kg di CO₂ risparmiati
-            </p>
-            <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
-              dalla community in Sardegna questa settimana
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }

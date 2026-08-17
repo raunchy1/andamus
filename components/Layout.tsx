@@ -2,6 +2,7 @@
 
 import { useDeviceType } from "./view-mode";
 import { BottomNav } from "./BottomNav";
+import { Footer } from "./footer";
 import { usePathname } from "next/navigation";
 
 /** Active conversation thread — not the inbox list. */
@@ -52,9 +53,12 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-bg overflow-x-hidden">
       <div className="relative w-full min-h-screen overflow-x-hidden">
-        <main className="flex-1 w-full pt-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] min-h-[100dvh] overflow-x-hidden">
+        <main className="flex-1 w-full pt-16 min-h-[100dvh] overflow-x-hidden">
           {children}
         </main>
+        <div className="pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
+          <Footer />
+        </div>
         <BottomNav />
       </div>
     </div>
@@ -89,6 +93,7 @@ function DesktopLayout({ children }: { children: React.ReactNode }) {
       <main className="pt-20 pb-16 max-w-6xl mx-auto px-6 lg:px-8 min-h-screen">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }

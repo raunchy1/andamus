@@ -80,7 +80,13 @@
     "feature3Description": "Parli direttamente con conducente e passeggeri, senza intermediari.",
     "ctaTitle": "Hai posti liberi in auto?",
     "ctaDescription": "Pubblica un passaggio e dividi le spese di viaggio.",
-    "quickGuide": "Guida rapida"
+    "quickGuide": "Guida rapida",
+    "greetingMorning": "Buongiorno",
+    "greetingAfternoon": "Buon pomeriggio",
+    "greetingEvening": "Buonasera",
+    "featuredToday": "In evidenza oggi",
+    "withDriver": "con {name}",
+    "driverFallback": "Conducente"
   },
   "search": {
     "title": "Cerca un passaggio",
@@ -1170,7 +1176,8 @@
     "version": "Versione",
     "allRightsReserved": "Tutti i diritti riservati",
     "terms": "Termini",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "deleteAccount": "Elimina account"
   },
   "share": {
     "discoveredMessage": "Ho scoperto Andamus, il carpooling della Sardegna.",
@@ -1296,5 +1303,40 @@
     "legend2To4": "2-4 passaggi",
     "legend1": "1 passaggio",
     "confirm": "Conferma"
+  },
+  "cookies": {
+    "title": "Cookie e privacy",
+    "description": "Usiamo i cookie per far funzionare l’app e, se acconsenti, per capire come viene usata.",
+    "readPolicy": "Leggi l’informativa privacy",
+    "necessaryTitle": "Necessari",
+    "necessaryDesc": "Indispensabili per accesso, prenotazioni e pagamenti.",
+    "analyticsTitle": "Analitici",
+    "analyticsDesc": "Ci aiutano a capire quali funzioni vengono usate.",
+    "functionalTitle": "Funzionali",
+    "functionalDesc": "Ricordano lingua e filtri di ricerca.",
+    "back": "Indietro",
+    "save": "Salva preferenze",
+    "customize": "Personalizza",
+    "necessaryOnly": "Solo necessari",
+    "acceptAll": "Accetta tutto",
+    "close": "Chiudi"
+  },
+  "deleteAccount": {
+    "title": "Eliminazione dell’account",
+    "intro": "Puoi eliminare il tuo account Andamus e tutti i dati collegati in qualsiasi momento. L’operazione è definitiva e non può essere annullata.",
+    "whatTitle": "Cosa viene eliminato",
+    "what1": "Profilo, nome, email, telefono e foto",
+    "what2": "Passaggi pubblicati e prenotazioni effettuate",
+    "what3": "Messaggi in chat e valutazioni",
+    "what4": "Veicoli, preferenze e notifiche",
+    "retentionTitle": "Cosa conserviamo e per quanto",
+    "retention": "Conserviamo le ricevute di pagamento per 10 anni, come richiesto dalla normativa fiscale italiana. Sono conservate separatamente e non collegate al tuo profilo. Tutto il resto viene rimosso immediatamente.",
+    "inAppTitle": "Dall’app",
+    "inAppDesc": "Accedi e vai su Profilo → Impostazioni → Elimina account.",
+    "inAppCta": "Accedi ed elimina l’account",
+    "emailTitle": "Via email",
+    "emailDesc": "Se non riesci ad accedere, scrivici dall’indirizzo email associato al tuo account. Elaboriamo la richiesta entro 30 giorni.",
+    "emailCta": "Scrivi a privacy@andamus.it",
+    "backHome": "Torna alla home"
   }
 }

@@ -80,7 +80,13 @@
     "feature3Description": "Du sprichst direkt mit Fahrer und Mitfahrern, ohne Zwischenhändler.",
     "ctaTitle": "Hast du freie Plätze im Auto?",
     "ctaDescription": "Veröffentliche eine Mitfahrgelegenheit und teile die Reisekosten.",
-    "quickGuide": "Kurzanleitung"
+    "quickGuide": "Kurzanleitung",
+    "greetingMorning": "Guten Morgen",
+    "greetingAfternoon": "Guten Tag",
+    "greetingEvening": "Guten Abend",
+    "featuredToday": "Heute hervorgehoben",
+    "withDriver": "mit {name}",
+    "driverFallback": "Fahrer"
   },
   "search": {
     "title": "Mitfahrgelegenheit suchen",
@@ -1170,7 +1176,8 @@
     "version": "Version",
     "allRightsReserved": "Alle Rechte vorbehalten",
     "terms": "AGB",
-    "privacy": "Datenschutz"
+    "privacy": "Datenschutz",
+    "deleteAccount": "Konto löschen"
   },
   "share": {
     "discoveredMessage": "Ich habe Andamus gefunden, Mitfahrgelegenheiten auf Sardinien.",
@@ -1296,5 +1303,40 @@
     "legend2To4": "2-4 Mitfahrgelegenheiten",
     "legend1": "1 Mitfahrgelegenheit",
     "confirm": "Bestätigen"
+  },
+  "cookies": {
+    "title": "Cookies und Datenschutz",
+    "description": "Wir verwenden Cookies, damit die App funktioniert — und mit deiner Zustimmung, um zu verstehen, wie sie genutzt wird.",
+    "readPolicy": "Datenschutzerklärung lesen",
+    "necessaryTitle": "Notwendig",
+    "necessaryDesc": "Erforderlich für Anmeldung, Buchungen und Zahlungen.",
+    "analyticsTitle": "Analyse",
+    "analyticsDesc": "Helfen uns zu verstehen, welche Funktionen genutzt werden.",
+    "functionalTitle": "Funktional",
+    "functionalDesc": "Merken sich Sprache und Suchfilter.",
+    "back": "Zurück",
+    "save": "Einstellungen speichern",
+    "customize": "Anpassen",
+    "necessaryOnly": "Nur notwendige",
+    "acceptAll": "Alle akzeptieren",
+    "close": "Schließen"
+  },
+  "deleteAccount": {
+    "title": "Konto löschen",
+    "intro": "Du kannst dein Andamus-Konto und alle zugehörigen Daten jederzeit löschen. Der Vorgang ist endgültig und kann nicht rückgängig gemacht werden.",
+    "whatTitle": "Was gelöscht wird",
+    "what1": "Profil, Name, E-Mail, Telefon und Foto",
+    "what2": "Veröffentlichte Fahrten und getätigte Buchungen",
+    "what3": "Chat-Nachrichten und Bewertungen",
+    "what4": "Fahrzeuge, Einstellungen und Benachrichtigungen",
+    "retentionTitle": "Was wir aufbewahren und wie lange",
+    "retention": "Zahlungsbelege bewahren wir 10 Jahre auf, wie es das italienische Steuerrecht verlangt. Sie werden getrennt gespeichert und sind nicht mit deinem Profil verknüpft. Alles andere wird sofort entfernt.",
+    "inAppTitle": "Über die App",
+    "inAppDesc": "Melde dich an und gehe zu Profil → Einstellungen → Konto löschen.",
+    "inAppCta": "Anmelden und Konto löschen",
+    "emailTitle": "Per E-Mail",
+    "emailDesc": "Wenn du dich nicht anmelden kannst, schreibe uns von der mit deinem Konto verknüpften Adresse. Wir bearbeiten Anfragen innerhalb von 30 Tagen.",
+    "emailCta": "E-Mail an privacy@andamus.it",
+    "backHome": "Zurück zur Startseite"
   }
 }
