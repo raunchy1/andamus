@@ -103,6 +103,8 @@ function HomeMobile(props: HomeViewProps) {
       todayRides={props.todayRides}
       loading={props.loading}
       locale={props.locale}
+      userName={props.userName}
+      userAvatar={props.userAvatar}
       translations={props.translations}
       savedRoutes={props.savedRoutes}
       router={props.router}

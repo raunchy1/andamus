@@ -81,157 +81,194 @@ export function SearchMobileView(props: SearchViewProps) {
 
   const filterPills = buildSearchFilterPills(props, t)
 
+  const routeTitle = [origin, destination].filter(Boolean).join(" → ") || t("title")
+  const subtitleParts = [
+    dateFrom ? formatDate?.(dateFrom) : null,
+    minSeats > 1 ? `${minSeats} posti` : null,
+    rides.length > 0 ? `${rides.length} passaggi` : null,
+  ].filter(Boolean)
+
   return (
-    <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
-      <header className="px-4 sm:px-6 pt-6 pb-4 border-b border-line">
-        <p className="text-eyebrow">// {t("resultsCount", { count: rides.length })}</p>
-        <h1 className="mt-2 font-h2 heading-editorial text-fg">{t("title")}</h1>
+    <div style={{ background: "var(--sand)", minHeight: "100dvh" }} className="overflow-x-hidden">
+      {/* ── Sticky header ──────────────────────────────── */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 30,
+          background: "var(--sand)",
+          borderBottom: "1px solid var(--line)",
+          padding: "60px 22px 14px",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: 17,
+            fontWeight: 600,
+            color: "var(--ink)",
+            margin: "0 0 2px",
+            letterSpacing: "-0.3px",
+          }}
+        >
+          {routeTitle}
+        </h1>
+        {subtitleParts.length > 0 && (
+          <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
+            {subtitleParts.join(" · ")}
+          </p>
+        )}
       </header>
 
+      {/* ── Chip filter row ────────────────────────────── */}
+      <div
+        style={{ display: "flex", gap: 8, overflowX: "auto", padding: "12px 16px" }}
+        className="no-scrollbar"
+      >
+        {/* Filtri (dark) */}
+        <button
+          type="button"
+          onClick={() => setShowFilters(true)}
+          style={{
+            flexShrink: 0,
+            height: 34,
+            padding: "0 14px",
+            borderRadius: 999,
+            background: "var(--ink)",
+            color: "var(--sand)",
+            fontSize: 13,
+            fontWeight: 500,
+            border: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            cursor: "pointer",
+          }}
+        >
+          <SlidersHorizontal size={13} strokeWidth={1.7} />
+          Filtri
+          {activeFiltersCount > 0 && (
+            <span
+              style={{
+                background: "var(--green)",
+                color: "#fff",
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 600,
+                padding: "1px 6px",
+              }}
+            >
+              {activeFiltersCount}
+            </span>
+          )}
+        </button>
+
+        {/* Dynamic filter chips */}
+        {getFilterOptions(t)
+          .filter((o) => o.id !== "all")
+          .map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
+              style={{
+                flexShrink: 0,
+                height: 34,
+                padding: "0 14px",
+                borderRadius: 999,
+                background: activeFilter === option.id ? "var(--green-tint)" : "var(--surface)",
+                color: activeFilter === option.id ? "var(--green)" : "var(--muted)",
+                fontSize: 13,
+                fontWeight: 500,
+                border: `1px solid ${activeFilter === option.id ? "var(--green-tint)" : "var(--line)"}`,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+      </div>
+
+      {/* ── Pull-to-refresh indicator ──────────────────── */}
+      {pullDistance > 0 && (
+        <div
+          style={{ height: pullDistance, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <RefreshCw
+            className={isRefreshing ? "animate-spin" : ""}
+            size={18}
+            strokeWidth={1.5}
+            style={{ color: "var(--muted)", transform: `rotate(${pullDistance * 2}deg)` }}
+          />
+        </div>
+      )}
+
+      {/* ── Results list ──────────────────────────────── */}
       <main
-        className="px-4 sm:px-6 max-w-2xl mx-auto overflow-x-hidden pb-8"
+        style={{ padding: "0 16px 96px", display: "flex", flexDirection: "column", gap: 10 }}
         ref={resultsRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
       >
-        <div
-          className="flex justify-center items-center h-0 overflow-visible transition-all duration-200 -mt-2 mb-2"
-          style={{ height: pullDistance > 0 ? pullDistance : 0 }}
-        >
-          <div className={`flex items-center gap-2 text-dim transition-opacity ${pullDistance > 60 ? "opacity-100" : "opacity-50"}`}>
-            <RefreshCw
-              className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`}
-              strokeWidth={1.5}
-              style={{ transform: `rotate(${pullDistance * 2}deg)` }}
-            />
-            <span className="font-mono text-xs">{pullDistance > 60 ? t("releaseToRefresh") : t("pullToRefresh")}</span>
-          </div>
-        </div>
+        {loading && (
+          <>
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+          </>
+        )}
 
-        <div className="sticky top-16 z-30 mb-3 border border-line rounded-[var(--radius)] bg-surface/95 backdrop-blur-sm p-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <label className="text-eyebrow lowercase">{t("fromLabel")}</label>
-              <LocationCombobox
-                value={origin}
-                onChange={setOrigin}
-                placeholder={t("departureLabel")}
-                buttonClassName="w-full"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-eyebrow lowercase">{t("toLabel")}</label>
-              <LocationCombobox
-                value={destination}
-                onChange={setDestination}
-                placeholder={t("destinationLabel")}
-                buttonClassName="w-full"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-3 space-y-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {getFilterOptions(t).map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => setActiveFilter(activeFilter === option.id ? "all" : option.id)}
-                className={`rounded-full border px-2.5 py-1 font-mono text-[10px] transition-colors ${
-                  activeFilter === option.id
-                    ? "border-accent bg-accent-dim text-fg"
-                    : "border-line text-muted hover:border-line-strong"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Button type="button" variant="ghost" size="sm" className="h-9 px-3 text-xs" onClick={() => setShowAlertModal(true)}>
-              <Bell size={14} strokeWidth={1.5} />
-              {t("alertButton")}
-            </Button>
-            <Button type="button" variant="secondary" size="sm" className="h-9 px-3 text-xs" onClick={() => setShowFilters(true)}>
-              <SlidersHorizontal size={14} strokeWidth={1.5} />
-              {t("advancedFilters")}
-              {activeFiltersCount > 0 && (
-                <span className="ml-1 font-mono text-[10px] text-accent">{activeFiltersCount}</span>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        <ActiveFilterPills pills={filterPills} />
-
-        <div className="mb-4 flex items-center justify-between">
-          <p className="font-mono text-xs text-muted">
-            {loading ? t("loading") : t("resultsCount", { count: rides.length })}
-          </p>
-          <button
-            type="button"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="p-2 rounded-full text-muted hover:text-fg hover:bg-surface-2 transition-colors"
-            aria-label={t("ariaRefresh")}
+        {!loading && hasError && (
+          <div
+            style={{
+              background: "var(--surface)",
+              borderRadius: 22,
+              padding: "40px 20px",
+              textAlign: "center",
+              border: "1px solid var(--line)",
+              marginTop: 8,
+            }}
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} strokeWidth={1.5} />
-          </button>
-        </div>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 16 }}>{t("searchError")}</p>
+            <Button type="button" variant="primary" onClick={handleRefresh}>
+              {t("retry")}
+            </Button>
+          </div>
+        )}
 
-        <div className="space-y-3">
-          {loading && (
-            <>
-              <RideCardSkeleton />
-              <RideCardSkeleton />
-              <RideCardSkeleton />
-            </>
-          )}
+        {!loading && !hasError && rides.length === 0 && (
+          <EmptyStateSearch
+            hasFilters={activeFiltersCount > 0}
+            onClearFilters={clearFilters}
+            onCreateRequest={() => setShowCreateModal?.(true)}
+            onCreateAlert={() => setShowAlertModal(true)}
+            fromCity={origin}
+            toCity={destination}
+            searchDate={dateFrom}
+            onSelectSuggestion={(sFrom, sTo, sDate) => {
+              if (sFrom !== undefined) setOrigin(sFrom)
+              if (sTo !== undefined) setDestination(sTo)
+              if (sDate !== undefined) setDateFrom(sDate || "")
+            }}
+          />
+        )}
 
-          {!loading && hasError && (
-            <div className="border border-line rounded-[var(--radius)] bg-surface py-12 text-center">
-              <p className="text-sm text-muted mb-4">{t("searchError")}</p>
-              <Button type="button" variant="primary" onClick={handleRefresh}>
-                {t("retry")}
-              </Button>
-            </div>
-          )}
-
-          {!loading && !hasError && rides.length === 0 && (
-            <EmptyStateSearch
-              hasFilters={activeFiltersCount > 0}
-              onClearFilters={clearFilters}
-              onCreateRequest={() => setShowCreateModal?.(true)}
-              onCreateAlert={() => setShowAlertModal(true)}
-              fromCity={origin}
-              toCity={destination}
-              searchDate={dateFrom}
-              onSelectSuggestion={(sFrom, sTo, sDate) => {
-                if (sFrom !== undefined) setOrigin(sFrom)
-                if (sTo !== undefined) setDestination(sTo)
-                if (sDate !== undefined) setDateFrom(sDate || "")
-              }}
+        {!loading &&
+          !hasError &&
+          rides.map((ride: SearchViewProps["rides"][number], idx: number) => (
+            <DiscoveryRideCard
+              key={ride.id}
+              ride={ride}
+              locale={locale}
+              index={idx}
+              freeLabel={t("filterFree")}
+              seatsFormatter={(count) => t("seats", { count })}
+              formatDate={formatDate}
+              today={today}
             />
-          )}
-
-          {!loading &&
-            !hasError &&
-            rides.map((ride: SearchViewProps["rides"][number], idx: number) => (
-              <DiscoveryRideCard
-                key={ride.id}
-                ride={ride}
-                locale={locale}
-                index={idx}
-                freeLabel={t("filterFree")}
-                seatsFormatter={(count) => t("seats", { count })}
-                formatDate={formatDate}
-                today={today}
-              />
-            ))}
-        </div>
+          ))}
       </main>
 
       <SearchFiltersSheet

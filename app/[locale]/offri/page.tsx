@@ -407,7 +407,10 @@ export default function OfferPage() {
 
   const handleLogin = async () => {
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      if (result.method === "gis") {
+        window.location.reload();
+      }
     } catch {
       // ignore
     }

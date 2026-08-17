@@ -57,8 +57,8 @@ export function MeetYourRide({
       <div className="mb-10">
         {/* Section header */}
         <div className="flex items-center gap-2 mb-5">
-          <div className="w-8 h-8 rounded-xl bg-[#4FB3C9]/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-[#4FB3C9]" />
+          <div className="w-8 h-8 rounded-xl bg-[#2D6A4F]/10 flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-[#2D6A4F]" />
           </div>
           <div>
             <h3 className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-fg/40">
@@ -72,7 +72,7 @@ export function MeetYourRide({
 
         <TiltCard
           tiltStrength={3}
-          className="bg-gradient-to-br from-[#4FB3C9]/[0.06] via-transparent to-transparent border border-[#4FB3C9]/15 rounded-3xl overflow-hidden"
+          className="bg-gradient-to-br from-[#2D6A4F]/[0.06] via-transparent to-transparent border border-[#2D6A4F]/15 rounded-3xl overflow-hidden"
         >
           {/* Vehicle gallery */}
           {vehicle.images.length > 0 ? (
@@ -105,7 +105,7 @@ export function MeetYourRide({
                     <div className="flex items-center gap-1.5">
                       {vehicle.color_hex && (
                         <div
-                          className="w-3.5 h-3.5 rounded-full border border-white/10"
+                          className="w-3.5 h-3.5 rounded-full border border-line"
                           style={{ backgroundColor: vehicle.color_hex }}
                         />
                       )}
@@ -131,22 +131,22 @@ export function MeetYourRide({
             {/* Quick specs grid */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               {vehicle.seats_available && (
-                <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
-                  <Users className="w-5 h-5 text-[#4FB3C9]" />
+                <div className="bg-surface rounded-2xl p-3 flex flex-col items-center gap-1">
+                  <Users className="w-5 h-5 text-[#2D6A4F]" />
                   <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Posti</p>
                   <p className="font-bold text-fg">{vehicle.seats_available}</p>
                 </div>
               )}
               {vehicle.fuel_type && (
-                <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
-                  <Fuel className="w-5 h-5 text-[#4FB3C9]" />
+                <div className="bg-surface rounded-2xl p-3 flex flex-col items-center gap-1">
+                  <Fuel className="w-5 h-5 text-[#2D6A4F]" />
                   <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Motore</p>
                   <p className="font-bold text-fg text-center text-sm">{fuelLabel}</p>
                 </div>
               )}
               {vehicle.transmission && (
-                <div className="bg-white/[0.03] rounded-2xl p-3 flex flex-col items-center gap-1">
-                  <Settings className="w-5 h-5 text-[#4FB3C9]" />
+                <div className="bg-surface rounded-2xl p-3 flex flex-col items-center gap-1">
+                  <Settings className="w-5 h-5 text-[#2D6A4F]" />
                   <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Cambio</p>
                   <p className="font-bold text-fg text-center text-sm">{transLabel}</p>
                 </div>
@@ -164,15 +164,15 @@ export function MeetYourRide({
                 </div>
               )}
               {score.total >= 80 && (
-                <div className="flex items-center gap-1.5 bg-[#4FB3C9]/10 border border-[#4FB3C9]/20 px-3 py-1.5 rounded-full">
-                  <Star className="w-3.5 h-3.5 text-[#4FB3C9] fill-current" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#4FB3C9]">
+                <div className="flex items-center gap-1.5 bg-[#2D6A4F]/10 border border-[#2D6A4F]/20 px-3 py-1.5 rounded-full">
+                  <Star className="w-3.5 h-3.5 text-[#2D6A4F] fill-current" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#2D6A4F]">
                     Profilo Completo
                   </span>
                 </div>
               )}
               {vehicle.rides_count > 0 && (
-                <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+                <div className="flex items-center gap-1.5 bg-surface border border-line px-3 py-1.5 rounded-full">
                   <Car className="w-3.5 h-3.5 text-fg/50" />
                   <span className="text-[10px] font-bold uppercase tracking-wider text-fg/50">
                     {vehicle.rides_count} corse effettuate
@@ -183,7 +183,7 @@ export function MeetYourRide({
 
             {/* Description */}
             {vehicle.description && (
-              <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 mb-4">
+              <div className="bg-surface border border-line rounded-2xl p-4 mb-4">
                 <p className="text-sm text-fg/70 leading-relaxed italic">
                   &ldquo;{vehicle.description}&rdquo;
                 </p>
@@ -200,7 +200,7 @@ export function MeetYourRide({
                   {featureIcons.map((feature) => (
                     <span
                       key={feature.key}
-                      className="inline-flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-3 py-1.5 rounded-full text-sm text-fg/70"
+                      className="inline-flex items-center gap-1.5 bg-surface border border-line px-3 py-1.5 rounded-full text-sm text-fg/70"
                     >
                       <span>{feature.icon}</span>
                       <span className="text-xs font-medium">

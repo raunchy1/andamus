@@ -19,11 +19,11 @@ export function DesktopNav() {
   const currentPath = pathname.replace(`/${locale}`, "") || "/";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-nav bg-bg/90 backdrop-blur-md border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-nav bg-bg/90 backdrop-blur-md border-b border-line">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
         <Link href={`/${locale}`} className="flex items-center gap-3">
-          <Car className="w-8 h-8 text-[#4FB3C9]" />
-          <span className="text-2xl font-extrabold tracking-tighter text-white uppercase">Andamus</span>
+          <Car className="w-8 h-8 text-[#2D6A4F]" />
+          <span className="text-2xl font-extrabold tracking-tighter text-ink uppercase">Andamus</span>
         </Link>
 
         <div className="flex items-center gap-8">
@@ -35,7 +35,7 @@ export function DesktopNav() {
                 key={item.href}
                 href={fullHref}
                 className={`text-sm font-semibold uppercase tracking-widest transition-colors ${
-                  isActive ? "text-[#4FB3C9]" : "text-white/50 hover:text-white"
+                  isActive ? "text-green" : "text-muted hover:text-ink"
                 }`}
               >
                 {t(item.labelKey)}

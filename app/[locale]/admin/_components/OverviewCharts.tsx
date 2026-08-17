@@ -31,7 +31,7 @@ interface OverviewChartsProps {
   citiesStats: CityStat[];
 }
 
-const ACCENT = "#4FB3C9";
+const ACCENT = "#2D6A4F";
 const MUTED = "#8C8C87";
 const DIM = "#5C5C58";
 const LINE = "#222220";

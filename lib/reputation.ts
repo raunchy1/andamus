@@ -71,7 +71,7 @@ export function getTrustLevel(score: number): {
   if (score >= 40)
     return { label: "In crescita", color: "text-yellow-400", emoji: "" };
   if (score >= 20)
-    return { label: "Nuovo membro", color: "text-[#4FB3C9]", emoji: "" };
+    return { label: "Nuovo membro", color: "text-[#2D6A4F]", emoji: "" };
   return { label: "Nuovo profilo", color: "text-white/50", emoji: "" };
 }
 

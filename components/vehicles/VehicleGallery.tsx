@@ -140,7 +140,7 @@ export function VehicleGallery({
         >
           {/* Close button */}
           <button
-            className="absolute top-6 right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="absolute top-6 right-6 p-3 rounded-full bg-surface text-muted hover:bg-sand-deep hover:text-ink transition-all z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             onClick={closeLightbox}
             aria-label="Chiudi galleria"
           >
@@ -151,7 +151,7 @@ export function VehicleGallery({
           {sortedImages.length > 1 && (
             <>
               <button
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-surface text-muted hover:bg-sand-deep hover:text-ink transition-all z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 onClick={(e) => {
                   e.stopPropagation();
                   prevLightbox();
@@ -161,7 +161,7 @@ export function VehicleGallery({
                 <ChevronLeft className="w-6 h-6" aria-hidden="true" />
               </button>
               <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-surface text-muted hover:bg-sand-deep hover:text-ink transition-all z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 onClick={(e) => {
                   e.stopPropagation();
                   nextLightbox();
@@ -202,7 +202,7 @@ export function VehicleGallery({
                   className={`h-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white ${
                     idx === lightboxIndex
                       ? "bg-white w-4"
-                      : "bg-white/40 hover:bg-white/70 w-1.5"
+                      : "bg-sand-deep hover:bg-line-strong w-1.5"
                   }`}
                 />
               ))}

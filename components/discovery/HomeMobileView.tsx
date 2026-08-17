@@ -2,16 +2,15 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Search, X, ChevronRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+import Image from "next/image"
+import { Search, ArrowUpDown, Calendar, Users, Bell, MapPin, ChevronRight, X } from "lucide-react"
 
 import { LocationCombobox } from "@/components/LocationCombobox"
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { DiscoveryRideCard } from "@/components/discovery/DiscoveryRideCard"
-import { saveRoute, deleteSavedRoute } from "@/lib/server/actions/saved-routes"
+import { deleteSavedRoute } from "@/lib/server/actions/saved-routes"
 import { toast } from "sonner"
-import { Analytics } from "@/lib/analytics"
+import { DiscoveryRideCard } from "@/components/discovery/DiscoveryRideCard"
 
 interface Ride {
   id: string
@@ -35,6 +34,8 @@ interface HomeMobileViewProps {
   todayRides: Ride[]
   loading: boolean
   locale: string
+  userName?: string
+  userAvatar?: string | null
   translations: {
     heroEyebrow: string
     heroHeadline: string
@@ -61,15 +62,40 @@ interface HomeMobileViewProps {
     howItWorksStep2: string
     howItWorksStep3: string
     close: string
+    welcomeBack?: string
   }
   savedRoutes: Array<{ id: string; from_city: string; to_city: string }>
-  router: { push: (url: string) => void; refresh: () => void }
+  router: ReturnType<typeof useRouter>
   suggestion: { from: string; to: string; reason: string } | null
   showInlineOnboarding: boolean
   setShowInlineOnboarding: (value: boolean) => void
 }
 
-function HomeMobileView({
+const FREQUENT_ROUTES = [
+  { from: "Cagliari", to: "Olbia",   count: 8, minPrice: 14 },
+  { from: "Sassari",  to: "Alghero", count: 12, minPrice: 4 },
+  { from: "Nuoro",    to: "Cagliari",count: 5,  minPrice: 11 },
+  { from: "Oristano", to: "Bosa",    count: 3,  minPrice: 6 },
+]
+
+function getInitials(name?: string) {
+  if (!name) return "?"
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+}
+
+function greeting() {
+  const h = new Date().getHours()
+  if (h < 12) return "Buongiorno"
+  if (h < 18) return "Buonasera"
+  return "Buonanotte"
+}
+
+export function HomeMobileView({
   origin,
   setOrigin,
   destination,
@@ -77,15 +103,16 @@ function HomeMobileView({
   todayRides,
   loading,
   locale,
+  userName,
+  userAvatar,
   translations: t,
   savedRoutes,
   router,
   suggestion,
-  showInlineOnboarding,
-  setShowInlineOnboarding,
 }: HomeMobileViewProps) {
   const today = new Date().toISOString().split("T")[0]
   const [date, setDate] = useState(today)
+  const [seats, setSeats] = useState(1)
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,153 +120,508 @@ function HomeMobileView({
     if (origin) params.set("from", origin)
     if (destination) params.set("to", destination)
     if (date && date !== today) params.set("date", date)
+    if (seats > 1) params.set("seats", String(seats))
     router.push(`/${locale}/cerca?${params.toString()}`)
   }
 
+  const handleSwap = () => {
+    setOrigin(destination)
+    setDestination(origin)
+  }
+
+  const nextRide = todayRides[0] ?? null
+
   return (
-    <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
-      <main className="flex-1 overflow-x-hidden px-4 sm:px-6 pb-8">
-        <header className="pt-6 pb-8">
-          <p className="text-eyebrow">{"// "}{t.heroEyebrow}</p>
-          <h1 className="mt-3 font-h2 heading-editorial text-fg">{t.heroHeadline}</h1>
-        </header>
+    <div
+      style={{ background: "var(--sand)", minHeight: "100dvh" }}
+      className="overflow-x-hidden pb-24"
+    >
+      {/* ── Header ─────────────────────────────────────── */}
+      <header
+        style={{ padding: "60px 22px 20px" }}
+        className="flex items-center justify-between"
+      >
+        <div>
+          <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 2 }}>
+            {greeting()}
+          </p>
+          <h1
+            style={{
+              fontSize: 26,
+              fontWeight: 600,
+              letterSpacing: "-0.6px",
+              color: "var(--ink)",
+              margin: 0,
+            }}
+          >
+            {userName?.split(" ")[0] ?? ""}
+          </h1>
+        </div>
 
-        <form onSubmit={onSubmit} className="space-y-3 border border-line rounded-[var(--radius)] bg-surface p-5">
-          <div className="space-y-1">
-            <label className="text-eyebrow lowercase">{t.heroFrom}</label>
-            <LocationCombobox
-              value={origin}
-              onChange={setOrigin}
-              placeholder={t.heroFromPlaceholder}
-              buttonClassName="w-full"
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          {/* Bell */}
+          <Link
+            href={`/${locale}/notifiche`}
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 999,
+              background: "var(--surface)",
+              border: "1px solid var(--line)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
+            <Bell size={18} strokeWidth={1.7} style={{ color: "var(--ink)" }} />
+            {/* badge */}
+            <span
+              style={{
+                position: "absolute",
+                top: 9,
+                right: 9,
+                width: 8,
+                height: 8,
+                borderRadius: 999,
+                background: "var(--terracotta)",
+                border: "2px solid var(--surface)",
+              }}
             />
-          </div>
-          <div className="space-y-1">
-            <label className="text-eyebrow lowercase">{t.heroTo}</label>
-            <LocationCombobox
-              value={destination}
-              onChange={setDestination}
-              placeholder={t.heroCityPlaceholder}
-              buttonClassName="w-full"
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-eyebrow lowercase">{t.heroDate}</label>
-            <PremiumDatePicker
-              date={date}
-              onSelect={(newDate) => setDate(newDate || today)}
-              onClear={() => setDate(today)}
-              min={today}
-              placeholder={t.heroDate}
-              label=""
-              className="w-full"
-            />
-          </div>
-          <Button type="submit" variant="primary" className="w-full">
-            <Search size={20} strokeWidth={1.5} />
-            {t.heroSearchButton}
-          </Button>
-        </form>
+          </Link>
 
-        {showInlineOnboarding && (
-          <section className="mt-6 border border-line rounded-[var(--radius)] bg-surface p-5">
+          {/* Avatar */}
+          <Link
+            href={`/${locale}/profilo`}
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 999,
+              background: "var(--terracotta)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontSize: 14,
+              fontWeight: 600,
+              letterSpacing: "-0.3px",
+              flexShrink: 0,
+              overflow: "hidden",
+            }}
+          >
+            {userAvatar ? (
+              <Image
+                src={userAvatar}
+                alt=""
+                width={42}
+                height={42}
+                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 999 }}
+              />
+            ) : (
+              getInitials(userName)
+            )}
+          </Link>
+        </div>
+      </header>
+
+      {/* ── Search card ────────────────────────────────── */}
+      <form onSubmit={onSubmit} style={{ padding: "0 16px" }}>
+        <div
+          style={{
+            background: "var(--surface)",
+            borderRadius: 26,
+            padding: 8,
+            boxShadow: "0 8px 24px -14px rgba(22,33,28,.3)",
+          }}
+        >
+          {/* Route row */}
+          <div style={{ display: "flex", alignItems: "stretch", gap: 0 }}>
+            {/* Indicator column */}
+            <div
+              style={{
+                width: 32,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                paddingTop: 18,
+                paddingBottom: 18,
+                gap: 0,
+                flexShrink: 0,
+              }}
+            >
+              {/* origin dot */}
+              <div
+                style={{
+                  width: 9,
+                  height: 9,
+                  borderRadius: 999,
+                  border: "2px solid var(--green)",
+                  background: "transparent",
+                }}
+              />
+              {/* dashed line */}
+              <div
+                style={{
+                  width: 1,
+                  height: 22,
+                  borderLeft: "2px dashed var(--track)",
+                  margin: "3px 0",
+                }}
+              />
+              {/* destination square */}
+              <div
+                style={{
+                  width: 9,
+                  height: 9,
+                  borderRadius: 2,
+                  background: "var(--terracotta)",
+                }}
+              />
+            </div>
+
+            {/* Input fields */}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+              <div style={{ padding: "10px 10px 10px 0" }}>
+                <LocationCombobox
+                  value={origin}
+                  onChange={setOrigin}
+                  placeholder={t.heroFromPlaceholder}
+                  buttonClassName="w-full border-0 shadow-none bg-transparent p-0 h-auto text-[17px] font-medium text-ink"
+                />
+              </div>
+              {/* hairline */}
+              <div style={{ height: 1, background: "var(--line-soft)" }} />
+              <div style={{ padding: "10px 10px 10px 0" }}>
+                <LocationCombobox
+                  value={destination}
+                  onChange={setDestination}
+                  placeholder={t.heroCityPlaceholder}
+                  buttonClassName="w-full border-0 shadow-none bg-transparent p-0 h-auto text-[17px] font-medium text-ink"
+                />
+              </div>
+            </div>
+
+            {/* Swap button */}
+            <div style={{ display: "flex", alignItems: "center", padding: "0 10px 0 6px" }}>
+              <button
+                type="button"
+                onClick={handleSwap}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 999,
+                  border: "1px solid var(--line)",
+                  background: "var(--surface)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                }}
+                aria-label="Scambia partenza e arrivo"
+              >
+                <ArrowUpDown size={15} strokeWidth={1.7} style={{ color: "var(--muted)" }} />
+              </button>
+            </div>
+          </div>
+
+          {/* Date + Seats chips */}
+          <div style={{ display: "flex", gap: 8, padding: "8px 8px 4px" }}>
+            <div
+              style={{
+                background: "var(--sand-deep)",
+                borderRadius: 16,
+                padding: "7px 12px",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                flex: 1,
+              }}
+            >
+              <Calendar size={14} strokeWidth={1.7} style={{ color: "var(--muted)", flexShrink: 0 }} />
+              <PremiumDatePicker
+                date={date}
+                onSelect={(d) => setDate(d || today)}
+                onClear={() => setDate(today)}
+                min={today}
+                placeholder={t.heroDate}
+                label=""
+                className="border-0 shadow-none bg-transparent p-0 h-auto text-[13px] text-ink font-medium w-full"
+              />
+            </div>
             <button
               type="button"
-              onClick={() => {
-                localStorage.setItem("onboarding_done_v2", "true")
-                setShowInlineOnboarding(false)
-                Analytics.trackEvent("onboarding_skipped")
+              onClick={() => setSeats((s) => (s >= 4 ? 1 : s + 1))}
+              style={{
+                background: "var(--sand-deep)",
+                borderRadius: 16,
+                padding: "7px 12px",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                border: 0,
+                cursor: "pointer",
               }}
-              className="float-right text-dim hover:text-muted transition-colors"
-              aria-label={t.close}
+              aria-label="Cambia numero di posti"
             >
-              <X size={18} strokeWidth={1.5} />
+              <Users size={14} strokeWidth={1.7} style={{ color: "var(--muted)", flexShrink: 0 }} />
+              <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink)", whiteSpace: "nowrap" }}>
+                {seats} {seats === 1 ? "posto" : "posti"}
+              </span>
             </button>
-            <p className="text-eyebrow mb-2">{"// "}{t.quickGuide}</p>
-            <h3 className="font-semibold text-fg mb-3">{t.howItWorksTitle}</h3>
-            <ol className="space-y-2 text-sm text-muted list-decimal list-inside">
-              <li>{t.howItWorksStep1}</li>
-              <li>{t.howItWorksStep2}</li>
-              <li>{t.howItWorksStep3}</li>
-            </ol>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              className="mt-4"
-              onClick={() => {
-                localStorage.setItem("onboarding_done_v2", "true")
-                setShowInlineOnboarding(false)
-                Analytics.trackEvent("onboarding_completed")
+          </div>
+
+          {/* CTA */}
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              height: 54,
+              borderRadius: 20,
+              background: "var(--green)",
+              color: "#fff",
+              fontSize: 16,
+              fontWeight: 600,
+              border: 0,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              marginTop: 4,
+              transition: "background 0.2s",
+            }}
+          >
+            <Search size={18} strokeWidth={2} />
+            Cerca passaggi
+          </button>
+        </div>
+      </form>
+
+      {/* ── Prossimo viaggio ───────────────────────────── */}
+      {nextRide && (
+        <section style={{ padding: "24px 16px 0" }}>
+          <Link href={`/${locale}/corsa/${nextRide.id}`}>
+            <div
+              style={{
+                background: "var(--ink)",
+                borderRadius: 24,
+                padding: "20px 20px",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              {t.gotIt}
-            </Button>
-          </section>
-        )}
-
-        {savedRoutes.length > 0 && (
-          <section className="mt-8">
-            <p className="text-eyebrow mb-3">{"// "}{t.savedRoutes}</p>
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {savedRoutes.map((route) => (
-                <div
-                  key={route.id}
-                  className="flex shrink-0 items-center gap-2 border border-line rounded-[var(--radius-sm)] bg-surface px-3 py-2"
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOrigin(route.from_city)
-                      setDestination(route.to_city)
-                      router.push(
-                        `/${locale}/cerca?from=${encodeURIComponent(route.from_city)}&to=${encodeURIComponent(route.to_city)}`
-                      )
-                    }}
-                    className="text-left"
-                  >
-                    <span className="block text-sm font-medium text-fg whitespace-nowrap">
-                      {route.from_city} → {route.to_city}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async (e) => {
-                      e.stopPropagation()
-                      try {
-                        const res = await deleteSavedRoute(route.id)
-                        if (res.success) {
-                          toast.success(t.routeRemoved)
-                          router.refresh()
-                        }
-                      } catch {
-                        toast.error(t.routeRemoveError)
-                      }
-                    }}
-                    className="text-dim hover:text-bad transition-colors"
-                    aria-label="Rimuovi tratta"
-                  >
-                    <X size={14} strokeWidth={1.5} />
-                  </button>
-                </div>
-              ))}
+              {/* decorative circle */}
+              <div
+                style={{
+                  position: "absolute",
+                  width: 160,
+                  height: 160,
+                  borderRadius: 999,
+                  background: "rgba(45,106,79,.35)",
+                  top: -40,
+                  right: -40,
+                  pointerEvents: "none",
+                }}
+              />
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: "2px",
+                  textTransform: "uppercase",
+                  color: "rgba(244,241,234,.55)",
+                  marginBottom: 8,
+                }}
+              >
+                Il tuo prossimo viaggio
+              </p>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: "rgba(244,241,234,.6)",
+                  marginBottom: 4,
+                }}
+              >
+                {nextRide.date === today ? "Oggi" : nextRide.date} · {nextRide.time?.slice(0, 5)}
+              </p>
+              <h3
+                style={{
+                  fontSize: 23,
+                  fontWeight: 600,
+                  color: "var(--sand)",
+                  margin: "0 0 6px",
+                  letterSpacing: "-0.5px",
+                }}
+              >
+                {nextRide.from_city} → {nextRide.to_city}
+              </h3>
+              <p style={{ fontSize: 13, color: "rgba(244,241,234,.6)", margin: 0 }}>
+                con {nextRide.profiles?.name ?? "Conducente"}
+              </p>
+              {/* arrow */}
+              <div
+                style={{
+                  position: "absolute",
+                  right: 20,
+                  bottom: 20,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 999,
+                  background: "rgba(244,241,234,.14)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ChevronRight size={20} strokeWidth={1.7} color="rgba(244,241,234,.8)" />
+              </div>
             </div>
-          </section>
-        )}
+          </Link>
+        </section>
+      )}
 
-        {suggestion && (
-          <section className="mt-6 border border-line rounded-[var(--radius)] bg-surface p-4 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-eyebrow mb-1">// suggerimento</p>
-              <p className="text-sm font-medium text-fg truncate">
+      {/* ── Tratte salvate ────────────────────────────── */}
+      {savedRoutes.length > 0 && (
+        <section style={{ padding: "24px 0 0" }}>
+          <h2
+            style={{
+              fontSize: 19,
+              fontWeight: 600,
+              letterSpacing: "-0.3px",
+              color: "var(--ink)",
+              margin: "0 0 14px",
+              padding: "0 22px",
+            }}
+          >
+            {t.savedRoutes}
+          </h2>
+          <div
+            style={{ display: "flex", gap: 8, overflowX: "auto", padding: "0 16px 4px" }}
+            className="no-scrollbar"
+          >
+            {savedRoutes.map((route) => (
+              <div
+                key={route.id}
+                style={{
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "var(--surface)",
+                  border: "1px solid var(--line)",
+                  borderRadius: 999,
+                  padding: "8px 12px",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOrigin(route.from_city)
+                    setDestination(route.to_city)
+                    router.push(
+                      `/${locale}/cerca?from=${encodeURIComponent(route.from_city)}&to=${encodeURIComponent(route.to_city)}`
+                    )
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: 0,
+                    padding: 0,
+                    fontSize: 13.5,
+                    fontWeight: 500,
+                    color: "var(--ink)",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                  }}
+                >
+                  {route.from_city} → {route.to_city}
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const res = await deleteSavedRoute(route.id)
+                      if (res.success) {
+                        toast.success(t.routeRemoved)
+                        router.refresh()
+                      }
+                    } catch {
+                      toast.error(t.routeRemoveError)
+                    }
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: 0,
+                    padding: 0,
+                    display: "inline-flex",
+                    color: "var(--faint)",
+                    cursor: "pointer",
+                  }}
+                  aria-label="Rimuovi tratta"
+                >
+                  <X size={13} strokeWidth={2} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── Suggerimento ──────────────────────────────── */}
+      {suggestion && (
+        <section style={{ padding: "24px 16px 0" }}>
+          <div
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--line)",
+              borderRadius: 22,
+              padding: 18,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+            }}
+          >
+            <div style={{ minWidth: 0 }}>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: "2px",
+                  textTransform: "uppercase",
+                  color: "var(--faint)",
+                  margin: "0 0 6px",
+                }}
+              >
+                Suggerimento
+              </p>
+              <p
+                style={{
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: "var(--ink)",
+                  margin: "0 0 2px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {suggestion.from} → {suggestion.to}
               </p>
-              <p className="text-xs text-muted truncate">{suggestion.reason}</p>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "var(--muted)",
+                  margin: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {suggestion.reason}
+              </p>
             </div>
-            <Button
+            <button
               type="button"
-              variant="secondary"
-              size="sm"
               onClick={() => {
                 setOrigin(suggestion.from)
                 setDestination(suggestion.to)
@@ -247,83 +629,188 @@ function HomeMobileView({
                   `/${locale}/cerca?from=${encodeURIComponent(suggestion.from)}&to=${encodeURIComponent(suggestion.to)}`
                 )
               }}
+              style={{
+                flexShrink: 0,
+                height: 40,
+                padding: "0 18px",
+                borderRadius: 999,
+                background: "var(--green-tint)",
+                color: "var(--green)",
+                fontSize: 14,
+                fontWeight: 600,
+                border: 0,
+                cursor: "pointer",
+              }}
             >
-              cerca
-            </Button>
-          </section>
-        )}
-
-        <section className="mt-10">
-          <div className="flex items-end justify-between mb-5">
-            <div>
-              <p className="text-eyebrow">{"// "}{t.today}</p>
-              <h2 className="mt-1 font-semibold text-fg">{t.todayRides}</h2>
-            </div>
-            <Link
-              href={`/${locale}/cerca`}
-              className="inline-flex items-center gap-1 font-mono text-xs text-accent hover:text-fg transition-colors lowercase"
-            >
-              {t.seeAll}
-              <ChevronRight size={14} strokeWidth={1.5} />
-            </Link>
+              Cerca
+            </button>
           </div>
-
-          {loading ? (
-            <div className="space-y-3">
-              {[1, 2].map((i) => (
-                <div key={i} className="h-40 rounded-[var(--radius)] border border-line bg-surface animate-pulse" />
-              ))}
-            </div>
-          ) : todayRides.length > 0 ? (
-            <div className="space-y-3">
-              {todayRides.map((ride, idx) => (
-                <DiscoveryRideCard
-                  key={ride.id}
-                  ride={ride}
-                  locale={locale}
-                  index={idx}
-                  freeLabel={t.free}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="border border-line rounded-[var(--radius)] bg-surface px-5 py-8 text-center">
-              <p className="font-medium text-fg mb-2">{t.noRidesToday}</p>
-              <Link
-                href={`/${locale}/cerca`}
-                className="inline-flex items-center gap-1 text-sm text-accent hover:text-fg transition-colors lowercase mb-5"
-              >
-                {t.searchOtherDates}
-                <ChevronRight size={14} strokeWidth={1.5} />
-              </Link>
-              <div>
-                <Link href={`/${locale}/offri`}>
-                  <Button variant="primary">{t.offerRide}</Button>
-                </Link>
-              </div>
-            </div>
-          )}
         </section>
+      )}
 
-        <Separator className="my-8" />
-
-        <div className="grid grid-cols-2 gap-3 pb-4">
+      {/* ── Tratte frequenti ──────────────────────────── */}
+      <section style={{ padding: "28px 0 0" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 22px",
+            marginBottom: 14,
+          }}
+        >
+          <h2 style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.3px", color: "var(--ink)", margin: 0 }}>
+            Tratte frequenti
+          </h2>
           <Link
-            href={`/${locale}/offri`}
-            className="border border-line rounded-[var(--radius-sm)] bg-surface px-4 py-5 text-sm font-semibold text-fg hover:bg-surface-2 transition-colors lowercase"
+            href={`/${locale}/cerca`}
+            style={{ fontSize: 13, color: "var(--green)", fontWeight: 500 }}
           >
-            {t.offerRide}
-          </Link>
-          <Link
-            href={`/${locale}/profilo`}
-            className="border border-line rounded-[var(--radius-sm)] bg-surface px-4 py-5 text-sm font-semibold text-muted hover:bg-surface-2 hover:text-fg transition-colors"
-          >
-            profilo
+            Vedi tutte
           </Link>
         </div>
-      </main>
+        <div
+          style={{ display: "flex", gap: 10, overflowX: "auto", padding: "0 16px 4px" }}
+          className="no-scrollbar"
+        >
+          {FREQUENT_ROUTES.map((r) => (
+            <button
+              key={`${r.from}-${r.to}`}
+              type="button"
+              onClick={() => {
+                setOrigin(r.from)
+                setDestination(r.to)
+                router.push(`/${locale}/cerca?from=${encodeURIComponent(r.from)}&to=${encodeURIComponent(r.to)}`)
+              }}
+              style={{
+                flexShrink: 0,
+                width: 172,
+                background: "var(--surface)",
+                borderRadius: 20,
+                padding: "16px 16px",
+                border: "1px solid var(--line)",
+                textAlign: "left",
+                cursor: "pointer",
+                transition: "border-color 0.2s",
+              }}
+            >
+              <p style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", margin: "0 0 4px" }}>
+                {r.from} → {r.to}
+              </p>
+              <p style={{ fontSize: 12.5, color: "var(--muted)", margin: 0 }}>
+                {r.count} oggi · da {r.minPrice} €
+              </p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Passaggi di oggi ──────────────────────────── */}
+      <section style={{ padding: "28px 16px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 14,
+          }}
+        >
+          <h2 style={{ fontSize: 19, fontWeight: 600, letterSpacing: "-0.3px", color: "var(--ink)", margin: 0 }}>
+            {t.todayRides}
+          </h2>
+          <Link
+            href={`/${locale}/cerca`}
+            style={{ fontSize: 13, color: "var(--green)", fontWeight: 500 }}
+          >
+            {t.seeAll}
+          </Link>
+        </div>
+
+        {loading ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                style={{
+                  height: 100,
+                  borderRadius: 22,
+                  background: "var(--sand-deep)",
+                  animation: "pulse 1.5s ease-in-out infinite",
+                }}
+              />
+            ))}
+          </div>
+        ) : todayRides.length > 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {todayRides.map((ride, idx) => (
+              <DiscoveryRideCard
+                key={ride.id}
+                ride={ride}
+                locale={locale}
+                index={idx}
+                freeLabel={t.free}
+              />
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              background: "var(--surface)",
+              borderRadius: 22,
+              padding: "32px 20px",
+              textAlign: "center",
+              border: "1px solid var(--line)",
+            }}
+          >
+            <p style={{ fontWeight: 600, color: "var(--ink)", marginBottom: 8 }}>
+              {t.noRidesToday}
+            </p>
+            <Link
+              href={`/${locale}/cerca`}
+              style={{ fontSize: 14, color: "var(--green)" }}
+            >
+              {t.searchOtherDates}
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* ── CO2 banner ────────────────────────────────── */}
+      <section style={{ padding: "24px 16px 0" }}>
+        <div
+          style={{
+            background: "var(--sand-deep)",
+            borderRadius: 22,
+            padding: "18px 18px",
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              background: "var(--green)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <MapPin size={20} strokeWidth={1.7} color="#fff" />
+          </div>
+          <div>
+            <p style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)", margin: "0 0 2px" }}>
+              2.140 kg di CO₂ risparmiati
+            </p>
+            <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
+              dalla community in Sardegna questa settimana
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
-
-export { HomeMobileView }

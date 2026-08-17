@@ -47,7 +47,7 @@ export default function GlobalError({
 
   return (
     <html lang={locale}>
-      <body className="bg-[#0a0a0a]">
+      <body className="bg-bg">
         <div className="min-h-screen flex items-center justify-center px-4">
           <div className="max-w-md w-full text-center">
             <div className="flex justify-center mb-6">
@@ -60,31 +60,31 @@ export default function GlobalError({
               {m.title}
             </h1>
             
-            <p className="text-white/60 mb-2">
+            <p className="text-muted mb-2">
               {m.desc}
             </p>
             
             {error.digest && (
-              <p className="text-white/40 text-sm mb-8 font-mono">
+              <p className="text-faint text-sm mb-8 font-mono">
                 Codice errore: {error.digest}
               </p>
             )}
 
             <button
               onClick={reset}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#4FB3C9] text-white rounded-xl font-medium hover:bg-[#3d9db3] transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2D6A4F] text-white rounded-xl font-medium hover:bg-[#1E4A36] transition-colors"
             >
               <RefreshCw className="h-5 w-5" />
               {m.reload}
             </button>
 
-            <div className="mt-8 pt-8 border-t border-white/10">
-              <p className="text-white/40 text-sm mb-2">
+            <div className="mt-8 pt-8 border-t border-line">
+              <p className="text-faint text-sm mb-2">
                 {m.contact}
               </p>
               <a 
                 href="mailto:support@andamus.it"
-                className="inline-flex items-center gap-2 text-[#4FB3C9] hover:text-[#3d9db3] transition-colors"
+                className="inline-flex items-center gap-2 text-[#2D6A4F] hover:text-[#1E4A36] transition-colors"
               >
                 <Mail className="h-4 w-4" />
                 support@andamus.it

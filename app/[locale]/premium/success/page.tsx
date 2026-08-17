@@ -40,10 +40,10 @@ function PremiumSuccessContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-bg flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
           <p className="text-bad mb-4">{t("verificationFailed")}</p>
-          <Link href={`/${locale}`} className="inline-flex items-center justify-center rounded-xl bg-[#4FB3C9] px-6 py-3 text-white font-medium hover:bg-[#3d9db3] transition-colors">
+          <Link href={`/${locale}`} className="inline-flex items-center justify-center rounded-xl bg-[#2D6A4F] px-6 py-3 text-white font-medium hover:bg-[#1E4A36] transition-colors">
             {t("backToHome")}
           </Link>
         </div>
@@ -52,7 +52,7 @@ function PremiumSuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
         <div className="mx-auto mb-6 h-20 w-20 rounded-full bg-green-500/20 flex items-center justify-center">
           {verifying ? (
@@ -61,17 +61,17 @@ function PremiumSuccessContent() {
             <Check className="h-10 w-10 text-green-400" />
           )}
         </div>
-        <h1 className="text-3xl font-bold text-white mb-4">
+        <h1 className="text-3xl font-bold text-ink mb-4">
           {verifying ? t("activating") : t("activated")}
         </h1>
-        <p className="text-white/60 mb-8">
+        <p className="text-muted mb-8">
           {verifying
             ? t("confirmingPayment")
             : t("premiumThanks")}
         </p>
         <Link
           href={`/${locale}/profilo`}
-          className="inline-flex items-center justify-center rounded-xl bg-[#4FB3C9] px-6 py-3 text-white font-medium hover:bg-[#3d9db3] transition-colors"
+          className="inline-flex items-center justify-center rounded-xl bg-[#2D6A4F] px-6 py-3 text-white font-medium hover:bg-[#1E4A36] transition-colors"
         >
           {t("goToProfile")}
         </Link>
@@ -83,8 +83,8 @@ function PremiumSuccessContent() {
 export default function PremiumSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[#4FB3C9]" />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[#2D6A4F]" />
       </div>
     }>
       <PremiumSuccessContent />

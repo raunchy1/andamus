@@ -26,7 +26,7 @@ import { toast } from "sonner";
 
 const ActivityChart = dynamic(
   () => import("./_components/ActivityChart").then((m) => m.ActivityChart),
-  { ssr: false, loading: () => <div className="h-full w-full animate-pulse bg-white/5 rounded-xl" /> }
+  { ssr: false, loading: () => <div className="h-full w-full animate-pulse bg-surface rounded-xl" /> }
 );
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
@@ -325,29 +325,29 @@ export default function StatisticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4FB3C9]" />
+      <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2D6A4F]" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
+    <main className="min-h-screen bg-bg pt-20 pb-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <Link 
             href={`/${locale}/profilo`}
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-muted hover:text-ink transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
             {t('backToProfile')}
           </Link>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-[#4FB3C9]" />
+          <h1 className="text-3xl font-bold text-ink flex items-center gap-3">
+            <TrendingUp className="w-8 h-8 text-[#2D6A4F]" />
             {t('myStats')}
           </h1>
-          <p className="text-white/60 mt-2">{t('subtitle')}</p>
+          <p className="text-muted mt-2">{t('subtitle')}</p>
         </div>
 
         {/* Stats Grid */}
@@ -365,7 +365,7 @@ export default function StatisticsPage() {
             suffix=" kg"
           />
           <StatCard 
-            icon={<Car className="w-6 h-6 text-[#4FB3C9]" />}
+            icon={<Car className="w-6 h-6 text-[#2D6A4F]" />}
             value={stats.ridesAsDriver}
             label={t('asDriver')}
           />
@@ -399,9 +399,9 @@ export default function StatisticsPage() {
         </div>
 
         {/* Activity Chart */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#4FB3C9]" />
+        <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
+          <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-[#2D6A4F]" />
             {t('activityLast12Months')}
           </h2>
           <div className="h-64">
@@ -415,16 +415,16 @@ export default function StatisticsPage() {
 
         {/* Favorite Routes */}
         {stats.favoriteRoutes.length > 0 && (
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#4FB3C9]" />
+          <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
+            <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-[#2D6A4F]" />
               {t('favoriteRoutes')}
             </h2>
             <div className="space-y-3">
               {stats.favoriteRoutes.map((route, index) => (
                 <div 
                   key={route.name}
-                  className="flex items-center justify-between p-4 bg-white/5 rounded-xl"
+                  className="flex items-center justify-between p-4 bg-surface rounded-xl"
                 >
                   <div className="flex items-center gap-4">
                     <div className={`
@@ -436,15 +436,15 @@ export default function StatisticsPage() {
                       {index + 1}
                     </div>
                     <div>
-                      <p className="text-white font-medium">{route.name}</p>
-                      <p className="text-white/50 text-sm">
+                      <p className="text-ink font-medium">{route.name}</p>
+                      <p className="text-muted text-sm">
                         {t('lastTime')}: {new Date(route.lastDate).toLocaleDateString(locale)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-white">{route.count}</p>
-                    <p className="text-white/50 text-sm">{t('times', { count: route.count })}</p>
+                    <p className="text-2xl font-bold text-ink">{route.count}</p>
+                    <p className="text-muted text-sm">{t('times', { count: route.count })}</p>
                   </div>
                 </div>
               ))}
@@ -453,10 +453,10 @@ export default function StatisticsPage() {
         )}
 
         {/* History Section */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+        <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <Clock className="w-5 h-5 text-[#4FB3C9]" />
+            <h2 className="text-xl font-semibold text-ink flex items-center gap-2">
+              <Clock className="w-5 h-5 text-[#2D6A4F]" />
               {t('fullHistory')}
             </h2>
             
@@ -476,8 +476,8 @@ export default function StatisticsPage() {
               onClick={() => setActiveTab("driver")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "driver"
-                  ? "bg-[#4FB3C9] text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10"
+                  ? "bg-[#2D6A4F] text-white"
+                  : "bg-surface text-muted hover:bg-sand-deep"
               }`}
             >
               <Car className="w-4 h-4" />
@@ -487,8 +487,8 @@ export default function StatisticsPage() {
               onClick={() => setActiveTab("passenger")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "passenger"
-                  ? "bg-[#4FB3C9] text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10"
+                  ? "bg-[#2D6A4F] text-white"
+                  : "bg-surface text-muted hover:bg-sand-deep"
               }`}
             >
               <Users className="w-4 h-4" />
@@ -501,7 +501,7 @@ export default function StatisticsPage() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#4FB3C9] outline-none"
+              className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-green outline-none"
             >
               <option value="all">{t('allYears')}</option>
               {years.map(year => (
@@ -512,7 +512,7 @@ export default function StatisticsPage() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#4FB3C9] outline-none"
+              className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-green outline-none"
             >
               <option value="all">{t('allMonths')}</option>
               {Array.from({ length: 12 }, (_, i) => {
@@ -529,7 +529,7 @@ export default function StatisticsPage() {
             <select
               value={selectedRoute}
               onChange={(e) => setSelectedRoute(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-[#4FB3C9] outline-none"
+              className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-green outline-none"
             >
               <option value="all">{t('allRoutes')}</option>
               {uniqueRoutes.map(route => (
@@ -541,24 +541,24 @@ export default function StatisticsPage() {
           {/* History List */}
           <div className="space-y-2">
             {filteredHistory.length === 0 ? (
-              <p className="text-center text-white/40 py-8">{t('noRidesFound')}</p>
+              <p className="text-center text-faint py-8">{t('noRidesFound')}</p>
             ) : (
               filteredHistory.map((item: HistoryItem) => (
                 <div 
                   key={item.id}
-                  className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+                  className="flex items-center justify-between p-4 bg-surface rounded-xl hover:bg-sand-deep transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center gap-1">
-                      <div className="h-2 w-2 rounded-full bg-[#4FB3C9]" />
-                      <div className="h-8 w-0.5 bg-white/20" />
-                      <div className="h-2 w-2 rounded-full bg-white/40" />
+                      <div className="h-2 w-2 rounded-full bg-[#2D6A4F]" />
+                      <div className="h-8 w-0.5 bg-sand-deep" />
+                      <div className="h-2 w-2 rounded-full bg-sand-deep" />
                     </div>
                     <div>
-                      <p className="text-white font-medium">
+                      <p className="text-ink font-medium">
                         {item.from_city} → {item.to_city}
                       </p>
-                      <p className="text-white/50 text-sm">
+                      <p className="text-muted text-sm">
                         {new Date(item.date).toLocaleDateString(locale, { 
                           weekday: 'short', 
                           day: 'numeric', 
@@ -570,13 +570,13 @@ export default function StatisticsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-semibold">
+                    <p className="text-ink font-semibold">
                       {item.price === 0 ? t('free') : `${item.price}€`}
                     </p>
                     <p className={`text-xs ${
                       item.status === 'confirmed' ? 'text-green-400' : 
                       item.status === 'pending' ? 'text-yellow-400' : 
-                      'text-white/50'
+                      'text-muted'
                     }`}>
                       {item.status === 'confirmed' ? t('confirmed') : 
                        item.status === 'pending' ? t('pendingStatus') : 
@@ -591,9 +591,9 @@ export default function StatisticsPage() {
 
         {/* Achievements Timeline */}
         {badges.length > 0 && (
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Award className="w-5 h-5 text-[#4FB3C9]" />
+          <div className="bg-surface border border-line rounded-2xl p-6">
+            <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
+              <Award className="w-5 h-5 text-[#2D6A4F]" />
               {t('achievementHistory')}
             </h2>
             <div className="space-y-4">
@@ -602,17 +602,17 @@ export default function StatisticsPage() {
                 return (
                   <div 
                     key={badge.id}
-                    className="flex items-center gap-4 p-4 bg-white/5 rounded-xl"
+                    className="flex items-center gap-4 p-4 bg-surface rounded-xl"
                   >
                     <div className={`w-12 h-12 rounded-xl ${badgeDetails.color} flex items-center justify-center text-2xl`}>
                       {badgeDetails.icon}
                     </div>
                     <div className="flex-1">
-                      <p className="text-white font-medium">{badgeDetails.name}</p>
-                      <p className="text-white/50 text-sm">{badgeDetails.description}</p>
+                      <p className="text-ink font-medium">{badgeDetails.name}</p>
+                      <p className="text-muted text-sm">{badgeDetails.description}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-white/60 text-sm">
+                      <p className="text-muted text-sm">
                         {new Date(badge.earned_at || '2024-01-01').toLocaleDateString(locale, {
                           day: 'numeric',
                           month: 'short',
@@ -644,10 +644,10 @@ function StatCard({
   suffix?: string;
 }) {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+    <div className="bg-surface border border-line rounded-2xl p-4 text-center">
       <div className="flex justify-center mb-2">{icon}</div>
-      <p className="text-2xl font-bold text-white">{value.toLocaleString()}{suffix}</p>
-      <p className="text-white/60 text-xs">{label}</p>
+      <p className="text-2xl font-bold text-ink">{value.toLocaleString()}{suffix}</p>
+      <p className="text-muted text-xs">{label}</p>
     </div>
   );
 }

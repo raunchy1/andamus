@@ -267,10 +267,10 @@ function ComingSoonContent() {
         <div className="flex items-center justify-center lg:justify-end">
           <div className="w-full max-w-md">
             <div className="relative mb-6 hidden h-80 overflow-hidden rounded-[2rem] border border-white/70 bg-[#171614] p-4 shadow-[0_32px_90px_rgba(23,22,20,0.22)] sm:block">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_12%,rgba(255,179,177,0.18),transparent_34%),linear-gradient(160deg,rgba(23,22,20,0),rgba(20,56,43,0.42))]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_12%,rgba(210,103,58,0.18),transparent_34%),linear-gradient(160deg,rgba(23,22,20,0),rgba(20,56,43,0.42))]" />
               <div className="relative flex h-full items-end justify-between gap-6">
                 <div className="pb-4 pl-2 text-[#f7f2e8]">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4FB3C9]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D6A4F]">
                     Anteprima app
                   </p>
                   <p className="mt-3 max-w-[12rem] text-3xl font-black leading-none tracking-tight">

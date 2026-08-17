@@ -80,20 +80,40 @@ function OfferTopBar() {
   const t = useTranslations("offer");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3 md:max-w-5xl md:px-6">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="inline-flex size-10 items-center justify-center rounded-[var(--radius-sm)] text-fg transition-colors hover:bg-surface-2"
-        >
-          <ChevronLeft className="size-5" strokeWidth={1.5} />
-        </button>
-        <div>
-          <p className="text-eyebrow">{t("newTrip")}</p>
-          <h1 className="heading-editorial text-xl text-fg">{t("createRide")}</h1>
-        </div>
-      </div>
+    <header style={{ background: "var(--sand)", padding: "60px 22px 18px" }}>
+      <button
+        type="button"
+        onClick={() => router.back()}
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 999,
+          background: "var(--surface)",
+          border: "1px solid var(--line)",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          marginBottom: 18,
+        }}
+        aria-label="Indietro"
+      >
+        <ChevronLeft size={20} strokeWidth={1.7} style={{ color: "var(--ink)" }} />
+      </button>
+      <h1
+        style={{
+          fontSize: 28,
+          fontWeight: 600,
+          letterSpacing: "-0.8px",
+          color: "var(--ink)",
+          margin: "0 0 6px",
+        }}
+      >
+        {t("createRide")}
+      </h1>
+      <p style={{ fontSize: 15, color: "var(--muted)", margin: 0 }}>
+        Tre minuti e il tuo posto libero è online.
+      </p>
     </header>
   );
 }
@@ -407,22 +427,65 @@ function SubmitButton({
 }: Pick<OfferViewProps, "formData" | "isSubmitting">) {
   const t = useTranslations("offer");
 
+  const label = isSubmitting
+    ? formData.isRecurring
+      ? t("creating")
+      : t("publishing")
+    : formData.isRecurring
+      ? t("createRecurringRide")
+      : t("publishRide");
+
   return (
-    <motion.div
-      {...fadeUp}
-      transition={{ ...fadeUp.transition, delay: 0.24 }}
-      className="pt-2 pb-8"
-    >
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting
-          ? formData.isRecurring
-            ? t("creating")
-            : t("publishing")
-          : formData.isRecurring
-            ? t("createRecurringRide")
-            : t("publishRide")}
-      </Button>
-    </motion.div>
+    <>
+      {/* spaziatore per la barra fissa */}
+      <div className="h-2 md:hidden" />
+
+      {/* barra azione fissa sopra la tab bar (mobile) */}
+      <div
+        className="md:hidden"
+        style={{
+          position: "fixed",
+          insetInline: 0,
+          bottom: 84,
+          zIndex: 40,
+          padding: "12px 16px",
+          background: "rgba(244,241,234,.94)",
+          borderTop: "1px solid var(--line)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+        }}
+      >
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          style={{
+            width: "100%",
+            height: 56,
+            borderRadius: 999,
+            background: "var(--ink)",
+            color: "var(--sand)",
+            fontSize: 17,
+            fontWeight: 600,
+            border: 0,
+            cursor: isSubmitting ? "wait" : "pointer",
+            opacity: isSubmitting ? 0.7 : 1,
+          }}
+        >
+          {label}
+        </button>
+      </div>
+
+      {/* CTA inline su desktop */}
+      <motion.div
+        {...fadeUp}
+        transition={{ ...fadeUp.transition, delay: 0.24 }}
+        className="hidden pt-2 pb-8 md:block"
+      >
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {label}
+        </Button>
+      </motion.div>
+    </>
   );
 }
 
@@ -430,10 +493,10 @@ export function OfferMobile(props: OfferViewProps) {
   const t = useTranslations("offer");
 
   return (
-    <div className="min-h-screen bg-bg pb-24">
+    <div style={{ background: "var(--sand)" }} className="min-h-screen pb-[200px]">
       <OfferTopBar />
 
-      <main className="mx-auto max-w-2xl space-y-8 px-4 py-6">
+      <main className="mx-auto max-w-2xl space-y-8 px-4 py-2">
         {props.submitError && (
           <p className="text-sm text-bad">{props.submitError}</p>
         )}

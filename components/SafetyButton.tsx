@@ -145,23 +145,23 @@ export function SafetyButton() {
             >
               {/* Handle bar */}
               <div className="flex justify-center pb-1 pt-3">
-                <div className="h-1 w-10 rounded-full bg-white/20" />
+                <div className="h-1 w-10 rounded-full bg-sand-deep" />
               </div>
 
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+              <div className="flex items-center justify-between border-b border-line px-5 py-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-bad/20">
                     <Shield className="h-5 w-5 text-bad" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white">{t("safety")}</p>
-                    <p className="text-xs text-white/50">{t("emergencyTools")}</p>
+                    <p className="font-semibold text-ink">{t("safety")}</p>
+                    <p className="text-xs text-muted">{t("emergencyTools")}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-sand-deep hover:text-ink"
                   aria-label={t("cancel")}
                 >
                   <X className="h-5 w-5" />
@@ -176,12 +176,12 @@ export function SafetyButton() {
                   className="w-full rounded-2xl bg-bad p-5 text-left transition-all hover:bg-bad active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
-                      <Siren className="h-7 w-7 text-white" />
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-sand-deep">
+                      <Siren className="h-7 w-7 text-bad" />
                     </div>
                     <div>
                       <p className="text-lg font-bold text-white">{t("sosEmergency")}</p>
-                      <p className="text-sm text-white/70">{t("callOrShare")}</p>
+                      <p className="text-sm text-fg">{t("callOrShare")}</p>
                     </div>
                   </div>
                 </button>
@@ -189,15 +189,15 @@ export function SafetyButton() {
                 {/* Share Location */}
                 <button
                   onClick={handleShareLocation}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition-all hover:bg-white/10 active:scale-[0.98]"
+                  className="w-full rounded-2xl border border-line bg-surface p-5 text-left transition-all hover:bg-sand-deep active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/20">
                       <MapPin className="h-7 w-7 text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold text-white">{t("shareLocation")}</p>
-                      <p className="text-sm text-white/50">{t("sendToContacts")}</p>
+                      <p className="text-lg font-semibold text-ink">{t("shareLocation")}</p>
+                      <p className="text-sm text-muted">{t("sendToContacts")}</p>
                     </div>
                   </div>
                 </button>
@@ -205,14 +205,14 @@ export function SafetyButton() {
                 {/* Emergency Number */}
                 <a
                   href="tel:112"
-                  className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all hover:bg-white/10 active:scale-[0.98]"
+                  className="flex w-full items-center gap-4 rounded-2xl border border-line bg-surface p-5 transition-all hover:bg-sand-deep active:scale-[0.98]"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20">
                     <Phone className="h-7 w-7 text-green-400" />
                   </div>
                   <div>
-                    <p className="text-lg font-semibold text-white">{t("call112")}</p>
-                    <p className="text-sm text-white/50">{t("emergencyNumber")}</p>
+                    <p className="text-lg font-semibold text-ink">{t("call112")}</p>
+                    <p className="text-sm text-muted">{t("emergencyNumber")}</p>
                   </div>
                 </a>
 
@@ -222,23 +222,23 @@ export function SafetyButton() {
                     setIsOpen(false);
                     setShowReport(true);
                   }}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition-all hover:bg-white/10 active:scale-[0.98]"
+                  className="w-full rounded-2xl border border-line bg-surface p-5 text-left transition-all hover:bg-sand-deep active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20">
                       <Bug className="h-7 w-7 text-amber-400" />
                     </div>
                     <div>
-                      <p className="text-lg font-semibold text-white">{t("reportProblem")}</p>
-                      <p className="text-sm text-white/50">{t("reportDescription")}</p>
+                      <p className="text-lg font-semibold text-ink">{t("reportProblem")}</p>
+                      <p className="text-sm text-muted">{t("reportDescription")}</p>
                     </div>
                   </div>
                 </button>
 
                 {/* Safety Tips */}
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-sm font-medium text-white">{t("safetyTips")}</p>
-                  <ul className="mt-2 space-y-1 text-xs text-white/60">
+                <div className="rounded-xl border border-line bg-surface p-4">
+                  <p className="text-sm font-medium text-ink">{t("safetyTips")}</p>
+                  <ul className="mt-2 space-y-1 text-xs text-muted">
                     <li>• {t("tip1")}</li>
                     <li>• {t("tip2")}</li>
                     <li>• {t("tip3")}</li>
@@ -274,8 +274,8 @@ export function SafetyButton() {
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-bad/20">
                 <AlertTriangle className="h-10 w-10 text-bad" />
               </div>
-              <h3 className="mb-2 text-2xl font-bold text-white">{t("emergencyQuestion")}</h3>
-              <p className="mb-6 text-white/60">{t("emergencyDescription")}</p>
+              <h3 className="mb-2 text-2xl font-bold text-ink">{t("emergencyQuestion")}</h3>
+              <p className="mb-6 text-muted">{t("emergencyDescription")}</p>
               <div className="space-y-3">
                 <button
                   onClick={handleEmergencyCall}
@@ -285,13 +285,13 @@ export function SafetyButton() {
                 </button>
                 <button
                   onClick={handleShareLocation}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
+                  className="w-full rounded-xl border border-line bg-surface py-4 text-base font-semibold text-ink transition-all hover:bg-sand-deep"
                 >
                   {t("shareLocation")}
                 </button>
                 <button
                   onClick={() => setShowSOS(false)}
-                  className="text-sm text-white/50 hover:text-white"
+                  className="text-sm text-muted hover:text-ink"
                 >
                   {t("cancel")}
                 </button>

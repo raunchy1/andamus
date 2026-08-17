@@ -4,15 +4,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { Compass, Route, Car, User } from "lucide-react";
+import { Home, Search, Plus, MessageCircle, User } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", icon: Compass, labelKey: "home" },
-  { href: "/cerca", icon: Route, labelKey: "search" },
-  { href: "/offri", icon: Car, labelKey: "offer" },
-  { href: "/profilo", icon: User, labelKey: "profile" },
+  { href: "/",       icon: Home,          labelKey: "home"   },
+  { href: "/cerca",  icon: Search,        labelKey: "search" },
+  { href: "/offri",  icon: Plus,          labelKey: "offer",  isPill: true },
+  { href: "/chat",   icon: MessageCircle, labelKey: "chat"   },
+  { href: "/profilo",icon: User,          labelKey: "profile"},
+];
+
+/** Rute pe care tab bar-ul nu apare */
+const HIDE_ON = [
+  "/onboarding",
+  "/corsa/",
+  "/prenotazione",
+  "/conferma",
+  "/notifiche",
 ];
 
 export function BottomNav() {
@@ -20,20 +29,36 @@ export function BottomNav() {
   const pathname = usePathname();
   const locale = useLocale();
 
-  const currentPath = pathname.replace(`/${locale}`, "") || "/";
+  const localePath = pathname.replace(`/${locale}`, "") || "/";
+
+  const hidden = HIDE_ON.some((p) => localePath.startsWith(p)) ||
+    /* thread chat: /chat/[bookingId] — nu lista /chat */
+    (localePath.startsWith("/chat/") && localePath.length > "/chat/".length);
+
+  if (hidden) return null;
 
   const activeIndex = navItems.findIndex((item) =>
     item.href === "/"
-      ? currentPath === "/"
-      : currentPath.startsWith(item.href)
+      ? localePath === "/"
+      : localePath.startsWith(item.href)
   );
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-nav md:hidden border-t border-line bg-bg/95 backdrop-blur-md"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      className="fixed bottom-0 left-0 right-0 z-nav md:hidden"
+      style={{
+        height: "84px",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        background: "rgba(244, 241, 234, 0.94)",
+        borderTop: "1px solid var(--line)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+      }}
     >
-      <div className="flex h-16 items-center justify-around px-2">
+      <div
+        className="flex items-start justify-around"
+        style={{ paddingTop: "10px", paddingLeft: "8px", paddingRight: "8px" }}
+      >
         {navItems.map((item, index) => {
           const fullHref = `/${locale}${item.href}`;
           const isActive = activeIndex === index;
@@ -43,26 +68,49 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={fullHref}
-              className="relative flex h-full w-[25%] flex-col items-center justify-center select-none"
+              className="flex flex-col items-center justify-start gap-[5px] flex-1 select-none"
             >
               <motion.div
-                className="flex flex-col items-center justify-center gap-1"
-                whileTap={{ scale: 0.98 }}
+                className="flex flex-col items-center gap-[5px]"
+                whileTap={{ scale: 0.94 }}
                 transition={{ duration: 0.1 }}
               >
-                <Icon
-                  size={22}
-                  strokeWidth={1.5}
-                  className={cn(
-                    "transition-colors",
-                    isActive ? "text-accent" : "text-dim"
-                  )}
-                />
+                {item.isPill ? (
+                  /* Tab Offri — pill 44×32 */
+                  <div
+                    className="flex items-center justify-center"
+                    style={{
+                      width: 44,
+                      height: 32,
+                      borderRadius: 999,
+                      background: isActive ? "var(--green)" : "var(--sand-deep)",
+                      transition: "background 0.2s",
+                    }}
+                  >
+                    <Icon
+                      size={18}
+                      strokeWidth={2.1}
+                      color={isActive ? "#FFFFFF" : "var(--muted)"}
+                    />
+                  </div>
+                ) : (
+                  <Icon
+                    size={22}
+                    strokeWidth={1.7}
+                    style={{
+                      color: isActive ? "var(--ink)" : "var(--faint)",
+                      transition: "color 0.2s",
+                    }}
+                  />
+                )}
                 <span
-                  className={cn(
-                    "font-mono text-[10px] leading-none transition-colors",
-                    isActive ? "text-fg" : "text-dim"
-                  )}
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 500,
+                    lineHeight: 1,
+                    color: isActive ? "var(--ink)" : "var(--faint)",
+                    transition: "color 0.2s",
+                  }}
                 >
                   {t(item.labelKey)}
                 </span>

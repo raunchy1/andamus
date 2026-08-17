@@ -177,7 +177,7 @@ export function PostActionModal({
       accent: "emerald",
     },
     booking_confirmed: {
-      icon: <CheckCircle2 className="w-8 h-8 text-[#4FB3C9]" />,
+      icon: <CheckCircle2 className="w-8 h-8 text-[#2D6A4F]" />,
       title: t("bookingConfirmedTitle"),
       subtitle: t("bookingConfirmedSubtitle"),
       primaryLabel: t("shareBooking"),
@@ -223,7 +223,7 @@ export function PostActionModal({
   const c = config[type];
   const accentBg = {
     emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-    rose: "bg-[#4FB3C9]/10 border-[#4FB3C9]/20 text-[#4FB3C9]",
+    rose: "bg-[#2D6A4F]/10 border-[#2D6A4F]/20 text-[#2D6A4F]",
     yellow: "bg-yellow-500/10 border-yellow-500/20 text-yellow-400",
     orange: "bg-orange-500/10 border-orange-500/20 text-orange-400",
     purple: "bg-purple-500/10 border-purple-500/20 text-purple-400",
@@ -252,17 +252,17 @@ export function PostActionModal({
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-2 pb-1 sm:hidden">
-              <div className="w-10 h-1 rounded-full bg-white/20" />
+              <div className="w-10 h-1 rounded-full bg-sand-deep" />
             </div>
 
-            <div className="bg-surface border border-white/10 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            <div className="bg-surface border border-line rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
               {/* Header */}
               <div className="relative px-6 pt-5 pb-4">
                 <button
                   onClick={handleClose}
-                  className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/5 transition-colors"
+                  className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-sand-deep transition-colors"
                 >
-                  <X className="w-4 h-4 text-white/40" />
+                  <X className="w-4 h-4 text-faint" />
                 </button>
 
                 <div className="flex items-center gap-4">
@@ -270,21 +270,21 @@ export function PostActionModal({
                     {c.icon}
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">{c.title}</h2>
-                    <p className="text-sm text-white/50">{c.subtitle}</p>
+                    <h2 className="text-lg font-bold text-ink">{c.title}</h2>
+                    <p className="text-sm text-muted">{c.subtitle}</p>
                   </div>
                 </div>
               </div>
 
               {/* Ride preview card */}
               {context?.fromCity && context?.toCity && (
-                <div className="mx-6 mb-4 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                <div className="mx-6 mb-4 p-3 rounded-xl bg-surface border border-line">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-ink">
                         {context.fromCity} → {context.toCity}
                       </p>
-                      <p className="text-xs text-white/40 mt-0.5">
+                      <p className="text-xs text-faint mt-0.5">
                         {context.date} · {context.time?.slice(0, 5)} {context.price !== undefined ? `· ${context.price > 0 ? `€${context.price}` : t("free")}` : ""}
                       </p>
                     </div>
@@ -302,7 +302,7 @@ export function PostActionModal({
                     <motion.button
                       whileTap={{ scale: 0.97 }}
                       onClick={handleShareNative}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#4FB3C9] text-white font-semibold text-sm hover:bg-[#3d9db3] transition-colors"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#2D6A4F] text-white font-semibold text-sm hover:bg-[#1E4A36] transition-colors"
                     >
                       <Share2 className="w-4 h-4" />
                       {c.primaryLabel}
@@ -315,7 +315,7 @@ export function PostActionModal({
                           onPrimaryAction();
                           handleClose();
                         }}
-                        className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-white/[0.05] text-white font-medium text-sm hover:bg-white/[0.08] transition-colors border border-white/10"
+                        className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-surface text-ink font-medium text-sm hover:bg-sand-deep transition-colors border border-line"
                       >
                         {t("continue")}
                         <ArrowRight className="w-4 h-4" />
@@ -327,38 +327,38 @@ export function PostActionModal({
                     <div className="grid grid-cols-4 gap-2">
                       <button
                         onClick={handleCopy}
-                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
-                        {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-white/60" />}
-                        <span className="text-[10px] text-white/60">{copied ? t("copied") : t("copy")}</span>
+                        {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-muted" />}
+                        <span className="text-[10px] text-muted">{copied ? t("copied") : t("copy")}</span>
                       </button>
                       <button
                         onClick={handleWhatsApp}
-                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
                         <MessageCircle className="w-5 h-5 text-emerald-400" />
-                        <span className="text-[10px] text-white/60">WhatsApp</span>
+                        <span className="text-[10px] text-muted">WhatsApp</span>
                       </button>
                       <button
                         onClick={handleTelegram}
-                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
                         <Send className="w-5 h-5 text-blue-400" />
-                        <span className="text-[10px] text-white/60">Telegram</span>
+                        <span className="text-[10px] text-muted">Telegram</span>
                       </button>
                       <button
                         onClick={handleTwitter}
-                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                        className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
-                        <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-fg" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                         </svg>
-                        <span className="text-[10px] text-white/60">X</span>
+                        <span className="text-[10px] text-muted">X</span>
                       </button>
                     </div>
                     <button
                       onClick={() => setShowShare(false)}
-                      className="text-xs text-white/40 hover:text-white/60 transition-colors py-1"
+                      className="text-xs text-faint hover:text-muted transition-colors py-1"
                     >
                       {t("back")}
                     </button>
@@ -368,12 +368,12 @@ export function PostActionModal({
 
               {/* Auto-dismiss indicator */}
               <div className="px-6 pt-2 pb-5">
-                <div className="h-0.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-0.5 bg-surface rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: "100%" }}
                     animate={{ width: "0%" }}
                     transition={{ duration: autoDismissMs / 1000, ease: "linear" }}
-                    className="h-full bg-white/20 rounded-full"
+                    className="h-full bg-sand-deep rounded-full"
                   />
                 </div>
               </div>

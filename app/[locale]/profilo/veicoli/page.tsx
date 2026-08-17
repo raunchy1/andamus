@@ -123,7 +123,7 @@ export default function VehiclesPage() {
         <div className="absolute inset-x-0 top-0 px-5 pt-14 flex items-center justify-between">
           <Link
             href={`/${locale}/profilo`}
-            className="p-3 rounded-2xl bg-white/[0.06] backdrop-blur-xl border border-white/10 text-fg hover:bg-white/[0.1] transition-all"
+            className="p-3 rounded-2xl bg-surface backdrop-blur-xl border border-line text-fg hover:bg-sand-deep transition-all"
           >
             <ArrowLeft className="w-6 h-6" />
           </Link>

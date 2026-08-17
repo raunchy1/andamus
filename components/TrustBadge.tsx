@@ -23,7 +23,7 @@ export function TrustBadge({ profile, size = "md", showScore = false, showLabel 
   const s = SIZE_MAP[size];
 
   let Icon = Shield;
-  let colorClass = "bg-white/5 text-white/40 border-white/10";
+  let colorClass = "bg-surface text-faint border-line";
 
   if (score >= 80) {
     Icon = Award;
@@ -62,12 +62,12 @@ export function DriverMeta({ profile, ridesDriven, className = "" }: DriverMetaP
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
       <TrustBadge profile={profile} size="sm" />
       {profile.review_count ? (
-        <span className="text-[10px] text-white/40">
+        <span className="text-[10px] text-faint">
           {profile.review_count} recension{profile.review_count === 1 ? "e" : "i"}
         </span>
       ) : null}
       {ridesDriven ? (
-        <span className="text-[10px] text-white/40">
+        <span className="text-[10px] text-faint">
           {ridesDriven} cors{ridesDriven === 1 ? "a" : "e"}
         </span>
       ) : null}

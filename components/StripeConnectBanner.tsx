@@ -44,8 +44,8 @@ export function StripeConnectBanner() {
 
   if (status === "loading") {
     return (
-      <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-5 flex items-center gap-3">
-        <Loader2 className="w-5 h-5 animate-spin text-[#4FB3C9]" />
+      <div className="rounded-2xl border border-line bg-surface p-5 flex items-center gap-3">
+        <Loader2 className="w-5 h-5 animate-spin text-[#2D6A4F]" />
         <span className="text-sm text-fg/60">Verifica pagamenti...</span>
       </div>
     );
@@ -64,9 +64,9 @@ export function StripeConnectBanner() {
   }
 
   return (
-    <div className="rounded-2xl border border-[#4FB3C9]/20 bg-[#4FB3C9]/5 p-5 space-y-3">
+    <div className="rounded-2xl border border-[#2D6A4F]/20 bg-[#2D6A4F]/5 p-5 space-y-3">
       <div className="flex items-start gap-3">
-        <CreditCard className="w-5 h-5 text-[#4FB3C9] shrink-0 mt-0.5" />
+        <CreditCard className="w-5 h-5 text-[#2D6A4F] shrink-0 mt-0.5" />
         <div>
           <p className="text-sm font-semibold text-fg">
             {status === "pending" ? "Completa la configurazione pagamenti" : "Attiva i pagamenti per le tue corse"}
@@ -81,7 +81,7 @@ export function StripeConnectBanner() {
       <button
         onClick={handleOnboard}
         disabled={isRedirecting}
-        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#4FB3C9]/20 border border-[#4FB3C9]/30 px-4 py-2.5 text-sm font-semibold text-[#4FB3C9] hover:bg-[#4FB3C9]/30 transition-colors disabled:opacity-60"
+        className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#2D6A4F]/20 border border-[#2D6A4F]/30 px-4 py-2.5 text-sm font-semibold text-[#2D6A4F] hover:bg-[#2D6A4F]/30 transition-colors disabled:opacity-60"
       >
         {isRedirecting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

@@ -122,29 +122,29 @@ export function CreateRequestModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
       <div
-        className="w-full max-w-lg rounded-[28px] border border-white/10 bg-[#0c0c0e]/95 p-6 sm:p-8 shadow-[0_0_50px_rgba(79, 179, 201,0.15)] relative overflow-y-auto max-h-[90vh]"
+        className="w-full max-w-lg rounded-[28px] border border-line bg-surface/95 p-6 sm:p-8 shadow-[0_0_50px_rgba(45,106,79,0.15)] relative overflow-y-auto max-h-[90vh]"
         style={{
           boxShadow: "0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
         }}
       >
         {/* Glow */}
-        <div className="absolute -top-24 -right-24 pointer-events-none w-48 h-48 rounded-full bg-[#4FB3C9]/10 blur-[80px]" />
+        <div className="absolute -top-24 -right-24 pointer-events-none w-48 h-48 rounded-full bg-[#2D6A4F]/10 blur-[80px]" />
 
         {/* Header */}
         <div className="mb-6 flex items-start justify-between relative">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4FB3C9]/30 bg-[#4FB3C9]/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9] mb-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2D6A4F]/30 bg-[#2D6A4F]/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#2D6A4F] mb-2">
               <Sparkles className="h-3 w-3" />
               Cerco passaggio
             </span>
-            <h3 className="text-2xl font-black tracking-tight text-white">Chiedi un passaggio</h3>
-            <p className="text-xs text-white/50 mt-1">
+            <h3 className="text-2xl font-black tracking-tight text-ink">Chiedi un passaggio</h3>
+            <p className="text-xs text-muted mt-1">
               Lascia che la community ti trovi un passaggio. Gli autisti ti vedranno!
             </p>
           </div>
           <button
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.03] border border-white/5 text-white/50 transition-all hover:bg-white/[0.08] hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface border border-line text-muted transition-all hover:bg-sand-deep hover:text-ink"
           >
             <X className="h-4.5 w-4.5" />
           </button>
@@ -155,26 +155,26 @@ export function CreateRequestModal({
           {/* Route Selector Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 {t("from")}
               </label>
               <LocationCombobox
                 value={fromCity}
                 onChange={setFromCity}
                 placeholder={t("any")}
-                buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
+                buttonClassName="h-12 border-line bg-surface text-sm"
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 {t("to")}
               </label>
               <LocationCombobox
                 value={toCity}
                 onChange={setToCity}
                 placeholder={t("any")}
-                buttonClassName="h-12 border-white/10 bg-white/[0.03] text-sm"
+                buttonClassName="h-12 border-line bg-surface text-sm"
               />
             </div>
           </div>
@@ -182,33 +182,33 @@ export function CreateRequestModal({
           {/* Date & Time Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 Data del viaggio
               </label>
               <div className="relative">
-                <Calendar className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-white/30" />
+                <Calendar className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-faint" />
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-10 pr-4 text-sm text-white outline-none focus:border-[#4FB3C9]/40 transition-colors"
+                  className="h-12 w-full rounded-xl border border-line bg-surface pl-10 pr-4 text-sm text-ink outline-none focus:border-green/40 transition-colors"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 Orario Indicativo (Opzionale)
               </label>
               <div className="relative">
-                <Clock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-white/30" />
+                <Clock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-faint" />
                 <input
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-10 pr-4 text-sm text-white outline-none focus:border-[#4FB3C9]/40 transition-colors"
+                  className="h-12 w-full rounded-xl border border-line bg-surface pl-10 pr-4 text-sm text-ink outline-none focus:border-green/40 transition-colors"
                 />
               </div>
             </div>
@@ -217,7 +217,7 @@ export function CreateRequestModal({
           {/* Time Flexibility */}
           {time && (
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 Flessibilità oraria
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -233,8 +233,8 @@ export function CreateRequestModal({
                     onClick={() => setTimeFlexibility(item.value)}
                     className={`h-10 rounded-lg text-xs font-semibold border transition-all ${
                       timeFlexibility === item.value
-                        ? "bg-[#4FB3C9] border-[#4FB3C9] text-white"
-                        : "bg-white/[0.03] border-white/10 text-white/70 hover:bg-white/[0.06]"
+                        ? "bg-[#2D6A4F] border-[#2D6A4F] text-white"
+                        : "bg-surface border-line text-fg hover:bg-sand-deep"
                     }`}
                   >
                     {item.label}
@@ -247,7 +247,7 @@ export function CreateRequestModal({
           {/* Seats Needed & Max Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 Posti richiesti
               </label>
               <div className="flex gap-2">
@@ -258,8 +258,8 @@ export function CreateRequestModal({
                     onClick={() => setSeatsNeeded(num)}
                     className={`flex-1 h-12 rounded-xl text-sm font-bold border transition-all ${
                       seatsNeeded === num
-                        ? "bg-[#4FB3C9] border-[#4FB3C9] text-white"
-                        : "bg-white/[0.03] border-white/10 text-white/70 hover:bg-white/[0.06]"
+                        ? "bg-[#2D6A4F] border-[#2D6A4F] text-white"
+                        : "bg-surface border-line text-fg hover:bg-sand-deep"
                     }`}
                   >
                     {num}
@@ -269,18 +269,18 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
                 Budget Massimo (Opzionale)
               </label>
               <div className="relative">
-                <Euro className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-white/30" />
+                <Euro className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-faint" />
                 <input
                   type="number"
                   placeholder="Nessun limite"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
                   min="0"
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.03] pl-10 pr-4 text-sm text-white outline-none focus:border-[#4FB3C9]/40 transition-colors"
+                  className="h-12 w-full rounded-xl border border-line bg-surface pl-10 pr-4 text-sm text-ink outline-none focus:border-green/40 transition-colors"
                 />
               </div>
             </div>
@@ -288,7 +288,7 @@ export function CreateRequestModal({
 
           {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#4FB3C9]">
+            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
               Note Aggiuntive (Dettagli, bagagli, etc.)
             </label>
             <textarea
@@ -296,7 +296,7 @@ export function CreateRequestModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white outline-none focus:border-[#4FB3C9]/40 transition-colors placeholder:text-white/20"
+              className="w-full rounded-xl border border-line bg-surface p-4 text-sm text-ink outline-none focus:border-green/40 transition-colors placeholder:text-faint"
             />
           </div>
 
@@ -304,7 +304,7 @@ export function CreateRequestModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 rounded-xl bg-gradient-to-r from-[#4FB3C9] to-[#4FB3C9] text-base font-bold text-white shadow-lg shadow-[#4FB3C9]/25 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-xl bg-gradient-to-r from-[#2D6A4F] to-[#2D6A4F] text-base font-bold text-white shadow-lg shadow-[#2D6A4F]/25 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

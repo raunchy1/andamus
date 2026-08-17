@@ -43,21 +43,21 @@ export function Footer() {
   };
 
   return (
-    <footer className="border-t border-white/5 bg-[#0a0a0a] text-white">
+    <footer className="border-t border-line bg-bg text-ink">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 group">
-              <Car className="h-6 w-6 text-[#4FB3C9] transition-transform group-hover:scale-110" />
+              <Car className="h-6 w-6 text-[#2D6A4F] transition-transform group-hover:scale-110" />
               <span className="text-lg font-bold">Andamus</span>
             </Link>
-            <p className="text-sm text-gray-400 leading-relaxed">
+            <p className="text-sm text-muted leading-relaxed">
               {t("tagline")}
             </p>
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#4FB3C9]/10 text-[#4FB3C9] text-sm font-medium hover:bg-[#4FB3C9]/20 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D6A4F]/10 text-[#2D6A4F] text-sm font-medium hover:bg-[#2D6A4F]/20 transition-colors"
             >
               <Share2 className="h-4 w-4" />
               {t("shareAndamus")}
@@ -66,7 +66,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-fg">
               {t("navigation")}
             </h3>
             <ul className="space-y-3">
@@ -74,7 +74,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-white hover:translate-x-1 inline-block"
+                    className="text-sm text-muted transition-colors hover:text-ink hover:translate-x-1 inline-block"
                   >
                     {t(link.labelKey)}
                   </Link>
@@ -85,7 +85,7 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-fg">
               {t("legal")}
             </h3>
             <ul className="space-y-3">
@@ -93,7 +93,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-white hover:translate-x-1 inline-block"
+                    className="text-sm text-muted transition-colors hover:text-ink hover:translate-x-1 inline-block"
                   >
                     {t(link.labelKey)}
                   </Link>
@@ -104,28 +104,28 @@ export function Footer() {
 
           {/* Info */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-300">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-fg">
               {t("info")}
             </h3>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted">
               {t("madeWithLove")}
             </p>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-faint">
               {t("version")} {APP_VERSION}
             </p>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400">
+        <div className="mt-12 border-t border-line pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted">
             © {currentYear} Andamus. {t("allRightsReserved")}.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/termini-e-condizioni" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+            <Link href="/termini-e-condizioni" className="text-xs text-faint hover:text-fg transition-colors">
               {t("terms")}
             </Link>
-            <Link href="/privacy-policy" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+            <Link href="/privacy-policy" className="text-xs text-faint hover:text-fg transition-colors">
               {t("privacy")}
             </Link>
           </div>

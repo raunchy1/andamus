@@ -165,18 +165,18 @@ export default function CancelBookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#4FB3C9]" />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-bad mb-4" />
-        <h1 className="text-2xl font-bold text-white">{t("notFoundTitle")}</h1>
-        <Link href={`/${locale}/profilo`} className="mt-6 text-[#4FB3C9] flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-ink">{t("notFoundTitle")}</h1>
+        <Link href={`/${locale}/profilo`} className="mt-6 text-[#2D6A4F] flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" /> {t("backToProfile")}
         </Link>
       </div>
@@ -186,12 +186,12 @@ export default function CancelBookingPage() {
   const isPassenger = userId === booking.passenger_id;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-      <div className="bg-[#12121e] border-b border-white/10 px-4 py-4">
+    <div className="min-h-screen bg-bg pt-20 pb-12">
+      <div className="bg-surface border-b border-line px-4 py-4">
         <div className="mx-auto max-w-2xl">
           <Link
             href={`/${locale}/profilo`}
-            className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-muted hover:text-ink transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             {t("backToProfile")}
@@ -204,21 +204,21 @@ export default function CancelBookingPage() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-bad/20 flex items-center justify-center">
             <X className="h-8 w-8 text-bad" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">{t("title")}</h1>
-          <p className="text-white/60">{t("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-ink mb-2">{t("title")}</h1>
+          <p className="text-muted">{t("subtitle")}</p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-elevated p-6 mb-6">
-          <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
+        <div className="rounded-2xl border border-line bg-elevated p-6 mb-6">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
             {t("rideDetails")}
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center gap-3 text-white">
-              <MapPin className="h-5 w-5 text-[#4FB3C9]" />
+            <div className="flex items-center gap-3 text-ink">
+              <MapPin className="h-5 w-5 text-[#2D6A4F]" />
               <span>{booking.ride.from_city} → {booking.ride.to_city}</span>
             </div>
-            <div className="flex items-center gap-3 text-white">
-              <Calendar className="h-5 w-5 text-[#4FB3C9]" />
+            <div className="flex items-center gap-3 text-ink">
+              <Calendar className="h-5 w-5 text-[#2D6A4F]" />
               <span>
                 {new Date(booking.ride.date).toLocaleDateString("it-IT", {
                   weekday: "long",
@@ -228,8 +228,8 @@ export default function CancelBookingPage() {
                 {booking.ride.time && ` alle ${booking.ride.time}`}
               </span>
             </div>
-            <div className="flex items-center gap-3 text-white">
-              <User className="h-5 w-5 text-[#4FB3C9]" />
+            <div className="flex items-center gap-3 text-ink">
+              <User className="h-5 w-5 text-[#2D6A4F]" />
               <span>
                 {isPassenger ? t("passenger") : t("driver")}: {booking.passenger.name}
               </span>
@@ -237,8 +237,8 @@ export default function CancelBookingPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-elevated p-6 mb-6">
-          <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wider mb-4">
+        <div className="rounded-2xl border border-line bg-elevated p-6 mb-6">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
             {t("reasonTitle")}
           </h3>
 
@@ -248,17 +248,17 @@ export default function CancelBookingPage() {
                 key={reason.value}
                 className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${
                   selectedReason === reason.value
-                    ? "border-[#4FB3C9] bg-[#4FB3C9]/10"
-                    : "border-white/10 bg-white/5 hover:bg-white/[0.07]"
+                    ? "border-[#2D6A4F] bg-[#2D6A4F]/10"
+                    : "border-line bg-surface hover:bg-sand-deep"
                 }`}
               >
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   selectedReason === reason.value
-                    ? "border-[#4FB3C9]"
-                    : "border-white/30"
+                    ? "border-[#2D6A4F]"
+                    : "border-line"
                 }`}>
                   {selectedReason === reason.value && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#4FB3C9]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#2D6A4F]" />
                   )}
                 </div>
                 <input
@@ -269,21 +269,21 @@ export default function CancelBookingPage() {
                   onChange={(e) => setSelectedReason(e.target.value)}
                   className="hidden"
                 />
-                <span className="text-white">{reason.label}</span>
+                <span className="text-ink">{reason.label}</span>
               </label>
             ))}
           </div>
 
           {selectedReason === "other" && (
             <div className="mt-4">
-              <label className="block text-sm text-white/60 mb-2">
+              <label className="block text-sm text-muted mb-2">
                 {t("detailsLabel")}
               </label>
               <textarea
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder={t("detailsPlaceholder")}
-                className="w-full h-24 px-4 py-3 rounded-xl border border-white/10 bg-bg text-white placeholder:text-white/30 resize-none focus:outline-none focus:border-[#4FB3C9]"
+                className="w-full h-24 px-4 py-3 rounded-xl border border-line bg-bg text-ink placeholder:text-faint resize-none focus:outline-none focus:border-[#2D6A4F]"
               />
             </div>
           )}
@@ -292,7 +292,7 @@ export default function CancelBookingPage() {
         <div className="flex gap-4">
           <Link
             href={`/${locale}/profilo`}
-            className="flex-1 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-semibold text-center hover:bg-white/10 transition-colors"
+            className="flex-1 py-4 rounded-xl border border-line bg-surface text-ink font-semibold text-center hover:bg-sand-deep transition-colors"
           >
             {t("cancel")}
           </Link>

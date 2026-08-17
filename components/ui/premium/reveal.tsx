@@ -24,12 +24,16 @@ export function Reveal({
   return (
     <motion.div
       className={className}
-      initial={reduce ? false : { opacity: 0, y }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+      // Con reduced-motion si parte gia' visibili: `useReducedMotion` restituisce
+      // false al primo render e true dopo l'hydration, quindi lo stato finale deve
+      // restare raggiungibile in entrambi i casi — altrimenti il contenuto resta a
+      // opacity 0 per sempre.
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once, margin: "0px 0px -80px 0px" }}
       transition={{
-        duration: 0.7,
-        delay,
+        duration: reduce ? 0 : 0.7,
+        delay: reduce ? 0 : delay,
         ease: [0.16, 1, 0.3, 1],
       }}
     >
@@ -52,11 +56,11 @@ export function RevealStagger({
     <motion.div
       className={className}
       initial="hidden"
-      whileInView={reduce ? undefined : "show"}
+      whileInView="show"
       viewport={{ once: true, margin: "0px 0px -80px 0px" }}
       variants={{
         hidden: {},
-        show: { transition: { staggerChildren: stagger } },
+        show: { transition: { staggerChildren: reduce ? 0 : stagger } },
       }}
     >
       {children}
@@ -77,14 +81,14 @@ export function RevealItem({
   return (
     <motion.div
       className={className}
-      variants={
-        reduce
-          ? undefined
-          : {
-              hidden: { opacity: 0, y },
-              show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
-            }
-      }
+      variants={{
+        hidden: reduce ? { opacity: 1, y: 0 } : { opacity: 0, y },
+        show: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: reduce ? 0 : 0.65, ease: [0.16, 1, 0.3, 1] },
+        },
+      }}
     >
       {children}
     </motion.div>

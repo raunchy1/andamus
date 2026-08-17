@@ -91,8 +91,8 @@ export default function LaunchPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="animate-pulse text-[#4FB3C9]">
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <div className="animate-pulse text-[#2D6A4F]">
           <Rocket className="w-12 h-12" />
         </div>
       </div>
@@ -100,14 +100,14 @@ export default function LaunchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e5e2e1]">
+    <div className="min-h-screen bg-bg text-fg">
       <div className="max-w-3xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#4FB3C9] to-[#4FB3C9] mb-6"
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#2D6A4F] to-[#2D6A4F] mb-6"
           >
             <Rocket className="w-10 h-10 text-white" />
           </motion.div>
@@ -123,7 +123,7 @@ export default function LaunchPage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-[#e5e2e1]/70 max-w-lg mx-auto"
+            className="text-lg text-fg max-w-lg mx-auto"
           >
             {t("subtitle")}
           </motion.p>
@@ -137,15 +137,15 @@ export default function LaunchPage() {
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-[#e5e2e1]/70">{t("progress")}</span>
-            <span className="text-sm font-bold text-[#4FB3C9]">{progress}%</span>
+            <span className="text-sm font-medium text-fg">{t("progress")}</span>
+            <span className="text-sm font-bold text-[#2D6A4F]">{progress}%</span>
           </div>
           <div className="h-3 bg-surface-2 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="h-full bg-gradient-to-r from-[#4FB3C9] to-[#4FB3C9] rounded-full"
+              className="h-full bg-gradient-to-r from-[#2D6A4F] to-[#2D6A4F] rounded-full"
             />
           </div>
         </motion.div>
@@ -169,7 +169,7 @@ export default function LaunchPage() {
                 transition={{ delay: 0.5 + index * 0.1 }}
                 className={`relative p-5 rounded-2xl border transition-all ${
                   isCompleted
-                    ? "bg-surface-2/50 border-[#4FB3C9]/30"
+                    ? "bg-surface-2/50 border-[#2D6A4F]/30"
                     : "bg-surface-2 border-line-strong hover:border-faint"
                 }`}
               >
@@ -179,8 +179,8 @@ export default function LaunchPage() {
                     onClick={() => toggleItem(item.id)}
                     className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                       isCompleted
-                        ? "bg-[#4FB3C9] border-[#4FB3C9]"
-                        : "border-[#e5e2e1]/30 hover:border-[#4FB3C9]"
+                        ? "bg-[#2D6A4F] border-[#2D6A4F]"
+                        : "border-[#e5e2e1]/30 hover:border-[#2D6A4F]"
                     }`}
                   >
                     {isCompleted && <Check className="w-4 h-4 text-white" />}
@@ -189,12 +189,12 @@ export default function LaunchPage() {
                   {/* Icon */}
                   <div
                     className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-                      isCompleted ? "bg-[#4FB3C9]/20" : "bg-[#0a0a0a]"
+                      isCompleted ? "bg-[#2D6A4F]/20" : "bg-bg"
                     }`}
                   >
                     <Icon
                       className={`w-6 h-6 ${
-                        isCompleted ? "text-[#4FB3C9]" : "text-[#e5e2e1]/70"
+                        isCompleted ? "text-[#2D6A4F]" : "text-fg"
                       }`}
                     />
                   </div>
@@ -203,14 +203,14 @@ export default function LaunchPage() {
                   <div className="flex-1 min-w-0">
                     <h3
                       className={`font-semibold mb-1 ${
-                        isCompleted ? "text-[#e5e2e1]/50 line-through" : "text-white"
+                        isCompleted ? "text-muted line-through" : "text-ink"
                       }`}
                     >
                       {item.title}
                     </h3>
                     <p
                       className={`text-sm ${
-                        isCompleted ? "text-[#e5e2e1]/30" : "text-[#e5e2e1]/60"
+                        isCompleted ? "text-faint" : "text-muted"
                       }`}
                     >
                       {item.description}
@@ -220,11 +220,11 @@ export default function LaunchPage() {
                     {!isCompleted && (
                       <div className="mt-3">
                         {item.isShare ? (
-                          <ShareApp variant="outline" className="text-[#4FB3C9] border-[#4FB3C9]/50" />
+                          <ShareApp variant="outline" className="text-[#2D6A4F] border-[#2D6A4F]/50" />
                         ) : item.action ? (
                           <Link
                             href={`/${locale}${item.action.href}`}
-                            className="inline-flex items-center gap-1 text-sm font-medium text-[#4FB3C9] hover:text-[#4FB3C9] transition-colors"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
                           >
                             {item.action.label}
                             <ChevronRight className="w-4 h-4" />
@@ -238,7 +238,7 @@ export default function LaunchPage() {
                 {/* Completion badge */}
                 {isCompleted && (
                   <div className="absolute top-4 right-4">
-                    <Star className="w-5 h-5 text-[#4FB3C9] fill-[#4FB3C9]" />
+                    <Star className="w-5 h-5 text-[#2D6A4F] fill-[#2D6A4F]" />
                   </div>
                 )}
               </motion.div>
@@ -251,25 +251,25 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#4FB3C9]/20 to-[#4FB3C9]/20 border border-[#4FB3C9]/30 text-center"
+            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#2D6A4F]/20 to-[#2D6A4F]/20 border border-[#2D6A4F]/30 text-center"
           >
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-2xl font-bold text-ink mb-2">
               {t("allDone")}
             </h2>
-            <p className="text-[#e5e2e1]/70 mb-4">
+            <p className="text-fg mb-4">
               {t("allDoneDesc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href={`/${locale}/cerca`}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#4FB3C9] text-white font-semibold hover:bg-[#3d9db3] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
               >
                 <Search className="w-5 h-5" />
                 {t("findRide")}
               </Link>
               <Link
                 href={`/${locale}/offri`}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-surface text-ink font-semibold hover:bg-sand-deep transition-colors"
               >
                 <Car className="w-5 h-5" />
                 {t("offerRide")}
@@ -280,7 +280,7 @@ export default function LaunchPage() {
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-[#e5e2e1]/40">
+          <p className="text-sm text-faint">
             {t("footer")}
           </p>
         </div>

@@ -301,14 +301,14 @@ export default function PrivacyPage() {
               <p>
                 Per qualsiasi domanda sulla privacy o per esercitare i tuoi diritti:
               </p>
-              <p className="font-semibold text-white">privacy@andamus.it</p>
+              <p className="font-semibold text-ink">privacy@andamus.it</p>
             </div>
           </section>
         </div>
 
         {/* Footer note */}
-        <div className="mt-16 pt-8 border-t border-white/10 text-center">
-          <p className="text-white/50 text-sm">
+        <div className="mt-16 pt-8 border-t border-line text-center">
+          <p className="text-muted text-sm">
             Utilizzando Andamus, accetti la nostra Privacy Policy.
           </p>
           <div className="mt-6 flex items-center justify-center gap-4">
@@ -318,8 +318,8 @@ export default function PrivacyPage() {
             >
               Termini e Condizioni
             </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/" className="text-dim hover:text-white text-sm">
+            <span className="text-faint">·</span>
+            <Link href="/" className="text-dim hover:text-ink text-sm">
               Torna alla home
             </Link>
           </div>

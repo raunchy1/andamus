@@ -192,20 +192,20 @@ export default function VerificationPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#4FB3C9]" />
+      <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
+    <div className="min-h-screen bg-bg pt-20 pb-12">
       {/* Header */}
-      <div className="bg-[#12121e] border-b border-white/10 px-4 py-4">
+      <div className="bg-surface border-b border-line px-4 py-4">
         <div className="mx-auto max-w-4xl">
           <Link
             href="/profilo"
-            className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-muted hover:text-ink transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             {t("backToProfile")}
@@ -215,14 +215,14 @@ export default function VerificationPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Status Card */}
-        <div className="mb-8 rounded-3xl bg-gradient-to-br from-[#4FB3C9] to-[#3d9db3] p-8 text-white">
+        <div className="mb-8 rounded-3xl bg-gradient-to-br from-[#2D6A4F] to-[#1E4A36] p-8 text-white">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sand-deep">
               <Shield className="h-10 w-10" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">{getBadgeTitle()}</h1>
-              <p className="text-white/80">
+              <p className="text-fg">
                 {t("verificationLevel", { level: getVerificationLevel() })}
               </p>
               <div className="mt-3 flex gap-1">
@@ -230,7 +230,7 @@ export default function VerificationPage() {
                   <div
                     key={i}
                     className={`h-2 w-8 rounded-full ${
-                      i <= getVerificationLevel() ? "bg-white" : "bg-white/30"
+                      i <= getVerificationLevel() ? "bg-white" : "bg-sand-deep"
                     }`}
                   />
                 ))}
@@ -243,20 +243,20 @@ export default function VerificationPage() {
           {/* TODO: Phone verification — implement Supabase OTP or Twilio when ready */}
 
           {/* Email Verification */}
-          <div className="rounded-2xl border border-white/10 bg-elevated p-6">
+          <div className="rounded-2xl border border-line bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
                   status.email === "verified"
                     ? "bg-green-500/20 text-green-400"
-                    : "bg-white/10 text-white"
+                    : "bg-sand-deep text-muted"
                 }`}
               >
                 <Mail className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">{t("email")}</h3>
-                <p className="text-sm text-white/50">
+                <h3 className="font-semibold text-ink">{t("email")}</h3>
+                <p className="text-sm text-muted">
                   {status.email === "verified" ? t("verified") : t("notVerified")}
                 </p>
               </div>
@@ -275,7 +275,7 @@ export default function VerificationPage() {
           </div>
 
           {/* ID Document Verification */}
-          <div className="rounded-2xl border border-white/10 bg-elevated p-6">
+          <div className="rounded-2xl border border-line bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
@@ -283,14 +283,14 @@ export default function VerificationPage() {
                     ? "bg-green-500/20 text-green-400"
                     : status.id === "pending"
                     ? "bg-yellow-500/20 text-yellow-400"
-                    : "bg-white/10 text-white"
+                    : "bg-sand-deep text-muted"
                 }`}
               >
                 <IdCard className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">{t("idDocument")}</h3>
-                <p className="text-sm text-white/50">
+                <h3 className="font-semibold text-ink">{t("idDocument")}</h3>
+                <p className="text-sm text-muted">
                   {status.id === "verified"
                     ? t("verified")
                     : status.id === "pending"
@@ -304,10 +304,10 @@ export default function VerificationPage() {
             </div>
 
             {status.id !== "verified" && status.id !== "pending" && (
-              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#4FB3C9] hover:bg-white/10">
-                <Upload className="mb-2 h-8 w-8 text-white/50" />
-                <span className="text-sm text-white/70">{t("uploadIdCard")}</span>
-                <span className="mt-1 text-xs text-white/40">{t("pngJpgUpTo5mb")}</span>
+              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-line bg-surface p-6 transition-all hover:border-[#2D6A4F] hover:bg-sand-deep">
+                <Upload className="mb-2 h-8 w-8 text-muted" />
+                <span className="text-sm text-fg">{t("uploadIdCard")}</span>
+                <span className="mt-1 text-xs text-faint">{t("pngJpgUpTo5mb")}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -320,7 +320,7 @@ export default function VerificationPage() {
             )}
 
             {uploading === "id" && (
-              <div className="mt-3 flex items-center justify-center gap-2 text-white/50">
+              <div className="mt-3 flex items-center justify-center gap-2 text-muted">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 {t("uploading")}
               </div>
@@ -328,7 +328,7 @@ export default function VerificationPage() {
           </div>
 
           {/* Driver License Verification */}
-          <div className="rounded-2xl border border-white/10 bg-elevated p-6">
+          <div className="rounded-2xl border border-line bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
@@ -336,14 +336,14 @@ export default function VerificationPage() {
                     ? "bg-green-500/20 text-green-400"
                     : status.driver === "pending"
                     ? "bg-yellow-500/20 text-yellow-400"
-                    : "bg-white/10 text-white"
+                    : "bg-sand-deep text-muted"
                 }`}
               >
                 <Car className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">{t("driverLicense")}</h3>
-                <p className="text-sm text-white/50">
+                <h3 className="font-semibold text-ink">{t("driverLicense")}</h3>
+                <p className="text-sm text-muted">
                   {status.driver === "verified"
                     ? t("verified")
                     : status.driver === "pending"
@@ -357,10 +357,10 @@ export default function VerificationPage() {
             </div>
 
             {status.driver !== "verified" && status.driver !== "pending" && (
-              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-6 transition-all hover:border-[#4FB3C9] hover:bg-white/10">
-                <Upload className="mb-2 h-8 w-8 text-white/50" />
-                <span className="text-sm text-white/70">{t("uploadLicense")}</span>
-                <span className="mt-1 text-xs text-white/40">{t("pngJpgUpTo5mb")}</span>
+              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-line bg-surface p-6 transition-all hover:border-[#2D6A4F] hover:bg-sand-deep">
+                <Upload className="mb-2 h-8 w-8 text-muted" />
+                <span className="text-sm text-fg">{t("uploadLicense")}</span>
+                <span className="mt-1 text-xs text-faint">{t("pngJpgUpTo5mb")}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -373,7 +373,7 @@ export default function VerificationPage() {
             )}
 
             {uploading === "driver" && (
-              <div className="mt-3 flex items-center justify-center gap-2 text-white/50">
+              <div className="mt-3 flex items-center justify-center gap-2 text-muted">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 {t("uploading")}
               </div>
@@ -382,16 +382,16 @@ export default function VerificationPage() {
         </div>
 
         {/* Benefits Info */}
-        <div className="mt-8 rounded-2xl border border-white/10 bg-[#12121e] p-6">
-          <h3 className="mb-4 text-lg font-semibold text-white">
+        <div className="mt-8 rounded-2xl border border-line bg-surface p-6">
+          <h3 className="mb-4 text-lg font-semibold text-ink">
             {t("verificationBenefits")}
           </h3>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-start gap-3">
               <Star className="h-5 w-5 text-yellow-400" />
               <div>
-                <p className="font-medium text-white">{t("trustBadge")}</p>
-                <p className="text-sm text-white/50">
+                <p className="font-medium text-ink">{t("trustBadge")}</p>
+                <p className="text-sm text-muted">
                   {t("othersSeeVerified")}
                 </p>
               </div>
@@ -399,8 +399,8 @@ export default function VerificationPage() {
             <div className="flex items-start gap-3">
               <Shield className="h-5 w-5 text-green-400" />
               <div>
-                <p className="font-medium text-white">{t("moreSecurity")}</p>
-                <p className="text-sm text-white/50">
+                <p className="font-medium text-ink">{t("moreSecurity")}</p>
+                <p className="text-sm text-muted">
                   {t("moreProtectionForYouAndPassengers")}
                 </p>
               </div>

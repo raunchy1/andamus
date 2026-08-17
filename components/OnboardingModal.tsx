@@ -28,12 +28,12 @@ interface OnboardingModalProps {
 
 const ICONS = [Car, Search, Car, Shield, Trophy, Star];
 const COLORS = [
-  "from-[#4FB3C9] to-[#3d9db3]",
-  "from-[#4FB3C9] to-[#4FB3C9]",
+  "from-[#2D6A4F] to-[#1E4A36]",
+  "from-[#2D6A4F] to-[#2D6A4F]",
   "from-green-500 to-emerald-600",
   "from-blue-500 to-indigo-600",
   "from-yellow-500 to-orange-500",
-  "from-[#4FB3C9] to-[#4FB3C9]",
+  "from-[#2D6A4F] to-[#2D6A4F]",
 ];
 
 const FEATURE_ICONS: Array<Array<React.ElementType>> = [
@@ -131,13 +131,13 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
       >
         <button
           onClick={handleSkip}
-          className="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors flex items-center gap-1 text-sm"
+          className="absolute -top-12 right-0 text-muted hover:text-ink transition-colors flex items-center gap-1 text-sm"
         >
           {t("skip")}
           <X className="w-4 h-4" />
         </button>
 
-        <div className="relative overflow-hidden rounded-3xl bg-surface border border-white/10 shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl bg-surface border border-line shadow-2xl">
           <div className={`absolute inset-0 bg-gradient-to-br ${currentColor} opacity-8`} />
 
           <div className="relative p-6 sm:p-8">
@@ -157,15 +157,15 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   className="flex justify-center mb-5"
                 >
                   <div className={`p-5 rounded-2xl bg-gradient-to-br ${currentColor} bg-opacity-15`}>
-                    <IconComponent className="w-14 h-14 text-[#4FB3C9]" />
+                    <IconComponent className="w-14 h-14 text-[#2D6A4F]" />
                   </div>
                 </motion.div>
 
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-ink mb-3">
                   {currentSlide.title}
                 </h2>
 
-                <p className="text-white/70 mb-5 leading-relaxed text-sm sm:text-base">
+                <p className="text-fg mb-5 leading-relaxed text-sm sm:text-base">
                   {currentSlide.description}
                 </p>
 
@@ -176,10 +176,10 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                       return (
                         <div
                           key={index}
-                          className="flex items-center gap-2 bg-white/5 rounded-full px-4 py-2 border border-white/5"
+                          className="flex items-center gap-2 bg-surface rounded-full px-4 py-2 border border-line"
                         >
-                          <FeatureIcon className="w-4 h-4 text-[#4FB3C9]" />
-                          <span className="text-sm text-white/90">{feature.text}</span>
+                          <FeatureIcon className="w-4 h-4 text-[#2D6A4F]" />
+                          <span className="text-sm text-fg">{feature.text}</span>
                         </div>
                       );
                     })}
@@ -191,7 +191,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                     <Link
                       href={`/${locale}/cerca`}
                       onClick={handleComplete}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#4FB3C9] text-white font-semibold hover:bg-[#3d9db3] transition-colors"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
                     >
                       <Search className="w-5 h-5" />
                       {t("searchRide")}
@@ -199,7 +199,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                     <Link
                       href={`/${locale}/offri`}
                       onClick={handleComplete}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-surface text-ink font-semibold hover:bg-sand-deep transition-colors border border-line"
                     >
                       <Car className="w-5 h-5" />
                       {t("offerRide")}
@@ -216,8 +216,8 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   onClick={() => setCurrentStep(index)}
                   className={`h-2 rounded-full transition-all ${
                     index === currentStep
-                      ? "w-8 bg-[#4FB3C9]"
-                      : "w-2 bg-white/20 hover:bg-white/40"
+                      ? "w-8 bg-[#2D6A4F]"
+                      : "w-2 bg-sand-deep hover:bg-sand-deep"
                   }`}
                 />
               ))}
@@ -230,8 +230,8 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   disabled={currentStep === 0}
                   className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
                     currentStep === 0
-                      ? "text-white/20 cursor-not-allowed"
-                      : "text-white/60 hover:text-white hover:bg-white/10"
+                      ? "text-faint cursor-not-allowed"
+                      : "text-muted hover:text-ink hover:bg-sand-deep"
                   }`}
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -240,7 +240,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1 px-6 py-3 rounded-xl bg-[#4FB3C9] text-white font-semibold hover:bg-[#3d9db3] transition-colors"
+                  className="flex items-center gap-1 px-6 py-3 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
                 >
                   {currentStep === slides.length - 2 ? t("start") : t("next")}
                   <ChevronRight className="w-5 h-5" />
@@ -251,7 +251,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
         </div>
 
         <div className="text-center mt-4">
-          <span className="text-white/40 text-sm">
+          <span className="text-faint text-sm">
             {t("step", { current: currentStep + 1, total: slides.length })}
           </span>
         </div>

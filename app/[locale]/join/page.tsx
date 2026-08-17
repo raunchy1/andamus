@@ -110,7 +110,10 @@ function JoinContent() {
     
     try {
       ProductAnalytics.signupStarted("google");
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      if (result.method === "gis") {
+        window.location.reload();
+      }
     } catch {
       toast.error(t("loginError"));
     }

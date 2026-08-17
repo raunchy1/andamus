@@ -267,12 +267,12 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
             fetchNotifications().finally(() => setDropdownLoading(false));
           }
         }}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+        className="relative flex h-10 w-10 items-center justify-center rounded-full text-fg transition-colors hover:bg-sand-deep hover:text-ink"
         aria-label={t("notifications")}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#4FB3C9] text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
+          <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-green text-[10px] font-bold text-white ring-2 ring-surface">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -280,15 +280,15 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 overflow-hidden rounded-2xl border border-white/10 bg-elevated shadow-2xl">
+        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 overflow-hidden rounded-2xl border border-line bg-elevated shadow-2xl">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-            <h3 className="font-semibold text-white">{t("notifications")}</h3>
+          <div className="flex items-center justify-between border-b border-line px-4 py-3">
+            <h3 className="font-semibold text-ink">{t("notifications")}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
                 disabled={loading}
-                className="flex items-center gap-1 text-xs text-[#4FB3C9] hover:text-white transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 text-xs text-green hover:text-green-dark transition-colors disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
@@ -304,13 +304,13 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
           <div className="max-h-96 overflow-y-auto">
             {dropdownLoading ? (
               <div className="px-4 py-8 text-center">
-                <Loader2 className="mx-auto h-8 w-8 text-white/30 animate-spin" />
-                <p className="mt-2 text-sm text-white/50">{t("loading")}</p>
+                <Loader2 className="mx-auto h-8 w-8 text-faint animate-spin" />
+                <p className="mt-2 text-sm text-muted">{t("loading")}</p>
               </div>
             ) : notifications.length === 0 ? (
               <div className="px-4 py-8 text-center">
-                <Bell className="mx-auto h-12 w-12 text-white/20" />
-                <p className="mt-2 text-sm text-white/50">{t("noNotifications")}</p>
+                <Bell className="mx-auto h-12 w-12 text-faint" />
+                <p className="mt-2 text-sm text-muted">{t("noNotifications")}</p>
               </div>
             ) : (
               notifications.map((notification) => {
@@ -320,20 +320,20 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                     key={notification.id}
                     href={getNotificationLink(notification)}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`flex items-start gap-3 border-b border-white/5 px-4 py-3 transition-colors hover:bg-white/5 ${
-                      !notification.read ? "bg-white/[0.02]" : ""
+                    className={`flex items-start gap-3 border-b border-line px-4 py-3 transition-colors hover:bg-sand-deep ${
+                      !notification.read ? "bg-surface" : ""
                     }`}
                   >
                     <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${notificationColors[notification.type]}`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white">{notification.title}</p>
-                      <p className="text-sm text-white/60 line-clamp-2">{notification.body}</p>
-                      <p className="mt-1 text-xs text-white/40">{timeAgo(notification.created_at, t)}</p>
+                      <p className="text-sm font-medium text-ink">{notification.title}</p>
+                      <p className="text-sm text-muted line-clamp-2">{notification.body}</p>
+                      <p className="mt-1 text-xs text-faint">{timeAgo(notification.created_at, t)}</p>
                     </div>
                     {!notification.read && (
-                      <div className="mt-2 h-2 w-2 rounded-full bg-[#4FB3C9]" />
+                      <div className="mt-2 h-2 w-2 rounded-full bg-[#2D6A4F]" />
                     )}
                   </Link>
                 );
@@ -343,11 +343,11 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="border-t border-white/10 px-4 py-2 text-center">
+            <div className="border-t border-line px-4 py-2 text-center">
               <Link
                 href={`/${locale}/profilo`}
                 onClick={() => setIsOpen(false)}
-                className="text-xs text-white/50 hover:text-white transition-colors"
+                className="text-xs text-muted hover:text-ink transition-colors"
               >
                 {t("seeAll")}
               </Link>

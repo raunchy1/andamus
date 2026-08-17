@@ -79,7 +79,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             width: 400,
             height: 400,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(79, 179, 201,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(45,106,79,0.12) 0%, transparent 70%)",
           }}
         />
         <div
@@ -90,7 +90,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             width: 500,
             height: 500,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(255,179,177,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(210,103,58,0.06) 0%, transparent 70%)",
           }}
         />
 
@@ -101,7 +101,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
               width: 44,
               height: 44,
               borderRadius: 12,
-              background: "#4FB3C9",
+              background: "#2D6A4F",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -125,7 +125,7 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
               width: 180,
               height: 180,
               borderRadius: 36,
-              background: avatarUrl ? "transparent" : "linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%)",
+              background: avatarUrl ? "transparent" : "linear-gradient(135deg, #2D6A4F 0%, #1E4A36 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -201,11 +201,11 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
             style={{
               fontSize: 20,
               fontWeight: 600,
-              color: "#4FB3C9",
-              background: "rgba(79, 179, 201,0.1)",
+              color: "#2D6A4F",
+              background: "rgba(45,106,79,0.1)",
               padding: "10px 24px",
               borderRadius: 10,
-              border: "1px solid rgba(79, 179, 201,0.3)",
+              border: "1px solid rgba(45,106,79,0.3)",
             }}
           >
             {titleText}

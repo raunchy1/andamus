@@ -201,14 +201,14 @@ export function EmptyStateSearch({
         >
           {/* Flexible Dates suggestions */}
           {recovery.flexibleDates.length > 0 && (
-            <div className="p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md shadow-2xl">
-              <h4 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
+            <div className="p-5 rounded-2xl border border-line bg-surface backdrop-blur-md shadow-2xl">
+              <h4 className="text-sm font-semibold text-fg mb-3 flex items-center gap-2">
                 <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 {t("flexibleDatesAvailable")}
               </h4>
-              <p className="text-xs text-white/50 mb-4">{t("nearbyRoutesTitle")}</p>
+              <p className="text-xs text-muted mb-4">{t("nearbyRoutesTitle")}</p>
               <div className="flex flex-col gap-2">
                 {recovery.flexibleDates.map((item, idx) => (
                   <button
@@ -217,7 +217,7 @@ export function EmptyStateSearch({
                       onSelectSuggestion?.(undefined, undefined, item.date);
                       Analytics.trackEvent("empty_search_recovered", { type: "flexible_date", date: item.date });
                     }}
-                    className="flex items-center justify-between p-3 rounded-xl border border-white/[0.04] bg-white/[0.03] hover:bg-white/[0.08] hover:border-emerald-500/30 transition duration-200 text-xs text-white"
+                    className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface hover:bg-sand-deep hover:border-emerald-500/30 transition duration-200 text-xs text-ink"
                   >
                     <span className="font-semibold">
                       {new Date(item.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
@@ -237,15 +237,15 @@ export function EmptyStateSearch({
 
           {/* Nearby Hubs suggestions */}
           {recovery.nearbySuggestions.length > 0 && (
-            <div className="p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md shadow-2xl">
-              <h4 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
+            <div className="p-5 rounded-2xl border border-line bg-surface backdrop-blur-md shadow-2xl">
+              <h4 className="text-sm font-semibold text-fg mb-3 flex items-center gap-2">
                 <svg className="w-4 h-4 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 {t("recommendedNearbyRoutes")}
               </h4>
-              <p className="text-xs text-white/50 mb-4">{t("nearbyZonesTitle")}</p>
+              <p className="text-xs text-muted mb-4">{t("nearbyZonesTitle")}</p>
               <div className="flex flex-col gap-2">
                 {recovery.nearbySuggestions.map((item, idx) => (
                   <button
@@ -254,15 +254,15 @@ export function EmptyStateSearch({
                       onSelectSuggestion?.(item.from_city, item.to_city, undefined);
                       Analytics.trackEvent("search_suggestion_clicked", { from: item.from_city, to: item.to_city, type: "nearby_hub" });
                     }}
-                    className="flex flex-col text-left p-3 rounded-xl border border-white/[0.04] bg-white/[0.03] hover:bg-white/[0.08] hover:border-sky-500/30 transition duration-200 text-xs text-white"
+                    className="flex flex-col text-left p-3 rounded-xl border border-line bg-surface hover:bg-sand-deep hover:border-sky-500/30 transition duration-200 text-xs text-ink"
                   >
                     <div className="flex justify-between items-center w-full mb-1">
-                      <span className="font-bold text-sky-300">
+                      <span className="font-bold text-green">
                         {item.from_city} ➔ {item.to_city}
                       </span>
-                      <span className="text-[10px] text-white/40 font-mono">+{item.distance_diff}km</span>
+                      <span className="text-[10px] text-faint font-mono">+{item.distance_diff}km</span>
                     </div>
-                    <span className="text-[10px] text-white/60">{item.reason}</span>
+                    <span className="text-[10px] text-muted">{item.reason}</span>
                   </button>
                 ))}
               </div>
@@ -271,19 +271,19 @@ export function EmptyStateSearch({
 
           {/* Passenger requests */}
           {recovery.matchingRequests.length > 0 && (
-            <div className="col-span-full p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md shadow-2xl">
-              <h4 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
+            <div className="col-span-full p-5 rounded-2xl border border-line bg-surface backdrop-blur-md shadow-2xl">
+              <h4 className="text-sm font-semibold text-fg mb-3 flex items-center gap-2">
                 <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
                 {t("peopleLookingTitle")}
               </h4>
-              <p className="text-xs text-white/50 mb-4">{t("offerToSeekersTitle")}</p>
+              <p className="text-xs text-muted mb-4">{t("offerToSeekersTitle")}</p>
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {recovery.matchingRequests.map((req, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col justify-between p-3.5 rounded-xl border border-white/[0.04] bg-white/[0.03] text-xs text-white"
+                    className="flex flex-col justify-between p-3.5 rounded-xl border border-line bg-surface text-xs text-ink"
                   >
                     <div className="flex items-center gap-2.5 mb-3">
                       {req.user?.avatar_url ? (
@@ -294,8 +294,8 @@ export function EmptyStateSearch({
                         </div>
                       )}
                       <div>
-                        <div className="font-bold text-white/90 truncate max-w-[120px]">{req.user?.full_name || t("commuterFallback")}</div>
-                        <div className="text-[10px] text-white/40">
+                        <div className="font-bold text-fg truncate max-w-[120px]">{req.user?.full_name || t("commuterFallback")}</div>
+                        <div className="text-[10px] text-faint">
                           {new Date(req.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
                             day: "numeric",
                             month: "short",
@@ -350,7 +350,7 @@ export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requ
       title={config.title}
       description={config.description}
       icon={
-        <svg className="w-12 h-12 text-[#4FB3C9]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-12 h-12 text-[#2D6A4F]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       }
@@ -367,7 +367,7 @@ export function EmptyStateChat() {
       title={t("noMessages")}
       description={t("chatAvailable")}
       icon={
-        <svg className="w-12 h-12 text-[#4FB3C9]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-12 h-12 text-[#2D6A4F]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       }

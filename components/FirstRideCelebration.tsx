@@ -17,7 +17,7 @@ interface ConfettiPiece {
 }
 
 function generateConfetti(count: number): ConfettiPiece[] {
-  const colors = ["#4FB3C9", "#4FB3C9", "#ffd700", "#10b981", "#3b82f6", "#f59e0b"];
+  const colors = ["#2D6A4F", "#2D6A4F", "#ffd700", "#10b981", "#3b82f6", "#f59e0b"];
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -59,7 +59,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     first_booking: {
       title: t("firstBookingTitle"),
       subtitle: t("firstBookingSubtitle"),
-      icon: <Sparkles className="w-12 h-12 text-[#4FB3C9]" />,
+      icon: <Sparkles className="w-12 h-12 text-[#2D6A4F]" />,
     },
     level_up: {
       title: title || t("levelUpTitle"),
@@ -69,7 +69,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     badge_earned: {
       title: title || t("badgeTitle"),
       subtitle: subtitle || t("badgeSubtitle"),
-      icon: <Trophy className="w-12 h-12 text-[#4FB3C9]" />,
+      icon: <Trophy className="w-12 h-12 text-[#2D6A4F]" />,
     },
   };
 
@@ -122,19 +122,19 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
           >
             <button
               onClick={handleClose}
-              className="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors"
+              className="absolute -top-12 right-0 text-muted hover:text-ink transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="relative overflow-hidden rounded-3xl bg-surface border border-white/10 shadow-2xl p-8 text-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4FB3C9]/10 to-transparent" />
+            <div className="relative overflow-hidden rounded-3xl bg-surface border border-line shadow-2xl p-8 text-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2D6A4F]/10 to-transparent" />
 
               <motion.div
                 initial={{ scale: 0, rotate: -20 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 15, delay: 0.4 }}
-                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#4FB3C9]/20 to-[#4FB3C9]/10 border border-[#4FB3C9]/20 mb-6"
+                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#2D6A4F]/20 to-[#2D6A4F]/10 border border-[#2D6A4F]/20 mb-6"
               >
                 {content.icon}
               </motion.div>
@@ -143,7 +143,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="relative text-2xl font-bold text-white mb-2"
+                className="relative text-2xl font-bold text-ink mb-2"
               >
                 {content.title}
               </motion.h2>
@@ -152,7 +152,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="relative text-white/60 mb-6"
+                className="relative text-muted mb-6"
               >
                 {content.subtitle}
               </motion.p>
@@ -162,7 +162,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 onClick={handleClose}
-                className="relative w-full py-3 rounded-xl bg-[#4FB3C9] text-white font-semibold hover:bg-[#3d9db3] transition-colors"
+                className="relative w-full py-3 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
               >
                 {t("ctaButton")}
               </motion.button>

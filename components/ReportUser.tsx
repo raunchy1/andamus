@@ -61,7 +61,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={iconOnly ? "text-white/50 hover:text-bad transition-colors flex items-center justify-center" : "flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-bad"}
+        className={iconOnly ? "text-muted hover:text-bad transition-colors flex items-center justify-center" : "flex items-center gap-2 text-sm text-muted transition-colors hover:text-bad"}
         title={t("reportUser")}
       >
         <Flag className="h-4.5 w-4.5" />
@@ -70,7 +70,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-elevated p-6">
+          <div className="w-full max-w-md rounded-3xl border border-line bg-elevated p-6">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -78,13 +78,13 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                   <AlertTriangle className="h-5 w-5 text-bad" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">{t("reportUser")}</h3>
-                  <p className="text-sm text-white/50">{reportedName}</p>
+                  <h3 className="font-semibold text-ink">{t("reportUser")}</h3>
+                  <p className="text-sm text-muted">{reportedName}</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-muted hover:bg-sand-deep hover:text-ink"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -92,7 +92,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
 
             {/* Reasons */}
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-medium text-white/70">
+              <label className="mb-2 block text-sm font-medium text-fg">
                 {t("reportReason")}
               </label>
               <div className="space-y-2">
@@ -101,8 +101,8 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                     key={r.id}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
                       reason === r.id
-                        ? "border-[#4FB3C9] bg-[#4FB3C9]/10"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                        ? "border-[#2D6A4F] bg-[#2D6A4F]/10"
+                        : "border-line bg-surface hover:bg-sand-deep"
                     }`}
                   >
                     <input
@@ -111,9 +111,9 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                       value={r.id}
                       checked={reason === r.id}
                       onChange={(e) => setReason(e.target.value)}
-                      className="h-4 w-4 accent-[#4FB3C9]"
+                      className="h-4 w-4 accent-[#2D6A4F]"
                     />
-                    <span className="text-sm text-white">{t(`reasons.${r.id}`)}</span>
+                    <span className="text-sm text-ink">{t(`reasons.${r.id}`)}</span>
                   </label>
                 ))}
               </div>
@@ -121,7 +121,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
 
             {/* Description */}
             <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-white/70">
+              <label className="mb-2 block text-sm font-medium text-fg">
                 {t("descriptionOptional")}
               </label>
               <textarea
@@ -129,7 +129,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("describeWhatHappened")}
                 rows={3}
-                className="w-full rounded-xl border border-white/10 bg-bg p-3 text-sm text-white outline-none focus:border-[#4FB3C9] placeholder:text-white/30"
+                className="w-full rounded-xl border border-line bg-bg p-3 text-sm text-ink outline-none focus:border-green placeholder:text-faint"
               />
             </div>
 

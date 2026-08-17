@@ -44,17 +44,17 @@ function ErrorFallback({ onRetry }: { onRetry: () => void }) {
             </svg>
           </div>
         </div>
-        <h2 className="text-lg font-bold text-white mb-2">
+        <h2 className="text-lg font-bold text-ink mb-2">
           Qualcosa è andato storto / Something went wrong
         </h2>
-        <p className="text-sm text-white/60 mb-6 leading-relaxed">
+        <p className="text-sm text-muted mb-6 leading-relaxed">
           Si è verificato un errore imprevisto. Ricarica la pagina o riprova più
           tardi.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={onRetry}
-            className="px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-xl text-sm font-semibold transition-colors border border-white/10"
+            className="px-5 py-2.5 bg-surface hover:bg-sand-deep text-ink rounded-xl text-sm font-semibold transition-colors border border-line"
           >
             ↻ Riprova / Retry
           </button>

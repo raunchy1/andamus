@@ -161,9 +161,9 @@ export default function StripeStatusPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white p-6">
-        <Loader2 className="w-12 h-12 animate-spin text-[#4FB3C9] mb-4" />
-        <p className="text-white/50 text-sm font-medium">{texts.loading}</p>
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center text-ink p-6">
+        <Loader2 className="w-12 h-12 animate-spin text-[#2D6A4F] mb-4" />
+        <p className="text-muted text-sm font-medium">{texts.loading}</p>
       </div>
     );
   }
@@ -173,14 +173,14 @@ export default function StripeStatusPage() {
   const isNotConnected = status?.account_id === null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
+    <div className="min-h-screen bg-bg text-ink pb-20">
       {/* Top Header */}
-      <header className="bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
+      <header className="bg-surface/80 backdrop-blur-xl border-b border-line sticky top-0 z-50">
         <div className="max-w-md mx-auto px-4 h-16 flex items-center gap-4">
           <button 
             type="button" 
             onClick={() => router.back()} 
-            className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06] transition-all active:scale-95"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-line bg-surface text-muted hover:bg-sand-deep transition-all active:scale-95"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -191,15 +191,15 @@ export default function StripeStatusPage() {
       <main className="max-w-md mx-auto px-4 pt-6 space-y-6">
         {/* Intro */}
         <div className="space-y-1">
-          <p className="text-sm text-white/50 leading-relaxed">{texts.subtitle}</p>
+          <p className="text-sm text-muted leading-relaxed">{texts.subtitle}</p>
         </div>
 
         {/* Status Card */}
-        <div className="bg-[#141414]/90 border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+        <div className="bg-[#141414]/90 border border-line rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl text-white">
           {/* Subtle accent glows */}
           {isConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />}
           {isPendingSetup && <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />}
-          {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#4FB3C9]/10 rounded-full blur-2xl pointer-events-none" />}
+          {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#2D6A4F]/10 rounded-full blur-2xl pointer-events-none" />}
 
           <div className="flex flex-col items-center text-center space-y-4 relative z-10">
             {/* Status Icons */}
@@ -214,8 +214,8 @@ export default function StripeStatusPage() {
               </div>
             )}
             {isNotConnected && (
-              <div className="w-16 h-16 rounded-2xl bg-[#4FB3C9]/10 border border-[#4FB3C9]/20 flex items-center justify-center shadow-lg shadow-[#4FB3C9]/5">
-                <CreditCard className="w-8 h-8 text-[#4FB3C9]" />
+              <div className="w-16 h-16 rounded-2xl bg-[#2D6A4F]/10 border border-[#2D6A4F]/20 flex items-center justify-center shadow-lg shadow-[#2D6A4F]/5">
+                <CreditCard className="w-8 h-8 text-[#2D6A4F]" />
               </div>
             )}
 
@@ -234,7 +234,7 @@ export default function StripeStatusPage() {
             </div>
 
             {/* Description */}
-            <p className="text-xs text-white/60 leading-relaxed">
+            <p className="text-xs text-muted leading-relaxed">
               {isConnected && texts.connectedDesc}
               {isPendingSetup && texts.pendingDesc}
               {isNotConnected && texts.notConnectedDesc}
@@ -246,7 +246,7 @@ export default function StripeStatusPage() {
                 type="button"
                 onClick={handleOnboard}
                 disabled={isPending}
-                className="w-full mt-4 py-4 px-6 rounded-2xl bg-[#4FB3C9] text-white font-extrabold text-sm uppercase tracking-wider hover:bg-[#3d9db3] active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#4FB3C9]/20"
+                className="w-full mt-4 py-4 px-6 rounded-2xl bg-[#2D6A4F] text-white font-extrabold text-sm uppercase tracking-wider hover:bg-[#1E4A36] active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#2D6A4F]/20"
               >
                 {isPending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -268,36 +268,36 @@ export default function StripeStatusPage() {
 
         {/* Benefits Section */}
         <div className="space-y-4 pt-2">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 px-1">{texts.benefitTitle}</h3>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-faint px-1">{texts.benefitTitle}</h3>
 
           <div className="space-y-3">
-            <div className="bg-[#141414]/40 border border-white/5 rounded-2xl p-4 flex gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-                <Coins className="w-5 h-5 text-[#4FB3C9]" />
+            <div className="bg-surface border border-line rounded-2xl p-4 flex gap-4">
+              <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center shrink-0">
+                <Coins className="w-5 h-5 text-[#2D6A4F]" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white">{texts.benefit1Title}</h4>
-                <p className="text-xs text-white/50 leading-relaxed">{texts.benefit1Desc}</p>
+                <h4 className="text-sm font-bold text-ink">{texts.benefit1Title}</h4>
+                <p className="text-xs text-muted leading-relaxed">{texts.benefit1Desc}</p>
               </div>
             </div>
 
-            <div className="bg-[#141414]/40 border border-white/5 rounded-2xl p-4 flex gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-                <TrendingUp className="w-5 h-5 text-[#4FB3C9]" />
+            <div className="bg-surface border border-line rounded-2xl p-4 flex gap-4">
+              <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center shrink-0">
+                <TrendingUp className="w-5 h-5 text-[#2D6A4F]" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white">{texts.benefit2Title}</h4>
-                <p className="text-xs text-white/50 leading-relaxed">{texts.benefit2Desc}</p>
+                <h4 className="text-sm font-bold text-ink">{texts.benefit2Title}</h4>
+                <p className="text-xs text-muted leading-relaxed">{texts.benefit2Desc}</p>
               </div>
             </div>
 
-            <div className="bg-[#141414]/40 border border-white/5 rounded-2xl p-4 flex gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5 text-[#4FB3C9]" />
+            <div className="bg-surface border border-line rounded-2xl p-4 flex gap-4">
+              <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5 text-[#2D6A4F]" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white">{texts.benefit3Title}</h4>
-                <p className="text-xs text-white/50 leading-relaxed">{texts.benefit3Desc}</p>
+                <h4 className="text-sm font-bold text-ink">{texts.benefit3Title}</h4>
+                <p className="text-xs text-muted leading-relaxed">{texts.benefit3Desc}</p>
               </div>
             </div>
           </div>

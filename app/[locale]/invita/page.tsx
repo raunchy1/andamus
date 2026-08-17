@@ -118,20 +118,20 @@ export default function InvitaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] pt-20 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#4FB3C9]" />
+      <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
+    <main className="min-h-screen bg-bg pt-20 pb-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <Link 
             href="/profilo"
-            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-muted hover:text-ink transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
             {t("backToProfile")}
@@ -142,11 +142,11 @@ export default function InvitaPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4FB3C9] to-[#3d9db3] mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#2D6A4F] to-[#1E4A36] mb-4">
               <Gift className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">{t("title")}</h1>
-            <p className="text-white/60">{t("subtitle")}</p>
+            <h1 className="text-3xl font-bold text-ink mb-2">{t("title")}</h1>
+            <p className="text-muted">{t("subtitle")}</p>
           </motion.div>
         </div>
 
@@ -155,20 +155,20 @@ export default function InvitaPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
+          className="bg-surface border border-line rounded-2xl p-6 mb-8"
         >
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-[#4FB3C9]" />
+          <h2 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+            <Share2 className="w-5 h-5 text-[#2D6A4F]" />
             {t("yourLink")}
           </h2>
           
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm break-all">
+            <div className="flex-1 bg-sand border border-line rounded-xl px-4 py-3 text-ink font-mono text-sm break-all">
               {referralLink}
             </div>
             <Button
               onClick={copyLink}
-              className="bg-[#4FB3C9] hover:bg-[#3d9db3] text-white"
+              className="bg-[#2D6A4F] hover:bg-[#1E4A36] text-white"
             >
               {copied ? (
                 <><Check className="w-4 h-4 mr-2" /> {t("copied")}</>
@@ -213,20 +213,20 @@ export default function InvitaPage() {
           transition={{ delay: 0.2 }}
           className="grid grid-cols-2 gap-4 mb-8"
         >
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
+          <div className="bg-surface border border-line rounded-2xl p-6 text-center">
             <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mx-auto mb-3">
               <Users className="w-6 h-6 text-blue-400" />
             </div>
-            <p className="text-3xl font-bold text-white">{profile?.referrals_count || 0}</p>
-            <p className="text-white/60 text-sm">{t("friendsInvited")}</p>
+            <p className="text-3xl font-bold text-ink">{profile?.referrals_count || 0}</p>
+            <p className="text-muted text-sm">{t("friendsInvited")}</p>
           </div>
           
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
+          <div className="bg-surface border border-line rounded-2xl p-6 text-center">
             <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center mx-auto mb-3">
               <Trophy className="w-6 h-6 text-yellow-400" />
             </div>
-            <p className="text-3xl font-bold text-white">{profile?.referral_points_earned || 0}</p>
-            <p className="text-white/60 text-sm">{t("pointsEarned")}</p>
+            <p className="text-3xl font-bold text-ink">{profile?.referral_points_earned || 0}</p>
+            <p className="text-muted text-sm">{t("pointsEarned")}</p>
           </div>
         </motion.div>
 
@@ -235,35 +235,35 @@ export default function InvitaPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
+          className="bg-surface border border-line rounded-2xl p-6 mb-8"
         >
-          <h2 className="text-lg font-semibold text-white mb-4">{t("howItWorks")}</h2>
+          <h2 className="text-lg font-semibold text-ink mb-4">{t("howItWorks")}</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#4FB3C9] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 1
               </div>
               <div>
-                <p className="text-white font-medium">{t("step1Title")}</p>
-                <p className="text-white/60 text-sm">{t("step1Desc")}</p>
+                <p className="text-ink font-medium">{t("step1Title")}</p>
+                <p className="text-muted text-sm">{t("step1Desc")}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#4FB3C9] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 2
               </div>
               <div>
-                <p className="text-white font-medium">{t("step2Title")}</p>
-                <p className="text-white/60 text-sm">{t("step2Desc")}</p>
+                <p className="text-ink font-medium">{t("step2Title")}</p>
+                <p className="text-muted text-sm">{t("step2Desc")}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#4FB3C9] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 3
               </div>
               <div>
-                <p className="text-white font-medium">{t("step3Title")}</p>
-                <p className="text-white/60 text-sm">{t("step3Desc")}</p>
+                <p className="text-ink font-medium">{t("step3Title")}</p>
+                <p className="text-muted text-sm">{t("step3Desc")}</p>
               </div>
             </div>
           </div>
@@ -274,9 +274,9 @@ export default function InvitaPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+          className="bg-surface border border-line rounded-2xl p-6"
         >
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-400" />
             {t("leaderboard")}
           </h2>
@@ -285,13 +285,13 @@ export default function InvitaPage() {
             {leaderboard.map((user, index) => (
               <div 
                 key={user.user_id}
-                className="flex items-center gap-4 p-3 rounded-xl bg-white/5"
+                className="flex items-center gap-4 p-3 rounded-xl bg-surface"
               >
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
                   index === 0 ? "bg-yellow-500/20 text-yellow-400" :
                   index === 1 ? "bg-gray-400/20 text-muted" :
                   index === 2 ? "bg-orange-600/20 text-orange-400" :
-                  "bg-white/10 text-white/60"
+                  "bg-surface text-muted"
                 }`}>
                   {index + 1}
                 </div>
@@ -306,22 +306,22 @@ export default function InvitaPage() {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-white/60" />
+                    <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center">
+                      <Users className="w-5 h-5 text-muted" />
                     </div>
                   )}
-                  <span className="text-white font-medium">{user.user_name || t("userFallback")}</span>
+                  <span className="text-ink font-medium">{user.user_name || t("userFallback")}</span>
                 </div>
                 
                 <div className="text-right">
-                  <p className="text-white font-bold">{user.referrals_count}</p>
-                  <p className="text-white/60 text-xs">{t("invites")}</p>
+                  <p className="text-ink font-bold">{user.referrals_count}</p>
+                  <p className="text-muted text-xs">{t("invites")}</p>
                 </div>
               </div>
             ))}
             
             {leaderboard.length === 0 && (
-              <div className="text-center py-8 text-white/40">
+              <div className="text-center py-8 text-faint">
                 <Trophy className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p>{t("emptyTitle")}</p>
                 <p className="text-sm">{t("emptySubtitle")}</p>

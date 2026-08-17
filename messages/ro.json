@@ -25,7 +25,8 @@
     "user": "Utilizator",
     "closeMenu": "Închide",
     "openMenu": "Meniu",
-    "language": "Limbă"
+    "language": "Limbă",
+    "chat": "Chat"
   },
   "theme": {
     "light": "Luminos",
@@ -539,8 +540,14 @@
       "getStarted": "Începe",
       "skip": "Sari",
       "slides": [
-        {"title": "Curse", "description": "Caută sau oferă locuri."},
-        {"title": "Direct", "description": "Vorbești cu șoferul."}
+        {
+          "title": "Curse",
+          "description": "Caută sau oferă locuri."
+        },
+        {
+          "title": "Direct",
+          "description": "Vorbești cu șoferul."
+        }
       ]
     }
   }

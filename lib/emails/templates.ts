@@ -1,9 +1,9 @@
 // Email HTML Templates for Andamus
-// Light transactional template with teal accent (#4FB3C9)
+// Light transactional template with teal accent (#2D6A4F)
 
 import { escapeHtml } from "./escape";
 
-const brandColor = "#4FB3C9";
+const brandColor = "#2D6A4F";
 const bgColor = "#f6f7f8";
 const surfaceColor = "#ffffff";
 const textColor = "#1a1a18";

@@ -10,7 +10,7 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "light",
   setTheme: () => {},
 });
 
@@ -19,7 +19,7 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   // Apply theme function - defined early to avoid TDZ issues
@@ -49,16 +49,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     Promise.resolve().then(() => {
       setMounted(true);
       const saved = typeof window !== "undefined" ? (localStorage.getItem("theme") as Theme | null) : null;
-      const initial = saved || "dark";
+      const initial = saved || "light";
       setThemeState(initial);
       applyTheme(initial);
     });
   }, []);
 
-  // Prevent hydration mismatch by forcing dark on server/pre-mount
+  // Prevent hydration mismatch by forcing light on server/pre-mount
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: "dark", setTheme }}>
+      <ThemeContext.Provider value={{ theme: "light", setTheme }}>
         {children}
       </ThemeContext.Provider>
     );

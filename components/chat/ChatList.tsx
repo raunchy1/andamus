@@ -11,6 +11,9 @@ export interface ChatConversation {
   bookingId: string;
   participantName: string;
   participantAvatar: string | null;
+  /** Tratta del viaggio, es. "Cagliari → Olbia" */
+  route?: string;
+  /** Ultimo messaggio scambiato */
   preview: string;
   timestamp: string;
   unreadCount?: number;
@@ -60,44 +63,129 @@ export function ChatList({ conversations, className }: ChatListProps) {
   }
 
   return (
-    <div className={cn("divide-y divide-line", className)}>
+    <div className={className}>
       {conversations.map((conversation) => (
-        <div key={conversation.bookingId}>
-          <Link
-            href={`/${locale}/chat/${conversation.bookingId}`}
-            className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-surface-2/60 sm:px-6"
-          >
-            <div className="relative shrink-0">
-              <Avatar
-                src={conversation.participantAvatar}
-                name={conversation.participantName}
-                size="md"
+        <Link
+          key={conversation.bookingId}
+          href={`/${locale}/chat/${conversation.bookingId}`}
+          className="chat-row"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "14px 22px",
+            transition: "background .15s",
+          }}
+        >
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <Avatar
+              src={conversation.participantAvatar}
+              name={conversation.participantName}
+              size="md"
+              className="size-12"
+            />
+            {conversation.isOnline && (
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                  width: 10,
+                  height: 10,
+                  borderRadius: 999,
+                  background: "var(--green)",
+                  border: "2px solid var(--sand)",
+                }}
               />
-              {conversation.isOnline && (
-                <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-bg bg-accent" />
-              )}
-            </div>
+            )}
+          </div>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="truncate text-sm font-semibold text-fg">
-                  {conversation.participantName}
-                </p>
-                <span className="shrink-0 font-mono text-[11px] text-dim">
-                  {formatListTime(conversation.timestamp, locale)}
-                </span>
-              </div>
-              <p className="mt-0.5 truncate text-sm text-muted">{conversation.preview}</p>
-            </div>
-
-            {conversation.unreadCount && conversation.unreadCount > 0 ? (
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-[10px] font-medium text-accent-fg">
-                {conversation.unreadCount > 9 ? "9+" : conversation.unreadCount}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                justifyContent: "space-between",
+                gap: 8,
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: "var(--ink)",
+                  margin: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {conversation.participantName}
+              </p>
+              <span style={{ flexShrink: 0, fontSize: 12.5, color: "var(--faint)" }}>
+                {formatListTime(conversation.timestamp, locale)}
               </span>
-            ) : null}
-          </Link>
-        </div>
+            </div>
+
+            {conversation.route && (
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: "var(--green)",
+                  margin: "2px 0 0",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {conversation.route}
+              </p>
+            )}
+
+            {conversation.preview && (
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "var(--muted)",
+                  margin: "2px 0 0",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {conversation.preview}
+              </p>
+            )}
+          </div>
+
+          {conversation.unreadCount && conversation.unreadCount > 0 ? (
+            <span
+              style={{
+                display: "flex",
+                width: 20,
+                height: 20,
+                flexShrink: 0,
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 999,
+                background: "var(--green)",
+                color: "#fff",
+                fontSize: 10,
+                fontWeight: 600,
+              }}
+            >
+              {conversation.unreadCount > 9 ? "9+" : conversation.unreadCount}
+            </span>
+          ) : null}
+        </Link>
       ))}
+
+      <style jsx>{`
+        .chat-row:hover {
+          background: var(--sand-deep);
+        }
+      `}</style>
     </div>
   );
 }

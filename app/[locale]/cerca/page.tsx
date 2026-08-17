@@ -460,23 +460,23 @@ export default function SearchPage() {
           <div className="min-h-screen bg-bg pt-16 pb-24">
             <div className="max-w-2xl mx-auto px-4 sm:px-6">
               <div className="mb-8">
-                <div className="h-5 w-32 mb-2 bg-white/[0.06] rounded-lg animate-pulse" />
-                <div className="h-9 w-24 bg-white/[0.08] rounded-lg animate-pulse" />
+                <div className="h-5 w-32 mb-2 bg-surface rounded-lg animate-pulse" />
+                <div className="h-9 w-24 bg-surface rounded-lg animate-pulse" />
               </div>
-              <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3 mb-6">
+              <div className="bg-surface border border-line rounded-xl p-3 mb-6">
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="h-10 w-full bg-white/[0.05] rounded-lg animate-pulse" />
-                  <div className="h-10 w-full bg-white/[0.05] rounded-lg animate-pulse" />
+                  <div className="h-10 w-full bg-surface rounded-lg animate-pulse" />
+                  <div className="h-10 w-full bg-surface rounded-lg animate-pulse" />
                 </div>
               </div>
               <div className="flex gap-2 mb-8 overflow-hidden">
                 {[1,2,3,4,5].map((i) => (
-                  <div key={i} className="h-8 rounded-full flex-shrink-0 bg-white/[0.05] animate-pulse w-20" />
+                  <div key={i} className="h-8 rounded-full flex-shrink-0 bg-surface animate-pulse w-20" />
                 ))}
               </div>
               <div className="space-y-4">
                 {[1,2,3].map((i) => (
-                  <div key={i} className="bg-white/[0.025] border border-white/[0.06] rounded-2xl p-4 sm:p-6 animate-pulse h-48" />
+                  <div key={i} className="bg-surface border border-line rounded-2xl p-4 sm:p-6 animate-pulse h-48" />
                 ))}
               </div>
             </div>

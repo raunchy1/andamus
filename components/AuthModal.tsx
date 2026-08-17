@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FEATURES } from "@/lib/features";
-import { signInWithGoogle } from "@/lib/auth";
+import { preloadGoogleIdentity, signInWithGoogle } from "@/lib/auth";
 import { ProductAnalytics } from "@/lib/posthog";
 
 interface AuthModalProps {
@@ -36,6 +36,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   useEffect(() => {
     if (isOpen) {
       setMode(defaultTab);
+      // Warm Google Identity so the popup can open on the next click (user-gesture).
+      preloadGoogleIdentity();
     }
   }, [isOpen, defaultTab]);
 
@@ -113,8 +115,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
     setLoading(true);
     try {
       ProductAnalytics.signupStarted("google");
-      await signInWithGoogle();
-      // On success the browser is redirected by Supabase; no further action needed.
+      const result = await signInWithGoogle();
+      // GIS finishes in-page (no redirect). OAuth redirects away from this page.
+      if (result.method === "gis") {
+        toast.success(t("loginSuccess"));
+        handleClose();
+        router.refresh();
+        ProductAnalytics.trackEvent("login_success", { method: "google" });
+        setLoading(false);
+      }
+      // method === "oauth": browser navigates to Google; leave loading state.
     } catch (error: any) {
       toast.error(error instanceof Error ? error.message : t("googleLoginError"));
       setLoading(false);
@@ -159,7 +169,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       
       <div
         id="auth-modal-content"
-        className={`w-full sm:max-w-md bg-[#1a1a1a] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-200 ${
+        className={`w-full sm:max-w-md bg-surface rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-200 ${
           isVisible ? "translate-y-0 sm:scale-100" : "translate-y-8 sm:scale-95"
         }`}
         style={{ maxHeight: "92vh", overflowY: "auto" }}
@@ -167,8 +177,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       >
         {/* Progress Bar (if loading) */}
         {loading && (
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[#4FB3C9]/20 overflow-hidden">
-            <div className="h-full bg-[#4FB3C9] animate-progress-indeterminate" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[#2D6A4F]/20 overflow-hidden">
+            <div className="h-full bg-[#2D6A4F] animate-progress-indeterminate" />
           </div>
         )}
 
@@ -176,33 +186,33 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         <div className="px-6 pt-8 pb-4 relative">
           <button
             onClick={handleClose}
-            className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 text-white/40 hover:text-white transition-all"
+            className="absolute top-6 right-6 p-2 rounded-full hover:bg-sand-deep text-faint hover:text-ink transition-all"
           >
             <X size={20} />
           </button>
           
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[#4FB3C9] flex items-center justify-center text-white shadow-lg shadow-[#4FB3C9]/20">
+            <div className="w-10 h-10 rounded-xl bg-[#2D6A4F] flex items-center justify-center text-white shadow-lg shadow-[#2D6A4F]/20">
               <Car size={24} strokeWidth={2.5} />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tighter uppercase">
+            <h2 className="text-2xl font-black text-ink tracking-tighter uppercase">
               {mode === "login" ? t("loginTitle") : t("registerTitle")}
             </h2>
           </div>
-          <p className="text-white/50 text-sm">
+          <p className="text-muted text-sm">
             {mode === "login" ? t("loginSubtitle") : t("registerSubtitle")}
           </p>
         </div>
 
         {/* Tabs */}
         <div className="px-6 mb-6">
-          <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl">
+          <div className="flex p-1 bg-surface border border-line rounded-2xl">
             <button
               onClick={() => setMode("login")}
               className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
                 mode === "login" 
-                  ? "bg-[#4FB3C9] text-white shadow-lg shadow-[#4FB3C9]/20" 
-                  : "text-white/40 hover:text-white/60"
+                  ? "bg-[#2D6A4F] text-white shadow-lg shadow-[#2D6A4F]/20" 
+                  : "text-faint hover:text-muted"
               }`}
             >
               {t("loginTab")}
@@ -211,8 +221,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
               onClick={() => setMode("register")}
               className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
                 mode === "register" 
-                  ? "bg-[#4FB3C9] text-white shadow-lg shadow-[#4FB3C9]/20" 
-                  : "text-white/40 hover:text-white/60"
+                  ? "bg-[#2D6A4F] text-white shadow-lg shadow-[#2D6A4F]/20" 
+                  : "text-faint hover:text-muted"
               }`}
             >
               {t("registerTab")}
@@ -224,18 +234,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         <div className="px-6 pb-8 space-y-4">
           {mode === "register" && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
                 {t("nameLabel")}
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-faint group-focus-within:text-[#2D6A4F] transition-colors">
                   <User size={18} />
                 </div>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                  className="w-full bg-sand border border-line focus:border-green/50 rounded-2xl pl-12 pr-4 py-4 text-ink placeholder:text-faint focus:outline-none transition-all"
                   placeholder={t("namePlaceholder")}
                 />
               </div>
@@ -243,42 +253,42 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           )}
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
               {t("emailLabel")}
             </label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-faint group-focus-within:text-[#2D6A4F] transition-colors">
                 <Mail size={18} />
               </div>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                className="w-full bg-sand border border-line focus:border-green/50 rounded-2xl pl-12 pr-4 py-4 text-ink placeholder:text-faint focus:outline-none transition-all"
                 placeholder="nome@esempio.it"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
               {t("passwordLabel")}
             </label>
             <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-faint group-focus-within:text-[#2D6A4F] transition-colors">
                 <Lock size={18} />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-12 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                className="w-full bg-sand border border-line focus:border-green/50 rounded-2xl pl-12 pr-12 py-4 text-ink placeholder:text-faint focus:outline-none transition-all"
                 placeholder={t("passwordPlaceholder")}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/20 hover:text-white transition-colors"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-faint hover:text-ink transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -287,18 +297,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
           {mode === "register" && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
                 {t("confirmPasswordLabel")}
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-[#4FB3C9] transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-faint group-focus-within:text-[#2D6A4F] transition-colors">
                   <Lock size={18} />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/5 focus:border-[#4FB3C9]/50 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-white/10 focus:outline-none transition-all"
+                  className="w-full bg-sand border border-line focus:border-green/50 rounded-2xl pl-12 pr-4 py-4 text-ink placeholder:text-faint focus:outline-none transition-all"
                   placeholder={t("confirmPasswordPlaceholder")}
                 />
               </div>
@@ -308,7 +318,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           <button
             onClick={mode === "login" ? handleLogin : handleRegister}
             disabled={loading}
-            className="w-full bg-[#4FB3C9] hover:bg-[#3d9db3] disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-[#4FB3C9]/20 flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="w-full bg-[#2D6A4F] hover:bg-[#1E4A36] disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-[#2D6A4F]/20 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />
@@ -320,17 +330,17 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           {/* Google Login (Only if enabled in features) */}
           <div className="relative py-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/5"></div>
+              <div className="w-full border-t border-line"></div>
             </div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
-              <span className="bg-[#1a1a1a] px-4 text-white/20">{t("orContinueWith")}</span>
+              <span className="bg-surface px-4 text-faint">{t("orContinueWith")}</span>
             </div>
           </div>
 
           <button
             onClick={handleGoogle}
             disabled={loading}
-            className="w-full bg-white text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-surface border border-line text-ink font-bold py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-sand-deep transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

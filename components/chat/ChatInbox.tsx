@@ -42,6 +42,21 @@ export function ChatInbox() {
         return;
       }
 
+      // ultimo messaggio per ogni conversazione — una sola query, niente N+1
+      const bookingIds = bookings.map((b: { id: string }) => b.id);
+      const { data: messages } = await supabase
+        .from("messages")
+        .select("booking_id, content, created_at")
+        .in("booking_id", bookingIds)
+        .order("created_at", { ascending: false });
+
+      const lastMessageByBooking = new Map<string, string>();
+      for (const m of messages ?? []) {
+        if (!lastMessageByBooking.has(m.booking_id)) {
+          lastMessageByBooking.set(m.booking_id, m.content);
+        }
+      }
+
       const items: ChatConversation[] = bookings.map((booking: {
         id: string;
         updated_at: string;
@@ -62,7 +77,8 @@ export function ChatInbox() {
           bookingId: booking.id,
           participantName: driver?.name || t("user"),
           participantAvatar: driver?.avatar_url || null,
-          preview: `${ride?.from_city || ""} → ${ride?.to_city || ""}`,
+          route: `${ride?.from_city || ""} → ${ride?.to_city || ""}`,
+          preview: lastMessageByBooking.get(booking.id) ?? "",
           timestamp: booking.updated_at,
           unreadCount: 0,
         };

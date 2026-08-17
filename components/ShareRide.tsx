@@ -136,10 +136,10 @@ ${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
       return (
         <button
           onClick={handleShareNative}
-          className={`p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors ${className}`}
+          className={`p-2 rounded-full bg-surface hover:bg-sand-deep transition-colors ${className}`}
           title={t("share")}
         >
-          <Share2 className="w-4 h-4 text-white/60" />
+          <Share2 className="w-4 h-4 text-muted" />
         </button>
       );
     }
@@ -147,9 +147,9 @@ ${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
       return (
         <button
           onClick={handleShareNative}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-colors text-sm font-medium ${className}`}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-line bg-surface hover:bg-sand-deep transition-colors text-sm font-medium ${className}`}
         >
-          <Share2 className="w-4 h-4 text-[#4FB3C9]" />
+          <Share2 className="w-4 h-4 text-[#2D6A4F]" />
           {t("share")}
         </button>
       );
@@ -158,7 +158,7 @@ ${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={handleShareNative}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4FB3C9]/10 text-[#4FB3C9] hover:bg-[#4FB3C9]/20 transition-colors text-sm font-semibold ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2D6A4F]/10 text-[#2D6A4F] hover:bg-[#2D6A4F]/20 transition-colors text-sm font-semibold ${className}`}
       >
         <Share2 className="w-4 h-4" />
         {t("share")}
@@ -230,19 +230,19 @@ function ShareModal({
             className="relative w-full max-w-sm mx-4 mb-4 sm:mb-0"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
-            <div className="bg-surface border border-white/10 rounded-2xl p-5 shadow-2xl">
+            <div className="bg-surface border border-line rounded-2xl p-5 shadow-2xl">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-white">{ts("title")}</h3>
-                <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/5 transition-colors">
-                  <X className="w-5 h-5 text-white/60" />
+                <h3 className="text-lg font-bold text-ink">{ts("title")}</h3>
+                <button onClick={onClose} className="p-1 rounded-lg hover:bg-sand-deep transition-colors">
+                  <X className="w-5 h-5 text-muted" />
                 </button>
               </div>
 
-              <div className="bg-white/[0.03] rounded-xl p-3 mb-4 border border-white/5">
-                <p className="text-sm text-white/80 font-medium">
+              <div className="bg-surface rounded-xl p-3 mb-4 border border-line">
+                <p className="text-sm text-fg font-medium">
                   {ride.from_city} → {ride.to_city}
                 </p>
-                <p className="text-xs text-white/40 mt-0.5">
+                <p className="text-xs text-faint mt-0.5">
                   {ride.date} · {ride.time.slice(0, 5)} {ride.price > 0 ? `· €${ride.price}` : `· ${ts("free")}`}
                 </p>
                 {trustLabel && (
@@ -257,33 +257,33 @@ function ShareModal({
               <div className="grid grid-cols-4 gap-2">
                 <button
                   onClick={onCopy}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
-                  {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-white/60" />}
-                  <span className="text-[10px] text-white/60">{copied ? ts("copied") : ts("copy")}</span>
+                  {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-muted" />}
+                  <span className="text-[10px] text-muted">{copied ? ts("copied") : ts("copy")}</span>
                 </button>
                 <button
                   onClick={onWhatsApp}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
                   <MessageCircle className="w-5 h-5 text-emerald-400" />
-                  <span className="text-[10px] text-white/60">WhatsApp</span>
+                  <span className="text-[10px] text-muted">WhatsApp</span>
                 </button>
                 <button
                   onClick={onTelegram}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
                   <Send className="w-5 h-5 text-blue-400" />
-                  <span className="text-[10px] text-white/60">Telegram</span>
+                  <span className="text-[10px] text-muted">Telegram</span>
                 </button>
                 <button
                   onClick={onTwitter}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-colors"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
-                  <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-fg" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
-                  <span className="text-[10px] text-white/60">X</span>
+                  <span className="text-[10px] text-muted">X</span>
                 </button>
               </div>
             </div>

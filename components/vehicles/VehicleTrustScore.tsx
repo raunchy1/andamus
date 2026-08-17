@@ -25,7 +25,7 @@ export function VehicleTrustScore({
   const svgSize = (radius + stroke) * 2;
 
   const color =
-    percent >= 80 ? "#22c55e" : percent >= 50 ? "#f59e0b" : "#4FB3C9";
+    percent >= 80 ? "#22c55e" : percent >= 50 ? "#f59e0b" : "#2D6A4F";
   const label =
     percent >= 80 ? "Ottimo" : percent >= 50 ? "Buono" : "Incompleto";
 

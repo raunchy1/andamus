@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
           destination: driverProfile.stripe_connect_account_id,
         },
       },
-      success_url: `${origin}/${locale}/chat/${finalBooking.id}?payment=success`,
+      success_url: `${origin}/${locale}/conferma/${finalBooking.id}?payment=success`,
       cancel_url: `${origin}/${locale}/corsa/${rideId}?payment=cancelled`,
       metadata: {
         booking_id: finalBooking.id,

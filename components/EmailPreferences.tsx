@@ -98,7 +98,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
         </div>
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-12 bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="h-12 bg-surface rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -124,7 +124,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
             </div>
             <div
               className={`w-12 h-6 rounded-full relative transition-colors ${
-                preferences[option.key] ? "bg-primary" : "bg-white/20"
+                preferences[option.key] ? "bg-primary" : "bg-sand-deep"
               }`}
               onClick={() => handleToggle(option.key)}
             >

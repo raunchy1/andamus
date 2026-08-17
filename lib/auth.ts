@@ -32,8 +32,131 @@ function getCallbackPath(redirectTo?: string): string {
   return `${origin}/auth/callback?next=${encodeURIComponent(safeTarget)}`;
 }
 
-export async function signInWithGoogle(redirectTo?: string) {
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        oauth2: {
+          initCodeClient: (config: {
+            client_id: string;
+            scope: string;
+            ux_mode?: "popup" | "redirect";
+            callback: (response: { code?: string; error?: string; error_description?: string }) => void;
+            error_callback?: (error: { type?: string; message?: string }) => void;
+          }) => { requestCode: () => void };
+        };
+      };
+    };
+  }
+}
+
+let googleIdentityReady: Promise<void> | null = null;
+
+/** Preload GIS so the popup can open synchronously on the user's click (user-gesture). */
+export function preloadGoogleIdentity(): void {
+  if (typeof window === "undefined") return;
+  if (window.google?.accounts?.oauth2 || googleIdentityReady) return;
+
+googleIdentityReady = new Promise<void>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    );
+    if (existing) {
+      if (window.google?.accounts?.oauth2) {
+        resolve();
+        return;
+      }
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Failed to load Google Identity")), {
+        once: true,
+      });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Google Identity"));
+    document.head.appendChild(script);
+  });
+
+  googleIdentityReady.catch(() => {
+    googleIdentityReady = null;
+  });
+}
+
+function loadGoogleIdentityScript(): Promise<void> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Google sign-in is only available in the browser"));
+  }
+  if (window.google?.accounts?.oauth2) return Promise.resolve();
+  preloadGoogleIdentity();
+  return googleIdentityReady || Promise.reject(new Error("Google Identity not loading"));
+}
+
+/**
+ * Preferred path: Google Identity Services popup bound to this site's origin.
+ * Users see "Accesează andamus.vercel.app" (or the verified app name "Andamus")
+ * instead of the Supabase project subdomain.
+ *
+ * Falls back to classic Supabase OAuth redirect if GIS / server exchange fails.
+ */
+export async function signInWithGoogle(redirectTo?: string): Promise<{ method: "gis" | "oauth" }> {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const supabase = createClient();
+
+  // If GIS is already loaded, open the popup immediately (keeps user-gesture).
+  // If not, wait once then fall back to full-page OAuth (popups require a sync gesture).
+  if (clientId && window.google?.accounts?.oauth2) {
+    try {
+      const authCode = await new Promise<string>((resolve, reject) => {
+        const client = window.google!.accounts.oauth2.initCodeClient({
+          client_id: clientId,
+          scope: "openid email profile",
+          ux_mode: "popup",
+          callback: (response) => {
+            if (response.error || !response.code) {
+              reject(
+                new Error(
+                  response.error_description || response.error || "Google sign-in was cancelled"
+                )
+              );
+              return;
+            }
+            resolve(response.code);
+          },
+          error_callback: (error) => {
+            reject(new Error(error.message || error.type || "Google sign-in failed"));
+          },
+        });
+        client.requestCode();
+      });
+
+      const exchangeRes = await fetch("/api/auth/google-id-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: authCode }),
+      });
+      const exchangeJson = (await exchangeRes.json()) as { id_token?: string; error?: string };
+      if (!exchangeRes.ok || !exchangeJson.id_token) {
+        throw new Error(exchangeJson.error || "Failed to complete Google sign-in");
+      }
+
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token: exchangeJson.id_token,
+      });
+      if (error) throw error;
+
+      return { method: "gis" };
+    } catch (err) {
+      console.warn("[auth] GIS Google sign-in failed, falling back to OAuth redirect", err);
+    }
+  } else if (clientId) {
+    // Warm the script for the next click.
+    void loadGoogleIdentityScript().catch(() => undefined);
+  }
 
   const stateRes = await fetch("/api/auth/oauth-state", { method: "POST" });
   if (!stateRes.ok) {
@@ -53,6 +176,7 @@ export async function signInWithGoogle(redirectTo?: string) {
   });
 
   if (error) throw error;
+  return { method: "oauth" };
 }
 
 export async function signUpWithEmail(

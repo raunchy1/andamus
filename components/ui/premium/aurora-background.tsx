@@ -29,14 +29,15 @@ export function AuroraBackground({
           )}
           style={{
             backgroundImage: [
-              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(79, 179, 201,0.50), transparent 60%)",
-              "radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255,179,177,0.40), transparent 60%)",
-              "radial-gradient(ellipse 70% 60% at 60% 80%, rgba(111,216,204,0.30), transparent 60%)",
+              // verde bosco · terracotta · sabbia — palette Andamusu
+              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(45,106,79,0.22), transparent 60%)",
+              "radial-gradient(ellipse 50% 40% at 80% 20%, rgba(210,103,58,0.18), transparent 60%)",
+              "radial-gradient(ellipse 70% 60% at 60% 80%, rgba(237,231,218,0.55), transparent 60%)",
             ].join(","),
           }}
         />
         {showRadialMask && (
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_#0a0a0a_85%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_var(--sand)_85%)]" />
         )}
       </div>
       {children}

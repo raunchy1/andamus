@@ -96,7 +96,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
   return (
     <div className="min-h-screen bg-surface pb-28">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-surface/95 backdrop-blur-xl border-b border-white/8 px-5 py-4 flex items-center gap-4">
+      <div className="sticky top-0 z-20 bg-surface/95 backdrop-blur-xl border-b border-line px-5 py-4 flex items-center gap-4">
         <button
           onClick={onClose}
           className="p-2.5 rounded-xl bg-elevated hover:bg-elevated text-fg/70 transition-all"
@@ -276,7 +276,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
         {/* ── INFO SECTION ── */}
         <section>
           <h3 className="font-bold text-lg text-fg mb-3">Dettagli veicolo</h3>
-          <div className="bg-surface rounded-2xl divide-y divide-white/5">
+          <div className="bg-surface rounded-2xl divide-y divide-line">
             {[
               { label: "Marca", value: vehicle.make_name },
               { label: "Modello", value: vehicle.model_name },

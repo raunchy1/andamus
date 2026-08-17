@@ -126,14 +126,14 @@ export default function TermsPage() {
               Responsabilità degli utenti
             </h3>
             <div className="space-y-3 text-dim leading-relaxed">
-              <p className="font-semibold text-white">Come autista:</p>
+              <p className="font-semibold text-ink">Come autista:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Devi possedere patente valida e veicolo assicurato regolarmente</li>
                 <li>Sei responsabile della sicurezza dei passeggeri durante il viaggio</li>
                 <li>Devi rispettare il Codice della Strada e le normative vigenti</li>
                 <li>Non puoi richiedere contributi superiori alle spese effettive</li>
               </ul>
-              <p className="font-semibold text-white mt-4">Come passeggero:</p>
+              <p className="font-semibold text-ink mt-4">Come passeggero:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Devi rispettare l&apos;autista e gli altri passeggeri</li>
                 <li>Devi presentarsi puntualmente al punto di incontro</li>
@@ -240,14 +240,14 @@ export default function TermsPage() {
               <p>
                 Per qualsiasi domanda sui presenti termini, puoi contattarci all&apos;indirizzo:
               </p>
-              <p className="font-semibold text-white">support@andamus.it</p>
+              <p className="font-semibold text-ink">support@andamus.it</p>
             </div>
           </section>
         </div>
 
         {/* Footer note */}
-        <div className="mt-16 pt-8 border-t border-white/10 text-center">
-          <p className="text-white/50 text-sm">
+        <div className="mt-16 pt-8 border-t border-line text-center">
+          <p className="text-muted text-sm">
             Utilizzando Andamus, accetti integralmente i presenti Termini e Condizioni.
           </p>
           <div className="mt-6 flex items-center justify-center gap-4">
@@ -257,8 +257,8 @@ export default function TermsPage() {
             >
               Privacy Policy
             </Link>
-            <span className="text-white/30">·</span>
-            <Link href="/" className="text-dim hover:text-white text-sm">
+            <span className="text-faint">·</span>
+            <Link href="/" className="text-dim hover:text-ink text-sm">
               Torna alla home
             </Link>
           </div>

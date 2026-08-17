@@ -386,7 +386,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                   }`}
                 >
                   <div
-                    className="w-10 h-10 rounded-full border-2 border-white/10"
+                    className="w-10 h-10 rounded-full border-2 border-line"
                     style={{ backgroundColor: swatch.hex }}
                   />
                   <span className="text-[11px] font-medium text-fg/70 text-center leading-tight">
@@ -398,7 +398,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
             {color && (
               <div className="flex items-center gap-3 bg-elevated rounded-xl px-4 py-3">
                 <div
-                  className="w-5 h-5 rounded-full border border-white/10"
+                  className="w-5 h-5 rounded-full border border-line"
                   style={{ backgroundColor: colorHex }}
                 />
                 <span className="font-semibold text-fg">{color}</span>
@@ -697,7 +697,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
               </div>
               {color && (
                 <div className="bg-elevated rounded-2xl p-4 flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full border border-white/10" style={{ backgroundColor: colorHex }} />
+                  <div className="w-4 h-4 rounded-full border border-line" style={{ backgroundColor: colorHex }} />
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-0.5">Colore</p>
                     <p className="font-bold text-fg">{color}</p>

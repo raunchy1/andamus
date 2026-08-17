@@ -20,7 +20,7 @@ export function ThemeToggle({ isHome = false }: ThemeToggleProps) {
 
   if (!mounted) {
     return (
-      <button className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors">
+      <button className="flex h-10 w-10 items-center justify-center rounded-full text-fg transition-colors">
         <Sun className="h-5 w-5" />
       </button>
     );
@@ -31,7 +31,7 @@ export function ThemeToggle({ isHome = false }: ThemeToggleProps) {
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-all duration-300 hover:bg-white/10 hover:text-white"
+      className="flex h-10 w-10 items-center justify-center rounded-full text-fg transition-all duration-300 hover:bg-sand-deep hover:text-ink"
       title={isDark ? t("switchToLight") : t("switchToDark")}
     >
       <div className="relative h-5 w-5">

@@ -135,7 +135,7 @@ export function PremiumCalendar({
   return (
     <div className="flex flex-col sm:flex-row gap-0 sm:gap-1">
       {/* Left Panel — Selected Day Info + Quick Actions */}
-      <div className="sm:w-52 p-5 sm:border-r border-white/5 flex flex-col justify-between bg-gradient-to-b from-white/[0.02] to-transparent">
+      <div className="sm:w-52 p-5 sm:border-r border-line flex flex-col justify-between bg-gradient-to-b from-sand-deep/40 to-transparent">
         <div>
           <div className="flex items-center gap-2 mb-5">
             <CalendarDays className="w-4 h-4 text-muted" strokeWidth={1.5} />
@@ -149,13 +149,13 @@ export function PremiumCalendar({
               animate={{ opacity: 1, y: 0 }}
               className="text-center sm:text-left"
             >
-              <p className="text-xs text-[#6b6b6b] capitalize">{selectedDayInfo.weekday}</p>
-              <p className="text-5xl font-heading font-bold text-[#f8f8f8] tracking-tighter leading-none mt-1">{selectedDayInfo.day}</p>
-              <p className="text-sm font-semibold text-[#a0a0a0] mt-1">{selectedDayInfo.month} {selectedDayInfo.year}</p>
+              <p className="text-xs text-muted capitalize">{selectedDayInfo.weekday}</p>
+              <p className="text-5xl font-heading font-bold text-ink tracking-tighter leading-none mt-1">{selectedDayInfo.day}</p>
+              <p className="text-sm font-semibold text-muted mt-1">{selectedDayInfo.month} {selectedDayInfo.year}</p>
             </motion.div>
           ) : (
             <div className="text-center sm:text-left py-4">
-              <p className="text-sm text-[#444444]">{t("selectDate")}</p>
+              <p className="text-sm text-faint">{t("selectDate")}</p>
             </div>
           )}
 
@@ -168,16 +168,16 @@ export function PremiumCalendar({
         </div>
 
         {/* Insights */}
-        <div className="mt-6 pt-4 border-t border-white/5">
+        <div className="mt-6 pt-4 border-t border-line">
           {totalAvailable !== null && (
             <div className="flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-accent" strokeWidth={1.5} />
-              <span className="text-[11px] text-[#6b6b6b]">
+              <span className="text-[11px] text-muted">
                 {t("ridesAvailable", { count: totalAvailable })}
               </span>
             </div>
           )}
-          <p className="text-[10px] text-[#444444] mt-2 leading-relaxed">
+          <p className="text-[10px] text-faint mt-2 leading-relaxed">
             {t("calendarInfo")}
           </p>
         </div>
@@ -205,9 +205,9 @@ export function PremiumCalendar({
               animate="center"
               exit="exit"
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="text-white font-bold text-base tracking-tight"
+              className="text-ink font-bold text-base tracking-tight"
             >
-              {MONTHS[month]} <span className="text-white/40 font-semibold">{year}</span>
+              {MONTHS[month]} <span className="text-faint font-semibold">{year}</span>
             </motion.span>
           </AnimatePresence>
 
@@ -225,7 +225,7 @@ export function PremiumCalendar({
         <div className="grid grid-cols-7 mb-2">
           {WEEKDAYS.map((d) => (
             <div key={d} className="h-9 flex items-center justify-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#444444]">{d}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-faint">{d}</span>
             </div>
           ))}
         </div>
@@ -276,17 +276,17 @@ export function PremiumCalendar({
                       "bg-accent-dim"
                     ],
                     !isSelected && !isToday && !isDisabled && [
-                      "text-[#a0a0a0] hover:bg-white/[0.05] hover:text-[#f8f8f8]",
-                      "bg-white/[0.02]"
+                      "text-muted hover:bg-sand-deep hover:text-ink",
+                      "bg-surface"
                     ],
-                    isDisabled && "opacity-20 cursor-not-allowed text-[#444444]"
+                    isDisabled && "opacity-20 cursor-not-allowed text-faint"
                   )}
                 >
                   <span className={cn("text-sm font-semibold", isSelected && "text-white")}>{day}</span>
                   {availCount !== undefined && !isSelected && !isDisabled && availCount > 0 && (
                     <span className={cn(
                       "absolute bottom-1 w-1 h-1 rounded-full",
-                      availCount >= 5 ? "bg-emerald-400" : availCount >= 2 ? "bg-yellow-400" : "bg-white/30"
+                      availCount >= 5 ? "bg-emerald-400" : availCount >= 2 ? "bg-yellow-400" : "bg-sand-deep"
                     )} />
                   )}
                   {isToday && !isSelected && (
@@ -299,10 +299,10 @@ export function PremiumCalendar({
         </AnimatePresence>
 
         {/* Legend */}
-        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-center gap-4">
+        <div className="mt-4 pt-3 border-t border-line flex items-center justify-center gap-4">
           <LegendDot color="bg-emerald-400" label={t("legend5Plus")} />
           <LegendDot color="bg-yellow-400" label={t("legend2To4")} />
-          <LegendDot color="bg-white/30" label={t("legend1")} />
+          <LegendDot color="bg-sand-deep" label={t("legend1")} />
         </div>
       </div>
     </div>
@@ -318,7 +318,7 @@ function QuickButton({ icon, label, onClick }: { icon: React.ReactNode; label: s
       className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl bg-surface-2 border border-line hover:bg-surface hover:border-line-strong transition-all group"
     >
       <span className="text-muted group-hover:text-accent transition-colors">{icon}</span>
-      <span className="text-xs font-medium text-white/60 group-hover:text-white transition-colors">{label}</span>
+      <span className="text-xs font-medium text-muted group-hover:text-ink transition-colors">{label}</span>
     </motion.button>
   );
 }
@@ -327,7 +327,7 @@ function LegendDot({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-1.5">
       <span className={cn("w-1.5 h-1.5 rounded-full", color)} />
-      <span className="text-[10px] text-white/30">{label}</span>
+      <span className="text-[10px] text-faint">{label}</span>
     </div>
   );
 }

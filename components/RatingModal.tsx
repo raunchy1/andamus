@@ -122,13 +122,13 @@ export function RatingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-elevated p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-3xl border border-line bg-elevated p-6 shadow-2xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white">{t("leaveReview")}</h3>
+          <h3 className="text-xl font-bold text-ink">{t("leaveReview")}</h3>
           <button
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-sand-deep hover:text-ink"
           >
             <X className="h-5 w-5" />
           </button>
@@ -139,21 +139,21 @@ export function RatingModal({
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
               <Star className="h-8 w-8 text-green-400 fill-green-400" />
             </div>
-            <p className="text-lg font-semibold text-white">{t("reviewSent")}</p>
-            <p className="mt-2 text-sm text-white/60">{t("thankYou")}</p>
+            <p className="text-lg font-semibold text-ink">{t("reviewSent")}</p>
+            <p className="mt-2 text-sm text-muted">{t("thankYou")}</p>
           </div>
         ) : alreadyReviewed ? (
           <div className="py-8 text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/20">
               <Star className="h-8 w-8 text-yellow-400 fill-yellow-400" />
             </div>
-            <p className="text-white/60">{t("alreadyReviewedMessage")}</p>
+            <p className="text-muted">{t("alreadyReviewedMessage")}</p>
           </div>
         ) : (
           <>
             {/* User Info */}
             <div className="mb-6 flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#4FB3C9]/10 text-[#4FB3C9]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#2D6A4F]/10 text-[#2D6A4F]">
                 {reviewedUser.avatar_url ? (
                   <Image
                     src={reviewedUser.avatar_url}
@@ -169,14 +169,14 @@ export function RatingModal({
                 )}
               </div>
               <div>
-                <p className="text-sm text-white/50">{t("howWouldYouRate")}</p>
-                <p className="text-lg font-semibold text-white">{reviewedUser.name}?</p>
+                <p className="text-sm text-muted">{t("howWouldYouRate")}</p>
+                <p className="text-lg font-semibold text-ink">{reviewedUser.name}?</p>
               </div>
             </div>
 
             {/* Star Rating */}
             <div className="mb-6">
-              <p className="mb-3 text-center text-sm text-white/50">{t("tapToRate")}</p>
+              <p className="mb-3 text-center text-sm text-muted">{t("tapToRate")}</p>
               <div className="flex justify-center gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -190,13 +190,13 @@ export function RatingModal({
                       className={`h-10 w-10 transition-all ${
                         star <= (hoverRating || rating)
                           ? "fill-yellow-400 text-yellow-400 drop-shadow-lg"
-                          : "text-white/20"
+                          : "text-faint"
                       }`}
                     />
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-center text-sm font-medium text-[#4FB3C9]">
+              <p className="mt-2 text-center text-sm font-medium text-[#2D6A4F]">
                 {rating === 1 && t("rating1")}
                 {rating === 2 && t("rating2")}
                 {rating === 3 && t("rating3")}
@@ -207,7 +207,7 @@ export function RatingModal({
 
             {/* Comment */}
             <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-white/70">
+              <label className="mb-2 block text-sm font-medium text-fg">
                 {t("commentOptional")}
               </label>
               <textarea
@@ -215,7 +215,7 @@ export function RatingModal({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder={t("describeExperience")}
                 rows={3}
-                className="w-full rounded-xl border border-white/10 bg-bg p-4 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[#4FB3C9]"
+                className="w-full rounded-xl border border-line bg-sand p-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-green"
               />
             </div>
 
@@ -223,7 +223,7 @@ export function RatingModal({
             <button
               onClick={handleSubmit}
               disabled={loading || rating === 0}
-              className="w-full rounded-xl bg-[#4FB3C9] py-4 text-base font-semibold text-white shadow-lg shadow-[#4FB3C9]/25 transition-all hover:bg-[#3d9db3] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-[#2D6A4F] py-4 text-base font-semibold text-white shadow-lg shadow-[#2D6A4F]/25 transition-all hover:bg-[#1E4A36] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin" />

@@ -28,9 +28,9 @@ function getWeatherIcon(code: number, className: string = "w-5 h-5") {
 // Compact version for ride cards
 function CompactWeatherWidget({ weather, rainWarning }: { weather: WeatherData; rainWarning: boolean }) {
   return (
-    <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2 py-1 border border-white/10">
+    <div className="flex items-center gap-2 bg-surface rounded-lg px-2 py-1 border border-line">
       {getWeatherIcon(weather.weatherCode, "w-4 h-4")}
-      <span className="text-white text-xs font-medium">
+      <span className="text-ink text-xs font-medium">
         {weather.maxTemp}°
       </span>
       {rainWarning && (
@@ -45,13 +45,13 @@ function FullWeatherWidget({ weather, city, rainWarning }: { weather: WeatherDat
   const weatherInfo = getWeatherInfo(weather.weatherCode);
   
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+    <div className="bg-surface border border-line rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white font-semibold flex items-center gap-2">
+        <h3 className="text-ink font-semibold flex items-center gap-2">
           <Cloud className="w-5 h-5 text-blue-400" />
           Meteo a {city}
         </h3>
-        <span className="text-white/50 text-sm">
+        <span className="text-muted text-sm">
           {new Date(weather.date).toLocaleDateString('it-IT', { 
             weekday: 'short', 
             day: 'numeric', 
@@ -62,19 +62,19 @@ function FullWeatherWidget({ weather, city, rainWarning }: { weather: WeatherDat
       
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center">
             {getWeatherIcon(weather.weatherCode, "w-7 h-7")}
           </div>
           <div>
-            <p className="text-white font-bold text-lg">{weather.maxTemp}° / {weather.minTemp}°</p>
-            <p className="text-white/60 text-sm">{weatherInfo.label}</p>
+            <p className="text-ink font-bold text-lg">{weather.maxTemp}° / {weather.minTemp}°</p>
+            <p className="text-muted text-sm">{weatherInfo.label}</p>
           </div>
         </div>
         
         <div className="flex-1 flex items-center justify-end gap-3">
           <div className="text-right">
-            <p className="text-white/60 text-xs">Probabilità pioggia</p>
-            <p className={`font-semibold ${rainWarning ? 'text-yellow-400' : 'text-white'}`}>
+            <p className="text-muted text-xs">Probabilità pioggia</p>
+            <p className={`font-semibold ${rainWarning ? 'text-yellow-600' : 'text-ink'}`}>
               {weather.rainProbability}%
             </p>
           </div>
@@ -120,15 +120,15 @@ export function WeatherWidget({ city, date, variant = "full" }: WeatherWidgetPro
   if (loading) {
     if (variant === "compact") {
       return (
-        <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2 py-1 border border-white/10 animate-pulse">
-          <Cloud className="w-4 h-4 text-white/30" />
-          <span className="text-white/30 text-xs">--°</span>
+        <div className="flex items-center gap-2 bg-surface rounded-lg px-2 py-1 border border-line animate-pulse">
+          <Cloud className="w-4 h-4 text-faint" />
+          <span className="text-faint text-xs">--°</span>
         </div>
       );
     }
     return (
-      <div className="bg-white/5 border border-white/10 rounded-xl p-4 animate-pulse">
-        <div className="h-16 bg-white/5 rounded-lg" />
+      <div className="bg-surface border border-line rounded-xl p-4 animate-pulse">
+        <div className="h-16 bg-surface rounded-lg" />
       </div>
     );
   }

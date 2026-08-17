@@ -35,10 +35,10 @@ export function BadgeUnlockNotification({
       exit={{ opacity: 0, y: -20, scale: 0.9 }}
       className="fixed bottom-[96px] right-6 z-[60]"
     >
-      <div className="bg-gradient-to-r from-[#4FB3C9] to-[#3d9db3] text-white rounded-2xl shadow-2xl p-6 max-w-sm border border-white/20">
+      <div className="bg-gradient-to-r from-[#2D6A4F] to-[#1E4A36] text-white rounded-2xl shadow-2xl p-6 max-w-sm border border-line">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-white/60 hover:text-white transition-colors"
+          className="absolute top-3 right-3 text-muted hover:text-white transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -54,9 +54,9 @@ export function BadgeUnlockNotification({
           </motion.div>
           
           <div>
-            <p className="text-white/80 text-sm font-medium mb-1">{t("newBadgeUnlocked")}</p>
-            <h4 className="text-white text-xl font-bold">{badge.name}</h4>
-            <p className="text-white/70 text-sm mt-1">{badge.description}</p>
+            <p className="text-fg text-sm font-medium mb-1">{t("newBadgeUnlocked")}</p>
+            <h4 className="text-ink text-xl font-bold">{badge.name}</h4>
+            <p className="text-fg text-sm mt-1">{badge.description}</p>
           </div>
         </div>
         
@@ -64,7 +64,7 @@ export function BadgeUnlockNotification({
           initial={{ scaleX: 1 }}
           animate={{ scaleX: 0 }}
           transition={{ duration: 5, ease: "linear" }}
-          className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 rounded-b-2xl origin-left"
+          className="absolute bottom-0 left-0 right-0 h-1 bg-sand-deep rounded-b-2xl origin-left"
         />
       </div>
     </motion.div>
@@ -100,10 +100,10 @@ function BadgeItem({ badge, index }: { badge: Badge; index: number }) {
             exit={{ opacity: 0, y: 10 }}
             className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10"
           >
-            <div className="bg-[#111111] text-white px-3 py-2 rounded-lg shadow-xl border border-white/10 whitespace-nowrap">
+            <div className="bg-ink text-surface px-3 py-2 rounded-lg shadow-xl border border-line whitespace-nowrap">
               <p className="font-semibold text-sm">{details.name}</p>
-              <p className="text-xs text-white/70">{details.description}</p>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#111111]" />
+              <p className="text-xs text-fg">{details.description}</p>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-ink" />
             </div>
           </motion.div>
         )}
@@ -135,7 +135,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
     return (
       <div className="flex gap-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="w-14 h-14 rounded-xl bg-white/10 animate-pulse" />
+          <div key={i} className="w-14 h-14 rounded-xl bg-surface animate-pulse" />
         ))}
       </div>
     );
@@ -144,9 +144,9 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
   if (badges.length === 0) {
     return (
       <div className="text-center py-6">
-        <Award className="w-12 h-12 text-white/20 mx-auto mb-3" />
-        <p className="text-white/50 text-sm">{t("noBadgesYet")}</p>
-        <p className="text-white/30 text-xs mt-1">{t("completeActionsToUnlock")}</p>
+        <Award className="w-12 h-12 text-faint mx-auto mb-3" />
+        <p className="text-muted text-sm">{t("noBadgesYet")}</p>
+        <p className="text-faint text-xs mt-1">{t("completeActionsToUnlock")}</p>
       </div>
     );
   }
@@ -163,7 +163,7 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
       {!showAll && remainingCount > 0 && (
         <button
           onClick={() => setShowUnlockModal(true)}
-          className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center text-white/60 hover:bg-white/20 transition-colors"
+          className="w-14 h-14 rounded-xl bg-surface flex items-center justify-center text-muted hover:bg-sand-deep transition-colors"
         >
           <span className="text-sm font-medium">+{remainingCount}</span>
         </button>
@@ -183,14 +183,14 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#111111] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+              className="bg-surface border border-line rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">{t("allBadges")}</h3>
+                <h3 className="text-xl font-bold text-ink">{t("allBadges")}</h3>
                 <button
                   onClick={() => setShowUnlockModal(false)}
-                  className="text-white/60 hover:text-white"
+                  className="text-muted hover:text-ink"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -206,8 +206,8 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
                       >
                         {details.icon}
                       </div>
-                      <p className="text-white text-xs font-medium truncate">{details.name}</p>
-                      <p className="text-white/40 text-[10px]">
+                      <p className="text-ink text-xs font-medium truncate">{details.name}</p>
+                      <p className="text-faint text-[10px]">
                         {new Date(badge.earned_at || '2024-01-01').toLocaleDateString('it-IT')}
                       </p>
                     </div>
@@ -215,8 +215,8 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
                 })}
               </div>
               
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <h4 className="text-white/60 text-sm font-medium mb-4">{t("badgesToUnlock")}</h4>
+              <div className="mt-8 pt-6 border-t border-line">
+                <h4 className="text-muted text-sm font-medium mb-4">{t("badgesToUnlock")}</h4>
                 <div className="space-y-3">
                   {Object.values(BADGES)
                     .filter((b) => !badges.some((ub) => ub.type === b.type))
@@ -226,8 +226,8 @@ export function BadgeDisplay({ userId, showAll = false, maxDisplay = 5 }: BadgeD
                           {badge.icon}
                         </div>
                         <div>
-                          <p className="text-white text-sm font-medium">{badge.name}</p>
-                          <p className="text-white/50 text-xs">{badge.description}</p>
+                          <p className="text-ink text-sm font-medium">{badge.name}</p>
+                          <p className="text-muted text-xs">{badge.description}</p>
                         </div>
                       </div>
                     ))}
@@ -268,32 +268,32 @@ export function LevelProgress({ points }: { points: number }) {
   })();
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+    <div className="bg-surface border border-line rounded-xl p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <span className="text-4xl">{current.emoji}</span>
           <div>
-            <p className="text-white/60 text-sm">{t("currentLevel")}</p>
-            <p className="text-white text-xl font-bold">{current.name}</p>
+            <p className="text-muted text-sm">{t("currentLevel")}</p>
+            <p className="text-ink text-xl font-bold">{current.name}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-white/60 text-sm">{t("points")}</p>
-          <p className="text-[#4FB3C9] text-2xl font-bold">{points}</p>
+          <p className="text-muted text-sm">{t("points")}</p>
+          <p className="text-[#2D6A4F] text-2xl font-bold">{points}</p>
         </div>
       </div>
       
       {/* Progress bar */}
       <div className="relative">
-        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+        <div className="h-3 bg-surface rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-[#4FB3C9] to-[#4FB3C9] rounded-full"
+            className="h-full bg-gradient-to-r from-[#2D6A4F] to-[#2D6A4F] rounded-full"
           />
         </div>
-        <div className="flex justify-between mt-2 text-xs text-white/40">
+        <div className="flex justify-between mt-2 text-xs text-faint">
           <span>{current.min} pts</span>
           {next ? (
             <span>{t("pointsFor", { min: next.min, name: next.name })}</span>
@@ -304,7 +304,7 @@ export function LevelProgress({ points }: { points: number }) {
       </div>
       
       {next && (
-        <p className="text-white/50 text-sm mt-4 text-center">
+        <p className="text-muted text-sm mt-4 text-center">
           {t("pointsToNext", { remaining: next.min - points, name: next.name, emoji: next.emoji })}
         </p>
       )}
@@ -324,20 +324,20 @@ export function PointsInfo() {
   ];
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-      <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <span className="text-[#4FB3C9]">💎</span>
+    <div className="bg-surface border border-line rounded-xl p-6">
+      <h3 className="text-ink font-semibold mb-4 flex items-center gap-2">
+        <span className="text-[#2D6A4F]">💎</span>
         {t("howToEarnPoints")}
       </h3>
       
       <div className="space-y-3">
         {pointActions.map((item) => (
-          <div key={item.key} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+          <div key={item.key} className="flex items-center justify-between py-2 border-b border-line last:border-0">
             <div className="flex items-center gap-3">
               <span className="text-lg">{item.icon}</span>
-              <span className="text-white/80 text-sm">{t(`pointActions.${item.key}`)}</span>
+              <span className="text-fg text-sm">{t(`pointActions.${item.key}`)}</span>
             </div>
-            <span className="text-[#4FB3C9] font-semibold text-sm">+{item.points} pts</span>
+            <span className="text-[#2D6A4F] font-semibold text-sm">+{item.points} pts</span>
           </div>
         ))}
       </div>

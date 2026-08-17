@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export function Spotlight({
   className,
   size = 500,
-  color = "rgba(255,179,177,0.18)",
+  color = "rgba(210,103,58,0.18)",
 }: {
   className?: string;
   size?: number;

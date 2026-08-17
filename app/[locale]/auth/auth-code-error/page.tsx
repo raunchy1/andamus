@@ -80,24 +80,24 @@ export default async function AuthCodeErrorPage({
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[#0a0a0a] flex items-center justify-center px-6 py-16">
-      <div className="max-w-md w-full text-center space-y-8 bg-[#141417] border border-white/5 rounded-3xl p-8 shadow-[0_30px_80px_-25px_rgba(79, 179, 201,0.15)]">
+    <div className="min-h-[100dvh] bg-bg flex items-center justify-center px-6 py-16">
+      <div className="max-w-md w-full text-center space-y-8 bg-surface border border-line rounded-3xl p-8 shadow-[0_30px_80px_-25px_rgba(45,106,79,0.15)]">
         
         {/* Warning Icon */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4FB3C9]/10 border border-[#4FB3C9]/20 shadow-[0_0_15px_rgba(79, 179, 201,0.1)]">
-          <AlertTriangle className="h-8 w-8 text-[#4FB3C9]" />
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2D6A4F]/10 border border-[#2D6A4F]/20 shadow-[0_0_15px_rgba(45,106,79,0.1)]">
+          <AlertTriangle className="h-8 w-8 text-[#2D6A4F]" />
         </div>
 
         {/* Diagnostic Titles */}
         <div className="space-y-3">
-          <h1 className="text-2xl font-extrabold tracking-tight text-white border-none p-0 m-0">
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink border-none p-0 m-0">
             {errorTitle}
           </h1>
-          <p className="text-sm text-white/60 leading-relaxed">
+          <p className="text-sm text-muted leading-relaxed">
             {errorDescription}
           </p>
           {solutionText && (
-            <p className="text-xs text-white/40 leading-relaxed italic bg-white/[0.02] p-3 rounded-xl border border-white/5">
+            <p className="text-xs text-faint leading-relaxed italic bg-surface p-3 rounded-xl border border-line">
               💡 {solutionText}
             </p>
           )}
@@ -105,15 +105,15 @@ export default async function AuthCodeErrorPage({
 
         {/* Developer Debug Box (Dev mode only) */}
         {isDev && (
-          <div className="text-left bg-[#0f0f11] border border-white/10 rounded-2xl p-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#4FB3C9] uppercase tracking-wider">
+          <div className="text-left bg-surface border border-line rounded-2xl p-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#2D6A4F] uppercase tracking-wider">
               <Terminal className="w-3.5 h-3.5" />
               <span>Developer Diagnostics</span>
             </div>
-            <div className="space-y-1 text-[11px] font-mono text-white/50">
-              <div><strong className="text-white/70">Reason Code:</strong> {reason || "undefined"}</div>
-              <div><strong className="text-white/70">URL Error:</strong> {rawErrorMessage || "none"}</div>
-              <div><strong className="text-white/70">Environment:</strong> development</div>
+            <div className="space-y-1 text-[11px] font-mono text-muted">
+              <div><strong className="text-fg">Reason Code:</strong> {reason || "undefined"}</div>
+              <div><strong className="text-fg">URL Error:</strong> {rawErrorMessage || "none"}</div>
+              <div><strong className="text-fg">Environment:</strong> development</div>
             </div>
           </div>
         )}
@@ -122,7 +122,7 @@ export default async function AuthCodeErrorPage({
         <div className="flex flex-col gap-3 pt-2">
           <Link
             href={`/${locale}/profilo`}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#4FB3C9] px-6 py-4 text-sm font-bold text-white hover:bg-[#3d9db3] transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(79, 179, 201,0.4)]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#2D6A4F] px-6 py-4 text-sm font-bold text-white hover:bg-[#1E4A36] transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(45,106,79,0.4)]"
           >
             <RefreshCw className="w-4 h-4" />
             <span>{locale === "it" ? "Riprova ad accedere" : locale === "en" ? "Try signing in again" : "Erneut versuchen"}</span>
@@ -130,7 +130,7 @@ export default async function AuthCodeErrorPage({
 
           <Link
             href={`/${locale}`}
-            className="flex items-center justify-center gap-2 rounded-xl bg-white/[0.03] border border-white/5 px-6 py-3.5 text-sm font-semibold text-white/80 hover:bg-white/[0.07] hover:text-white transition-all active:scale-[0.98]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-surface border border-line px-6 py-3.5 text-sm font-semibold text-fg hover:bg-sand-deep hover:text-ink transition-all active:scale-[0.98]"
           >
             <Home className="w-4 h-4" />
             <span>{t("backToHome")}</span>

@@ -1026,9 +1026,7 @@ export function RideDetailClient({
 
       if (error) {
         if (error.code === "23505") {
-          toast.error(
-            t("alreadyBooked") || "Hai già una prenotazione per questo viaggio"
-          );
+          toast.error(t("alreadyBooked"));
           setRequesting(false);
           return;
         }

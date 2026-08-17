@@ -41,7 +41,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`p-2 rounded-full transition-colors hover:bg-white/10 ${className}`}
+        className={`p-2 rounded-full transition-colors hover:bg-sand-deep ${className}`}
         title={t("share")}
       >
         <Share2 className="w-5 h-5" />
@@ -53,7 +53,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-current transition-colors hover:bg-white/5 ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-current transition-colors hover:bg-sand-deep ${className}`}
       >
         <Share2 className="w-4 h-4" />
         <span className="text-sm font-medium">{t("share")}</span>
@@ -65,16 +65,16 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`w-full flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-[#4FB3C9]/10 to-[#4FB3C9]/10 border border-[#4FB3C9]/20 transition-all hover:from-[#4FB3C9]/20 hover:to-[#4FB3C9]/20 ${className}`}
+        className={`w-full flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-[#2D6A4F]/10 to-[#2D6A4F]/10 border border-[#2D6A4F]/20 transition-all hover:from-[#2D6A4F]/20 hover:to-[#2D6A4F]/20 ${className}`}
       >
-        <div className="w-10 h-10 rounded-full bg-[#4FB3C9]/20 flex items-center justify-center flex-shrink-0">
-          <Share2 className="w-5 h-5 text-[#4FB3C9]" />
+        <div className="w-10 h-10 rounded-full bg-[#2D6A4F]/20 flex items-center justify-center flex-shrink-0">
+          <Share2 className="w-5 h-5 text-[#2D6A4F]" />
         </div>
         <div className="flex-1 text-left">
-          <p className="font-semibold text-white">{t("inviteFriends")}</p>
-          <p className="text-sm text-white/60">{t("shareDescription")}</p>
+          <p className="font-semibold text-ink">{t("inviteFriends")}</p>
+          <p className="text-sm text-muted">{t("shareDescription")}</p>
         </div>
-        {copied ? <Check className="w-5 h-5 text-green-400" /> : <Link2 className="w-5 h-5 text-white/40" />}
+        {copied ? <Check className="w-5 h-5 text-green-400" /> : <Link2 className="w-5 h-5 text-faint" />}
       </button>
     );
   }
@@ -83,7 +83,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
   return (
     <button
       onClick={handleShare}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#4FB3C9] text-white font-medium transition-colors hover:bg-[#3d9db3] ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D6A4F] text-white font-medium transition-colors hover:bg-[#1E4A36] ${className}`}
     >
       <Share2 className="w-4 h-4" />
       <span>{t("share")}</span>

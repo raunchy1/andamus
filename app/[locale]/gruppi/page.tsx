@@ -35,7 +35,7 @@ interface CreateForm {
 // ── Constants ───────────────────────────────────────────────────────────────
 
 const GROUP_COLORS = [
-  "#4FB3C9", "#2196F3", "#5FA87A", "#C2A24E",
+  "#2D6A4F", "#2196F3", "#5FA87A", "#C2A24E",
   "#9C27B0", "#00BCD4", "#607D8B", "#8B9DAF",
 ];
 
@@ -44,7 +44,7 @@ const EMPTY_FORM: CreateForm = {
   description: "",
   origin: "",
   destination: "",
-  color: "#4FB3C9",
+  color: "#2D6A4F",
 };
 
 // ── Component ───────────────────────────────────────────────────────────────
@@ -265,7 +265,7 @@ export default function GruppiPage() {
                   name={group.name}
                   size="lg"
                   className="rounded-2xl"
-                  style={{ backgroundColor: group.avatar_color ?? "#4FB3C9" }}
+                  style={{ backgroundColor: group.avatar_color ?? "#2D6A4F" }}
                 />
 
                 <div className="min-w-0 flex-1">

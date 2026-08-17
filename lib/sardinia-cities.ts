@@ -315,7 +315,7 @@ export function calculateCO2Saved(distanceKm: number, passengers: number = 1): n
 }
 
 /** Map accent — matches --accent token */
-export const MAP_ACCENT = "#4FB3C9";
+export const MAP_ACCENT = "#2D6A4F";
 export const MAP_MUTED = "#8C8C87";
 
 // Dark map styles for Google Maps (tile + static)

@@ -7,7 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  /* Familjen Grotesk è la famiglia unica del design system */
+  --font-sans: var(--font-grotesk), var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-mono);
   --font-heading: var(--font-heading);
   --font-space: var(--font-space);
@@ -56,6 +57,18 @@
   --color-ok: var(--ok);
   --color-pending: var(--pending);
   --color-bad: var(--bad);
+  /* Andamusu mobile design tokens */
+  --color-green: var(--green);
+  --color-green-dark: var(--green-dark);
+  --color-green-tint: var(--green-tint);
+  --color-sand: var(--sand);
+  --color-sand-deep: var(--sand-deep);
+  --color-line-soft: var(--line-soft);
+  --color-track: var(--track);
+  --color-terracotta: var(--terracotta);
+  --color-avatar2: var(--avatar2);
+  --color-avatar3: var(--avatar3);
+  --font-grotesk: var(--font-grotesk);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -66,88 +79,99 @@
 }
 
 /* ═══════════════════════════════════════════════
-   ANDAMUS EDITORIAL DESIGN SYSTEM — Phase 1
-   Monochrome + single accent (Sardinian sea-teal)
+   ANDAMUSU DESIGN SYSTEM — Mobile Redesign
+   Warm light theme · Familjen Grotesk · Forest green
    ═══════════════════════════════════════════════ */
 :root {
-  /* base surfaces */
-  --bg:         #0A0A0A;
-  --surface:    #121212;
-  --surface-2:  #1A1A1A;
-  --elevated:   #1F1F1F;
+  /* ── Palette tokens (source of truth) ────────── */
+  --green:        #2D6A4F;
+  --green-dark:   #1E4A36;
+  --green-tint:   #EDF3EF;
+  --ink:          #16211C;
+  --muted:        #6B7570;
+  --faint:        #9AA29C;
+  --sand:         #F4F1EA;
+  --sand-deep:    #EDE7DA;
+  --surface:      #FFFFFF;
+  --line:         #E4DFD4;
+  --line-soft:    #EFEBE2;
+  --track:        #D8D3C7;
+  --terracotta:   #D2673A;
+  --avatar2:      #1B4965;
+  --avatar3:      #7A5C3E;
 
-  /* text */
-  --fg:    #EDEDEA;
-  --muted: #8C8C87;
-  --dim:   #5A5A55;
-  --faint: #3A3A36;
+  /* ── Semantic aliases (used by Tailwind classes) ─ */
+  --bg:           var(--sand);
+  --surface-2:    var(--sand-deep);
+  --elevated:     var(--surface);
+  --fg:           var(--ink);
+  --dim:          var(--muted);
 
-  /* lines */
-  --line:        #222220;
-  --line-strong: #2E2E2B;
+  --line-strong:  #D0C9BB;
 
-  /* single accent */
-  --accent:     #4FB3C9;
-  --accent-fg:  #06181C;
-  --accent-dim: rgba(79, 179, 201, 0.12);
+  /* ── Accent = green ─────────────────────────── */
+  --accent:       var(--green);
+  --accent-fg:    var(--surface);
+  --accent-dim:   var(--green-tint);
 
-  /* functional states */
-  --ok:      #5FA87A;
-  --pending: #C2A24E;
-  --bad:     #C2685E;
+  /* ── Functional states ──────────────────────── */
+  --ok:           var(--green);
+  --pending:      #C2A24E;
+  --bad:          var(--terracotta);
 
   --radius:    14px;
   --radius-sm: 10px;
 
-  /* shadcn compatibility mappings */
-  --background: var(--bg);
-  --foreground: var(--fg);
-  --card: var(--surface);
-  --card-foreground: var(--fg);
-  --popover: var(--elevated);
-  --popover-foreground: var(--fg);
+  /* ── shadcn/ui compatibility mappings ─────────── */
+  --background:             var(--sand);
+  --foreground:             var(--ink);
+  --card:                   var(--surface);
+  --card-foreground:        var(--ink);
+  --popover:                var(--surface);
+  --popover-foreground:     var(--ink);
 
-  --primary: var(--accent);
-  --primary-foreground: var(--accent-fg);
-  --primary-hover: #3d9db3;
-  --primary-light: var(--accent-dim);
+  --primary:                var(--green);
+  --primary-foreground:     var(--surface);
+  --primary-hover:          var(--green-dark);
+  --primary-light:          var(--green-tint);
 
-  --secondary: var(--surface-2);
-  --secondary-foreground: var(--fg);
+  --secondary:              var(--sand-deep);
+  --secondary-foreground:   var(--ink);
 
-  --muted-foreground: var(--muted);
-  --accent-foreground: var(--accent-fg);
+  --muted-foreground:       var(--muted);
+  --accent-foreground:      var(--surface);
 
-  --destructive: var(--bad);
-  --destructive-foreground: var(--fg);
+  --destructive:            var(--terracotta);
+  --destructive-foreground: var(--surface);
 
-  --border: var(--line);
-  --border-strong: var(--line-strong);
-  --input: var(--line);
-  --ring: var(--accent);
+  --border:                 var(--line);
+  --border-strong:          var(--line-strong);
+  --input:                  var(--line);
+  --ring:                   var(--green);
 
-  --chart-1: var(--accent);
+  --chart-1: var(--green);
   --chart-2: var(--pending);
-  --chart-3: var(--ok);
+  --chart-3: var(--terracotta);
   --chart-4: var(--muted);
-  --chart-5: var(--dim);
+  --chart-5: var(--faint);
 
-  --sidebar: var(--bg);
-  --sidebar-foreground: var(--fg);
-  --sidebar-primary: var(--accent);
-  --sidebar-primary-foreground: var(--accent-fg);
-  --sidebar-accent: var(--surface-2);
-  --sidebar-accent-foreground: var(--fg);
-  --sidebar-border: var(--line);
-  --sidebar-ring: var(--accent);
+  --sidebar:                    var(--sand);
+  --sidebar-foreground:         var(--ink);
+  --sidebar-primary:            var(--green);
+  --sidebar-primary-foreground: var(--surface);
+  --sidebar-accent:             var(--sand-deep);
+  --sidebar-accent-foreground:  var(--ink);
+  --sidebar-border:             var(--line);
+  --sidebar-ring:               var(--green);
 
-  --bg-overlay: rgba(0, 0, 0, 0.6);
+  --bg-overlay: rgba(22, 33, 28, 0.5);
 
-  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-default:  cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 150ms;
+  --ease-spring:   cubic-bezier(0.2, 1.3, 0.5, 1);
+  --duration-fast:   150ms;
   --duration-normal: 250ms;
-  --duration-slow: 400ms;
+  --duration-slow:   400ms;
 }
 
 @layer base {
@@ -159,7 +183,7 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-grotesk), var(--font-inter), system-ui, sans-serif;
     font-feature-settings: "cv11", "ss01";
   }
 
@@ -467,18 +491,18 @@ img, video, svg {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(22, 33, 28, 0.15);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(22, 33, 28, 0.25);
 }
 
 /* Waveform bars for chat */
 .waveform-bar {
   width: 3px;
-  background: #4FB3C9;
+  background: #2D6A4F;
   border-radius: 1px;
   margin: 0 1px;
 }
@@ -493,7 +517,7 @@ img, video, svg {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #4FB3C9;
+  background-color: #2D6A4F;
 }
 
 /* Custom ring rotation for profile */
@@ -584,6 +608,31 @@ html {
 @keyframes pulseRing {
   0%   { box-shadow: 0 0 0 0   rgba(79, 179, 201, 0.55); }
   100% { box-shadow: 0 0 0 24px rgba(79, 179, 201, 0); }
+}
+
+/* ── Andamusu motion keyframes ──────────────────── */
+
+/* rise: testo/elementi in entrata scalati dal basso */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* pop: conferma prenotazione — spring scale */
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-rise {
+  animation: rise 500ms var(--ease-out-expo) both;
+}
+.animate-rise-1 { animation: rise 500ms var(--ease-out-expo) 120ms both; }
+.animate-rise-2 { animation: rise 500ms var(--ease-out-expo) 200ms both; }
+.animate-rise-3 { animation: rise 500ms var(--ease-out-expo) 280ms both; }
+
+.animate-pop {
+  animation: pop 450ms var(--ease-spring) both;
 }
 
 /* Respect reduced motion */
@@ -684,7 +733,7 @@ html {
 
   /* Gradient backgrounds */
   .bg-gradient-primary {
-    background: linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%);
+    background: linear-gradient(135deg, #2D6A4F 0%, #3d9db3 100%);
   }
 
   .bg-gradient-surface {
@@ -733,7 +782,7 @@ html {
 
   /* Premium button */
   .btn-premium {
-    background: linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%);
+    background: linear-gradient(135deg, #2D6A4F 0%, #3d9db3 100%);
     box-shadow: 0 4px 16px rgba(79, 179, 201, 0.3);
     transition: all var(--duration-normal) var(--ease-default);
   }
@@ -761,7 +810,7 @@ html {
 
   /* Text gradient */
   .text-gradient {
-    background: linear-gradient(135deg, #4FB3C9 0%, #3d9db3 100%);
+    background: linear-gradient(135deg, #2D6A4F 0%, #3d9db3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
