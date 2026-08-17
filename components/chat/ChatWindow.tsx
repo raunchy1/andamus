@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { sendMessage, markMessagesAsRead } from "@/lib/chat-actions";
-import { staticMapDarkStyleQuery } from "@/lib/sardinia-cities";
+import { staticMapStyleQuery } from "@/lib/sardinia-cities";
 import {
   Loader2,
   X,
@@ -98,8 +98,8 @@ type DisplayMessage = Message | LocalMessage;
 // ============================================================
 // UTILITIES
 // ============================================================
-function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString("it-IT", {
+function formatTime(dateStr: string, locale: string) {
+  return new Date(dateStr).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -165,6 +165,7 @@ const MessageBubble = memo(function MessageBubble({
   retryingId: string | null;
 }) {
   const t = useTranslations("chat");
+  const locale = useLocale();
   const mine = isMyMessage(message.sender_id, currentUserId);
   const isLocal = "status" in message;
   const isPending = isLocal && message.status === "pending";
@@ -249,7 +250,7 @@ const MessageBubble = memo(function MessageBubble({
                 {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
                   <div className="w-full h-32 rounded-lg overflow-hidden bg-elevated relative">
                     <Image
-                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapDarkStyleQuery}&markers=color:0x4FB3C9%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapStyleQuery}&markers=color:0x2D6A4F%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
                       alt={t("locationMapAlt")}
                       fill
                       className="object-cover grayscale opacity-60"
@@ -308,7 +309,7 @@ const MessageBubble = memo(function MessageBubble({
       </div>
       <div className="flex items-center gap-1.5 px-1">
         <span className="font-mono text-[11px] text-dim">
-          {formatTime(message.created_at)}
+          {formatTime(message.created_at, locale)}
         </span>
         {!isLocal && <ReadIndicator message={message as Message} currentUserId={currentUserId} />}
         {isPending && (

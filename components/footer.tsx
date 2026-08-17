@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Car, Share2 } from "lucide-react";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const footerLinks = [
   { href: "/cerca", labelKey: "searchRides" },
@@ -14,12 +14,14 @@ const footerLinks = [
 const legalLinks = [
   { href: "/termini-e-condizioni", labelKey: "termsAndConditions" },
   { href: "/privacy-policy", labelKey: "privacyPolicy" },
+  { href: "/elimina-account", labelKey: "deleteAccount" },
 ];
 
 const APP_VERSION = "v1.0";
 
 export function Footer() {
   const t = useTranslations("footer");
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
 
   const handleShare = async () => {
@@ -48,8 +50,8 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Car className="h-6 w-6 text-[#2D6A4F] transition-transform group-hover:scale-110" />
+            <Link href={`/${locale}`} className="flex items-center gap-2 group">
+              <Car className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
               <span className="text-lg font-bold">Andamus</span>
             </Link>
             <p className="text-sm text-muted leading-relaxed">
@@ -57,7 +59,7 @@ export function Footer() {
             </p>
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D6A4F]/10 text-[#2D6A4F] text-sm font-medium hover:bg-[#2D6A4F]/20 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
             >
               <Share2 className="h-4 w-4" />
               {t("shareAndamus")}
@@ -73,7 +75,7 @@ export function Footer() {
               {footerLinks.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={link.href}
+                    href={`/${locale}${link.href}`}
                     className="text-sm text-muted transition-colors hover:text-ink hover:translate-x-1 inline-block"
                   >
                     {t(link.labelKey)}
@@ -92,7 +94,7 @@ export function Footer() {
               {legalLinks.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={link.href}
+                    href={`/${locale}${link.href}`}
                     className="text-sm text-muted transition-colors hover:text-ink hover:translate-x-1 inline-block"
                   >
                     {t(link.labelKey)}
@@ -122,10 +124,10 @@ export function Footer() {
             © {currentYear} Andamus. {t("allRightsReserved")}.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/termini-e-condizioni" className="text-xs text-faint hover:text-fg transition-colors">
+            <Link href={`/${locale}/termini-e-condizioni`} className="text-xs text-faint hover:text-fg transition-colors">
               {t("terms")}
             </Link>
-            <Link href="/privacy-policy" className="text-xs text-faint hover:text-fg transition-colors">
+            <Link href={`/${locale}/privacy-policy`} className="text-xs text-faint hover:text-fg transition-colors">
               {t("privacy")}
             </Link>
           </div>

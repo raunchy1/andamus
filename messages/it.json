@@ -80,7 +80,15 @@
     "feature3Description": "Parli direttamente con conducente e passeggeri, senza intermediari.",
     "ctaTitle": "Hai posti liberi in auto?",
     "ctaDescription": "Pubblica un passaggio e dividi le spese di viaggio.",
-    "quickGuide": "Guida rapida"
+    "quickGuide": "Guida rapida",
+    "greetingMorning": "Buongiorno",
+    "greetingAfternoon": "Buon pomeriggio",
+    "greetingEvening": "Buonasera",
+    "featuredToday": "In evidenza oggi",
+    "withDriver": "con {name}",
+    "driverFallback": "Conducente",
+    "seatsCount": "{count, plural, one {# posto} other {# posti}}",
+    "changeSeats": "Cambia numero di posti"
   },
   "search": {
     "title": "Cerca un passaggio",
@@ -421,7 +429,8 @@
     "fileTooLarge": "File troppo grande. Massimo 5 MB.",
     "invalidFileType": "Formato non valido. Usa JPG, PNG, WebP o PDF.",
     "pullToRefresh": "Trascina per aggiornare",
-    "releaseToRefresh": "Rilascia per aggiornare"
+    "releaseToRefresh": "Rilascia per aggiornare",
+    "completedRidesLabel": "Corse completate"
   },
   "chat": {
     "messagePlaceholder": "Scrivi un messaggio...",
@@ -1081,11 +1090,17 @@
     "noNotifications": "Nessuna notifica",
     "seeAll": "Vedi tutte le notifiche",
     "allNotificationsRead": "Hai letto tutte le notifiche",
-    "justNow": "Adesso",
+    "justNow": "adesso",
     "minutesAgo": "{count} min fa",
     "hoursAgo": "{count} h fa",
     "daysAgo": "{count} g fa",
-    "loading": "Caricamento"
+    "loading": "Caricamento",
+    "title": "Notifiche",
+    "back": "Indietro",
+    "markAllRead": "Segna tutte come lette",
+    "empty": "Nessuna notifica",
+    "emptyHint": "Ti avviseremo quando succede qualcosa.",
+    "delete": "Elimina notifica"
   },
   "rating": {
     "selectRating": "Seleziona una valutazione",
@@ -1149,7 +1164,8 @@
     "emergencyDescription": "Se sei in pericolo, chiama subito il 112 o condividi la tua posizione.",
     "cancel": "Annulla",
     "reportProblem": "Segnala un problema",
-    "reportDescription": "Aiutaci a migliorare Andamus"
+    "reportDescription": "Aiutaci a migliorare Andamus",
+    "shareLocationText": "La mia posizione attuale: {url}"
   },
   "footer": {
     "searchRides": "Cerca passaggi",
@@ -1170,7 +1186,8 @@
     "version": "Versione",
     "allRightsReserved": "Tutti i diritti riservati",
     "terms": "Termini",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "deleteAccount": "Elimina account"
   },
   "share": {
     "discoveredMessage": "Ho scoperto Andamus, il carpooling della Sardegna.",
@@ -1296,5 +1313,133 @@
     "legend2To4": "2-4 passaggi",
     "legend1": "1 passaggio",
     "confirm": "Conferma"
+  },
+  "cookies": {
+    "title": "Cookie e privacy",
+    "description": "Usiamo i cookie per far funzionare l’app e, se acconsenti, per capire come viene usata.",
+    "readPolicy": "Leggi l’informativa privacy",
+    "necessaryTitle": "Necessari",
+    "necessaryDesc": "Indispensabili per accesso, prenotazioni e pagamenti.",
+    "analyticsTitle": "Analitici",
+    "analyticsDesc": "Ci aiutano a capire quali funzioni vengono usate.",
+    "functionalTitle": "Funzionali",
+    "functionalDesc": "Ricordano lingua e filtri di ricerca.",
+    "back": "Indietro",
+    "save": "Salva preferenze",
+    "customize": "Personalizza",
+    "necessaryOnly": "Solo necessari",
+    "acceptAll": "Accetta tutto",
+    "close": "Chiudi"
+  },
+  "deleteAccount": {
+    "title": "Eliminazione dell’account",
+    "intro": "Puoi eliminare il tuo account Andamus e tutti i dati collegati in qualsiasi momento. L’operazione è definitiva e non può essere annullata.",
+    "whatTitle": "Cosa viene eliminato",
+    "what1": "Profilo, nome, email, telefono e foto",
+    "what2": "Passaggi pubblicati e prenotazioni effettuate",
+    "what3": "Messaggi in chat e valutazioni",
+    "what4": "Veicoli, preferenze e notifiche",
+    "retentionTitle": "Cosa conserviamo e per quanto",
+    "retention": "Conserviamo le ricevute di pagamento per 10 anni, come richiesto dalla normativa fiscale italiana. Sono conservate separatamente e non collegate al tuo profilo. Tutto il resto viene rimosso immediatamente.",
+    "inAppTitle": "Dall’app",
+    "inAppDesc": "Accedi e vai su Profilo → Impostazioni → Elimina account.",
+    "inAppCta": "Accedi ed elimina l’account",
+    "emailTitle": "Via email",
+    "emailDesc": "Se non riesci ad accedere, scrivici dall’indirizzo email associato al tuo account. Elaboriamo la richiesta entro 30 giorni.",
+    "emailCta": "Scrivi a privacy@andamus.it",
+    "backHome": "Torna alla home"
+  },
+  "hubs": {
+    "badge": "Aeroporti e università",
+    "title": "Snodi di viaggio",
+    "subtitle": "Le tratte più battute dell’isola, verso gli aeroporti e i poli universitari della Sardegna.",
+    "typeAirport": "Aeroporto",
+    "typeUniversity": "Università",
+    "quickRoutes": "Tratte rapide",
+    "upcomingDepartures": "Prossime partenze",
+    "activeRides": "{count} attive",
+    "seats": "Posti: {count}",
+    "noDepartures": "Nessuna partenza in programma al momento.",
+    "publishFirst": "Pubblica il primo passaggio",
+    "hubs": {
+      "cagliari-elmas": {
+        "name": "Aeroporto di Cagliari Elmas",
+        "description": "Il principale scalo del Sud Sardegna, collegato con tutta l’isola.",
+        "shortcut1": "Partenze da Cagliari",
+        "shortcut2": "Arrivi a Cagliari",
+        "shortcut3": "Da Oristano"
+      },
+      "olbia-airport": {
+        "name": "Aeroporto di Olbia Costa Smeralda",
+        "description": "Lo scalo di riferimento per la Gallura e il Nord-Est dell’isola.",
+        "shortcut1": "Partenze da Olbia",
+        "shortcut2": "Arrivi a Olbia",
+        "shortcut3": "Da Nuoro"
+      },
+      "unica-monserrato": {
+        "name": "Cittadella Universitaria di Monserrato",
+        "description": "Il polo scientifico dell’Università di Cagliari, con forte pendolarismo studentesco.",
+        "shortcut1": "Da Oristano",
+        "shortcut2": "Rientro verso Sassari",
+        "shortcut3": "Da Cagliari centro"
+      },
+      "uniss-piazza-italia": {
+        "name": "Università di Sassari",
+        "description": "Punto di riferimento per gli studenti del Nord Sardegna.",
+        "shortcut1": "Verso Cagliari",
+        "shortcut2": "Da Alghero",
+        "shortcut3": "Da Porto Torres"
+      }
+    }
+  },
+  "eventsHub": {
+    "badge": "Eventi",
+    "title": "Grandi eventi in Sardegna",
+    "subtitle": "Concerti, festival e manifestazioni. Trova chi va nella tua stessa direzione e dividete le spese del viaggio.",
+    "metaTitle": "Eventi | Andamus",
+    "metaDescription": "Trova passaggi per concerti, festival e grandi eventi in Sardegna.",
+    "upcoming": "Prossime date",
+    "noEvents": "Nessun evento in programma al momento.",
+    "ridesAvailable": "{count} passaggi",
+    "searchRide": "Cerca un passaggio",
+    "trustTitle1": "Viaggia sicuro",
+    "trustDesc1": "Profili verificati e valutazioni della community per ogni conducente e passeggero.",
+    "trustTitle2": "Persone come te",
+    "trustDesc2": "Incontra chi condivide i tuoi interessi e inizia l’evento già dal viaggio.",
+    "trustTitle3": "Spese divise",
+    "trustDesc3": "Offri i posti liberi in auto o prenota il tuo posto, dividendo carburante e pedaggi."
+  },
+  "reputation": {
+    "trust": {
+      "veryReliable": "Molto affidabile",
+      "reliable": "Affidabile",
+      "growing": "In crescita",
+      "newMember": "Nuovo membro",
+      "newProfile": "Nuovo profilo"
+    },
+    "age": {
+      "justArrived": "Appena arrivato",
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "days": "{count} giorni",
+      "weeks": "{count} settimane",
+      "months": "{count} mesi",
+      "years": "{count} anni"
+    },
+    "noCompletionRate": "—",
+    "trustScoreLabel": "Affidabilità",
+    "reviewCount": "{count, plural, one {# recensione} other {# recensioni}}",
+    "rideCount": "{count, plural, one {# corsa} other {# corse}}"
+  },
+  "launchBanner": {
+    "live": "Andamus è ora live!",
+    "tagline": "Il carpooling dei sardi è qui.",
+    "whatsNew": "Novità v1.0",
+    "dismiss": "Chiudi banner",
+    "feature1": "Pulsante SOS per emergenze",
+    "feature2": "Chat integrata tra utenti",
+    "feature3": "Sistema livelli e punti",
+    "feature4": "Notifiche push in tempo reale",
+    "feature0": "{count} città sarde connesse"
   }
 }

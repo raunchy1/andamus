@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { ShieldCheck, X } from "lucide-react";
 import { Haptic } from "@/lib/haptic";
 
 export default function CookieConsent() {
+  const t = useTranslations("cookies");
+  const locale = useLocale();
   const [show, setShow] = useState(false);
   const [customizing, setCustomizing] = useState(false);
   const [preferences, setPreferences] = useState({
@@ -70,13 +74,20 @@ export default function CookieConsent() {
             <ShieldCheck className="w-5 h-5 text-muted" strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-fg">Informativa sui Cookie & Privacy</h4>
+            <h4 className="text-sm font-semibold text-fg">{t("title")}</h4>
             <p className="text-xs text-muted mt-1.5 leading-relaxed">
-              Andamus usa i cookie per migliorare l'esperienza di carpooling.
+              {t("description")}
             </p>
+            <Link
+              href={`/${locale}/privacy-policy`}
+              className="text-xs text-accent underline underline-offset-2 mt-1.5 inline-block hover:opacity-80 transition-opacity"
+            >
+              {t("readPolicy")}
+            </Link>
           </div>
-          <button 
-            onClick={handleNecessaryOnly} 
+          <button
+            onClick={handleNecessaryOnly}
+            aria-label={t("close")}
             className="text-dim hover:text-muted transition-colors"
           >
             <X className="w-4 h-4" strokeWidth={1.5} />
@@ -85,37 +96,37 @@ export default function CookieConsent() {
 
         {customizing && (
           <div className="mt-4 pt-4 border-t border-line space-y-3">
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs gap-3">
               <div>
-                <span className="font-semibold text-fg block">Cookie Necessari</span>
-                <span className="text-dim text-[10px]">Essenziali per il funzionamento dell&apos;app (Supabase, Stripe).</span>
+                <span className="font-semibold text-fg block">{t("necessaryTitle")}</span>
+                <span className="text-dim text-[10px]">{t("necessaryDesc")}</span>
               </div>
-              <input type="checkbox" disabled checked className="accent-accent" />
+              <input type="checkbox" disabled checked readOnly className="accent-accent" />
             </div>
-            
-            <div className="flex items-center justify-between text-xs">
+
+            <div className="flex items-center justify-between text-xs gap-3">
               <div>
-                <span className="font-semibold text-fg block">Cookie Analitici</span>
-                <span className="text-dim text-[10px]">Analisi dei flussi di viaggio sardi e usabilità (PostHog).</span>
+                <span className="font-semibold text-fg block">{t("analyticsTitle")}</span>
+                <span className="text-dim text-[10px]">{t("analyticsDesc")}</span>
               </div>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={preferences.analytics}
-                onChange={(e) => setPreferences({...preferences, analytics: e.target.checked})}
-                className="accent-accent cursor-pointer" 
+                onChange={(e) => setPreferences({ ...preferences, analytics: e.target.checked })}
+                className="accent-accent cursor-pointer"
               />
             </div>
-            
-            <div className="flex items-center justify-between text-xs">
+
+            <div className="flex items-center justify-between text-xs gap-3">
               <div>
-                <span className="font-semibold text-fg block">Cookie Funzionali</span>
-                <span className="text-dim text-[10px]">Salvataggio preferenze di lingua e filtri di ricerca.</span>
+                <span className="font-semibold text-fg block">{t("functionalTitle")}</span>
+                <span className="text-dim text-[10px]">{t("functionalDesc")}</span>
               </div>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={preferences.functional}
-                onChange={(e) => setPreferences({...preferences, functional: e.target.checked})}
-                className="accent-accent cursor-pointer" 
+                onChange={(e) => setPreferences({ ...preferences, functional: e.target.checked })}
+                className="accent-accent cursor-pointer"
               />
             </div>
           </div>
@@ -126,36 +137,36 @@ export default function CookieConsent() {
             <>
               <button
                 onClick={() => setCustomizing(false)}
-                className="flex-1 py-2 text-center text-xs lowercase text-muted hover:text-fg border border-line hover:bg-surface-2 rounded-[var(--radius-sm)] transition-all"
+                className="flex-1 py-2 text-center text-xs text-muted hover:text-fg border border-line hover:bg-surface-2 rounded-[var(--radius-sm)] transition-all"
               >
-                Indietro
+                {t("back")}
               </button>
               <button
                 onClick={handleSaveCustom}
-                className="flex-1 py-2 text-center text-xs lowercase bg-accent text-accent-fg font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-all"
+                className="flex-1 py-2 text-center text-xs bg-accent text-accent-fg font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-all"
               >
-                Salva Preferenze
+                {t("save")}
               </button>
             </>
           ) : (
             <>
               <button
                 onClick={() => setCustomizing(true)}
-                className="flex-1 py-2 text-center text-xs lowercase text-muted hover:text-fg rounded-[var(--radius-sm)] transition-all"
+                className="flex-1 py-2 text-center text-xs text-muted hover:text-fg rounded-[var(--radius-sm)] transition-all"
               >
-                Personalizza
+                {t("customize")}
               </button>
               <button
                 onClick={handleNecessaryOnly}
-                className="flex-1 py-2 text-center text-xs lowercase text-fg border border-line hover:bg-surface-2 rounded-[var(--radius-sm)] transition-all font-medium"
+                className="flex-1 py-2 text-center text-xs text-fg border border-line hover:bg-surface-2 rounded-[var(--radius-sm)] transition-all font-medium"
               >
-                Solo Necessari
+                {t("necessaryOnly")}
               </button>
               <button
                 onClick={handleAcceptAll}
-                className="flex-1 py-2 text-center text-xs lowercase bg-accent text-accent-fg font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-all"
+                className="flex-1 py-2 text-center text-xs bg-accent text-accent-fg font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-all"
               >
-                Accetta Tutto
+                {t("acceptAll")}
               </button>
             </>
           )}

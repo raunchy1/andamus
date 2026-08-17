@@ -55,6 +55,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     ctaTitle: t('ctaTitle'),
     ctaDescription: t('ctaDescription'),
     welcomeBack: t('welcomeBack'),
+    greetingMorning: t('greetingMorning'),
+    greetingAfternoon: t('greetingAfternoon'),
+    greetingEvening: t('greetingEvening'),
+    featuredToday: t('featuredToday'),
+    withDriver: t('withDriver'),
+    driverFallback: t('driverFallback'),
   };
 
   let todayRides: any[] = [];

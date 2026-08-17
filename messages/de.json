@@ -80,7 +80,15 @@
     "feature3Description": "Du sprichst direkt mit Fahrer und Mitfahrern, ohne Zwischenhändler.",
     "ctaTitle": "Hast du freie Plätze im Auto?",
     "ctaDescription": "Veröffentliche eine Mitfahrgelegenheit und teile die Reisekosten.",
-    "quickGuide": "Kurzanleitung"
+    "quickGuide": "Kurzanleitung",
+    "greetingMorning": "Guten Morgen",
+    "greetingAfternoon": "Guten Tag",
+    "greetingEvening": "Guten Abend",
+    "featuredToday": "Heute hervorgehoben",
+    "withDriver": "mit {name}",
+    "driverFallback": "Fahrer",
+    "seatsCount": "{count, plural, one {# Platz} other {# Plätze}}",
+    "changeSeats": "Anzahl der Plätze ändern"
   },
   "search": {
     "title": "Mitfahrgelegenheit suchen",
@@ -421,7 +429,8 @@
     "fileTooLarge": "Datei zu groß. Maximal 5 MB.",
     "invalidFileType": "Ungültiges Format. JPG, PNG, WebP oder PDF.",
     "pullToRefresh": "Zum Aktualisieren ziehen",
-    "releaseToRefresh": "Loslassen zum Aktualisieren"
+    "releaseToRefresh": "Loslassen zum Aktualisieren",
+    "completedRidesLabel": "Abgeschlossene Fahrten"
   },
   "chat": {
     "messagePlaceholder": "Nachricht schreiben...",
@@ -1081,11 +1090,17 @@
     "noNotifications": "Keine Benachrichtigungen",
     "seeAll": "Alle Benachrichtigungen anzeigen",
     "allNotificationsRead": "Du hast alle Benachrichtigungen gelesen",
-    "justNow": "Gerade eben",
+    "justNow": "gerade eben",
     "minutesAgo": "vor {count} Min.",
     "hoursAgo": "vor {count} Std.",
     "daysAgo": "vor {count} T.",
-    "loading": "Laden"
+    "loading": "Laden",
+    "title": "Benachrichtigungen",
+    "back": "Zurück",
+    "markAllRead": "Alle als gelesen markieren",
+    "empty": "Keine Benachrichtigungen",
+    "emptyHint": "Wir melden uns, sobald etwas passiert.",
+    "delete": "Benachrichtigung löschen"
   },
   "rating": {
     "selectRating": "Wähle eine Bewertung",
@@ -1149,7 +1164,8 @@
     "emergencyDescription": "Wenn du in Gefahr bist, rufe sofort die 112 an oder teile deinen Standort.",
     "cancel": "Abbrechen",
     "reportProblem": "Problem melden",
-    "reportDescription": "Hilf uns, Andamus zu verbessern"
+    "reportDescription": "Hilf uns, Andamus zu verbessern",
+    "shareLocationText": "Mein aktueller Standort: {url}"
   },
   "footer": {
     "searchRides": "Mitfahrgelegenheiten suchen",
@@ -1170,7 +1186,8 @@
     "version": "Version",
     "allRightsReserved": "Alle Rechte vorbehalten",
     "terms": "AGB",
-    "privacy": "Datenschutz"
+    "privacy": "Datenschutz",
+    "deleteAccount": "Konto löschen"
   },
   "share": {
     "discoveredMessage": "Ich habe Andamus gefunden, Mitfahrgelegenheiten auf Sardinien.",
@@ -1296,5 +1313,133 @@
     "legend2To4": "2-4 Mitfahrgelegenheiten",
     "legend1": "1 Mitfahrgelegenheit",
     "confirm": "Bestätigen"
+  },
+  "cookies": {
+    "title": "Cookies und Datenschutz",
+    "description": "Wir verwenden Cookies, damit die App funktioniert — und mit deiner Zustimmung, um zu verstehen, wie sie genutzt wird.",
+    "readPolicy": "Datenschutzerklärung lesen",
+    "necessaryTitle": "Notwendig",
+    "necessaryDesc": "Erforderlich für Anmeldung, Buchungen und Zahlungen.",
+    "analyticsTitle": "Analyse",
+    "analyticsDesc": "Helfen uns zu verstehen, welche Funktionen genutzt werden.",
+    "functionalTitle": "Funktional",
+    "functionalDesc": "Merken sich Sprache und Suchfilter.",
+    "back": "Zurück",
+    "save": "Einstellungen speichern",
+    "customize": "Anpassen",
+    "necessaryOnly": "Nur notwendige",
+    "acceptAll": "Alle akzeptieren",
+    "close": "Schließen"
+  },
+  "deleteAccount": {
+    "title": "Konto löschen",
+    "intro": "Du kannst dein Andamus-Konto und alle zugehörigen Daten jederzeit löschen. Der Vorgang ist endgültig und kann nicht rückgängig gemacht werden.",
+    "whatTitle": "Was gelöscht wird",
+    "what1": "Profil, Name, E-Mail, Telefon und Foto",
+    "what2": "Veröffentlichte Fahrten und getätigte Buchungen",
+    "what3": "Chat-Nachrichten und Bewertungen",
+    "what4": "Fahrzeuge, Einstellungen und Benachrichtigungen",
+    "retentionTitle": "Was wir aufbewahren und wie lange",
+    "retention": "Zahlungsbelege bewahren wir 10 Jahre auf, wie es das italienische Steuerrecht verlangt. Sie werden getrennt gespeichert und sind nicht mit deinem Profil verknüpft. Alles andere wird sofort entfernt.",
+    "inAppTitle": "Über die App",
+    "inAppDesc": "Melde dich an und gehe zu Profil → Einstellungen → Konto löschen.",
+    "inAppCta": "Anmelden und Konto löschen",
+    "emailTitle": "Per E-Mail",
+    "emailDesc": "Wenn du dich nicht anmelden kannst, schreibe uns von der mit deinem Konto verknüpften Adresse. Wir bearbeiten Anfragen innerhalb von 30 Tagen.",
+    "emailCta": "E-Mail an privacy@andamus.it",
+    "backHome": "Zurück zur Startseite"
+  },
+  "hubs": {
+    "badge": "Flughäfen und Universitäten",
+    "title": "Reiseknotenpunkte",
+    "subtitle": "Die meistbefahrenen Strecken der Insel — zu Sardiniens Flughäfen und Universitätsstandorten.",
+    "typeAirport": "Flughafen",
+    "typeUniversity": "Universität",
+    "quickRoutes": "Schnellstrecken",
+    "upcomingDepartures": "Nächste Abfahrten",
+    "activeRides": "{count} aktiv",
+    "seats": "Plätze: {count}",
+    "noDepartures": "Derzeit keine Abfahrten geplant.",
+    "publishFirst": "Veröffentliche die erste Fahrt",
+    "hubs": {
+      "cagliari-elmas": {
+        "name": "Flughafen Cagliari Elmas",
+        "description": "Der wichtigste Flughafen Südsardiniens, mit Verbindungen auf die ganze Insel.",
+        "shortcut1": "Abfahrten ab Cagliari",
+        "shortcut2": "Ankünfte in Cagliari",
+        "shortcut3": "Ab Oristano"
+      },
+      "olbia-airport": {
+        "name": "Flughafen Olbia Costa Smeralda",
+        "description": "Das Tor zur Gallura und zum Nordosten der Insel.",
+        "shortcut1": "Abfahrten ab Olbia",
+        "shortcut2": "Ankünfte in Olbia",
+        "shortcut3": "Ab Nuoro"
+      },
+      "unica-monserrato": {
+        "name": "Universitätscampus Monserrato",
+        "description": "Der naturwissenschaftliche Campus der Universität Cagliari mit starkem Pendlerverkehr.",
+        "shortcut1": "Ab Oristano",
+        "shortcut2": "Zurück nach Sassari",
+        "shortcut3": "Aus dem Zentrum von Cagliari"
+      },
+      "uniss-piazza-italia": {
+        "name": "Universität Sassari",
+        "description": "Anlaufstelle für Studierende in ganz Nordsardinien.",
+        "shortcut1": "Nach Cagliari",
+        "shortcut2": "Ab Alghero",
+        "shortcut3": "Ab Porto Torres"
+      }
+    }
+  },
+  "eventsHub": {
+    "badge": "Veranstaltungen",
+    "title": "Große Events auf Sardinien",
+    "subtitle": "Konzerte, Festivals und Veranstaltungen. Finde Mitfahrende in deine Richtung und teilt euch die Kosten.",
+    "metaTitle": "Veranstaltungen | Andamus",
+    "metaDescription": "Finde Mitfahrgelegenheiten zu Konzerten, Festivals und großen Events auf Sardinien.",
+    "upcoming": "Nächste Termine",
+    "noEvents": "Derzeit sind keine Veranstaltungen geplant.",
+    "ridesAvailable": "{count} Fahrten",
+    "searchRide": "Fahrt suchen",
+    "trustTitle1": "Sicher unterwegs",
+    "trustDesc1": "Verifizierte Profile und Community-Bewertungen für alle Fahrenden und Mitfahrenden.",
+    "trustTitle2": "Menschen wie du",
+    "trustDesc2": "Triff Gleichgesinnte — das Event beginnt schon auf der Hinfahrt.",
+    "trustTitle3": "Geteilte Kosten",
+    "trustDesc3": "Biete freie Plätze an oder buche einen — Sprit und Maut werden fair geteilt."
+  },
+  "reputation": {
+    "trust": {
+      "veryReliable": "Sehr zuverlässig",
+      "reliable": "Zuverlässig",
+      "growing": "Baut Vertrauen auf",
+      "newMember": "Neues Mitglied",
+      "newProfile": "Neues Profil"
+    },
+    "age": {
+      "justArrived": "Gerade beigetreten",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "days": "{count} Tage",
+      "weeks": "{count} Wochen",
+      "months": "{count} Monate",
+      "years": "{count} Jahre"
+    },
+    "noCompletionRate": "—",
+    "trustScoreLabel": "Vertrauenswert",
+    "reviewCount": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+    "rideCount": "{count, plural, one {# Fahrt} other {# Fahrten}}"
+  },
+  "launchBanner": {
+    "live": "Andamus ist jetzt live!",
+    "tagline": "Sardische Fahrgemeinschaften sind da.",
+    "whatsNew": "Neu in v1.0",
+    "dismiss": "Banner schließen",
+    "feature1": "SOS-Taste für Notfälle",
+    "feature2": "Integrierter Chat zwischen Nutzern",
+    "feature3": "Level- und Punktesystem",
+    "feature4": "Push-Benachrichtigungen in Echtzeit",
+    "feature0": "{count} sardische Orte verbunden"
   }
 }

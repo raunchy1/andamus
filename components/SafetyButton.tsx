@@ -57,7 +57,7 @@ export function SafetyButton() {
       async (position) => {
         const { latitude, longitude } = position.coords;
         const mapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-        const shareText = `La mia posizione attuale: ${mapsUrl}`;
+        const shareText = t("shareLocationText", { url: mapsUrl });
         try {
           if (navigator.share) {
             await navigator.share({

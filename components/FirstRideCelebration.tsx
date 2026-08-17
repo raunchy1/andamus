@@ -59,7 +59,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     first_booking: {
       title: t("firstBookingTitle"),
       subtitle: t("firstBookingSubtitle"),
-      icon: <Sparkles className="w-12 h-12 text-[#2D6A4F]" />,
+      icon: <Sparkles className="w-12 h-12 text-primary" />,
     },
     level_up: {
       title: title || t("levelUpTitle"),
@@ -69,7 +69,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     badge_earned: {
       title: title || t("badgeTitle"),
       subtitle: subtitle || t("badgeSubtitle"),
-      icon: <Trophy className="w-12 h-12 text-[#2D6A4F]" />,
+      icon: <Trophy className="w-12 h-12 text-primary" />,
     },
   };
 
@@ -128,13 +128,13 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
             </button>
 
             <div className="relative overflow-hidden rounded-3xl bg-surface border border-line shadow-2xl p-8 text-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#2D6A4F]/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
 
               <motion.div
                 initial={{ scale: 0, rotate: -20 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 15, delay: 0.4 }}
-                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#2D6A4F]/20 to-[#2D6A4F]/10 border border-[#2D6A4F]/20 mb-6"
+                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-[#2D6A4F]/10 border border-primary/20 mb-6"
               >
                 {content.icon}
               </motion.div>
@@ -162,7 +162,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 onClick={handleClose}
-                className="relative w-full py-3 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
+                className="relative w-full py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
               >
                 {t("ctaButton")}
               </motion.button>

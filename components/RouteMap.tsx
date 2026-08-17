@@ -7,10 +7,10 @@ import { MapPin, Navigation } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   SARDINIA_CITIES,
-  darkMapStyles,
+  mapStyles,
   MAP_ACCENT,
   MAP_MUTED,
-  staticMapDarkStyleQuery,
+  staticMapStyleQuery,
 } from "@/lib/sardinia-cities";
 
 interface RouteMapProps {
@@ -25,7 +25,7 @@ const center = {
 };
 
 const mapOptions = {
-  styles: darkMapStyles,
+  styles: mapStyles,
   disableDefaultUI: true,
   zoomControl: true,
   mapTypeControl: false,
@@ -35,7 +35,7 @@ const mapOptions = {
 
 const ORIGIN_MARKER_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z' fill='none' stroke='%238c8c87' stroke-width='1.5'/%3E%3Ccircle cx='12' cy='9' r='2.5' fill='none' stroke='%238c8c87' stroke-width='1.5'/%3E%3C/svg%3E`;
 
-const DESTINATION_MARKER_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z' fill='%234FB3C9'/%3E%3Ccircle cx='12' cy='9' r='2.5' fill='%230a0a0a'/%3E%3C/svg%3E`;
+const DESTINATION_MARKER_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='40' height='40'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z' fill='%232D6A4F'/%3E%3Ccircle cx='12' cy='9' r='2.5' fill='%23F4F1EA'/%3E%3C/svg%3E`;
 
 function RouteMapPlaceholder({
   fromCity,
@@ -294,7 +294,7 @@ export function MiniMap({ fromCity, toCity }: MiniMapProps) {
   const maxDiff = Math.max(latDiff, lngDiff);
   const zoom = maxDiff > 2 ? 7 : maxDiff > 1 ? 8 : 9;
 
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLng}&zoom=${zoom}&size=400x200&maptype=roadmap&markers=color:0x8c8c87%7Clabel:A%7C${from.lat},${from.lng}&markers=color:0x4FB3C9%7Clabel:B%7C${to.lat},${to.lng}&key=${apiKey}&${staticMapDarkStyleQuery}`;
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerLat},${centerLng}&zoom=${zoom}&size=400x200&maptype=roadmap&markers=color:0x8c8c87%7Clabel:A%7C${from.lat},${from.lng}&markers=color:0x2D6A4F%7Clabel:B%7C${to.lat},${to.lng}&key=${apiKey}&${staticMapStyleQuery}`;
 
   return (
     <div className="relative h-[120px] w-full overflow-hidden rounded-[var(--radius)] border border-line">

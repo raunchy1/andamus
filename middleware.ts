@@ -33,7 +33,12 @@ const COMING_SOON_BYPASS = [
   "/it/corsa", "/en/corsa", "/de/corsa",
   "/it/offri", "/en/offri", "/de/offri",
   "/it/cerca", "/en/cerca", "/de/cerca",
-  "/it/premium", "/en/premium", "/de/premium",
+  // Legal and data-rights pages must stay reachable even in waitlist mode:
+  // Google Play requires the privacy policy and the account-deletion page to
+  // be publicly accessible without installing or signing into the app.
+  "/it/privacy-policy", "/en/privacy-policy", "/de/privacy-policy",
+  "/it/termini-e-condizioni", "/en/termini-e-condizioni", "/de/termini-e-condizioni",
+  "/it/elimina-account", "/en/elimina-account", "/de/elimina-account",
 ];
 
 function hasSupabaseAuthCookie(request: NextRequest): boolean {

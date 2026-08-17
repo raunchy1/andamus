@@ -193,7 +193,7 @@ export default function VerificationPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
@@ -215,7 +215,7 @@ export default function VerificationPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Status Card */}
-        <div className="mb-8 rounded-3xl bg-gradient-to-br from-[#2D6A4F] to-[#1E4A36] p-8 text-white">
+        <div className="mb-8 rounded-3xl bg-gradient-to-br from-primary to-primary-hover p-8 text-white">
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sand-deep">
               <Shield className="h-10 w-10" />
@@ -304,7 +304,7 @@ export default function VerificationPage() {
             </div>
 
             {status.id !== "verified" && status.id !== "pending" && (
-              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-line bg-surface p-6 transition-all hover:border-[#2D6A4F] hover:bg-sand-deep">
+              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-line bg-surface p-6 transition-all hover:border-primary hover:bg-sand-deep">
                 <Upload className="mb-2 h-8 w-8 text-muted" />
                 <span className="text-sm text-fg">{t("uploadIdCard")}</span>
                 <span className="mt-1 text-xs text-faint">{t("pngJpgUpTo5mb")}</span>
@@ -357,7 +357,7 @@ export default function VerificationPage() {
             </div>
 
             {status.driver !== "verified" && status.driver !== "pending" && (
-              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-line bg-surface p-6 transition-all hover:border-[#2D6A4F] hover:bg-sand-deep">
+              <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-line bg-surface p-6 transition-all hover:border-primary hover:bg-sand-deep">
                 <Upload className="mb-2 h-8 w-8 text-muted" />
                 <span className="text-sm text-fg">{t("uploadLicense")}</span>
                 <span className="mt-1 text-xs text-faint">{t("pngJpgUpTo5mb")}</span>

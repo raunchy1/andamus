@@ -177,7 +177,7 @@ export function PostActionModal({
       accent: "emerald",
     },
     booking_confirmed: {
-      icon: <CheckCircle2 className="w-8 h-8 text-[#2D6A4F]" />,
+      icon: <CheckCircle2 className="w-8 h-8 text-primary" />,
       title: t("bookingConfirmedTitle"),
       subtitle: t("bookingConfirmedSubtitle"),
       primaryLabel: t("shareBooking"),
@@ -223,7 +223,7 @@ export function PostActionModal({
   const c = config[type];
   const accentBg = {
     emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-    rose: "bg-[#2D6A4F]/10 border-[#2D6A4F]/20 text-[#2D6A4F]",
+    rose: "bg-primary/10 border-primary/20 text-primary",
     yellow: "bg-yellow-500/10 border-yellow-500/20 text-yellow-400",
     orange: "bg-orange-500/10 border-orange-500/20 text-orange-400",
     purple: "bg-purple-500/10 border-purple-500/20 text-purple-400",
@@ -302,7 +302,7 @@ export function PostActionModal({
                     <motion.button
                       whileTap={{ scale: 0.97 }}
                       onClick={handleShareNative}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#2D6A4F] text-white font-semibold text-sm hover:bg-[#1E4A36] transition-colors"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-hover transition-colors"
                     >
                       <Share2 className="w-4 h-4" />
                       {c.primaryLabel}

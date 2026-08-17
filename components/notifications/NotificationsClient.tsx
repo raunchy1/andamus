@@ -13,6 +13,7 @@ import {
   BellRing,
   Bell,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 type NotificationType =
@@ -62,24 +63,23 @@ const iconColors: Record<NotificationType, string> = {
   ride_alert: "var(--ink)",
 };
 
-function relativeTime(dateStr: string): string {
+function relativeTime(dateStr: string, locale: string, justNow: string): string {
   const diffMs = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return justNow;
 
-  if (mins < 1) return "adesso";
-  if (mins < 60) return `${mins} min fa`;
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  if (mins < 60) return rtf.format(-mins, "minute");
 
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours} ${hours === 1 ? "ora" : "ore"} fa`;
+  if (hours < 24) return rtf.format(-hours, "hour");
 
   const days = Math.floor(hours / 24);
-  if (days === 1) return "ieri";
-  if (days < 7) return `${days} giorni fa`;
+  if (days < 7) return rtf.format(-days, "day");
 
-  return new Date(dateStr).toLocaleDateString("it-IT", {
-    day: "numeric",
-    month: "short",
-  });
+  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(
+    new Date(dateStr)
+  );
 }
 
 function linkFor(locale: string, n: Notification): string | null {
@@ -97,6 +97,7 @@ export function NotificationsClient({
   locale,
   initialNotifications,
 }: NotificationsClientProps) {
+  const t = useTranslations("notifications");
   const router = useRouter();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [supabase] = useState(() => createClient());
@@ -144,7 +145,7 @@ export function NotificationsClient({
               justifyContent: "center",
               cursor: "pointer",
             }}
-            aria-label="Indietro"
+            aria-label={t("back")}
           >
             <ChevronLeft size={20} strokeWidth={1.7} style={{ color: "var(--ink)" }} />
           </button>
@@ -162,7 +163,7 @@ export function NotificationsClient({
                 cursor: "pointer",
               }}
             >
-              Segna tutte come lette
+              {t("markAllRead")}
             </button>
           )}
         </div>
@@ -176,7 +177,7 @@ export function NotificationsClient({
             margin: 0,
           }}
         >
-          Notifiche
+          {t("title")}
         </h1>
       </header>
 
@@ -198,10 +199,10 @@ export function NotificationsClient({
             <Bell size={24} strokeWidth={1.7} style={{ color: "var(--muted)" }} />
           </div>
           <p style={{ fontSize: 17, fontWeight: 600, color: "var(--ink)", margin: "0 0 6px" }}>
-            Nessuna notifica
+            {t("empty")}
           </p>
           <p style={{ fontSize: 14, color: "var(--muted)", margin: 0 }}>
-            Ti avviseremo quando succede qualcosa.
+            {t("emptyHint")}
           </p>
         </div>
       ) : (
@@ -262,7 +263,7 @@ export function NotificationsClient({
                     {n.body}
                   </p>
                   <span style={{ fontSize: 12.5, color: "var(--faint)" }}>
-                    {relativeTime(n.created_at)}
+                    {relativeTime(n.created_at, locale, t("justNow"))}
                   </span>
                 </div>
               </div>

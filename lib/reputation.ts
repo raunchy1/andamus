@@ -60,37 +60,40 @@ export function computeTrustScore(profile: Partial<ReputationProfile>): number {
  * Get a human-readable trust level label.
  */
 export function getTrustLevel(score: number): {
+  /** Dictionary key under the `reputation.trust` namespace, not display text. */
   label: string;
   color: string;
   emoji: string;
 } {
   if (score >= 80)
-    return { label: "Molto affidabile", color: "text-emerald-400", emoji: "" };
+    return { label: "veryReliable", color: "text-emerald-600", emoji: "" };
   if (score >= 60)
-    return { label: "Affidabile", color: "text-green-400", emoji: "" };
+    return { label: "reliable", color: "text-accent", emoji: "" };
   if (score >= 40)
-    return { label: "In crescita", color: "text-yellow-400", emoji: "" };
+    return { label: "growing", color: "text-pending", emoji: "" };
   if (score >= 20)
-    return { label: "Nuovo membro", color: "text-[#2D6A4F]", emoji: "" };
-  return { label: "Nuovo profilo", color: "text-white/50", emoji: "" };
+    return { label: "newMember", color: "text-accent", emoji: "" };
+  return { label: "newProfile", color: "text-faint", emoji: "" };
 }
 
 /**
- * Format account age as a human-readable string (Italian).
+ * Account age as a unit + count, for the caller to render through the
+ * dictionary. Returning a formatted Italian string here made every consumer
+ * locale-blind.
  */
-export function formatAccountAge(
+export function getAccountAge(
   createdAt: string | null | undefined
-): string {
-  if (!createdAt) return "Appena arrivato";
+): { unit: "justArrived" | "today" | "yesterday" | "days" | "weeks" | "months" | "years"; count: number } {
+  if (!createdAt) return { unit: "justArrived", count: 0 };
   const days = Math.floor(
     (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)
   );
-  if (days < 1) return "Oggi";
-  if (days === 1) return "Ieri";
-  if (days < 7) return `${days} giorni`;
-  if (days < 30) return `${Math.floor(days / 7)} settimane`;
-  if (days < 365) return `${Math.floor(days / 30)} mesi`;
-  return `${Math.floor(days / 365)} anni`;
+  if (days < 1) return { unit: "today", count: 0 };
+  if (days === 1) return { unit: "yesterday", count: 1 };
+  if (days < 7) return { unit: "days", count: days };
+  if (days < 30) return { unit: "weeks", count: Math.floor(days / 7) };
+  if (days < 365) return { unit: "months", count: Math.floor(days / 30) };
+  return { unit: "years", count: Math.floor(days / 365) };
 }
 
 /**
@@ -101,22 +104,14 @@ export function isEstablishedUser(profile: Partial<ReputationProfile>): boolean 
 }
 
 /**
- * Calculate simulated response speed based on rating/trust.
- */
-export function getResponseSpeed(rating: number | null): string {
-  const r = rating || 5.0;
-  if (r >= 4.8) return "Entro 5 min";
-  if (r >= 4.5) return "Entro 30 min";
-  return "Entro 1 ora";
-}
-
-/**
  * Calculate completion rate percentage.
  */
-export function getCompletionRate(completed: number | null, total: number | null): number {
+export function getCompletionRate(completed: number | null, total: number | null): number | null {
   const comp = completed || 0;
   const tot = total || 0;
-  if (tot === 0) return 100; // Perfect by default for new users
+  // No completed rides yet means there is no rate to report. Returning a
+  // default of 100% would state a track record the user has not earned.
+  if (tot === 0) return null;
   return Math.min(100, Math.round((comp / tot) * 100));
 }
 

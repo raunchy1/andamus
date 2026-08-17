@@ -101,9 +101,9 @@ export default function RequestDetailPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4">
-        <AlertCircle className="h-16 w-16 text-[#2D6A4F] mb-4" />
+        <AlertCircle className="h-16 w-16 text-primary mb-4" />
         <h1 className="text-xl font-bold text-fg">{t("loadError")}</h1>
-        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-[#2D6A4F] hover:underline">
+        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-primary hover:underline">
           <ArrowLeft className="h-4 w-4" /> {t("backToRequests")}
         </Link>
       </div>
@@ -113,7 +113,7 @@ export default function RequestDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
@@ -121,9 +121,9 @@ export default function RequestDetailPage() {
   if (!request) {
     return (
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4">
-        <AlertCircle className="h-16 w-16 text-[#2D6A4F] mb-4" />
+        <AlertCircle className="h-16 w-16 text-primary mb-4" />
         <h1 className="text-2xl font-bold text-fg">{t("notFound")}</h1>
-        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-[#2D6A4F] hover:underline">
+        <Link href={`/${locale}/richieste`} className="mt-6 flex items-center gap-2 text-primary hover:underline">
           <ArrowLeft className="h-4 w-4" /> {t("backToRequests")}
         </Link>
       </div>
@@ -140,12 +140,12 @@ export default function RequestDetailPage() {
         <div className="mx-auto max-w-3xl relative">
           <Reveal>
             <div className="mb-4 flex items-center gap-2">
-              <Link href={`/${locale}/richieste`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-[#2D6A4F] transition-colors">
+              <Link href={`/${locale}/richieste`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-primary transition-colors">
                 <ArrowLeft className="h-4 w-4" />
                 {t("backToRequests")}
               </Link>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#2D6A4F]/30 bg-[#2D6A4F]/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#2D6A4F] backdrop-blur-md mb-4">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary backdrop-blur-md mb-4">
               <Sparkles className="h-3 w-3" />
               {t("lookingForRide")}
             </span>
@@ -168,7 +168,7 @@ export default function RequestDetailPage() {
                     {request.profiles?.avatar_url ? (
                       <img src={request.profiles.avatar_url} alt={request.profiles.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-lg font-bold text-[#2D6A4F]">
+                      <span className="text-lg font-bold text-primary">
                         {request.profiles?.name?.charAt(0)?.toUpperCase() ?? '?'}
                       </span>
                     )}
@@ -181,12 +181,12 @@ export default function RequestDetailPage() {
 
                 <div className="flex flex-col gap-1.5 text-sm text-fg">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-[#2D6A4F]" />
+                    <Calendar className="h-4 w-4 text-primary" />
                     <span className="capitalize">{formatDate(request.date)}</span>
                   </div>
                   {request.time && (
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-[#2D6A4F]" />
+                      <Clock className="h-4 w-4 text-primary" />
                       <span>{request.time.slice(0, 5)}</span>
                       <span className="text-xs text-faint">({flexibilityLabel(request.time_flexibility)})</span>
                     </div>
@@ -199,7 +199,7 @@ export default function RequestDetailPage() {
             <div className="grid gap-4 sm:grid-cols-3">
               <TiltCard tiltStrength={4} className="rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <Users className="h-4 w-4 text-[#2D6A4F]" />
+                  <Users className="h-4 w-4 text-primary" />
                   <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("seatsNeeded")}</p>
                 </div>
                 <p className="text-2xl font-black text-fg">{request.seats_needed}</p>
@@ -207,7 +207,7 @@ export default function RequestDetailPage() {
 
               <TiltCard tiltStrength={4} className="rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <Euro className="h-4 w-4 text-[#2D6A4F]" />
+                  <Euro className="h-4 w-4 text-primary" />
                   <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("maxBudget")}</p>
                 </div>
                 <p className="text-2xl font-black text-fg">
@@ -217,7 +217,7 @@ export default function RequestDetailPage() {
 
               <TiltCard tiltStrength={4} className="rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <Clock className="h-4 w-4 text-[#2D6A4F]" />
+                  <Clock className="h-4 w-4 text-primary" />
                   <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("flexibilityLabel") || t("flexibility")}</p>
                 </div>
                 <p className="text-lg font-bold text-fg truncate">{flexibilityLabel(request.time_flexibility)}</p>
@@ -227,7 +227,7 @@ export default function RequestDetailPage() {
             {/* Notes Section */}
             {request.notes && (
               <div className="rounded-3xl border border-line bg-surface p-6 backdrop-blur-sm flex gap-4">
-                <FileText className="h-6 w-6 text-[#2D6A4F] flex-shrink-0 mt-0.5" />
+                <FileText className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-bold text-fg mb-1">{t("notes")}</p>
                   <p className="text-fg leading-relaxed text-sm">{request.notes}</p>
@@ -237,8 +237,8 @@ export default function RequestDetailPage() {
 
             {/* Actions for Drivers */}
             {!isMyRequest && user && (
-              <div className="rounded-3xl border border-[#2D6A4F]/20 bg-gradient-to-br from-[#2D6A4F]/[0.05] via-[#2D6A4F]/[0.02] to-transparent p-8 text-center backdrop-blur-sm">
-                <MapPin className="h-10 w-10 text-[#2D6A4F] mx-auto mb-3" />
+              <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/[0.05] via-[#2D6A4F]/[0.02] to-transparent p-8 text-center backdrop-blur-sm">
+                <MapPin className="h-10 w-10 text-primary mx-auto mb-3" />
                 <p className="text-lg font-bold text-fg mb-2">{t("haveRidePrompt")}</p>
                 <p className="text-sm text-muted mb-6 max-w-md mx-auto">
                   Pubblica una corsa che corrisponde alle esigenze di questo passeggero. Verrà notificato istantaneamente!
@@ -259,7 +259,7 @@ export default function RequestDetailPage() {
             {/* Information for Request Owner */}
             {isMyRequest && (
               <div className="rounded-3xl border border-line bg-surface p-6 text-center backdrop-blur-sm">
-                <Sparkles className="h-6 w-6 text-[#2D6A4F] mx-auto mb-2" />
+                <Sparkles className="h-6 w-6 text-primary mx-auto mb-2" />
                 <p className="text-sm font-bold text-fg">{t("yourRequest")}</p>
                 <p className="text-xs text-muted mt-1 max-w-sm mx-auto">{t("notificationInfo")}</p>
               </div>

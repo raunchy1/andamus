@@ -270,7 +270,7 @@ function ComingSoonContent() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_12%,rgba(210,103,58,0.18),transparent_34%),linear-gradient(160deg,rgba(23,22,20,0),rgba(20,56,43,0.42))]" />
               <div className="relative flex h-full items-end justify-between gap-6">
                 <div className="pb-4 pl-2 text-[#f7f2e8]">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D6A4F]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                     Anteprima app
                   </p>
                   <p className="mt-3 max-w-[12rem] text-3xl font-black leading-none tracking-tight">

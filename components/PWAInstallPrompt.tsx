@@ -100,8 +100,8 @@ export function PWAInstallPrompt() {
         className="fixed bottom-20 sm:bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
       >
         <div className="bg-surface/90 border border-line rounded-3xl p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl flex items-center gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#2D6A4F]/10 flex items-center justify-center border border-[#2D6A4F]/20">
-            <Smartphone className="w-6 h-6 text-[#2D6A4F]" />
+          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+            <Smartphone className="w-6 h-6 text-primary" />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -121,7 +121,7 @@ export function PWAInstallPrompt() {
             </button>
             <button
               onClick={handleInstall}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2D6A4F] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#1E4A36] active:scale-95 transition-all min-h-11"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold uppercase tracking-wider hover:bg-primary-hover active:scale-95 transition-all min-h-11"
             >
               <Download className="w-3.5 h-3.5" />
               {t("installButton")}

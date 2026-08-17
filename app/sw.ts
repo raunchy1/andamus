@@ -13,6 +13,23 @@ import {
   ExpirationPlugin
 } from "serwist";
 
+// API routes that return user-scoped or payment data. These must never be
+// written to the cache — a cached response would be served to whoever uses
+// the device next, regardless of who is signed in.
+const PRIVATE_API_PREFIXES = [
+  "/api/profile",
+  "/api/reputation",
+  "/api/vehicles",
+  "/api/stripe",
+  "/api/premium",
+  "/api/push",
+  "/api/notifications",
+  "/api/referrals",
+  "/api/admin",
+  "/api/alerts",
+  "/api/jobs",
+];
+
 // Default cache configuration for Next.js
 const defaultCache = [
   {
@@ -121,7 +138,17 @@ const serwist = new Serwist({
       },
     },
     
-    // Cache internal API routes (GET only)
+    // Authenticated / sensitive API routes — NEVER cache.
+    // Caching these leaks one user's data to the next on a shared device.
+    {
+      matcher: ({ url, request }: { url: URL; request: Request }) =>
+        url.pathname.startsWith("/api/") &&
+        request.method === "GET" &&
+        PRIVATE_API_PREFIXES.some((p) => url.pathname.startsWith(p)),
+      handler: async ({ request }: { request: Request }) => fetch(request),
+    },
+
+    // Remaining public internal API routes (GET only)
     {
       matcher: ({ url, request }: { url: URL; request: Request }) =>
         url.pathname.startsWith("/api/") &&

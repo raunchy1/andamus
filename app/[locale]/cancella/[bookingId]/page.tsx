@@ -166,7 +166,7 @@ export default function CancelBookingPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
@@ -176,7 +176,7 @@ export default function CancelBookingPage() {
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-bad mb-4" />
         <h1 className="text-2xl font-bold text-ink">{t("notFoundTitle")}</h1>
-        <Link href={`/${locale}/profilo`} className="mt-6 text-[#2D6A4F] flex items-center gap-2">
+        <Link href={`/${locale}/profilo`} className="mt-6 text-primary flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" /> {t("backToProfile")}
         </Link>
       </div>
@@ -214,13 +214,13 @@ export default function CancelBookingPage() {
           </h3>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-ink">
-              <MapPin className="h-5 w-5 text-[#2D6A4F]" />
+              <MapPin className="h-5 w-5 text-primary" />
               <span>{booking.ride.from_city} → {booking.ride.to_city}</span>
             </div>
             <div className="flex items-center gap-3 text-ink">
-              <Calendar className="h-5 w-5 text-[#2D6A4F]" />
+              <Calendar className="h-5 w-5 text-primary" />
               <span>
-                {new Date(booking.ride.date).toLocaleDateString("it-IT", {
+                {new Date(booking.ride.date).toLocaleDateString(locale, {
                   weekday: "long",
                   day: "numeric",
                   month: "long",
@@ -229,7 +229,7 @@ export default function CancelBookingPage() {
               </span>
             </div>
             <div className="flex items-center gap-3 text-ink">
-              <User className="h-5 w-5 text-[#2D6A4F]" />
+              <User className="h-5 w-5 text-primary" />
               <span>
                 {isPassenger ? t("passenger") : t("driver")}: {booking.passenger.name}
               </span>
@@ -248,17 +248,17 @@ export default function CancelBookingPage() {
                 key={reason.value}
                 className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${
                   selectedReason === reason.value
-                    ? "border-[#2D6A4F] bg-[#2D6A4F]/10"
+                    ? "border-primary bg-primary/10"
                     : "border-line bg-surface hover:bg-sand-deep"
                 }`}
               >
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   selectedReason === reason.value
-                    ? "border-[#2D6A4F]"
+                    ? "border-primary"
                     : "border-line"
                 }`}>
                   {selectedReason === reason.value && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#2D6A4F]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                   )}
                 </div>
                 <input
@@ -283,7 +283,7 @@ export default function CancelBookingPage() {
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder={t("detailsPlaceholder")}
-                className="w-full h-24 px-4 py-3 rounded-xl border border-line bg-bg text-ink placeholder:text-faint resize-none focus:outline-none focus:border-[#2D6A4F]"
+                className="w-full h-24 px-4 py-3 rounded-xl border border-line bg-bg text-ink placeholder:text-faint resize-none focus:outline-none focus:border-primary"
               />
             </div>
           )}

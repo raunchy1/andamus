@@ -326,7 +326,7 @@ export default function StatisticsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2D6A4F]" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
     );
   }
@@ -344,7 +344,7 @@ export default function StatisticsPage() {
             {t('backToProfile')}
           </Link>
           <h1 className="text-3xl font-bold text-ink flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-[#2D6A4F]" />
+            <TrendingUp className="w-8 h-8 text-primary" />
             {t('myStats')}
           </h1>
           <p className="text-muted mt-2">{t('subtitle')}</p>
@@ -365,7 +365,7 @@ export default function StatisticsPage() {
             suffix=" kg"
           />
           <StatCard 
-            icon={<Car className="w-6 h-6 text-[#2D6A4F]" />}
+            icon={<Car className="w-6 h-6 text-primary" />}
             value={stats.ridesAsDriver}
             label={t('asDriver')}
           />
@@ -401,7 +401,7 @@ export default function StatisticsPage() {
         {/* Activity Chart */}
         <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
           <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#2D6A4F]" />
+            <Calendar className="w-5 h-5 text-primary" />
             {t('activityLast12Months')}
           </h2>
           <div className="h-64">
@@ -417,7 +417,7 @@ export default function StatisticsPage() {
         {stats.favoriteRoutes.length > 0 && (
           <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
             <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#2D6A4F]" />
+              <MapPin className="w-5 h-5 text-primary" />
               {t('favoriteRoutes')}
             </h2>
             <div className="space-y-3">
@@ -456,7 +456,7 @@ export default function StatisticsPage() {
         <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <h2 className="text-xl font-semibold text-ink flex items-center gap-2">
-              <Clock className="w-5 h-5 text-[#2D6A4F]" />
+              <Clock className="w-5 h-5 text-primary" />
               {t('fullHistory')}
             </h2>
             
@@ -476,7 +476,7 @@ export default function StatisticsPage() {
               onClick={() => setActiveTab("driver")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "driver"
-                  ? "bg-[#2D6A4F] text-white"
+                  ? "bg-primary text-white"
                   : "bg-surface text-muted hover:bg-sand-deep"
               }`}
             >
@@ -487,7 +487,7 @@ export default function StatisticsPage() {
               onClick={() => setActiveTab("passenger")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === "passenger"
-                  ? "bg-[#2D6A4F] text-white"
+                  ? "bg-primary text-white"
                   : "bg-surface text-muted hover:bg-sand-deep"
               }`}
             >
@@ -550,7 +550,7 @@ export default function StatisticsPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center gap-1">
-                      <div className="h-2 w-2 rounded-full bg-[#2D6A4F]" />
+                      <div className="h-2 w-2 rounded-full bg-primary" />
                       <div className="h-8 w-0.5 bg-sand-deep" />
                       <div className="h-2 w-2 rounded-full bg-sand-deep" />
                     </div>
@@ -593,7 +593,7 @@ export default function StatisticsPage() {
         {badges.length > 0 && (
           <div className="bg-surface border border-line rounded-2xl p-6">
             <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
-              <Award className="w-5 h-5 text-[#2D6A4F]" />
+              <Award className="w-5 h-5 text-primary" />
               {t('achievementHistory')}
             </h2>
             <div className="space-y-4">

@@ -32,7 +32,7 @@ export function AnimatedCounter({
   const inView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
   const mv = useMotionValue(0);
   const ctxLocale = useLocale();
-  const effectiveLocale = locale ?? ctxLocale ?? "it-IT";
+  const effectiveLocale = locale ?? ctxLocale ?? "it";
 
   useEffect(() => {
     if (!inView) return;

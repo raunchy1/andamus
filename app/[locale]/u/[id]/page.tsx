@@ -1,9 +1,10 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { createClient } from "@/lib/supabase/server";
 import { PublicProfileView } from "@/components/PublicProfile";
-import { computeTrustScore, getTrustLevel, formatAccountAge } from "@/lib/reputation";
+import { computeTrustScore, getTrustLevel, getAccountAge } from "@/lib/reputation";
 
 interface PublicProfilePageProps {
   params: Promise<{ id: string; locale: string }>;
@@ -38,10 +39,12 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
   const trustScore = computeTrustScore(profile);
   const trustLevel = getTrustLevel(trustScore);
 
+  const tTrust = await getTranslations({ locale, namespace: "reputation" });
+  const trustText = tTrust(`trust.${trustLevel.label}`);
   const titles: Record<string, string> = {
-    it: `${profile.name} — ${trustLevel.label} su Andamus`,
-    en: `${profile.name} — ${trustLevel.label} on Andamus`,
-    de: `${profile.name} — ${trustLevel.label} bei Andamus`,
+    it: `${profile.name} — ${trustText} su Andamus`,
+    en: `${profile.name} — ${trustText} on Andamus`,
+    de: `${profile.name} — ${trustText} bei Andamus`,
   };
 
   const descriptions: Record<string, string> = {
@@ -148,7 +151,9 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   const trustScore = computeTrustScore(profile);
   const trustLevel = getTrustLevel(trustScore);
-  const accountAge = formatAccountAge(profile.created_at);
+  const ageParts = getAccountAge(profile.created_at);
+  const tRep = await getTranslations({ locale, namespace: "reputation" });
+  const accountAge = tRep(`age.${ageParts.unit}`, { count: ageParts.count });
 
   const jsonLd = {
     "@context": "https://schema.org",

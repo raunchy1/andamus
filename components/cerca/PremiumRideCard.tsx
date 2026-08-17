@@ -83,8 +83,8 @@ export function PremiumRideCard({
       >
         {/* Scarcity alert bubble if applicable */}
         {activity.seatsScarcityText && (
-          <div className="absolute top-0 right-0 left-0 bg-[#2D6A4F]/10 border-b border-[#2D6A4F]/15 py-1 px-4 text-center">
-            <span className="text-[9px] font-extrabold tracking-widest text-[#2D6A4F] uppercase animate-pulse flex items-center justify-center gap-1">
+          <div className="absolute top-0 right-0 left-0 bg-primary/10 border-b border-primary/15 py-1 px-4 text-center">
+            <span className="text-[9px] font-extrabold tracking-widest text-primary uppercase animate-pulse flex items-center justify-center gap-1">
               <Zap className="w-2.5 h-2.5 fill-[#2D6A4F]" />
               {activity.seatsScarcityText}
             </span>
@@ -94,12 +94,12 @@ export function PremiumRideCard({
         {/* Top Row: Date/Time + Price */}
         <div className={`flex justify-between items-start ${activity.seatsScarcityText ? "mt-5" : ""} mb-4 sm:mb-6 gap-4`}>
           <div className="space-y-1 min-w-0">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#2D6A4F]">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
               {isFeatured && (
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#2D6A4F] animate-pulse" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               )}
               {ride.is_boosted && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#2D6A4F]/20 border border-[#2D6A4F]/50 text-[#2D6A4F] text-[8px] tracking-normal font-extrabold animate-pulse mr-1">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 border border-primary/50 text-primary text-[8px] tracking-normal font-extrabold animate-pulse mr-1">
                   🔥 RICHIESTA ALTA
                 </span>
               )}
@@ -200,7 +200,7 @@ export function PremiumRideCard({
               </div>
               <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                 <div className="flex items-center gap-0.5">
-                  <Star className="w-2.5 h-2.5 text-[#2D6A4F] fill-[#2D6A4F]" />
+                  <Star className="w-2.5 h-2.5 text-primary fill-[#2D6A4F]" />
                   <span className="text-[10px] font-bold text-muted-foreground">
                     {ride.profiles.rating}
                   </span>
@@ -211,7 +211,7 @@ export function PremiumRideCard({
                   Fidato
                 </span>
                 <span className="text-faint text-[9px]">•</span>
-                <span className="text-[9px] font-bold text-[#2D6A4F] bg-[#2D6A4F]/8 border border-[#2D6A4F]/20 px-1 py-0.5 rounded-md">
+                <span className="text-[9px] font-bold text-primary bg-primary/8 border border-primary/20 px-1 py-0.5 rounded-md">
                   {metrics.responseTimeText}
                 </span>
                 <span className="text-faint text-[9px]">•</span>

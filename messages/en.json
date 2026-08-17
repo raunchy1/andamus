@@ -80,7 +80,15 @@
     "feature3Description": "Talk directly with the driver and passengers, no middlemen.",
     "ctaTitle": "Got free seats in your car?",
     "ctaDescription": "Publish a ride and split travel costs.",
-    "quickGuide": "Quick guide"
+    "quickGuide": "Quick guide",
+    "greetingMorning": "Good morning",
+    "greetingAfternoon": "Good afternoon",
+    "greetingEvening": "Good evening",
+    "featuredToday": "Featured today",
+    "withDriver": "with {name}",
+    "driverFallback": "Driver",
+    "seatsCount": "{count, plural, one {# seat} other {# seats}}",
+    "changeSeats": "Change number of seats"
   },
   "search": {
     "title": "Find a ride",
@@ -421,7 +429,8 @@
     "fileTooLarge": "File too large. Maximum 5 MB.",
     "invalidFileType": "Invalid format. Use JPG, PNG, WebP or PDF.",
     "pullToRefresh": "Pull to refresh",
-    "releaseToRefresh": "Release to refresh"
+    "releaseToRefresh": "Release to refresh",
+    "completedRidesLabel": "Completed rides"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -1081,11 +1090,17 @@
     "noNotifications": "No notifications",
     "seeAll": "See all notifications",
     "allNotificationsRead": "You've read all notifications",
-    "justNow": "Just now",
+    "justNow": "just now",
     "minutesAgo": "{count} min ago",
     "hoursAgo": "{count} h ago",
     "daysAgo": "{count} d ago",
-    "loading": "Loading"
+    "loading": "Loading",
+    "title": "Notifications",
+    "back": "Back",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications",
+    "emptyHint": "We’ll let you know when something happens.",
+    "delete": "Delete notification"
   },
   "rating": {
     "selectRating": "Select a rating",
@@ -1149,7 +1164,8 @@
     "emergencyDescription": "If you're in danger, call 112 right away or share your location.",
     "cancel": "Cancel",
     "reportProblem": "Report a problem",
-    "reportDescription": "Help us improve Andamus"
+    "reportDescription": "Help us improve Andamus",
+    "shareLocationText": "My current location: {url}"
   },
   "footer": {
     "searchRides": "Find rides",
@@ -1170,7 +1186,8 @@
     "version": "Version",
     "allRightsReserved": "All rights reserved",
     "terms": "Terms",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "deleteAccount": "Delete account"
   },
   "share": {
     "discoveredMessage": "I found Andamus, Sardinian carpooling.",
@@ -1296,5 +1313,133 @@
     "legend2To4": "2-4 rides",
     "legend1": "1 ride",
     "confirm": "Confirm"
+  },
+  "cookies": {
+    "title": "Cookies and privacy",
+    "description": "We use cookies to run the app and, with your consent, to understand how it is used.",
+    "readPolicy": "Read the privacy policy",
+    "necessaryTitle": "Necessary",
+    "necessaryDesc": "Required for sign-in, bookings and payments.",
+    "analyticsTitle": "Analytics",
+    "analyticsDesc": "Help us understand which features are used.",
+    "functionalTitle": "Functional",
+    "functionalDesc": "Remember your language and search filters.",
+    "back": "Back",
+    "save": "Save preferences",
+    "customize": "Customize",
+    "necessaryOnly": "Necessary only",
+    "acceptAll": "Accept all",
+    "close": "Close"
+  },
+  "deleteAccount": {
+    "title": "Delete your account",
+    "intro": "You can delete your Andamus account and all associated data at any time. This is permanent and cannot be undone.",
+    "whatTitle": "What gets deleted",
+    "what1": "Profile, name, email, phone and photo",
+    "what2": "Rides you published and bookings you made",
+    "what3": "Chat messages and ratings",
+    "what4": "Vehicles, preferences and notifications",
+    "retentionTitle": "What we keep, and for how long",
+    "retention": "We keep payment receipts for 10 years, as required by Italian tax law. They are stored separately and are not linked to your profile. Everything else is removed immediately.",
+    "inAppTitle": "From the app",
+    "inAppDesc": "Sign in and go to Profile → Settings → Delete account.",
+    "inAppCta": "Sign in and delete account",
+    "emailTitle": "By email",
+    "emailDesc": "If you cannot sign in, email us from the address linked to your account. We process requests within 30 days.",
+    "emailCta": "Email privacy@andamus.it",
+    "backHome": "Back to home"
+  },
+  "hubs": {
+    "badge": "Airports and universities",
+    "title": "Travel hubs",
+    "subtitle": "The island’s busiest routes, connecting Sardinia’s airports and university campuses.",
+    "typeAirport": "Airport",
+    "typeUniversity": "University",
+    "quickRoutes": "Quick routes",
+    "upcomingDepartures": "Upcoming departures",
+    "activeRides": "{count} active",
+    "seats": "Seats: {count}",
+    "noDepartures": "No departures scheduled right now.",
+    "publishFirst": "Publish the first ride",
+    "hubs": {
+      "cagliari-elmas": {
+        "name": "Cagliari Elmas Airport",
+        "description": "Southern Sardinia’s main airport, connected to the whole island.",
+        "shortcut1": "Departures from Cagliari",
+        "shortcut2": "Arrivals at Cagliari",
+        "shortcut3": "From Oristano"
+      },
+      "olbia-airport": {
+        "name": "Olbia Costa Smeralda Airport",
+        "description": "The gateway to Gallura and the island’s north-east.",
+        "shortcut1": "Departures from Olbia",
+        "shortcut2": "Arrivals at Olbia",
+        "shortcut3": "From Nuoro"
+      },
+      "unica-monserrato": {
+        "name": "Monserrato University Campus",
+        "description": "The science campus of the University of Cagliari, with heavy student commuting.",
+        "shortcut1": "From Oristano",
+        "shortcut2": "Back to Sassari",
+        "shortcut3": "From central Cagliari"
+      },
+      "uniss-piazza-italia": {
+        "name": "University of Sassari",
+        "description": "The hub for students across northern Sardinia.",
+        "shortcut1": "To Cagliari",
+        "shortcut2": "From Alghero",
+        "shortcut3": "From Porto Torres"
+      }
+    }
+  },
+  "eventsHub": {
+    "badge": "Events",
+    "title": "Major events in Sardinia",
+    "subtitle": "Concerts, festivals and gatherings. Find someone heading the same way and share the cost of the trip.",
+    "metaTitle": "Events | Andamus",
+    "metaDescription": "Find rides to concerts, festivals and major events across Sardinia.",
+    "upcoming": "Upcoming dates",
+    "noEvents": "No events scheduled right now.",
+    "ridesAvailable": "{count} rides",
+    "searchRide": "Find a ride",
+    "trustTitle1": "Travel safely",
+    "trustDesc1": "Verified profiles and community ratings for every driver and passenger.",
+    "trustTitle2": "People like you",
+    "trustDesc2": "Meet others who share your interests and start the event on the way there.",
+    "trustTitle3": "Shared costs",
+    "trustDesc3": "Offer your empty seats or book one, splitting fuel and tolls fairly."
+  },
+  "reputation": {
+    "trust": {
+      "veryReliable": "Very reliable",
+      "reliable": "Reliable",
+      "growing": "Building trust",
+      "newMember": "New member",
+      "newProfile": "New profile"
+    },
+    "age": {
+      "justArrived": "Just joined",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "days": "{count} days",
+      "weeks": "{count} weeks",
+      "months": "{count} months",
+      "years": "{count} years"
+    },
+    "noCompletionRate": "—",
+    "trustScoreLabel": "Trust score",
+    "reviewCount": "{count, plural, one {# review} other {# reviews}}",
+    "rideCount": "{count, plural, one {# ride} other {# rides}}"
+  },
+  "launchBanner": {
+    "live": "Andamus is now live!",
+    "tagline": "Sardinian carpooling is here.",
+    "whatsNew": "What’s new in v1.0",
+    "dismiss": "Dismiss banner",
+    "feature1": "SOS button for emergencies",
+    "feature2": "Built-in chat between users",
+    "feature3": "Levels and points system",
+    "feature4": "Real-time push notifications",
+    "feature0": "{count} Sardinian towns connected"
   }
 }

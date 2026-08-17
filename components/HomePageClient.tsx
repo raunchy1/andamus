@@ -37,7 +37,6 @@ interface HomeUIProps {
   router: ReturnType<typeof useRouter>;
   savedRoutes: any[];
   suggestion: { from: string; to: string; reason: string } | null;
-  signals: { ridesAddedToday: number; activeCommutersCount: number; trendingRoute: { from: string; to: string } | null } | null;
   showInlineOnboarding: boolean;
   setShowInlineOnboarding: (value: boolean) => void;
 }
@@ -76,6 +75,12 @@ interface HomeTranslations {
   ctaTitle: string;
   ctaDescription: string;
   welcomeBack: string;
+  greetingMorning: string;
+  greetingAfternoon: string;
+  greetingEvening: string;
+  featuredToday: string;
+  withDriver: string;
+  driverFallback: string;
   savedRoutes: string;
   routeRemoved: string;
   routeRemoveError: string;
@@ -155,7 +160,6 @@ export default function HomePageClient({
   const [userName] = useState(initialUserName);
   const [userAvatar] = useState(initialUserAvatar);
   const [suggestion, setSuggestion] = useState<{ from: string; to: string; reason: string } | null>(null);
-  const [signals, setSignals] = useState<{ ridesAddedToday: number; activeCommutersCount: number; trendingRoute: { from: string; to: string } | null } | null>(null);
   const [showInlineOnboarding, setShowInlineOnboarding] = useState(false);
 
   useEffect(() => {
@@ -189,23 +193,6 @@ export default function HomePageClient({
     trackActiveSession();
   }, []);
 
-  useEffect(() => {
-    const fetchSignals = async () => {
-      try {
-        const response = await fetch("/api/marketplace/signals");
-        if (!response.ok) throw new Error("API error");
-        const res = await response.json();
-        setSignals(res);
-      } catch {
-        setSignals({
-          ridesAddedToday: 3,
-          activeCommutersCount: 16,
-          trendingRoute: { from: "Cagliari", to: "Sassari" },
-        });
-      }
-    };
-    fetchSignals();
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,7 +217,6 @@ export default function HomePageClient({
     translations,
     savedRoutes: initialSavedRoutes,
     suggestion,
-    signals,
     showInlineOnboarding,
     setShowInlineOnboarding,
   };

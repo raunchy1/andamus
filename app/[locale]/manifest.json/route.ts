@@ -1,10 +1,16 @@
 import type { MetadataRoute } from "next";
 
-export default async function manifest({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<MetadataRoute.Manifest> {
+/**
+ * Served as a route handler rather than Next's `manifest.ts` convention.
+ * That convention is only registered at the root of app/, so the previous
+ * app/[locale]/manifest.ts produced no route at all and every locale's
+ * <link rel="manifest" href="/{locale}/manifest.json"> returned 404 — the
+ * app had no reachable manifest and could not be installed as a PWA.
+ */
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ locale: string }> }
+) {
   const { locale } = await params;
 
   const names: Record<string, { name: string; short_name: string; description: string }> = {
@@ -51,27 +57,29 @@ export default async function manifest({
     },
   ];
 
-  return {
+  const manifest: MetadataRoute.Manifest = {
     name: n.name,
     short_name: n.short_name,
     description: n.description,
     start_url: `/${locale}`,
     display: "standalone",
-    background_color: "#0a0a0a",
-    theme_color: "#0A0A0A",
+    background_color: "#F4F1EA",
+    theme_color: "#2D6A4F",
     orientation: "portrait",
     scope: "/",
     lang: locale,
     dir: "ltr",
     categories: ["travel", "navigation", "social", "lifestyle"],
     icons: [
-      { src: "/icon-72x72.png", sizes: "72x72", type: "image/png", purpose: "maskable" },
-      { src: "/icon-96x96.png", sizes: "96x96", type: "image/png", purpose: "maskable" },
-      { src: "/icon-128x128.png", sizes: "128x128", type: "image/png", purpose: "maskable" },
-      { src: "/icon-144x144.png", sizes: "144x144", type: "image/png", purpose: "maskable" },
-      { src: "/icon-152x152.png", sizes: "152x152", type: "image/png", purpose: "maskable" },
+      { src: "/icon-72x72.png", sizes: "72x72", type: "image/png", purpose: "any" },
+      { src: "/icon-96x96.png", sizes: "96x96", type: "image/png", purpose: "any" },
+      { src: "/icon-128x128.png", sizes: "128x128", type: "image/png", purpose: "any" },
+      { src: "/icon-144x144.png", sizes: "144x144", type: "image/png", purpose: "any" },
+      { src: "/icon-152x152.png", sizes: "152x152", type: "image/png", purpose: "any" },
+      { src: "/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icon-384x384.png", sizes: "384x384", type: "image/png", purpose: "any" },
+      { src: "/icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/icon-192x192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
-      { src: "/icon-384x384.png", sizes: "384x384", type: "image/png", purpose: "maskable" },
       { src: "/icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     screenshots: [
@@ -83,4 +91,11 @@ export default async function manifest({
     prefer_related_applications: false,
     id: "andamus-carpooling",
   };
+
+  return Response.json(manifest, {
+    headers: {
+      "Content-Type": "application/manifest+json",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
 }

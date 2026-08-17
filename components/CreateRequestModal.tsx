@@ -128,12 +128,12 @@ export function CreateRequestModal({
         }}
       >
         {/* Glow */}
-        <div className="absolute -top-24 -right-24 pointer-events-none w-48 h-48 rounded-full bg-[#2D6A4F]/10 blur-[80px]" />
+        <div className="absolute -top-24 -right-24 pointer-events-none w-48 h-48 rounded-full bg-primary/10 blur-[80px]" />
 
         {/* Header */}
         <div className="mb-6 flex items-start justify-between relative">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2D6A4F]/30 bg-[#2D6A4F]/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-[#2D6A4F] mb-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
               <Sparkles className="h-3 w-3" />
               Cerco passaggio
             </span>
@@ -155,7 +155,7 @@ export function CreateRequestModal({
           {/* Route Selector Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 {t("from")}
               </label>
               <LocationCombobox
@@ -167,7 +167,7 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 {t("to")}
               </label>
               <LocationCombobox
@@ -182,7 +182,7 @@ export function CreateRequestModal({
           {/* Date & Time Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 Data del viaggio
               </label>
               <div className="relative">
@@ -199,7 +199,7 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 Orario Indicativo (Opzionale)
               </label>
               <div className="relative">
@@ -217,7 +217,7 @@ export function CreateRequestModal({
           {/* Time Flexibility */}
           {time && (
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 Flessibilità oraria
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -233,7 +233,7 @@ export function CreateRequestModal({
                     onClick={() => setTimeFlexibility(item.value)}
                     className={`h-10 rounded-lg text-xs font-semibold border transition-all ${
                       timeFlexibility === item.value
-                        ? "bg-[#2D6A4F] border-[#2D6A4F] text-white"
+                        ? "bg-primary border-primary text-white"
                         : "bg-surface border-line text-fg hover:bg-sand-deep"
                     }`}
                   >
@@ -247,7 +247,7 @@ export function CreateRequestModal({
           {/* Seats Needed & Max Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 Posti richiesti
               </label>
               <div className="flex gap-2">
@@ -258,7 +258,7 @@ export function CreateRequestModal({
                     onClick={() => setSeatsNeeded(num)}
                     className={`flex-1 h-12 rounded-xl text-sm font-bold border transition-all ${
                       seatsNeeded === num
-                        ? "bg-[#2D6A4F] border-[#2D6A4F] text-white"
+                        ? "bg-primary border-primary text-white"
                         : "bg-surface border-line text-fg hover:bg-sand-deep"
                     }`}
                   >
@@ -269,7 +269,7 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
                 Budget Massimo (Opzionale)
               </label>
               <div className="relative">
@@ -288,7 +288,7 @@ export function CreateRequestModal({
 
           {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-[#2D6A4F]">
+            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
               Note Aggiuntive (Dettagli, bagagli, etc.)
             </label>
             <textarea
@@ -304,7 +304,7 @@ export function CreateRequestModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 rounded-xl bg-gradient-to-r from-[#2D6A4F] to-[#2D6A4F] text-base font-bold text-white shadow-lg shadow-[#2D6A4F]/25 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-xl bg-primary text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

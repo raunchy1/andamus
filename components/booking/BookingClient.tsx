@@ -57,7 +57,7 @@ export function BookingClient({
   const total = isFree ? 0 : subtotal + SERVICE_FEE;
 
   const departure = time?.slice(0, 5) ?? "";
-  const dateLabel = new Date(date).toLocaleDateString("it-IT", {
+  const dateLabel = new Date(date).toLocaleDateString(locale, {
     weekday: "long",
     day: "numeric",
     month: "long",

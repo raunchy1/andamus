@@ -162,7 +162,7 @@ export default function StripeStatusPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center text-ink p-6">
-        <Loader2 className="w-12 h-12 animate-spin text-[#2D6A4F] mb-4" />
+        <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
         <p className="text-muted text-sm font-medium">{texts.loading}</p>
       </div>
     );
@@ -195,27 +195,27 @@ export default function StripeStatusPage() {
         </div>
 
         {/* Status Card */}
-        <div className="bg-[#141414]/90 border border-line rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl text-white">
+        <div className="bg-surface border border-line rounded-3xl p-6 shadow-lg relative overflow-hidden text-fg">
           {/* Subtle accent glows */}
           {isConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />}
           {isPendingSetup && <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />}
-          {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#2D6A4F]/10 rounded-full blur-2xl pointer-events-none" />}
+          {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />}
 
           <div className="flex flex-col items-center text-center space-y-4 relative z-10">
             {/* Status Icons */}
             {isConnected && (
               <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-lg shadow-emerald-500/5">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               </div>
             )}
             {isPendingSetup && (
               <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-lg shadow-amber-500/5">
-                <AlertTriangle className="w-8 h-8 text-amber-400" />
+                <AlertTriangle className="w-8 h-8 text-amber-600" />
               </div>
             )}
             {isNotConnected && (
-              <div className="w-16 h-16 rounded-2xl bg-[#2D6A4F]/10 border border-[#2D6A4F]/20 flex items-center justify-center shadow-lg shadow-[#2D6A4F]/5">
-                <CreditCard className="w-8 h-8 text-[#2D6A4F]" />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5">
+                <CreditCard className="w-8 h-8 text-primary" />
               </div>
             )}
 
@@ -227,8 +227,8 @@ export default function StripeStatusPage() {
                 {isNotConnected && texts.notConnected}
               </h2>
               <p className="text-xs font-bold uppercase tracking-wider opacity-60">
-                {isConnected && <span className="text-emerald-400">{texts.connectedStatus}</span>}
-                {isPendingSetup && <span className="text-amber-400">{texts.pendingStatus}</span>}
+                {isConnected && <span className="text-emerald-600">{texts.connectedStatus}</span>}
+                {isPendingSetup && <span className="text-amber-600">{texts.pendingStatus}</span>}
                 {isNotConnected && <span className="text-bad">{texts.notConnectedStatus}</span>}
               </p>
             </div>
@@ -246,7 +246,7 @@ export default function StripeStatusPage() {
                 type="button"
                 onClick={handleOnboard}
                 disabled={isPending}
-                className="w-full mt-4 py-4 px-6 rounded-2xl bg-[#2D6A4F] text-white font-extrabold text-sm uppercase tracking-wider hover:bg-[#1E4A36] active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-[#2D6A4F]/20"
+                className="w-full mt-4 py-4 px-6 rounded-2xl bg-primary text-white font-extrabold text-sm uppercase tracking-wider hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
               >
                 {isPending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -273,7 +273,7 @@ export default function StripeStatusPage() {
           <div className="space-y-3">
             <div className="bg-surface border border-line rounded-2xl p-4 flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center shrink-0">
-                <Coins className="w-5 h-5 text-[#2D6A4F]" />
+                <Coins className="w-5 h-5 text-primary" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-sm font-bold text-ink">{texts.benefit1Title}</h4>
@@ -283,7 +283,7 @@ export default function StripeStatusPage() {
 
             <div className="bg-surface border border-line rounded-2xl p-4 flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center shrink-0">
-                <TrendingUp className="w-5 h-5 text-[#2D6A4F]" />
+                <TrendingUp className="w-5 h-5 text-primary" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-sm font-bold text-ink">{texts.benefit2Title}</h4>
@@ -293,7 +293,7 @@ export default function StripeStatusPage() {
 
             <div className="bg-surface border border-line rounded-2xl p-4 flex gap-4">
               <div className="w-10 h-10 rounded-xl bg-surface border border-line flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5 text-[#2D6A4F]" />
+                <ShieldCheck className="w-5 h-5 text-primary" />
               </div>
               <div className="space-y-1">
                 <h4 className="text-sm font-bold text-ink">{texts.benefit3Title}</h4>
