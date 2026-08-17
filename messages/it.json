@@ -1088,11 +1088,17 @@
     "noNotifications": "Nessuna notifica",
     "seeAll": "Vedi tutte le notifiche",
     "allNotificationsRead": "Hai letto tutte le notifiche",
-    "justNow": "Adesso",
+    "justNow": "adesso",
     "minutesAgo": "{count} min fa",
     "hoursAgo": "{count} h fa",
     "daysAgo": "{count} g fa",
-    "loading": "Caricamento"
+    "loading": "Caricamento",
+    "title": "Notifiche",
+    "back": "Indietro",
+    "markAllRead": "Segna tutte come lette",
+    "empty": "Nessuna notifica",
+    "emptyHint": "Ti avviseremo quando succede qualcosa.",
+    "delete": "Elimina notifica"
   },
   "rating": {
     "selectRating": "Seleziona una valutazione",

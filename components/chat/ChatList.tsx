@@ -30,12 +30,12 @@ function formatListTime(dateStr: string, locale: string) {
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
   if (isToday) {
-    return date.toLocaleTimeString(locale === "it" ? "it-IT" : locale, {
+    return date.toLocaleTimeString(locale, {
       hour: "2-digit",
       minute: "2-digit",
     });
   }
-  return date.toLocaleDateString(locale === "it" ? "it-IT" : locale, {
+  return date.toLocaleDateString(locale, {
     day: "numeric",
     month: "short",
   });

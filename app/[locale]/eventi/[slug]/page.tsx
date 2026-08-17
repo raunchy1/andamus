@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Calendar, MapPin, Search, Loader2, AlertCircle } from "lucide-react";
@@ -21,6 +22,7 @@ interface EventItem {
 
 export default function EventDetailPage() {
   const params = useParams();
+  const locale = useLocale();
   const slug = params.slug as string;
   const supabase = createClient();
   const [event, setEvent] = useState<EventItem | null>(null);
@@ -37,7 +39,7 @@ export default function EventDetailPage() {
   }, [slug, supabase]);
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    return new Date(dateStr).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   };
 
   if (loading) {
@@ -53,7 +55,7 @@ export default function EventDetailPage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-destructive mb-4" />
         <h1 className="text-2xl font-bold text-foreground">Evento non trovato</h1>
-        <Link href="/eventi" className="mt-6 flex items-center gap-2 text-accent">
+        <Link href={`/${locale}/eventi`} className="mt-6 flex items-center gap-2 text-accent">
           <ArrowLeft className="h-4 w-4" /> Torna agli eventi
         </Link>
       </div>
@@ -73,7 +75,7 @@ export default function EventDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-6">
           <div className="mx-auto max-w-3xl">
-            <Link href="/eventi" className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white mb-2 transition-colors">
+            <Link href={`/${locale}/eventi`} className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white mb-2 transition-colors">
               <ArrowLeft className="h-4 w-4" />
               Torna agli eventi
             </Link>

@@ -1088,11 +1088,17 @@
     "noNotifications": "Keine Benachrichtigungen",
     "seeAll": "Alle Benachrichtigungen anzeigen",
     "allNotificationsRead": "Du hast alle Benachrichtigungen gelesen",
-    "justNow": "Gerade eben",
+    "justNow": "gerade eben",
     "minutesAgo": "vor {count} Min.",
     "hoursAgo": "vor {count} Std.",
     "daysAgo": "vor {count} T.",
-    "loading": "Laden"
+    "loading": "Laden",
+    "title": "Benachrichtigungen",
+    "back": "Zurück",
+    "markAllRead": "Alle als gelesen markieren",
+    "empty": "Keine Benachrichtigungen",
+    "emptyHint": "Wir melden uns, sobald etwas passiert.",
+    "delete": "Benachrichtigung löschen"
   },
   "rating": {
     "selectRating": "Wähle eine Bewertung",

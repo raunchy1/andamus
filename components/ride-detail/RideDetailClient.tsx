@@ -206,6 +206,7 @@ function RideDetailRouteHero({
   rideStatus: import("@/lib/ride-status").ComputedRideStatus;
 }) {
   const t = useTranslations("ride");
+  const heroLocale = useLocale();
   const departureTime = ride.time.slice(0, 5);
   const { meta, arrivalTime } = getRouteTiming(ride.from_city, ride.to_city, departureTime);
 
@@ -213,7 +214,7 @@ function RideDetailRouteHero({
     .filter((s) => s.city !== ride.from_city && s.city !== ride.to_city)
     .map((s) => ({ name: s.city }));
 
-  const dateLabel = new Date(ride.date).toLocaleDateString("it-IT", {
+  const dateLabel = new Date(ride.date).toLocaleDateString(heroLocale, {
     weekday: "short",
     day: "numeric",
     month: "short",

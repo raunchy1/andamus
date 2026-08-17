@@ -220,7 +220,7 @@ export default function CancelBookingPage() {
             <div className="flex items-center gap-3 text-ink">
               <Calendar className="h-5 w-5 text-primary" />
               <span>
-                {new Date(booking.ride.date).toLocaleDateString("it-IT", {
+                {new Date(booking.ride.date).toLocaleDateString(locale, {
                   weekday: "long",
                   day: "numeric",
                   month: "long",

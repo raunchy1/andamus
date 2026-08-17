@@ -98,8 +98,8 @@ type DisplayMessage = Message | LocalMessage;
 // ============================================================
 // UTILITIES
 // ============================================================
-function formatTime(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString("it-IT", {
+function formatTime(dateStr: string, locale: string) {
+  return new Date(dateStr).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -165,6 +165,7 @@ const MessageBubble = memo(function MessageBubble({
   retryingId: string | null;
 }) {
   const t = useTranslations("chat");
+  const locale = useLocale();
   const mine = isMyMessage(message.sender_id, currentUserId);
   const isLocal = "status" in message;
   const isPending = isLocal && message.status === "pending";
@@ -308,7 +309,7 @@ const MessageBubble = memo(function MessageBubble({
       </div>
       <div className="flex items-center gap-1.5 px-1">
         <span className="font-mono text-[11px] text-dim">
-          {formatTime(message.created_at)}
+          {formatTime(message.created_at, locale)}
         </span>
         {!isLocal && <ReadIndicator message={message as Message} currentUserId={currentUserId} />}
         {isPending && (

@@ -25,7 +25,7 @@ export function BookingConfirmation({
   driverName,
 }: BookingConfirmationProps) {
   const departure = time?.slice(0, 5) ?? "";
-  const dateLabel = new Date(date).toLocaleDateString("it-IT", {
+  const dateLabel = new Date(date).toLocaleDateString(locale, {
     weekday: "long",
     day: "numeric",
     month: "long",

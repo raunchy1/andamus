@@ -220,7 +220,7 @@ export function EmptyStateSearch({
                     className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface hover:bg-sand-deep hover:border-emerald-500/30 transition duration-200 text-xs text-ink"
                   >
                     <span className="font-semibold">
-                      {new Date(item.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
+                      {new Date(item.date).toLocaleDateString(locale, {
                         weekday: "short",
                         day: "numeric",
                         month: "short",
@@ -296,7 +296,7 @@ export function EmptyStateSearch({
                       <div>
                         <div className="font-bold text-fg truncate max-w-[120px]">{req.user?.full_name || t("commuterFallback")}</div>
                         <div className="text-[10px] text-faint">
-                          {new Date(req.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
+                          {new Date(req.date).toLocaleDateString(locale, {
                             day: "numeric",
                             month: "short",
                           })}

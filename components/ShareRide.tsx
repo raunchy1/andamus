@@ -40,7 +40,7 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
 
   const formattedDate = (() => {
     try {
-      return new Date(ride.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", {
+      return new Date(ride.date).toLocaleDateString(locale, {
         weekday: "long",
         day: "numeric",
         month: "long",
