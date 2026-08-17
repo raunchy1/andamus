@@ -65,10 +65,10 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`w-full flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-[#2D6A4F]/10 to-[#2D6A4F]/10 border border-[#2D6A4F]/20 transition-all hover:from-[#2D6A4F]/20 hover:to-[#2D6A4F]/20 ${className}`}
+        className={`w-full flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-[#2D6A4F]/10 border border-primary/20 transition-all hover:from-primary/20 hover:to-[#2D6A4F]/20 ${className}`}
       >
-        <div className="w-10 h-10 rounded-full bg-[#2D6A4F]/20 flex items-center justify-center flex-shrink-0">
-          <Share2 className="w-5 h-5 text-[#2D6A4F]" />
+        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+          <Share2 className="w-5 h-5 text-primary" />
         </div>
         <div className="flex-1 text-left">
           <p className="font-semibold text-ink">{t("inviteFriends")}</p>
@@ -83,7 +83,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
   return (
     <button
       onClick={handleShare}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D6A4F] text-white font-medium transition-colors hover:bg-[#1E4A36] ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white font-medium transition-colors hover:bg-primary-hover ${className}`}
     >
       <Share2 className="w-4 h-4" />
       <span>{t("share")}</span>

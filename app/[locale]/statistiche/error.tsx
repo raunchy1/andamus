@@ -23,8 +23,8 @@ export default function StatisticsError({
     <main className="min-h-screen bg-bg pt-24 pb-12">
       <div className="max-w-4xl mx-auto px-4 text-center">
         <div className="flex justify-center mb-6">
-          <div className="h-24 w-24 rounded-full bg-[#2D6A4F]/10 flex items-center justify-center">
-            <BarChart3 className="h-12 w-12 text-[#2D6A4F]" />
+          <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
+            <BarChart3 className="h-12 w-12 text-primary" />
           </div>
         </div>
         
@@ -39,7 +39,7 @@ export default function StatisticsError({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2D6A4F] text-white rounded-xl font-medium hover:bg-[#1E4A36] transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-hover transition-colors"
           >
             <RefreshCw className="h-5 w-5" />
             {t("retry")}

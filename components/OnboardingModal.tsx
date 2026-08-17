@@ -28,12 +28,12 @@ interface OnboardingModalProps {
 
 const ICONS = [Car, Search, Car, Shield, Trophy, Star];
 const COLORS = [
-  "from-[#2D6A4F] to-[#1E4A36]",
-  "from-[#2D6A4F] to-[#2D6A4F]",
+  "from-primary to-primary-hover",
+  "from-primary to-[#2D6A4F]",
   "from-green-500 to-emerald-600",
   "from-blue-500 to-indigo-600",
   "from-yellow-500 to-orange-500",
-  "from-[#2D6A4F] to-[#2D6A4F]",
+  "from-primary to-[#2D6A4F]",
 ];
 
 const FEATURE_ICONS: Array<Array<React.ElementType>> = [
@@ -157,7 +157,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   className="flex justify-center mb-5"
                 >
                   <div className={`p-5 rounded-2xl bg-gradient-to-br ${currentColor} bg-opacity-15`}>
-                    <IconComponent className="w-14 h-14 text-[#2D6A4F]" />
+                    <IconComponent className="w-14 h-14 text-primary" />
                   </div>
                 </motion.div>
 
@@ -178,7 +178,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                           key={index}
                           className="flex items-center gap-2 bg-surface rounded-full px-4 py-2 border border-line"
                         >
-                          <FeatureIcon className="w-4 h-4 text-[#2D6A4F]" />
+                          <FeatureIcon className="w-4 h-4 text-primary" />
                           <span className="text-sm text-fg">{feature.text}</span>
                         </div>
                       );
@@ -191,7 +191,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                     <Link
                       href={`/${locale}/cerca`}
                       onClick={handleComplete}
-                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
+                      className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
                     >
                       <Search className="w-5 h-5" />
                       {t("searchRide")}
@@ -216,7 +216,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   onClick={() => setCurrentStep(index)}
                   className={`h-2 rounded-full transition-all ${
                     index === currentStep
-                      ? "w-8 bg-[#2D6A4F]"
+                      ? "w-8 bg-primary"
                       : "w-2 bg-sand-deep hover:bg-sand-deep"
                   }`}
                 />
@@ -240,7 +240,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1 px-6 py-3 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
+                  className="flex items-center gap-1 px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
                 >
                   {currentStep === slides.length - 2 ? t("start") : t("next")}
                   <ChevronRight className="w-5 h-5" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import "./globals.css";
 import { AlertTriangle, RefreshCw, Mail } from "lucide-react";
 import * as Sentry from "@sentry/nextjs";
 
@@ -56,7 +57,7 @@ export default function GlobalError({
               </div>
             </div>
             
-            <h1 className="text-3xl font-bold text-white mb-4">
+            <h1 className="text-3xl font-bold text-fg mb-4">
               {m.title}
             </h1>
             
@@ -72,7 +73,7 @@ export default function GlobalError({
 
             <button
               onClick={reset}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2D6A4F] text-white rounded-xl font-medium hover:bg-[#1E4A36] transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-accent-fg rounded-xl font-medium hover:bg-primary-hover transition-colors"
             >
               <RefreshCw className="h-5 w-5" />
               {m.reload}
@@ -84,7 +85,7 @@ export default function GlobalError({
               </p>
               <a 
                 href="mailto:support@andamus.it"
-                className="inline-flex items-center gap-2 text-[#2D6A4F] hover:text-[#1E4A36] transition-colors"
+                className="inline-flex items-center gap-2 text-primary hover:text-[#1E4A36] transition-colors"
               >
                 <Mail className="h-4 w-4" />
                 support@andamus.it

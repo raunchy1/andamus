@@ -84,8 +84,8 @@ export default async function AuthCodeErrorPage({
       <div className="max-w-md w-full text-center space-y-8 bg-surface border border-line rounded-3xl p-8 shadow-[0_30px_80px_-25px_rgba(45,106,79,0.15)]">
         
         {/* Warning Icon */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2D6A4F]/10 border border-[#2D6A4F]/20 shadow-[0_0_15px_rgba(45,106,79,0.1)]">
-          <AlertTriangle className="h-8 w-8 text-[#2D6A4F]" />
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(45,106,79,0.1)]">
+          <AlertTriangle className="h-8 w-8 text-primary" />
         </div>
 
         {/* Diagnostic Titles */}
@@ -106,7 +106,7 @@ export default async function AuthCodeErrorPage({
         {/* Developer Debug Box (Dev mode only) */}
         {isDev && (
           <div className="text-left bg-surface border border-line rounded-2xl p-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#2D6A4F] uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
               <Terminal className="w-3.5 h-3.5" />
               <span>Developer Diagnostics</span>
             </div>
@@ -122,7 +122,7 @@ export default async function AuthCodeErrorPage({
         <div className="flex flex-col gap-3 pt-2">
           <Link
             href={`/${locale}/profilo`}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#2D6A4F] px-6 py-4 text-sm font-bold text-white hover:bg-[#1E4A36] transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(45,106,79,0.4)]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-sm font-bold text-white hover:bg-primary-hover transition-all active:scale-[0.98] shadow-[0_10px_25px_-8px_rgba(45,106,79,0.4)]"
           >
             <RefreshCw className="w-4 h-4" />
             <span>{locale === "it" ? "Riprova ad accedere" : locale === "en" ? "Try signing in again" : "Erneut versuchen"}</span>

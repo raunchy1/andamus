@@ -101,7 +101,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
                     key={r.id}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all ${
                       reason === r.id
-                        ? "border-[#2D6A4F] bg-[#2D6A4F]/10"
+                        ? "border-primary bg-primary/10"
                         : "border-line bg-surface hover:bg-sand-deep"
                     }`}
                   >

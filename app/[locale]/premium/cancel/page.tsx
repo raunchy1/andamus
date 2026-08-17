@@ -20,7 +20,7 @@ export default function PremiumCancelPage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/premium"
-            className="inline-flex items-center justify-center rounded-xl bg-[#2D6A4F] px-6 py-3 text-white font-medium hover:bg-[#1E4A36] transition-colors"
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-white font-medium hover:bg-primary-hover transition-colors"
           >
             {t("backToPlans")}
           </Link>

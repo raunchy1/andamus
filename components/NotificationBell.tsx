@@ -333,7 +333,7 @@ export function NotificationBell({ isHome = false }: NotificationBellProps) {
                       <p className="mt-1 text-xs text-faint">{timeAgo(notification.created_at, t)}</p>
                     </div>
                     {!notification.read && (
-                      <div className="mt-2 h-2 w-2 rounded-full bg-[#2D6A4F]" />
+                      <div className="mt-2 h-2 w-2 rounded-full bg-primary" />
                     )}
                   </Link>
                 );

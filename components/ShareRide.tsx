@@ -149,7 +149,7 @@ ${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
           onClick={handleShareNative}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border border-line bg-surface hover:bg-sand-deep transition-colors text-sm font-medium ${className}`}
         >
-          <Share2 className="w-4 h-4 text-[#2D6A4F]" />
+          <Share2 className="w-4 h-4 text-primary" />
           {t("share")}
         </button>
       );
@@ -158,7 +158,7 @@ ${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={handleShareNative}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2D6A4F]/10 text-[#2D6A4F] hover:bg-[#2D6A4F]/20 transition-colors text-sm font-semibold ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-semibold ${className}`}
       >
         <Share2 className="w-4 h-4" />
         {t("share")}

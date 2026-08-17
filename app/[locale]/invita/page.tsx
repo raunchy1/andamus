@@ -119,7 +119,7 @@ export default function InvitaPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#2D6A4F]" />
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
@@ -142,7 +142,7 @@ export default function InvitaPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#2D6A4F] to-[#1E4A36] mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary-hover mb-4">
               <Gift className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-ink mb-2">{t("title")}</h1>
@@ -158,7 +158,7 @@ export default function InvitaPage() {
           className="bg-surface border border-line rounded-2xl p-6 mb-8"
         >
           <h2 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-[#2D6A4F]" />
+            <Share2 className="w-5 h-5 text-primary" />
             {t("yourLink")}
           </h2>
           
@@ -168,7 +168,7 @@ export default function InvitaPage() {
             </div>
             <Button
               onClick={copyLink}
-              className="bg-[#2D6A4F] hover:bg-[#1E4A36] text-white"
+              className="bg-primary hover:bg-primary-hover text-white"
             >
               {copied ? (
                 <><Check className="w-4 h-4 mr-2" /> {t("copied")}</>
@@ -240,7 +240,7 @@ export default function InvitaPage() {
           <h2 className="text-lg font-semibold text-ink mb-4">{t("howItWorks")}</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shrink-0">
                 1
               </div>
               <div>
@@ -249,7 +249,7 @@ export default function InvitaPage() {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shrink-0">
                 2
               </div>
               <div>
@@ -258,7 +258,7 @@ export default function InvitaPage() {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shrink-0">
                 3
               </div>
               <div>

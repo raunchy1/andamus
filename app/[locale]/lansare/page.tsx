@@ -92,7 +92,7 @@ export default function LaunchPage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="animate-pulse text-[#2D6A4F]">
+        <div className="animate-pulse text-primary">
           <Rocket className="w-12 h-12" />
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#2D6A4F] to-[#2D6A4F] mb-6"
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-[#2D6A4F] mb-6"
           >
             <Rocket className="w-10 h-10 text-white" />
           </motion.div>
@@ -138,14 +138,14 @@ export default function LaunchPage() {
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-fg">{t("progress")}</span>
-            <span className="text-sm font-bold text-[#2D6A4F]">{progress}%</span>
+            <span className="text-sm font-bold text-primary">{progress}%</span>
           </div>
           <div className="h-3 bg-surface-2 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="h-full bg-gradient-to-r from-[#2D6A4F] to-[#2D6A4F] rounded-full"
+              className="h-full bg-gradient-to-r from-primary to-[#2D6A4F] rounded-full"
             />
           </div>
         </motion.div>
@@ -169,7 +169,7 @@ export default function LaunchPage() {
                 transition={{ delay: 0.5 + index * 0.1 }}
                 className={`relative p-5 rounded-2xl border transition-all ${
                   isCompleted
-                    ? "bg-surface-2/50 border-[#2D6A4F]/30"
+                    ? "bg-surface-2/50 border-primary/30"
                     : "bg-surface-2 border-line-strong hover:border-faint"
                 }`}
               >
@@ -179,8 +179,8 @@ export default function LaunchPage() {
                     onClick={() => toggleItem(item.id)}
                     className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                       isCompleted
-                        ? "bg-[#2D6A4F] border-[#2D6A4F]"
-                        : "border-[#e5e2e1]/30 hover:border-[#2D6A4F]"
+                        ? "bg-primary border-primary"
+                        : "border-[#e5e2e1]/30 hover:border-primary"
                     }`}
                   >
                     {isCompleted && <Check className="w-4 h-4 text-white" />}
@@ -189,12 +189,12 @@ export default function LaunchPage() {
                   {/* Icon */}
                   <div
                     className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-                      isCompleted ? "bg-[#2D6A4F]/20" : "bg-bg"
+                      isCompleted ? "bg-primary/20" : "bg-bg"
                     }`}
                   >
                     <Icon
                       className={`w-6 h-6 ${
-                        isCompleted ? "text-[#2D6A4F]" : "text-fg"
+                        isCompleted ? "text-primary" : "text-fg"
                       }`}
                     />
                   </div>
@@ -220,11 +220,11 @@ export default function LaunchPage() {
                     {!isCompleted && (
                       <div className="mt-3">
                         {item.isShare ? (
-                          <ShareApp variant="outline" className="text-[#2D6A4F] border-[#2D6A4F]/50" />
+                          <ShareApp variant="outline" className="text-primary border-primary/50" />
                         ) : item.action ? (
                           <Link
                             href={`/${locale}${item.action.href}`}
-                            className="inline-flex items-center gap-1 text-sm font-medium text-[#2D6A4F] hover:text-[#2D6A4F] transition-colors"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary transition-colors"
                           >
                             {item.action.label}
                             <ChevronRight className="w-4 h-4" />
@@ -238,7 +238,7 @@ export default function LaunchPage() {
                 {/* Completion badge */}
                 {isCompleted && (
                   <div className="absolute top-4 right-4">
-                    <Star className="w-5 h-5 text-[#2D6A4F] fill-[#2D6A4F]" />
+                    <Star className="w-5 h-5 text-primary fill-[#2D6A4F]" />
                   </div>
                 )}
               </motion.div>
@@ -251,7 +251,7 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#2D6A4F]/20 to-[#2D6A4F]/20 border border-[#2D6A4F]/30 text-center"
+            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-primary/20 to-[#2D6A4F]/20 border border-primary/30 text-center"
           >
             <h2 className="text-2xl font-bold text-ink mb-2">
               {t("allDone")}
@@ -262,7 +262,7 @@ export default function LaunchPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href={`/${locale}/cerca`}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#2D6A4F] text-white font-semibold hover:bg-[#1E4A36] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-hover transition-colors"
               >
                 <Search className="w-5 h-5" />
                 {t("findRide")}

@@ -153,7 +153,7 @@ export function RatingModal({
           <>
             {/* User Info */}
             <div className="mb-6 flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#2D6A4F]/10 text-[#2D6A4F]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
                 {reviewedUser.avatar_url ? (
                   <Image
                     src={reviewedUser.avatar_url}
@@ -196,7 +196,7 @@ export function RatingModal({
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-center text-sm font-medium text-[#2D6A4F]">
+              <p className="mt-2 text-center text-sm font-medium text-primary">
                 {rating === 1 && t("rating1")}
                 {rating === 2 && t("rating2")}
                 {rating === 3 && t("rating3")}
@@ -223,7 +223,7 @@ export function RatingModal({
             <button
               onClick={handleSubmit}
               disabled={loading || rating === 0}
-              className="w-full rounded-xl bg-[#2D6A4F] py-4 text-base font-semibold text-white shadow-lg shadow-[#2D6A4F]/25 transition-all hover:bg-[#1E4A36] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-primary py-4 text-base font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="mx-auto h-5 w-5 animate-spin" />

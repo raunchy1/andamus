@@ -67,8 +67,8 @@ export default async function EventsHubPage({
         
         <div className="max-w-4xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-line mb-6 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-[#2D6A4F]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#2D6A4F]">Community Hub</span>
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Community Hub</span>
           </div>
           
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-6 leading-[0.9]">
@@ -104,7 +104,7 @@ export default async function EventsHubPage({
               <Link 
                 key={event.id}
                 href={`/${locale}/cerca?event=${event.slug}`}
-                className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#121212] border border-line hover:border-[#2D6A4F]/30 transition-all duration-500 shadow-2xl hover:shadow-[#2D6A4F]/5"
+                className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#121212] border border-line hover:border-primary/30 transition-all duration-500 shadow-2xl hover:shadow-primary/5"
                 style={{ 
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.03)"
                 }}
@@ -121,25 +121,25 @@ export default async function EventsHubPage({
                     <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/30 to-transparent" />
                     
                     {/* Badge Indicator */}
-                    <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2D6A4F]/90 backdrop-blur-md text-[9px] font-extrabold tracking-wide uppercase text-white shadow-lg">
+                    <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/90 backdrop-blur-md text-[9px] font-extrabold tracking-wide uppercase text-white shadow-lg">
                       <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                       {event.ride_count && event.ride_count > 0 ? `${event.ride_count} Passaggi` : "Cerca Passaggio"}
                     </div>
 
                     <div className="absolute bottom-4 left-4 right-4">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#2D6A4F] mb-1 block">{event.category}</span>
-                      <h3 className="text-xl font-black text-white leading-tight uppercase tracking-tight group-hover:text-[#2D6A4F] transition-colors">{event.name}</h3>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-1 block">{event.category}</span>
+                      <h3 className="text-xl font-black text-white leading-tight uppercase tracking-tight group-hover:text-primary transition-colors">{event.name}</h3>
                     </div>
                   </div>
 
                   <div className="p-5 flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                        <div className="flex items-center gap-2 text-muted">
-                          <Calendar className="w-4 h-4 text-[#2D6A4F]" />
+                          <Calendar className="w-4 h-4 text-primary" />
                           <span className="text-xs font-bold">{new Date(event.start_date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                        </div>
                        <div className="flex items-center gap-2 text-muted">
-                          <MapPin className="w-4 h-4 text-[#2D6A4F]" />
+                          <MapPin className="w-4 h-4 text-primary" />
                           <span className="text-xs font-bold truncate">{event.location}</span>
                        </div>
                     </div>
@@ -159,7 +159,7 @@ export default async function EventsHubPage({
                               +12 altri
                            </div>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center text-faint group-hover:bg-[#2D6A4F] group-hover:text-white group-hover:border-transparent transition-all">
+                        <div className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center text-faint group-hover:bg-primary group-hover:text-white group-hover:border-transparent transition-all">
                            <ArrowRight className="w-4 h-4" />
                         </div>
                     </div>
@@ -173,7 +173,7 @@ export default async function EventsHubPage({
       {/* Trust & Safety Banner */}
       <div className="max-w-6xl mx-auto px-6 mt-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 rounded-[32px] bg-surface border border-line backdrop-blur-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#2D6A4F]/5 blur-[80px] rounded-full -mr-20 -mt-20" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full -mr-20 -mt-20" />
           
           <div className="relative">
             <div className="w-10 h-10 rounded-xl bg-[#4CAF50]/10 flex items-center justify-center text-[#4CAF50] mb-4">
