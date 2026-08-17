@@ -1338,5 +1338,65 @@
     "emailDesc": "Wenn du dich nicht anmelden kannst, schreibe uns von der mit deinem Konto verknüpften Adresse. Wir bearbeiten Anfragen innerhalb von 30 Tagen.",
     "emailCta": "E-Mail an privacy@andamus.it",
     "backHome": "Zurück zur Startseite"
+  },
+  "hubs": {
+    "badge": "Flughäfen und Universitäten",
+    "title": "Reiseknotenpunkte",
+    "subtitle": "Die meistbefahrenen Strecken der Insel — zu Sardiniens Flughäfen und Universitätsstandorten.",
+    "typeAirport": "Flughafen",
+    "typeUniversity": "Universität",
+    "quickRoutes": "Schnellstrecken",
+    "upcomingDepartures": "Nächste Abfahrten",
+    "activeRides": "{count} aktiv",
+    "seats": "Plätze: {count}",
+    "noDepartures": "Derzeit keine Abfahrten geplant.",
+    "publishFirst": "Veröffentliche die erste Fahrt",
+    "hubs": {
+      "cagliari-elmas": {
+        "name": "Flughafen Cagliari Elmas",
+        "description": "Der wichtigste Flughafen Südsardiniens, mit Verbindungen auf die ganze Insel.",
+        "shortcut1": "Abfahrten ab Cagliari",
+        "shortcut2": "Ankünfte in Cagliari",
+        "shortcut3": "Ab Oristano"
+      },
+      "olbia-airport": {
+        "name": "Flughafen Olbia Costa Smeralda",
+        "description": "Das Tor zur Gallura und zum Nordosten der Insel.",
+        "shortcut1": "Abfahrten ab Olbia",
+        "shortcut2": "Ankünfte in Olbia",
+        "shortcut3": "Ab Nuoro"
+      },
+      "unica-monserrato": {
+        "name": "Universitätscampus Monserrato",
+        "description": "Der naturwissenschaftliche Campus der Universität Cagliari mit starkem Pendlerverkehr.",
+        "shortcut1": "Ab Oristano",
+        "shortcut2": "Zurück nach Sassari",
+        "shortcut3": "Aus dem Zentrum von Cagliari"
+      },
+      "uniss-piazza-italia": {
+        "name": "Universität Sassari",
+        "description": "Anlaufstelle für Studierende in ganz Nordsardinien.",
+        "shortcut1": "Nach Cagliari",
+        "shortcut2": "Ab Alghero",
+        "shortcut3": "Ab Porto Torres"
+      }
+    }
+  },
+  "eventsHub": {
+    "badge": "Veranstaltungen",
+    "title": "Große Events auf Sardinien",
+    "subtitle": "Konzerte, Festivals und Veranstaltungen. Finde Mitfahrende in deine Richtung und teilt euch die Kosten.",
+    "metaTitle": "Veranstaltungen | Andamus",
+    "metaDescription": "Finde Mitfahrgelegenheiten zu Konzerten, Festivals und großen Events auf Sardinien.",
+    "upcoming": "Nächste Termine",
+    "noEvents": "Derzeit sind keine Veranstaltungen geplant.",
+    "ridesAvailable": "{count} Fahrten",
+    "searchRide": "Fahrt suchen",
+    "trustTitle1": "Sicher unterwegs",
+    "trustDesc1": "Verifizierte Profile und Community-Bewertungen für alle Fahrenden und Mitfahrenden.",
+    "trustTitle2": "Menschen wie du",
+    "trustDesc2": "Triff Gleichgesinnte — das Event beginnt schon auf der Hinfahrt.",
+    "trustTitle3": "Geteilte Kosten",
+    "trustDesc3": "Biete freie Plätze an oder buche einen — Sprit und Maut werden fair geteilt."
   }
 }

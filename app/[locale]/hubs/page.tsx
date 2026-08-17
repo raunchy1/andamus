@@ -1,268 +1,244 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Link from "next/link";
-import { 
-  Plane, 
-  GraduationCap, 
-  ChevronRight, 
-  Calendar, 
-  Car, 
-  MapPin,
+import Image from "next/image";
+import {
+  Plane,
+  GraduationCap,
+  ChevronRight,
+  Calendar,
   Clock,
-  Sparkles
+  MapPin,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { OrbGlow } from "@/components/ui/premium/orb-glow";
-import { RevealItem } from "@/components/ui/premium/reveal";
 
 // Enable incremental static regeneration (ISR) - cache for 1 hour
 export const revalidate = 3600;
 
+type HubType = "airport" | "university";
+
 interface HubData {
   id: string;
-  name: string;
-  type: "airport" | "university";
+  type: HubType;
   city: string;
-  coords: { lat: number; lng: number };
-  description: string;
-  icon: any;
-  shortcuts: { label: string; from: string; to: string; qs?: string }[];
-  accentColor: string;
+  /** Search terms used to build the three quick-route links, in order. */
+  shortcuts: { from: string; to: string }[];
 }
+
+const HUBS: HubData[] = [
+  {
+    id: "cagliari-elmas",
+    type: "airport",
+    city: "Cagliari",
+    shortcuts: [
+      { from: "Cagliari Aeroporto", to: "Sassari" },
+      { from: "Sassari", to: "Cagliari Aeroporto" },
+      { from: "Oristano", to: "Cagliari Aeroporto" },
+    ],
+  },
+  {
+    id: "olbia-airport",
+    type: "airport",
+    city: "Olbia",
+    shortcuts: [
+      { from: "Olbia Aeroporto", to: "Sassari" },
+      { from: "Cagliari", to: "Olbia Aeroporto" },
+      { from: "Nuoro", to: "Olbia Aeroporto" },
+    ],
+  },
+  {
+    id: "unica-monserrato",
+    type: "university",
+    city: "Monserrato",
+    shortcuts: [
+      { from: "Oristano", to: "Cittadella Universitaria Monserrato" },
+      { from: "Cittadella Universitaria Monserrato", to: "Sassari" },
+      { from: "Cagliari", to: "Cittadella Universitaria Monserrato" },
+    ],
+  },
+  {
+    id: "uniss-piazza-italia",
+    type: "university",
+    city: "Sassari",
+    shortcuts: [
+      { from: "Sassari", to: "Cagliari" },
+      { from: "Alghero", to: "Sassari" },
+      { from: "Porto Torres", to: "Sassari" },
+    ],
+  },
+];
 
 export default async function HubsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "hubs" });
 
   const supabase = await createClient();
 
-  const hubs: HubData[] = [
-    {
-      id: "cagliari-elmas",
-      name: "Aeroporto Cagliari Elmas (CAG)",
-      type: "airport",
-      city: "Cagliari",
-      coords: { lat: 39.2514, lng: 9.0641 },
-      description: "Il principale snodo aereo del Sud Sardegna, collegato con tutta l'isola.",
-      icon: Plane,
-      accentColor: "from-sky-500 to-blue-600",
-      shortcuts: [
-        { label: "Partenze da CAG", from: "Cagliari Aeroporto", to: "Sassari" },
-        { label: "Arrivi a CAG", from: "Sassari", to: "Cagliari Aeroporto" },
-        { label: "Corridoio Oristano", from: "Oristano", to: "Cagliari Aeroporto" },
-      ],
-    },
-    {
-      id: "olbia-airport",
-      name: "Aeroporto Olbia Costa Smeralda (OLB)",
-      type: "airport",
-      city: "Olbia",
-      coords: { lat: 40.8986, lng: 9.5175 },
-      description: "Lo scalo di riferimento per la Gallura e il Nord-Est, frequentato da turisti e lavoratori.",
-      icon: Plane,
-      accentColor: "from-teal-400 to-emerald-600",
-      shortcuts: [
-        { label: "Partenze da OLB", from: "Olbia Aeroporto", to: "Sassari" },
-        { label: "Arrivi a OLB", from: "Cagliari", to: "Olbia Aeroporto" },
-        { label: "Gallura Express", from: "Nuoro", to: "Olbia Aeroporto" },
-      ],
-    },
-    {
-      id: "unica-monserrato",
-      name: "Cittadella Universitaria UniCa",
-      type: "university",
-      city: "Monserrato / Cagliari",
-      coords: { lat: 39.2678, lng: 9.1417 },
-      description: "Il cuore scientifico e studentesco dell'Università di Cagliari, polo ad altissima densità pendolare.",
-      icon: GraduationCap,
-      accentColor: "from-purple-500 to-indigo-600",
-      shortcuts: [
-        { label: "Studente Lunedì Mattina", from: "Oristano", to: "Cittadella Universitaria Monserrato" },
-        { label: "Rientro Venerdì", from: "Cittadella Universitaria Monserrato", to: "Sassari" },
-        { label: "Tratta Cagliari Centro", from: "Cagliari", to: "Cittadella Universitaria Monserrato" },
-      ],
-    },
-    {
-      id: "uniss-piazza-italia",
-      name: "Università degli Studi di Sassari (UniSs)",
-      type: "university",
-      city: "Sassari",
-      coords: { lat: 40.7244, lng: 8.5614 },
-      description: "Il punto d'incontro degli studenti del Nord Sardegna, con flussi attivi da Alghero e Porto Torres.",
-      icon: GraduationCap,
-      accentColor: "from-orange-500 to-rose-600",
-      shortcuts: [
-        { label: "Venerdì Studenti", from: "Sassari", to: "Cagliari" },
-        { label: "Pendolari Alghero", from: "Alghero", to: "Sassari" },
-        { label: "Tratta Porto Torres", from: "Porto Torres", to: "Sassari" },
-      ],
-    },
-  ];
-
-  // Fetch active rides counts and upcoming departures for each hub
   const hubsWithRides = await Promise.all(
-    hubs.map(async (hub) => {
-      // Find rides heading to this hub's city or matching keywords in route details
-      const { data: activeRides, error } = await supabase
-        .from("rides")
-        .select(`
-          id,
-          from_city,
-          to_city,
-          date,
-          time,
-          price,
-          seats_available,
-          profiles:driver_id (
-            name,
-            avatar_url
+    HUBS.map(async (hub) => {
+      const cityFilter = `from_city.ilike.%${hub.city}%,to_city.ilike.%${hub.city}%`;
+
+      // The preview list is capped at 3, so it cannot be used to report a
+      // total. Count separately, otherwise the badge would claim "3 active"
+      // for a hub that actually has fifty.
+      const [ridesRes, countRes] = await Promise.all([
+        supabase
+          .from("rides")
+          .select(
+            "id, from_city, to_city, date, time, price, seats_available, profiles:driver_id (name, avatar_url)"
           )
-        `)
-        .eq("status", "active")
-        .or(`from_city.ilike.%${hub.city}%,to_city.ilike.%${hub.city}%`)
-        .order("date", { ascending: true })
-        .order("time", { ascending: true })
-        .limit(3);
+          .eq("status", "active")
+          .or(cityFilter)
+          .order("date", { ascending: true })
+          .order("time", { ascending: true })
+          .limit(3),
+        supabase
+          .from("rides")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "active")
+          .or(cityFilter),
+      ]);
 
       return {
         ...hub,
-        upcomingRides: activeRides || [],
-        totalActiveCount: activeRides?.length || 0,
+        upcomingRides: ridesRes.data ?? [],
+        activeCount: countRes.count ?? 0,
       };
     })
   );
 
+  const dateFmt = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" });
+
   return (
-    <div className="relative min-h-screen bg-[#0b0b0f] text-white pt-24 pb-16 px-4 overflow-hidden">
-      {/* Decorative Orbs */}
-      <OrbGlow color="#4FB3C9" className="top-12 left-1/4 w-[400px] h-[400px] opacity-15" />
-      <OrbGlow color="#4FB3C9" className="bottom-12 right-1/4 w-[500px] h-[500px] opacity-10" />
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+      <header className="mx-auto max-w-2xl text-center">
+        <p className="inline-flex items-center gap-2 rounded-full bg-accent-dim px-3 py-1 text-xs font-semibold text-accent">
+          <MapPin className="h-3.5 w-3.5" />
+          {t("badge")}
+        </p>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-fg sm:text-4xl">
+          {t("title")}
+        </h1>
+        <p className="mt-3 leading-relaxed text-muted">{t("subtitle")}</p>
+      </header>
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Header section */}
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#4FB3C9]/30 bg-[#4FB3C9]/10 text-[#4FB3C9] text-xs font-semibold backdrop-blur-md shadow-lg shadow-[#4FB3C9]/5">
-            <Sparkles className="w-3.5 h-3.5" />
-            Nodi di Viaggio Popolari
-          </div>
-          <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-            Andamus Presets Hubs
-          </h1>
-          <p className="text-white/60 font-body-lg">
-            Rotte ad alta densità per studenti universitari e viaggiatori aeroportuali in tutta la Sardegna.
-          </p>
-        </div>
+      <div className="mt-12 grid gap-6 md:grid-cols-2">
+        {hubsWithRides.map((hub) => {
+          const Icon = hub.type === "airport" ? Plane : GraduationCap;
+          const base = `hubs.${hub.id}`;
 
-        {/* Hubs Cards Grid */}
-        <div className="grid gap-8 md:grid-cols-2">
-          {hubsWithRides.map((hub, idx) => {
-            const Icon = hub.icon;
-            return (
-              <div
-                key={hub.id}
-                className="group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md shadow-2xl transition duration-300 hover:border-white/[0.12] hover:bg-white/[0.04]"
-              >
-                {/* Visual gradient backdrop overlay */}
-                <div className={`absolute top-0 right-0 w-[150px] h-[150px] bg-gradient-to-br ${hub.accentColor} opacity-5 blur-3xl group-hover:opacity-10 transition duration-500`} />
-
-                <div className="p-6 sm:p-8 space-y-6">
-                  {/* Top Header */}
-                  <div className="flex items-start gap-4">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${hub.accentColor} text-white shadow-lg`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4FB3C9]">
-                        {hub.type === "airport" ? "Hub Aeroportuale" : "Snodo Universitario"}
-                      </div>
-                      <h3 className="text-xl font-heading font-bold text-white group-hover:text-[#4FB3C9] transition">
-                        {hub.name}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-white/50 leading-relaxed font-body-sm">
-                    {hub.description}
+          return (
+            <section
+              key={hub.id}
+              className="rounded-3xl border border-line bg-surface p-6 transition-colors hover:border-border-strong"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent-dim text-accent">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
+                    {hub.type === "airport" ? t("typeAirport") : t("typeUniversity")}
                   </p>
-
-                  {/* Predefined Quick Search Shortcuts */}
-                  <div className="space-y-3">
-                    <div className="text-xs font-bold uppercase tracking-widest text-white/30">
-                      Rotte Rapide ad Alta Frequenza
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {hub.shortcuts.map((shortcut, sIdx) => (
-                        <Link
-                          key={sIdx}
-                          href={`/${locale}/cerca?from=${encodeURIComponent(shortcut.from)}&to=${encodeURIComponent(shortcut.to)}`}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.03] text-xs text-white/80 hover:bg-white/[0.08] hover:border-white/[0.1] hover:text-[#4FB3C9] transition"
-                        >
-                          {shortcut.label}
-                          <ChevronRight className="w-3 h-3 text-[#4FB3C9]/80" />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Active Departures list */}
-                  <div className="pt-4 border-t border-white/[0.04] space-y-4">
-                    <div className="flex justify-between items-center">
-                      <div className="text-xs font-bold uppercase tracking-widest text-white/30">
-                        Prossime Partenze Attive
-                      </div>
-                      <span className="text-[10px] font-bold bg-[#4FB3C9]/10 text-[#4FB3C9] px-2 py-0.5 rounded-full border border-[#4FB3C9]/20">
-                        {hub.totalActiveCount} passaggi attivi
-                      </span>
-                    </div>
-
-                    {hub.upcomingRides.length > 0 ? (
-                      <div className="flex flex-col gap-2">
-                        {hub.upcomingRides.map((ride: any) => (
-                          <Link
-                            key={ride.id}
-                            href={`/${locale}/corsa/${ride.id}`}
-                            className="flex items-center justify-between p-3 rounded-2xl border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.05] transition text-xs text-white"
-                          >
-                            <div className="flex items-center gap-3">
-                              {ride.profiles?.avatar_url ? (
-                                <img src={ride.profiles.avatar_url} alt="" className="w-7 h-7 rounded-full border border-white/[0.08] object-cover" />
-                              ) : (
-                                <div className="w-7 h-7 rounded-full bg-white/[0.06] text-white/50 flex items-center justify-center font-bold">
-                                  {ride.profiles?.name?.[0] || "?"}
-                                </div>
-                              )}
-                              <div>
-                                <div className="font-semibold text-white/90 truncate max-w-[150px]">
-                                  {ride.from_city} ➔ {ride.to_city}
-                                </div>
-                                <div className="flex items-center gap-1.5 text-[10px] text-white/40 mt-0.5">
-                                  <Calendar className="w-3 h-3" />
-                                  <span>{new Date(ride.date).toLocaleDateString(locale === "it" ? "it-IT" : "en-US", { day: "numeric", month: "short" })}</span>
-                                  <Clock className="w-3 h-3 ml-1" />
-                                  <span>{ride.time.slice(0, 5)}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="font-bold text-[#4FB3C9]">€{ride.price}</span>
-                              <div className="text-[9px] text-white/40">Posti: {ride.seats_available}</div>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-6 px-4 rounded-2xl border border-dashed border-white/[0.04] bg-white/[0.01] text-xs text-white/40">
-                        Nessuna partenza diretta registrata per le prossime ore.
-                        <Link href={`/${locale}/offri?from=${encodeURIComponent(hub.city)}`} className="block mt-2 font-semibold text-[#4FB3C9] hover:underline">
-                          Pubblica il primo tragitto!
-                        </Link>
-                      </div>
-                    )}
-                  </div>
+                  <h2 className="mt-1 text-lg font-semibold leading-snug text-fg">
+                    {t(`${base}.name`)}
+                  </h2>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              <p className="mt-4 text-sm leading-relaxed text-muted">
+                {t(`${base}.description`)}
+              </p>
+
+              <div className="mt-6">
+                <p className="text-xs font-semibold uppercase tracking-wider text-faint">
+                  {t("quickRoutes")}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {hub.shortcuts.map((s, i) => (
+                    <Link
+                      key={`${s.from}-${s.to}`}
+                      href={`/${locale}/cerca?from=${encodeURIComponent(s.from)}&to=${encodeURIComponent(s.to)}`}
+                      className="inline-flex items-center gap-1 rounded-xl border border-line bg-surface-2 px-3 py-1.5 text-xs text-fg transition-colors hover:border-accent/40 hover:text-accent"
+                    >
+                      {t(`${base}.shortcut${i + 1}`)}
+                      <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6 border-t border-line pt-5">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-faint">
+                    {t("upcomingDepartures")}
+                  </p>
+                  {hub.activeCount > 0 && (
+                    <span className="rounded-full bg-accent-dim px-2 py-0.5 text-[10px] font-bold text-accent">
+                      {t("activeRides", { count: hub.activeCount })}
+                    </span>
+                  )}
+                </div>
+
+                {hub.upcomingRides.length > 0 ? (
+                  <ul className="mt-3 flex flex-col gap-2">
+                    {hub.upcomingRides.map((ride: any) => (
+                      <li key={ride.id}>
+                        <Link
+                          href={`/${locale}/corsa/${ride.id}`}
+                          className="flex items-center justify-between gap-3 rounded-2xl border border-line px-3 py-2.5 transition-colors hover:bg-surface-2"
+                        >
+                          <div className="flex min-w-0 items-center gap-3">
+                            {ride.profiles?.avatar_url ? (
+                              <Image
+                                src={ride.profiles.avatar_url}
+                                alt=""
+                                width={28}
+                                height={28}
+                                className="h-7 w-7 shrink-0 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-bold text-muted">
+                                {ride.profiles?.name?.[0] ?? "?"}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-fg">
+                                {ride.from_city} → {ride.to_city}
+                              </p>
+                              <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted">
+                                <Calendar className="h-3 w-3" />
+                                {dateFmt.format(new Date(ride.date))}
+                                <Clock className="ml-1 h-3 w-3" />
+                                {ride.time?.slice(0, 5)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className="text-sm font-semibold text-accent">€{ride.price}</p>
+                            <p className="text-[10px] text-muted">
+                              {t("seats", { count: ride.seats_available })}
+                            </p>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="mt-3 rounded-2xl border border-dashed border-line px-4 py-6 text-center">
+                    <p className="text-xs text-muted">{t("noDepartures")}</p>
+                    <Link
+                      href={`/${locale}/offri?from=${encodeURIComponent(hub.city)}`}
+                      className="mt-2 inline-block text-xs font-semibold text-accent hover:underline"
+                    >
+                      {t("publishFirst")}
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );

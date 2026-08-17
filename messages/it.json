@@ -1338,5 +1338,65 @@
     "emailDesc": "Se non riesci ad accedere, scrivici dall’indirizzo email associato al tuo account. Elaboriamo la richiesta entro 30 giorni.",
     "emailCta": "Scrivi a privacy@andamus.it",
     "backHome": "Torna alla home"
+  },
+  "hubs": {
+    "badge": "Aeroporti e università",
+    "title": "Snodi di viaggio",
+    "subtitle": "Le tratte più battute dell’isola, verso gli aeroporti e i poli universitari della Sardegna.",
+    "typeAirport": "Aeroporto",
+    "typeUniversity": "Università",
+    "quickRoutes": "Tratte rapide",
+    "upcomingDepartures": "Prossime partenze",
+    "activeRides": "{count} attive",
+    "seats": "Posti: {count}",
+    "noDepartures": "Nessuna partenza in programma al momento.",
+    "publishFirst": "Pubblica il primo passaggio",
+    "hubs": {
+      "cagliari-elmas": {
+        "name": "Aeroporto di Cagliari Elmas",
+        "description": "Il principale scalo del Sud Sardegna, collegato con tutta l’isola.",
+        "shortcut1": "Partenze da Cagliari",
+        "shortcut2": "Arrivi a Cagliari",
+        "shortcut3": "Da Oristano"
+      },
+      "olbia-airport": {
+        "name": "Aeroporto di Olbia Costa Smeralda",
+        "description": "Lo scalo di riferimento per la Gallura e il Nord-Est dell’isola.",
+        "shortcut1": "Partenze da Olbia",
+        "shortcut2": "Arrivi a Olbia",
+        "shortcut3": "Da Nuoro"
+      },
+      "unica-monserrato": {
+        "name": "Cittadella Universitaria di Monserrato",
+        "description": "Il polo scientifico dell’Università di Cagliari, con forte pendolarismo studentesco.",
+        "shortcut1": "Da Oristano",
+        "shortcut2": "Rientro verso Sassari",
+        "shortcut3": "Da Cagliari centro"
+      },
+      "uniss-piazza-italia": {
+        "name": "Università di Sassari",
+        "description": "Punto di riferimento per gli studenti del Nord Sardegna.",
+        "shortcut1": "Verso Cagliari",
+        "shortcut2": "Da Alghero",
+        "shortcut3": "Da Porto Torres"
+      }
+    }
+  },
+  "eventsHub": {
+    "badge": "Eventi",
+    "title": "Grandi eventi in Sardegna",
+    "subtitle": "Concerti, festival e manifestazioni. Trova chi va nella tua stessa direzione e dividete le spese del viaggio.",
+    "metaTitle": "Eventi | Andamus",
+    "metaDescription": "Trova passaggi per concerti, festival e grandi eventi in Sardegna.",
+    "upcoming": "Prossime date",
+    "noEvents": "Nessun evento in programma al momento.",
+    "ridesAvailable": "{count} passaggi",
+    "searchRide": "Cerca un passaggio",
+    "trustTitle1": "Viaggia sicuro",
+    "trustDesc1": "Profili verificati e valutazioni della community per ogni conducente e passeggero.",
+    "trustTitle2": "Persone come te",
+    "trustDesc2": "Incontra chi condivide i tuoi interessi e inizia l’evento già dal viaggio.",
+    "trustTitle3": "Spese divise",
+    "trustDesc3": "Offri i posti liberi in auto o prenota il tuo posto, dividendo carburante e pedaggi."
   }
 }

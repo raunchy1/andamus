@@ -1338,5 +1338,65 @@
     "emailDesc": "If you cannot sign in, email us from the address linked to your account. We process requests within 30 days.",
     "emailCta": "Email privacy@andamus.it",
     "backHome": "Back to home"
+  },
+  "hubs": {
+    "badge": "Airports and universities",
+    "title": "Travel hubs",
+    "subtitle": "The island’s busiest routes, connecting Sardinia’s airports and university campuses.",
+    "typeAirport": "Airport",
+    "typeUniversity": "University",
+    "quickRoutes": "Quick routes",
+    "upcomingDepartures": "Upcoming departures",
+    "activeRides": "{count} active",
+    "seats": "Seats: {count}",
+    "noDepartures": "No departures scheduled right now.",
+    "publishFirst": "Publish the first ride",
+    "hubs": {
+      "cagliari-elmas": {
+        "name": "Cagliari Elmas Airport",
+        "description": "Southern Sardinia’s main airport, connected to the whole island.",
+        "shortcut1": "Departures from Cagliari",
+        "shortcut2": "Arrivals at Cagliari",
+        "shortcut3": "From Oristano"
+      },
+      "olbia-airport": {
+        "name": "Olbia Costa Smeralda Airport",
+        "description": "The gateway to Gallura and the island’s north-east.",
+        "shortcut1": "Departures from Olbia",
+        "shortcut2": "Arrivals at Olbia",
+        "shortcut3": "From Nuoro"
+      },
+      "unica-monserrato": {
+        "name": "Monserrato University Campus",
+        "description": "The science campus of the University of Cagliari, with heavy student commuting.",
+        "shortcut1": "From Oristano",
+        "shortcut2": "Back to Sassari",
+        "shortcut3": "From central Cagliari"
+      },
+      "uniss-piazza-italia": {
+        "name": "University of Sassari",
+        "description": "The hub for students across northern Sardinia.",
+        "shortcut1": "To Cagliari",
+        "shortcut2": "From Alghero",
+        "shortcut3": "From Porto Torres"
+      }
+    }
+  },
+  "eventsHub": {
+    "badge": "Events",
+    "title": "Major events in Sardinia",
+    "subtitle": "Concerts, festivals and gatherings. Find someone heading the same way and share the cost of the trip.",
+    "metaTitle": "Events | Andamus",
+    "metaDescription": "Find rides to concerts, festivals and major events across Sardinia.",
+    "upcoming": "Upcoming dates",
+    "noEvents": "No events scheduled right now.",
+    "ridesAvailable": "{count} rides",
+    "searchRide": "Find a ride",
+    "trustTitle1": "Travel safely",
+    "trustDesc1": "Verified profiles and community ratings for every driver and passenger.",
+    "trustTitle2": "People like you",
+    "trustDesc2": "Meet others who share your interests and start the event on the way there.",
+    "trustTitle3": "Shared costs",
+    "trustDesc3": "Offer your empty seats or book one, splitting fuel and tolls fairly."
   }
 }

@@ -1,15 +1,19 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Sparkles, Calendar, MapPin, ArrowRight, Music, Users, Shield } from "lucide-react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Calendar, MapPin, ArrowRight, Music, Users, Shield, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { GradientText } from "@/components/ui/premium/gradient-text";
-import { OrbGlow } from "@/components/ui/premium/orb-glow";
 
-export const metadata: Metadata = {
-  title: "Hub Eventi | Andamus",
-  description: "Trova passaggi per i concerti, festival e grandi eventi in Sardegna.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "eventsHub" });
+  return { title: t("metaTitle"), description: t("metaDescription") };
+}
 
 interface SardiniaEvent {
   id: string;
@@ -29,178 +33,142 @@ export default async function EventsHubPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "eventsHub" });
+
   const supabase = await createClient();
 
-  // 1. Fetch upcoming major events in Sardinia
   const { data: events, error } = await supabase
     .from("events")
     .select("*")
     .order("start_date", { ascending: true });
 
-  const parsedEvents: SardiniaEvent[] = events || [];
-
   if (error) {
     console.error("[events-hub] Error fetching events:", error.message);
   }
 
-  // 2. Fetch associated ride counts for each event to show real-time marketplace signals
+  const parsedEvents: SardiniaEvent[] = events ?? [];
+
+  // Real ride counts per event — the badge only renders when this is > 0.
   if (parsedEvents.length > 0) {
     await Promise.all(
       parsedEvents.map(async (event) => {
         const { count } = await supabase
           .from("rides")
-          .select("*", { count: "exact", head: true })
+          .select("id", { count: "exact", head: true })
           .eq("event_id", event.id)
           .eq("status", "active");
-        
-        event.ride_count = count || 0;
+
+        event.ride_count = count ?? 0;
       })
     );
   }
 
-  return (
-    <div className="min-h-screen bg-bg text-fg pb-20">
-      {/* Hero Section with Premium Effects */}
-      <div className="relative pt-12 pb-16 px-6 overflow-hidden">
-        <OrbGlow className="-top-24 -right-24" color="#2D6A4F" size={400} opacity={0.25} />
-        <OrbGlow className="top-1/2 -left-20" color="#4285F4" size={300} opacity={0.15} />
-        
-        <div className="max-w-4xl mx-auto relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-line mb-6 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Community Hub</span>
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-6 leading-[0.9]">
-            Grandi Eventi <br />
-            <GradientText>Sardegna 2024</GradientText>
-          </h1>
-          
-          <p className="text-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            Non viaggiare da solo. Unisciti ad altri fan, dividi le spese del viaggio e arriva a destinazione in sicurezza. Il carpooling perfetto per i tuoi eventi preferiti.
-          </p>
-        </div>
-      </div>
+  const dateFmt = new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-      {/* Events Grid */}
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex items-center justify-between mb-10 border-b border-line pb-6">
-          <h2 className="text-sm font-black uppercase tracking-[0.3em] text-faint">Prossime Date</h2>
-          <div className="flex gap-2">
-             <span className="px-3 py-1 rounded-lg bg-surface text-[10px] font-bold text-muted">Tutti</span>
-             <span className="px-3 py-1 rounded-lg hover:bg-sand-deep text-[10px] font-bold text-faint transition-colors cursor-pointer">Concerti</span>
-             <span className="px-3 py-1 rounded-lg hover:bg-sand-deep text-[10px] font-bold text-faint transition-colors cursor-pointer">Festival</span>
-          </div>
-        </div>
+  const trustPoints = [
+    { Icon: Shield, title: t("trustTitle1"), desc: t("trustDesc1") },
+    { Icon: Users, title: t("trustTitle2"), desc: t("trustDesc2") },
+    { Icon: Music, title: t("trustTitle3"), desc: t("trustDesc3") },
+  ];
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <header className="mx-auto max-w-2xl text-center">
+        <p className="inline-flex items-center gap-2 rounded-full bg-accent-dim px-3 py-1 text-xs font-semibold text-accent">
+          <Sparkles className="h-3.5 w-3.5" />
+          {t("badge")}
+        </p>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-fg sm:text-4xl">
+          {t("title")}
+        </h1>
+        <p className="mt-3 leading-relaxed text-muted">{t("subtitle")}</p>
+      </header>
+
+      <div className="mt-12">
+        <h2 className="border-b border-line pb-4 text-xs font-semibold uppercase tracking-wider text-faint">
+          {t("upcoming")}
+        </h2>
 
         {parsedEvents.length === 0 ? (
-          <div className="py-20 text-center bg-surface border border-dashed border-line rounded-3xl">
-            <Calendar className="w-12 h-12 text-faint mx-auto mb-4" />
-            <p className="text-faint font-medium">Nessun evento programmato al momento.</p>
+          <div className="mt-8 rounded-3xl border border-dashed border-line py-16 text-center">
+            <Calendar className="mx-auto mb-3 h-10 w-10 text-faint" />
+            <p className="text-sm text-muted">{t("noEvents")}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {parsedEvents.map((event) => (
-              <Link 
+              <Link
                 key={event.id}
                 href={`/${locale}/cerca?event=${event.slug}`}
-                className="group relative flex flex-col rounded-3xl overflow-hidden bg-[#121212] border border-line hover:border-primary/30 transition-all duration-500 shadow-2xl hover:shadow-primary/5"
-                style={{ 
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.03)"
-                }}
+                className="group flex flex-col overflow-hidden rounded-3xl border border-line bg-surface transition-colors hover:border-accent/40"
               >
-                  {/* Event visual background card */}
-                  <div className="relative aspect-[16/10] overflow-hidden w-full bg-neutral-900 border-b border-line">
-                    <Image
-                      src={event.image_url}
-                      alt={event.name}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/30 to-transparent" />
-                    
-                    {/* Badge Indicator */}
-                    <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/90 backdrop-blur-md text-[9px] font-extrabold tracking-wide uppercase text-white shadow-lg">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                      {event.ride_count && event.ride_count > 0 ? `${event.ride_count} Passaggi` : "Cerca Passaggio"}
-                    </div>
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-2">
+                  <Image
+                    src={event.image_url}
+                    alt={event.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                  {event.ride_count && event.ride_count > 0 ? (
+                    <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-accent-fg">
+                      {t("ridesAvailable", { count: event.ride_count })}
+                    </span>
+                  ) : null}
+                </div>
 
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-primary mb-1 block">{event.category}</span>
-                      <h3 className="text-xl font-black text-white leading-tight uppercase tracking-tight group-hover:text-primary transition-colors">{event.name}</h3>
-                    </div>
-                  </div>
-
-                  <div className="p-5 flex flex-col gap-4">
-                    <div className="flex flex-col gap-2">
-                       <div className="flex items-center gap-2 text-muted">
-                          <Calendar className="w-4 h-4 text-primary" />
-                          <span className="text-xs font-bold">{new Date(event.start_date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                       </div>
-                       <div className="flex items-center gap-2 text-muted">
-                          <MapPin className="w-4 h-4 text-primary" />
-                          <span className="text-xs font-bold truncate">{event.location}</span>
-                       </div>
-                    </div>
-
-                    <p className="text-xs text-faint line-clamp-2 leading-relaxed">
-                      {event.description}
+                <div className="flex flex-1 flex-col gap-3 p-5">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                      {event.category}
                     </p>
-
-                    <div className="pt-2 flex items-center justify-between mt-auto">
-                        <div className="flex -space-x-2">
-                           {[1,2,3].map(i => (
-                             <div key={i} className="w-6 h-6 rounded-full border-2 border-[#121212] bg-neutral-800 flex items-center justify-center">
-                                <Users className="w-3 h-3 text-faint" />
-                             </div>
-                           ))}
-                           <div className="pl-4 text-[10px] font-bold text-faint flex items-center italic">
-                              +12 altri
-                           </div>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center text-faint group-hover:bg-primary group-hover:text-white group-hover:border-transparent transition-all">
-                           <ArrowRight className="w-4 h-4" />
-                        </div>
-                    </div>
+                    <h3 className="mt-1 text-base font-semibold leading-snug text-fg">
+                      {event.name}
+                    </h3>
                   </div>
+
+                  <div className="flex flex-col gap-1.5 text-xs text-muted">
+                    <span className="flex items-center gap-2">
+                      <Calendar className="h-3.5 w-3.5 text-accent" />
+                      {dateFmt.format(new Date(event.start_date))}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-accent" />
+                      <span className="truncate">{event.location}</span>
+                    </span>
+                  </div>
+
+                  <p className="line-clamp-2 text-xs leading-relaxed text-faint">
+                    {event.description}
+                  </p>
+
+                  <span className="mt-auto flex items-center gap-1.5 pt-2 text-xs font-semibold text-accent">
+                    {t("searchRide")}
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
         )}
       </div>
 
-      {/* Trust & Safety Banner */}
-      <div className="max-w-6xl mx-auto px-6 mt-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 rounded-[32px] bg-surface border border-line backdrop-blur-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full -mr-20 -mt-20" />
-          
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-[#4CAF50]/10 flex items-center justify-center text-[#4CAF50] mb-4">
-              <Shield className="w-6 h-6" />
+      <section className="mt-20 grid gap-8 rounded-3xl border border-line bg-surface p-8 sm:grid-cols-3">
+        {trustPoints.map(({ Icon, title, desc }) => (
+          <div key={title}>
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent-dim text-accent">
+              <Icon className="h-5 w-5" />
             </div>
-            <h4 className="text-sm font-black uppercase tracking-wider text-ink mb-2">Viaggia Sicuro</h4>
-            <p className="text-faint text-xs mt-1 leading-relaxed">Profili verificati e feedback della community per ogni autista e passeggero.</p>
+            <h3 className="text-sm font-semibold text-fg">{title}</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted">{desc}</p>
           </div>
-
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-[#2196F3]/10 flex items-center justify-center text-[#2196F3] mb-4">
-              <Users className="w-6 h-6" />
-            </div>
-            <h4 className="text-sm font-black uppercase tracking-wider text-ink mb-2">Community Reale</h4>
-            <p className="text-faint text-xs mt-1 leading-relaxed">Incontra persone con i tuoi stessi interessi e vivi l&apos;evento già dal viaggio.</p>
-          </div>
-
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-[#FFC107]/10 flex items-center justify-center text-[#FFC107] mb-4">
-              <Music className="w-6 h-6" />
-            </div>
-            <h4 className="text-sm font-black uppercase tracking-wider text-ink mb-2">Risparmio Equo</h4>
-            <p className="text-faint text-xs mt-1 leading-relaxed">Metti a disposizione i posti vuoti in auto o prenota il tuo passaggio a prezzi equi, dividendo pedaggi e carburante.</p>
-          </div>
-        </div>
-
-      </div>
+        ))}
+      </section>
     </div>
   );
 }
