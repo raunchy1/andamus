@@ -8,7 +8,6 @@ import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { SafetyButton } from "@/components/SafetyButton";
 import { VersionBadge } from "@/components/VersionBadge";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { LangSetter } from "@/components/LangSetter";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
@@ -158,7 +157,6 @@ export default async function LocaleLayout({
       <NextIntlClientProvider messages={messages} locale={locale}>
         <PostHogProvider>
           <LangSetter locale={locale} />
-          <ThemeProvider>
             <Suspense fallback={null}>
               <AnalyticsTracker />
             </Suspense>
@@ -172,7 +170,6 @@ export default async function LocaleLayout({
             <VersionBadge />
             <Sonner richColors position="top-center" />
             <CookieConsent />
-          </ThemeProvider>
         </PostHogProvider>
       </NextIntlClientProvider>
       {process.env.NEXT_PUBLIC_GA_ID && (

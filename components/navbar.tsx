@@ -20,7 +20,6 @@ import {
   Siren
 } from "lucide-react";
 
-import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
 import { Button } from "@/components/ui/button";
@@ -187,9 +186,6 @@ export function Navbar() {
             <LanguageSelector isHome={isHome} />
           </Suspense>
 
-          {/* Theme Toggle — always visible */}
-          <ThemeToggle isHome={isHome} />
-
           {!loading && (
             <>
               {user ? (
@@ -325,7 +321,6 @@ export function Navbar() {
                 <Suspense fallback={<div className="w-10 h-10 rounded-full" />}>
                   <LanguageSelector isHome={isHome} />
                 </Suspense>
-                <ThemeToggle isHome={isHome} />
               </div>
             </div>
             
