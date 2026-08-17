@@ -15,7 +15,15 @@ const PRICE_MAP: Record<string, string | undefined> = {
   driver: process.env.STRIPE_DRIVER_PRICE_ID,
 };
 
+/** Mirrors the gate in app/[locale]/premium/layout.tsx — see the note there. */
+const PREMIUM_ENABLED = process.env.NEXT_PUBLIC_PREMIUM_ENABLED === "true";
+
 export async function POST(req: NextRequest) {
+  // Gating the page alone would leave this endpoint callable directly.
+  if (!PREMIUM_ENABLED) {
+    return NextResponse.json({ error: "Not available" }, { status: 404 });
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
