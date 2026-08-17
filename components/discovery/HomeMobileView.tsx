@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -115,6 +116,9 @@ export function HomeMobileView({
   router,
   suggestion,
 }: HomeMobileViewProps) {
+  // Pluralised seat labels resolve here rather than via props: ICU plurals
+  // need the live count, which is client state.
+  const tHome = useTranslations("home")
   const today = new Date().toISOString().split("T")[0]
   const [date, setDate] = useState(today)
   const [seats, setSeats] = useState(1)
@@ -366,11 +370,11 @@ export function HomeMobileView({
                 border: 0,
                 cursor: "pointer",
               }}
-              aria-label="Cambia numero di posti"
+              aria-label={tHome("changeSeats")}
             >
               <Users size={14} strokeWidth={1.7} style={{ color: "var(--muted)", flexShrink: 0 }} />
               <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink)", whiteSpace: "nowrap" }}>
-                {seats} {seats === 1 ? "posto" : "posti"}
+                {tHome("seatsCount", { count: seats })}
               </span>
             </button>
           </div>

@@ -86,7 +86,9 @@
     "greetingEvening": "Good evening",
     "featuredToday": "Featured today",
     "withDriver": "with {name}",
-    "driverFallback": "Driver"
+    "driverFallback": "Driver",
+    "seatsCount": "{count, plural, one {# seat} other {# seats}}",
+    "changeSeats": "Change number of seats"
   },
   "search": {
     "title": "Find a ride",
@@ -1428,5 +1430,16 @@
     "trustScoreLabel": "Trust score",
     "reviewCount": "{count, plural, one {# review} other {# reviews}}",
     "rideCount": "{count, plural, one {# ride} other {# rides}}"
+  },
+  "launchBanner": {
+    "live": "Andamus is now live!",
+    "tagline": "Sardinian carpooling is here.",
+    "whatsNew": "What’s new in v1.0",
+    "dismiss": "Dismiss banner",
+    "feature1": "SOS button for emergencies",
+    "feature2": "Built-in chat between users",
+    "feature3": "Levels and points system",
+    "feature4": "Real-time push notifications",
+    "feature0": "{count} Sardinian towns connected"
   }
 }

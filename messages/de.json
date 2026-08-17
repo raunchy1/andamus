@@ -86,7 +86,9 @@
     "greetingEvening": "Guten Abend",
     "featuredToday": "Heute hervorgehoben",
     "withDriver": "mit {name}",
-    "driverFallback": "Fahrer"
+    "driverFallback": "Fahrer",
+    "seatsCount": "{count, plural, one {# Platz} other {# Plätze}}",
+    "changeSeats": "Anzahl der Plätze ändern"
   },
   "search": {
     "title": "Mitfahrgelegenheit suchen",
@@ -1428,5 +1430,16 @@
     "trustScoreLabel": "Vertrauenswert",
     "reviewCount": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
     "rideCount": "{count, plural, one {# Fahrt} other {# Fahrten}}"
+  },
+  "launchBanner": {
+    "live": "Andamus ist jetzt live!",
+    "tagline": "Sardische Fahrgemeinschaften sind da.",
+    "whatsNew": "Neu in v1.0",
+    "dismiss": "Banner schließen",
+    "feature1": "SOS-Taste für Notfälle",
+    "feature2": "Integrierter Chat zwischen Nutzern",
+    "feature3": "Level- und Punktesystem",
+    "feature4": "Push-Benachrichtigungen in Echtzeit",
+    "feature0": "{count} sardische Orte verbunden"
   }
 }

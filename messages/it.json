@@ -86,7 +86,9 @@
     "greetingEvening": "Buonasera",
     "featuredToday": "In evidenza oggi",
     "withDriver": "con {name}",
-    "driverFallback": "Conducente"
+    "driverFallback": "Conducente",
+    "seatsCount": "{count, plural, one {# posto} other {# posti}}",
+    "changeSeats": "Cambia numero di posti"
   },
   "search": {
     "title": "Cerca un passaggio",
@@ -1428,5 +1430,16 @@
     "trustScoreLabel": "Affidabilità",
     "reviewCount": "{count, plural, one {# recensione} other {# recensioni}}",
     "rideCount": "{count, plural, one {# corsa} other {# corse}}"
+  },
+  "launchBanner": {
+    "live": "Andamus è ora live!",
+    "tagline": "Il carpooling dei sardi è qui.",
+    "whatsNew": "Novità v1.0",
+    "dismiss": "Chiudi banner",
+    "feature1": "Pulsante SOS per emergenze",
+    "feature2": "Chat integrata tra utenti",
+    "feature3": "Sistema livelli e punti",
+    "feature4": "Notifiche push in tempo reale",
+    "feature0": "{count} città sarde connesse"
   }
 }
