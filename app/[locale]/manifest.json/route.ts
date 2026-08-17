@@ -1,10 +1,16 @@
 import type { MetadataRoute } from "next";
 
-export default async function manifest({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<MetadataRoute.Manifest> {
+/**
+ * Served as a route handler rather than Next's `manifest.ts` convention.
+ * That convention is only registered at the root of app/, so the previous
+ * app/[locale]/manifest.ts produced no route at all and every locale's
+ * <link rel="manifest" href="/{locale}/manifest.json"> returned 404 — the
+ * app had no reachable manifest and could not be installed as a PWA.
+ */
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ locale: string }> }
+) {
   const { locale } = await params;
 
   const names: Record<string, { name: string; short_name: string; description: string }> = {
@@ -51,7 +57,7 @@ export default async function manifest({
     },
   ];
 
-  return {
+  const manifest: MetadataRoute.Manifest = {
     name: n.name,
     short_name: n.short_name,
     description: n.description,
@@ -85,4 +91,11 @@ export default async function manifest({
     prefer_related_applications: false,
     id: "andamus-carpooling",
   };
+
+  return Response.json(manifest, {
+    headers: {
+      "Content-Type": "application/manifest+json",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
 }

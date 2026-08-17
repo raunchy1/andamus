@@ -1162,7 +1162,8 @@
     "emergencyDescription": "Se sei in pericolo, chiama subito il 112 o condividi la tua posizione.",
     "cancel": "Annulla",
     "reportProblem": "Segnala un problema",
-    "reportDescription": "Aiutaci a migliorare Andamus"
+    "reportDescription": "Aiutaci a migliorare Andamus",
+    "shareLocationText": "La mia posizione attuale: {url}"
   },
   "footer": {
     "searchRides": "Cerca passaggi",

@@ -1162,7 +1162,8 @@
     "emergencyDescription": "If you're in danger, call 112 right away or share your location.",
     "cancel": "Cancel",
     "reportProblem": "Report a problem",
-    "reportDescription": "Help us improve Andamus"
+    "reportDescription": "Help us improve Andamus",
+    "shareLocationText": "My current location: {url}"
   },
   "footer": {
     "searchRides": "Find rides",

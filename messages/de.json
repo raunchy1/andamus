@@ -1162,7 +1162,8 @@
     "emergencyDescription": "Wenn du in Gefahr bist, rufe sofort die 112 an oder teile deinen Standort.",
     "cancel": "Abbrechen",
     "reportProblem": "Problem melden",
-    "reportDescription": "Hilf uns, Andamus zu verbessern"
+    "reportDescription": "Hilf uns, Andamus zu verbessern",
+    "shareLocationText": "Mein aktueller Standort: {url}"
   },
   "footer": {
     "searchRides": "Mitfahrgelegenheiten suchen",
