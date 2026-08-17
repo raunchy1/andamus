@@ -1,4 +1,4 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { 
   Plane, 
@@ -32,7 +32,6 @@ interface HubData {
 export default async function HubsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "cerca" });
 
   const supabase = await createClient();
 

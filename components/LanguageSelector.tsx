@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Check } from "lucide-react";
@@ -11,13 +11,16 @@ interface LanguageSelectorProps {
   isHome?: boolean;
 }
 
-const languages = [
-  { code: "it", name: "Italiano", flag: "🇮🇹" },
-  { code: "en", name: "English", flag: "🇬🇧" },
-];
+const LANGUAGE_CODES = ["it", "en", "de"] as const;
+type LanguageCode = (typeof LANGUAGE_CODES)[number];
 
-export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
+function isLanguageCode(value: string): value is LanguageCode {
+  return (LANGUAGE_CODES as readonly string[]).includes(value);
+}
+
+export function LanguageSelector({ isHome: _isHome = false }: LanguageSelectorProps) {
   const locale = useLocale();
+  const t = useTranslations("language");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -28,27 +31,29 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
   );
 
   const handleLanguageChange = (newLocale: string) => {
-    // Store preference in localStorage
     localStorage.setItem("preferred-language", newLocale);
     setIsOpen(false);
   };
 
-  // Get the path without locale prefix
   const pathnameWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
 
-  // Preserve query parameters when switching language
   const queryString = searchParams.toString();
   const getHref = (newLocale: string) => {
     const base = `/${newLocale}${pathnameWithoutLocale}`;
     return queryString ? `${base}?${queryString}` : base;
   };
 
-  const currentLanguage = languages.find((l) => l.code === locale) || languages[0];
+  const currentCode: LanguageCode = isLanguageCode(locale) ? locale : "it";
+  const currentLabel = t(currentCode);
 
   if (!mounted) {
     return (
-      <button className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors">
-        <span className="text-lg">🇮🇹</span>
+      <button
+        type="button"
+        className="inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm text-fg"
+        aria-label={t("select")}
+      >
+        <span>{t("it")}</span>
       </button>
     );
   }
@@ -56,11 +61,14 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-        title="Cambia lingua / Change language / Sprache ändern"
+        className="inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm text-fg transition-colors hover:bg-sand-deep hover:text-ink"
+        aria-label={t("select")}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
       >
-        <span className="text-lg">{currentLanguage.flag}</span>
+        <span>{currentLabel}</span>
       </button>
 
       <AnimatePresence>
@@ -78,22 +86,23 @@ export function LanguageSelector({ isHome = false }: LanguageSelectorProps) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-white/10 bg-elevated shadow-lg"
+              className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-line bg-elevated shadow-lg"
+              role="listbox"
+              aria-label={t("select")}
             >
               <div className="py-2">
-                {languages.map((language) => (
+                {LANGUAGE_CODES.map((code) => (
                   <Link
-                    key={language.code}
-                    href={getHref(language.code)}
-                    onClick={() => handleLanguageChange(language.code)}
-                    className="flex w-full items-center justify-between px-4 py-2.5 text-sm text-fg transition-colors hover:bg-white/10"
+                    key={code}
+                    href={getHref(code)}
+                    onClick={() => handleLanguageChange(code)}
+                    className="flex min-h-11 w-full items-center justify-between px-4 py-2.5 text-sm text-fg transition-colors hover:bg-sand-deep"
+                    role="option"
+                    aria-selected={locale === code}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{language.flag}</span>
-                      <span>{language.name}</span>
-                    </div>
-                    {locale === language.code && (
-                      <Check className="h-4 w-4 text-[#4FB3C9]" />
+                    <span>{t(code)}</span>
+                    {locale === code && (
+                      <Check className="h-4 w-4 text-[#2D6A4F]" />
                     )}
                   </Link>
                 ))}

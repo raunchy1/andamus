@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "@/lib/env";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Navbar } from "@/components/navbar";
 import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -30,21 +30,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string }> 
 }): Promise<Metadata> {
   const { locale } = await params;
-  
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it";
-  
-  const titles: Record<string, string> = {
-    it: "Andamus - Carpooling in Sardegna",
-    en: "Andamus - Carpooling in Sardinia",
-  };
-  
-  const descriptions: Record<string, string> = {
-    it: "Trova e offri passaggi in Sardegna. Semplice, diretto, tra sardi.",
-    en: "Find or offer rides in Sardinia. Simple and direct.",
-  };
+  const t = await getTranslations({ locale, namespace: "metadata" });
 
-  const title = titles[locale] || titles.it;
-  const description = descriptions[locale] || descriptions.it;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it";
+  const title = t("title");
+  const description = t("description");
 
   return {
     title: {
@@ -69,6 +59,7 @@ export async function generateMetadata({
       languages: {
         it: "/it",
         en: "/en",
+        de: "/de",
       },
     },
     openGraph: {
@@ -83,7 +74,7 @@ export async function generateMetadata({
           url: "/og-image.png",
           width: 1200,
           height: 630,
-          alt: "Andamus - Carpooling in Sardegna",
+          alt: title,
         },
       ],
     },

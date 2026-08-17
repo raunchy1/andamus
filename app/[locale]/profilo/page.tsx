@@ -532,7 +532,7 @@ export default function ProfilePage() {
   };
 
   const handleDeleteAlert = async (alertId: string) => {
-    if (!window.confirm(t("confirmDeleteAlert") || "Eliminare questo avviso?")) return;
+    if (!window.confirm(t("confirmDeleteAlert"))) return;
     setDeletingAlertId(alertId);
     try {
       const { error } = await supabase.from("ride_alerts").delete().eq("id", alertId);
@@ -568,7 +568,7 @@ export default function ProfilePage() {
   };
 
   const handleDeleteTemplate = async (templateId: string) => {
-    if (!window.confirm(t("confirmDeleteTemplate") || "Eliminare questo template ricorrente?")) return;
+    if (!window.confirm(t("confirmDeleteTemplate"))) return;
     setDeletingTemplateId(templateId);
     try {
       const { error } = await supabase.from("ride_templates").delete().eq("id", templateId);

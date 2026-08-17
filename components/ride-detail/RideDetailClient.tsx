@@ -963,10 +963,7 @@ export function RideDetailClient({
 
         if (!res.ok) {
           if (data.error === "Driver has not set up payments") {
-            toast.error(
-              t("driverPaymentsNotSetup") ||
-                "Il guidatore non ha ancora configurato i pagamenti."
-            );
+            toast.error(t("driverPaymentsNotSetup"));
           } else {
             throw new Error(data.error || "Checkout failed");
           }

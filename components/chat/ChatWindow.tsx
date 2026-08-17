@@ -481,7 +481,7 @@ export default function ChatWindow({
   // Show payment success toast on redirect from Stripe
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
-      toast.success(t("paymentSuccess") || "Pagamento completato! La tua prenotazione è confermata.");
+      toast.success(t("paymentSuccess"));
       // Clean the URL
       window.history.replaceState({}, "", `/${locale}/chat/${bookingId}`);
     }

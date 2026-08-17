@@ -99,31 +99,32 @@ export function PWAInstallPrompt() {
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className="fixed bottom-20 sm:bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
       >
-        <div className="bg-surface/90 border border-white/10 rounded-3xl p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl flex items-center gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#4FB3C9]/10 flex items-center justify-center border border-[#4FB3C9]/20">
-            <Smartphone className="w-6 h-6 text-[#4FB3C9]" />
+        <div className="bg-surface/90 border border-line rounded-3xl p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-xl flex items-center gap-4">
+          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-[#2D6A4F]/10 flex items-center justify-center border border-[#2D6A4F]/20">
+            <Smartphone className="w-6 h-6 text-[#2D6A4F]" />
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-extrabold text-white">Ricevi notifiche sui tragitti</h4>
-            <p className="text-[11px] text-white/50 mt-1 leading-relaxed">
-              Aggiungi Andamus per trovare passaggi più velocemente.
+            <h4 className="text-sm font-extrabold text-ink">{t("installTitle")}</h4>
+            <p className="text-[11px] text-muted mt-1 leading-relaxed">
+              {t("installDescription")}
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleDismiss}
-              className="p-2 rounded-xl hover:bg-white/5 transition-colors"
+              className="p-2 rounded-xl hover:bg-sand-deep transition-colors min-h-11 min-w-11 inline-flex items-center justify-center"
+              aria-label={t("dismissButton")}
             >
-              <X className="w-4 h-4 text-white/40" />
+              <X className="w-4 h-4 text-faint" />
             </button>
             <button
               onClick={handleInstall}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#4FB3C9] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#3d9db3] active:scale-95 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2D6A4F] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#1E4A36] active:scale-95 transition-all min-h-11"
             >
               <Download className="w-3.5 h-3.5" />
-              Installa
+              {t("installButton")}
             </button>
           </div>
         </div>
