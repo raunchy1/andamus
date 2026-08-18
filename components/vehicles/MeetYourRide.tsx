@@ -14,6 +14,7 @@ import { VehicleGallery } from "./VehicleGallery";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal } from "@/components/ui/premium/reveal";
 import { GradientText } from "@/components/ui/premium/gradient-text";
+import { FeatureIcon } from "./feature-icons";
 
 interface MeetYourRideProps {
   vehicle: VehicleWithImages;
@@ -200,9 +201,9 @@ export function MeetYourRide({
                   {featureIcons.map((feature) => (
                     <span
                       key={feature.key}
-                      className="inline-flex items-center gap-1.5 bg-surface border border-line px-3 py-1.5 rounded-full text-sm text-fg/70"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm text-muted"
                     >
-                      <span>{feature.icon}</span>
+                      <FeatureIcon name={feature.icon} className="h-3.5 w-3.5" />
                       <span className="text-xs font-medium">
                         {locale === "en" ? feature.labelEn : locale === "de" ? feature.labelDe : feature.labelIt}
                       </span>

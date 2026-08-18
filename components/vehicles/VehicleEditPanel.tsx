@@ -11,6 +11,7 @@ import { VEHICLE_FEATURES } from "@/lib/types/vehicle";
 import { VehicleTrustScore } from "./VehicleTrustScore";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { FeatureIcon } from "./feature-icons";
 
 interface VehicleEditPanelProps {
   vehicle: VehicleWithImages;
@@ -250,34 +251,32 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
 
         {/* ── COMFORT SECTION ── */}
         <section>
-          <h3 className="font-bold text-lg text-fg mb-3">Comfort e caratteristiche</h3>
+          <h3 className="mb-3 font-heading text-lg text-ink">{t("comfortTitle")}</h3>
           <div className="grid grid-cols-2 gap-2">
             {VEHICLE_FEATURES.map((feature) => {
               const active = vehicle.features?.includes(feature.key) ?? false;
               return (
                 <div
                   key={feature.key}
-                  className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                  className={`flex items-center gap-3 rounded-xl border p-3 ${
                     active
-                      ? "border-primary/30 bg-primary/5 text-primary"
-                      : "border-line/20 bg-surface text-fg/60"
+                      ? "border-green bg-green-tint text-ink"
+                      : "border-line bg-surface text-muted"
                   }`}
                 >
-                  <span className="text-xl">{feature.icon}</span>
+                  <FeatureIcon name={feature.icon} className="h-4 w-4 shrink-0" />
                   <span className="text-sm font-medium">{feature.labelIt}</span>
-                  {active && <Check className="w-4 h-4 ml-auto" />}
+                  {active && <Check className="ml-auto h-4 w-4 shrink-0 text-green" strokeWidth={1.5} aria-hidden />}
                 </div>
               );
             })}
           </div>
-          <p className="text-xs text-fg/40 mt-3 text-center">
-            Per modificare i comfort, usa il wizard per creare una nuova configurazione
-          </p>
+          <p className="mt-3 text-center text-xs leading-relaxed text-muted">{t("comfortReadOnly")}</p>
         </section>
 
         {/* ── INFO SECTION ── */}
         <section>
-          <h3 className="font-bold text-lg text-fg mb-3">Dettagli veicolo</h3>
+          <h3 className="mb-3 font-heading text-lg text-ink">{t("detailsTitle")}</h3>
           <div className="bg-surface rounded-2xl divide-y divide-line">
             {[
               { label: "Marca", value: vehicle.make_name },

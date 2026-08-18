@@ -1566,6 +1566,9 @@
     "delete": "Delete vehicle",
     "setPrimary": "Set as primary",
     "photoAdded": "Photo added",
-    "descriptionSaved": "Description saved"
+    "descriptionSaved": "Description saved",
+    "comfortTitle": "Comfort and features",
+    "comfortReadOnly": "To change the features, create a new configuration from the wizard.",
+    "detailsTitle": "Vehicle details"
   }
 }

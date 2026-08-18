@@ -1,6 +1,7 @@
 "use client";
 
 import { VEHICLE_FEATURES, type VehicleFeature } from "@/lib/types/vehicle";
+import { FeatureIcon } from "./feature-icons";
 
 interface VehicleFeatureTagsProps {
   features: VehicleFeature[];
@@ -45,15 +46,13 @@ export function VehicleFeatureTags({
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 select-none ${
                 isActive
                   ? "bg-primary/20 border border-primary/40 text-primary"
-                  : "bg-elevated border border-line/30 text-fg/60 hover:border-primary/30 hover:text-fg"
+                  : "border border-line bg-surface text-muted hover:border-line-strong hover:text-ink"
               }`}
             >
-              <span
-                className={size === "sm" ? "text-xs" : "text-sm"}
-                aria-hidden="true"
-              >
-                {feature.icon}
-              </span>
+              <FeatureIcon
+                name={feature.icon}
+                className={size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"}
+              />
               <span className={size === "sm" ? "text-[11px]" : "text-sm"}>
                 {label}
               </span>
@@ -64,9 +63,9 @@ export function VehicleFeatureTags({
         return (
           <span
             key={feature.key}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-elevated border border-line/20 text-fg/70 text-sm"
+            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm text-muted"
           >
-            <span aria-hidden="true">{feature.icon}</span>
+            <FeatureIcon name={feature.icon} />
             <span>{label}</span>
           </span>
         );

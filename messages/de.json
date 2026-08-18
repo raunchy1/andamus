@@ -1566,6 +1566,9 @@
     "delete": "Fahrzeug löschen",
     "setPrimary": "Als Hauptfahrzeug festlegen",
     "photoAdded": "Foto hinzugefügt",
-    "descriptionSaved": "Beschreibung gespeichert"
+    "descriptionSaved": "Beschreibung gespeichert",
+    "comfortTitle": "Komfort und Ausstattung",
+    "comfortReadOnly": "Um die Ausstattung zu ändern, erstelle eine neue Konfiguration im Assistenten.",
+    "detailsTitle": "Fahrzeugdetails"
   }
 }

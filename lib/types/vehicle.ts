@@ -136,25 +136,26 @@ export interface VehicleFeatureInfo {
   labelIt: string;
   labelEn: string;
   labelDe: string;
-  icon: string; // emoji
+  /** lucide-react icon name; resolve through components/vehicles/feature-icons */
+  icon: string;
 }
 
 export const VEHICLE_FEATURES: VehicleFeatureInfo[] = [
-  { key: "ac", labelIt: "Aria Condizionata", labelEn: "Air Conditioning", labelDe: "Klimaanlage", icon: "❄️" },
-  { key: "usb", labelIt: "USB", labelEn: "USB", labelDe: "USB", icon: "🔌" },
-  { key: "phone_charger", labelIt: "Caricatore Phone", labelEn: "Phone Charger", labelDe: "Handyladegerät", icon: "📱" },
-  { key: "bluetooth", labelIt: "Bluetooth", labelEn: "Bluetooth", labelDe: "Bluetooth", icon: "🎵" },
-  { key: "large_trunk", labelIt: "Bagagliaio Grande", labelEn: "Large Trunk", labelDe: "Großer Kofferraum", icon: "🧳" },
-  { key: "pet_friendly", labelIt: "Pet Friendly", labelEn: "Pet Friendly", labelDe: "Tierfreundlich", icon: "🐾" },
-  { key: "non_smoker", labelIt: "Non Fumatori", labelEn: "Non-Smoker", labelDe: "Nichtraucher", icon: "🚭" },
-  { key: "music_friendly", labelIt: "Musica OK", labelEn: "Music Friendly", labelDe: "Musikfreundlich", icon: "🎶" },
-  { key: "quiet_ride", labelIt: "Viaggio Silenzioso", labelEn: "Quiet Ride", labelDe: "Ruhige Fahrt", icon: "🤫" },
-  { key: "wheelchair_accessible", labelIt: "Accessibile Sedia a Rotelle", labelEn: "Wheelchair Accessible", labelDe: "Rollstuhlgerecht", icon: "♿" },
-  { key: "child_seat", labelIt: "Seggiolino Bimbo", labelEn: "Child Seat", labelDe: "Kindersitz", icon: "👶" },
-  { key: "electric", labelIt: "Veicolo Elettrico", labelEn: "Electric Vehicle", labelDe: "Elektrofahrzeug", icon: "⚡" },
-  { key: "luxury", labelIt: "Veicolo Luxury", labelEn: "Luxury Vehicle", labelDe: "Luxusfahrzeug", icon: "💎" },
-  { key: "student_friendly", labelIt: "Ideale Studenti", labelEn: "Student Friendly", labelDe: "Studierendenfreundlich", icon: "🎓" },
-  { key: "women_friendly", labelIt: "Solo Donne", labelEn: "Women Friendly", labelDe: "Frauenfreundlich", icon: "👩" },
+  { key: "ac", labelIt: "Aria Condizionata", labelEn: "Air Conditioning", labelDe: "Klimaanlage", icon: "Snowflake" },
+  { key: "usb", labelIt: "USB", labelEn: "USB", labelDe: "USB", icon: "Usb" },
+  { key: "phone_charger", labelIt: "Caricatore Phone", labelEn: "Phone Charger", labelDe: "Handyladegerät", icon: "Smartphone" },
+  { key: "bluetooth", labelIt: "Bluetooth", labelEn: "Bluetooth", labelDe: "Bluetooth", icon: "Bluetooth" },
+  { key: "large_trunk", labelIt: "Bagagliaio Grande", labelEn: "Large Trunk", labelDe: "Großer Kofferraum", icon: "Luggage" },
+  { key: "pet_friendly", labelIt: "Pet Friendly", labelEn: "Pet Friendly", labelDe: "Tierfreundlich", icon: "PawPrint" },
+  { key: "non_smoker", labelIt: "Non Fumatori", labelEn: "Non-Smoker", labelDe: "Nichtraucher", icon: "CigaretteOff" },
+  { key: "music_friendly", labelIt: "Musica OK", labelEn: "Music Friendly", labelDe: "Musikfreundlich", icon: "Music" },
+  { key: "quiet_ride", labelIt: "Viaggio Silenzioso", labelEn: "Quiet Ride", labelDe: "Ruhige Fahrt", icon: "VolumeOff" },
+  { key: "wheelchair_accessible", labelIt: "Accessibile Sedia a Rotelle", labelEn: "Wheelchair Accessible", labelDe: "Rollstuhlgerecht", icon: "Accessibility" },
+  { key: "child_seat", labelIt: "Seggiolino Bimbo", labelEn: "Child Seat", labelDe: "Kindersitz", icon: "Baby" },
+  { key: "electric", labelIt: "Veicolo Elettrico", labelEn: "Electric Vehicle", labelDe: "Elektrofahrzeug", icon: "Zap" },
+  { key: "luxury", labelIt: "Veicolo Luxury", labelEn: "Luxury Vehicle", labelDe: "Luxusfahrzeug", icon: "Gem" },
+  { key: "student_friendly", labelIt: "Ideale Studenti", labelEn: "Student Friendly", labelDe: "Studierendenfreundlich", icon: "GraduationCap" },
+  { key: "women_friendly", labelIt: "Solo Donne", labelEn: "Women Friendly", labelDe: "Frauenfreundlich", icon: "UserRound" },
 ];
 
 export const FUEL_TYPE_LABELS: Record<FuelType, { it: string; en: string; de: string }> = {

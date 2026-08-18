@@ -1566,6 +1566,9 @@
     "delete": "Elimina veicolo",
     "setPrimary": "Imposta come principale",
     "photoAdded": "Foto aggiunta",
-    "descriptionSaved": "Descrizione salvata"
+    "descriptionSaved": "Descrizione salvata",
+    "comfortTitle": "Comfort e caratteristiche",
+    "comfortReadOnly": "Per cambiare i comfort, crea una nuova configurazione dal wizard.",
+    "detailsTitle": "Dettagli veicolo"
   }
 }

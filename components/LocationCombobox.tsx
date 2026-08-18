@@ -49,6 +49,10 @@ export function LocationCombobox({
   const [search, setSearch] = useState("");
   const [allLocations, setAllLocations] = useState<Location[]>([]);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  // The sheet is sized against the *visual* viewport, not the layout viewport:
+  // on Android the on-screen keyboard overlays the layout viewport, so 100dvh
+  // still runs underneath the keys and hides the bottom of the list.
+  const [viewport, setViewport] = useState<{ height: number; offsetTop: number } | null>(null);
   const [recentLocations, setRecentLocations] = useState<Location[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,14 +76,22 @@ export function LocationCombobox({
       return;
     }
     const handleResize = () => {
-      const isKeyboard = window.visualViewport
-        ? window.visualViewport.height < window.innerHeight - 150
-        : false;
-      setKeyboardOpen(isKeyboard);
+      const vv = window.visualViewport;
+      if (!vv) {
+        setKeyboardOpen(false);
+        setViewport(null);
+        return;
+      }
+      setKeyboardOpen(vv.height < window.innerHeight - 150);
+      setViewport({ height: vv.height, offsetTop: vv.offsetTop });
     };
     handleResize();
     window.visualViewport?.addEventListener("resize", handleResize);
-    return () => window.visualViewport?.removeEventListener("resize", handleResize);
+    window.visualViewport?.addEventListener("scroll", handleResize);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("scroll", handleResize);
+    };
   }, [isOpen]);
 
   const filtered = useMemo(() => {
@@ -169,16 +181,21 @@ export function LocationCombobox({
   const sheet = (
     <div
       className={cn(
-        "fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex flex-col",
+        "fixed left-0 right-0 z-[200] bg-black/60 backdrop-blur-sm flex flex-col",
         keyboardOpen ? "justify-start" : "justify-end"
       )}
+      style={
+        viewport
+          ? { top: viewport.offsetTop, height: viewport.height }
+          : { top: 0, bottom: 0 }
+      }
       onClick={handleClose}
     >
       <div
         className={cn(
           "w-full sm:w-[30rem] sm:mx-auto bg-surface flex flex-col shadow-2xl transition-all duration-300 border border-line",
           keyboardOpen
-            ? "h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[85vh] sm:rounded-[var(--radius)]"
+            ? "h-full max-h-full sm:h-auto sm:max-h-[85vh] sm:rounded-[var(--radius)]"
             : "max-h-[85%] sm:max-h-[85vh] rounded-t-[var(--radius)] sm:rounded-[var(--radius)]"
         )}
         onClick={(e) => e.stopPropagation()}
