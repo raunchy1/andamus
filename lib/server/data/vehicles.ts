@@ -406,3 +406,100 @@ export async function getVehicleForRide(
 
 export { computeVehicleScore };
 // dom 31 mag 2026, 16:40:12, CEST
+
+// ─── Catalog search (make + model in one query) ────────────────────────────
+
+export interface CatalogEntry {
+  model_id: string;
+  make_id: string;
+  make_name: string;
+  model_name: string;
+  label: string;
+  image_url: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
+}
+
+/**
+ * One-box search over the catalog: "pan" finds Fiat Panda, "bmw" finds every
+ * BMW. Matching a make returns that make's models so typing a brand still
+ * lists cars rather than a dead end.
+ */
+export async function searchVehicleCatalog(
+  query: string,
+  limit = 30
+): Promise<CatalogEntry[]> {
+  const q = query.trim();
+  if (q.length < 1) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicle_models")
+    .select(
+      "id, name, image_url, image_author, image_license, image_source_url, is_popular, sort_order, vehicle_makes!inner(id, name, is_popular)"
+    )
+    .or(`name.ilike.${q}%,name.ilike.% ${q}%`)
+    .order("sort_order")
+    .limit(200);
+
+  const { data: byMake } = await supabase
+    .from("vehicle_models")
+    .select(
+      "id, name, image_url, image_author, image_license, image_source_url, is_popular, sort_order, vehicle_makes!inner(id, name, is_popular)"
+    )
+    .ilike("vehicle_makes.name", `${q}%`)
+    .order("sort_order")
+    .limit(200);
+
+  if (error && !byMake) throw error;
+
+  const rows = [...(data ?? []), ...(byMake ?? [])] as unknown as Array<{
+    id: string;
+    name: string;
+    image_url: string | null;
+    image_author: string | null;
+    image_license: string | null;
+    image_source_url: string | null;
+    is_popular: boolean;
+    sort_order: number;
+    vehicle_makes: { id: string; name: string; is_popular: boolean };
+  }>;
+
+  const lower = q.toLowerCase();
+  const seen = new Set<string>();
+  const rank = (r: (typeof rows)[number]) => {
+    const name = r.name.toLowerCase();
+    const make = r.vehicle_makes.name.toLowerCase();
+    // Typing a whole brand should list that brand, not another brand's model
+    // that happens to start with the same letters ("mini" → Mini, not Minica).
+    if (make === lower) return 0;
+    if (name.startsWith(lower)) return 1;
+    if (make.startsWith(lower)) return 2;
+    return 3;
+  };
+
+  return rows
+    .filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)))
+    .sort((a, b) => {
+      const byRank = rank(a) - rank(b);
+      if (byRank) return byRank;
+      // sort_order is 1000 minus the Wikipedia language count, so the
+      // nameplates people actually drive come first.
+      const bySort = a.sort_order - b.sort_order;
+      if (bySort) return bySort;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, limit)
+    .map((r) => ({
+      model_id: r.id,
+      make_id: r.vehicle_makes.id,
+      make_name: r.vehicle_makes.name,
+      model_name: r.name,
+      label: `${r.vehicle_makes.name} ${r.name}`,
+      image_url: r.image_url,
+      image_author: r.image_author,
+      image_license: r.image_license,
+      image_source_url: r.image_source_url,
+    }));
+}

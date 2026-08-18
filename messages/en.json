@@ -451,7 +451,8 @@
     "emailDetail": "Choose what you receive",
     "deleteAccount": "Delete account",
     "emailConfirmed": "Address confirmed",
-    "emailNotConfirmed": "Confirm your address from the link we sent you."
+    "emailNotConfirmed": "Confirm your address from the link we sent you.",
+    "photoCredit": "Photo: {author}"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -1569,6 +1570,10 @@
     "descriptionSaved": "Description saved",
     "comfortTitle": "Comfort and features",
     "comfortReadOnly": "To change the features, create a new configuration from the wizard.",
-    "detailsTitle": "Vehicle details"
+    "detailsTitle": "Vehicle details",
+    "searchPlaceholder": "Search make or model",
+    "noMatch": "No model found",
+    "changeVehicle": "Change vehicle",
+    "photoCredit": "Photo: {author}"
   }
 }

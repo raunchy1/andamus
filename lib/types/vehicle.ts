@@ -42,6 +42,11 @@ export interface VehicleModel {
   is_popular: boolean;
   sort_order: number;
   created_at: string;
+  /** Wikimedia Commons photo of the model; licence requires the credit below. */
+  image_url: string | null;
+  image_author: string | null;
+  image_license: string | null;
+  image_source_url: string | null;
 }
 
 export interface VehicleImage {

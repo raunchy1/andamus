@@ -334,6 +334,27 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
               onChange={setSelectedModel}
               placeholder="Cerca modello (Golf, Panda, 3...)"
             />
+
+            {selectedModel?.image_url && (
+              <figure className="overflow-hidden rounded-2xl border border-line bg-surface">
+                <div className="relative aspect-[16/9] bg-sand-deep">
+                  <Image
+                    src={selectedModel.image_url}
+                    alt={`${selectedMake?.name} ${selectedModel.name}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 480px"
+                    unoptimized={!selectedModel.image_url.includes("/storage/v1/")}
+                  />
+                </div>
+                {selectedModel.image_author && (
+                  <figcaption className="px-4 py-3 text-[11px] leading-relaxed text-muted">
+                    {t("photoCredit", { author: selectedModel.image_author })}
+                    {selectedModel.image_license ? ` · ${selectedModel.image_license}` : ""}
+                  </figcaption>
+                )}
+              </figure>
+            )}
           </div>
         )}
 

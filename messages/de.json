@@ -451,7 +451,8 @@
     "emailDetail": "Wähle, was du bekommst",
     "deleteAccount": "Konto löschen",
     "emailConfirmed": "Adresse bestätigt",
-    "emailNotConfirmed": "Bestätige deine Adresse über den Link, den wir dir geschickt haben."
+    "emailNotConfirmed": "Bestätige deine Adresse über den Link, den wir dir geschickt haben.",
+    "photoCredit": "Foto: {author}"
   },
   "chat": {
     "messagePlaceholder": "Nachricht schreiben...",
@@ -1569,6 +1570,10 @@
     "descriptionSaved": "Beschreibung gespeichert",
     "comfortTitle": "Komfort und Ausstattung",
     "comfortReadOnly": "Um die Ausstattung zu ändern, erstelle eine neue Konfiguration im Assistenten.",
-    "detailsTitle": "Fahrzeugdetails"
+    "detailsTitle": "Fahrzeugdetails",
+    "searchPlaceholder": "Marke oder Modell suchen",
+    "noMatch": "Kein Modell gefunden",
+    "changeVehicle": "Fahrzeug ändern",
+    "photoCredit": "Foto: {author}"
   }
 }

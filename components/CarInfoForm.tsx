@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Car, Palette, Calendar, Hash, Save, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { VehiclePicker, commonsThumb, isMirrored, type CatalogEntry } from "@/components/vehicles/VehiclePicker";
 
 interface CarInfo {
   car_model?: string | null;
+  car_image_url?: string | null;
+  car_image_author?: string | null;
+  car_image_license?: string | null;
   car_color?: string | null;
   car_plate?: string | null;
   car_year?: number | null;
@@ -42,7 +47,10 @@ const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 
 export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps) {
   const t = useTranslations("profile");
-  const [model, setModel] = useState(initialData?.car_model || "");
+  const [picked, setPicked] = useState<CatalogEntry | null>(null);
+  // Vehicles saved before the catalog existed are plain strings; keep showing
+  // them until the driver picks a catalogue entry.
+  const model = picked?.label ?? initialData?.car_model ?? "";
   const [color, setColor] = useState(initialData?.car_color || "");
   const [plate, setPlate] = useState(initialData?.car_plate || "");
   const [year, setYear] = useState(initialData?.car_year?.toString() || "");
@@ -52,6 +60,9 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
     e.preventDefault();
     onSave({
       car_model: model || null,
+      car_image_url: picked?.image_url ?? initialData?.car_image_url ?? null,
+      car_image_author: picked?.image_author ?? initialData?.car_image_author ?? null,
+      car_image_license: picked?.image_license ?? initialData?.car_image_license ?? null,
       car_color: color || null,
       car_plate: plate || null,
       car_year: year ? parseInt(year) : null,
@@ -66,45 +77,61 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
   if (!isEditing && initialData?.car_model) {
     return (
-      <div className="bg-surface rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 w-10 h-10 rounded-xl flex items-center justify-center">
-              <Car className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-label font-bold text-[10px] uppercase tracking-wider text-fg/40">
+      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+        {initialData.car_image_url && (
+          <div className="relative aspect-[16/9] bg-sand-deep">
+            <Image
+              src={commonsThumb(initialData.car_image_url, 800)}
+              alt={initialData.car_model}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, 480px"
+              unoptimized={!isMirrored(initialData.car_image_url)}
+            />
+          </div>
+        )}
+        <div className="p-5">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
                 {t("vehicle")}
               </p>
-              <p className="font-semibold text-fg">{initialData.car_model}</p>
+              <p className="mt-0.5 font-heading text-lg text-ink">{initialData.car_model}</p>
             </div>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="shrink-0 text-sm font-medium text-green hover:underline"
+            >
+              {t("edit")}
+            </button>
           </div>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="text-primary text-sm font-semibold hover:underline"
-          >
-            {t("edit")}
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          {initialData.car_color && (
-            <div className="flex items-center gap-2 text-fg/70">
-              <Palette className="w-4 h-4" />
-              <span>{initialData.car_color}</span>
-            </div>
-          )}
-          {initialData.car_year && (
-            <div className="flex items-center gap-2 text-fg/70">
-              <Calendar className="w-4 h-4" />
-              <span>{initialData.car_year}</span>
-            </div>
-          )}
-          {initialData.car_plate && (
-            <div className="col-span-2 flex items-center gap-2 text-fg/70">
-              <Hash className="w-4 h-4" />
-              <span className="font-mono tracking-wider">{initialData.car_plate}</span>
-            </div>
+
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {initialData.car_color && (
+              <div className="flex items-center gap-2 text-muted">
+                <Palette className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                <span>{initialData.car_color}</span>
+              </div>
+            )}
+            {initialData.car_year && (
+              <div className="flex items-center gap-2 text-muted">
+                <Calendar className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                <span>{initialData.car_year}</span>
+              </div>
+            )}
+            {initialData.car_plate && (
+              <div className="col-span-2 flex items-center gap-2 text-muted">
+                <Hash className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                <span className="font-mono tracking-wider">{initialData.car_plate}</span>
+              </div>
+            )}
+          </div>
+
+          {initialData.car_image_author && (
+            <p className="mt-4 text-[11px] leading-relaxed text-muted">
+              {t("photoCredit", { author: initialData.car_image_author })}
+              {initialData.car_image_license ? ` · ${initialData.car_image_license}` : ""}
+            </p>
           )}
         </div>
       </div>
@@ -130,20 +157,14 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
 
       {/* Model */}
       <div>
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-fg/40 mb-2">
+        <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
           {t("carModelLabel")}
         </label>
-        <div className="relative">
-          <Car className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-fg/30" />
-          <input
-            type="text"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-            placeholder={t("carModelPlaceholder")}
-            className="w-full bg-elevated rounded-xl py-3 pl-12 pr-4 text-fg placeholder:text-fg/30 border border-transparent focus:border-primary/50 focus:outline-none transition-all"
-            required
-          />
-        </div>
+        <VehiclePicker
+          value={picked}
+          fallbackLabel={initialData?.car_model}
+          onChange={setPicked}
+        />
       </div>
 
       {/* Color */}

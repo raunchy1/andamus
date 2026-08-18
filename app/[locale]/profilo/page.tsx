@@ -79,6 +79,9 @@ interface Profile {
   car_color?: string | null;
   car_plate?: string | null;
   car_year?: number | null;
+  car_image_url?: string | null;
+  car_image_author?: string | null;
+  car_image_license?: string | null;
 }
 
 interface Ride {
@@ -589,7 +592,15 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSaveCarInfo = async (carData: { car_model?: string | null; car_color?: string | null; car_plate?: string | null; car_year?: number | null }) => {
+  const handleSaveCarInfo = async (carData: {
+    car_model?: string | null;
+    car_color?: string | null;
+    car_plate?: string | null;
+    car_year?: number | null;
+    car_image_url?: string | null;
+    car_image_author?: string | null;
+    car_image_license?: string | null;
+  }) => {
     if (!user) return;
 
     const { error } = await supabase
@@ -599,6 +610,9 @@ export default function ProfilePage() {
         car_color: carData.car_color,
         car_plate: carData.car_plate,
         car_year: carData.car_year,
+        car_image_url: carData.car_image_url,
+        car_image_author: carData.car_image_author,
+        car_image_license: carData.car_image_license,
       })
       .eq("id", user.id);
 
@@ -1490,6 +1504,9 @@ export default function ProfilePage() {
                       car_color: profile?.car_color,
                       car_plate: profile?.car_plate,
                       car_year: profile?.car_year,
+                      car_image_url: profile?.car_image_url,
+                      car_image_author: profile?.car_image_author,
+                      car_image_license: profile?.car_image_license,
                     }}
                     onSave={handleSaveCarInfo}
                   />
