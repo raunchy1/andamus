@@ -1208,7 +1208,7 @@
     "safety": "Safety",
     "shareLocation": "Share location",
     "call112": "Call 112",
-    "safetyTips": "Safety tips:",
+    "safetyTips": "Safety tips",
     "tip1": "Tell someone who you are travelling with and on which route.",
     "tip2": "Read the profile and reviews before you confirm.",
     "tip3": "Arrange to meet in a public place.",
@@ -1475,13 +1475,13 @@
       "newProfile": "New profile"
     },
     "age": {
-      "justArrived": "Just joined",
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "days": "{count} days",
-      "weeks": "{count} weeks",
-      "months": "{count} months",
-      "years": "{count} years"
+      "justArrived": "a moment",
+      "today": "today",
+      "yesterday": "a day",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "weeks": "{count, plural, one {# week} other {# weeks}}",
+      "months": "{count, plural, one {# month} other {# months}}",
+      "years": "{count, plural, one {# year} other {# years}}"
     },
     "noCompletionRate": "—",
     "trustScoreLabel": "Trust score",

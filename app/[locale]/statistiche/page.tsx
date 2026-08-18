@@ -159,20 +159,33 @@ export default function StatisticsPage() {
     const completedBookings = myBookings.filter(b => b.status === 'confirmed');
 
     let totalDistance = 0;
-    const ridesWithDistance = [...completedRides, ...completedBookings.map(b => b.rides)];
+    // CO2 is accumulated per ride, so each trip is credited with the people who
+    // actually shared it. Multiplying total distance by total passengers, as
+    // this page used to, cross-multiplied unrelated trips and inflated the
+    // figure several times over.
+    let co2Saved = 0;
 
-    ridesWithDistance.forEach(ride => {
+    completedRides.forEach(ride => {
       const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
       if (dist) {
         totalDistance += dist;
+        co2Saved += calculateCO2Saved(dist, ride.bookings_count || 0);
       }
     });
+
+    completedBookings.forEach(booking => {
+      const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
+      if (dist) {
+        totalDistance += dist;
+        co2Saved += calculateCO2Saved(dist, 1);
+      }
+    });
+
+    co2Saved = Math.round(co2Saved * 10) / 10;
 
     // Bookings received on the user's own rides — not "people helped", which
     // would count requests that were never confirmed.
     const bookingsReceived = completedRides.reduce((sum, ride) => sum + (ride.bookings_count || 0), 0);
-
-    const co2Saved = calculateCO2Saved(totalDistance, bookingsReceived);
 
     const activityData = [];
     const now = new Date();
@@ -374,7 +387,7 @@ export default function StatisticsPage() {
             <h2 className="border-b border-line px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
               {t('summaryTitle')}
             </h2>
-            <dl className="grid grid-cols-2 divide-x divide-y divide-line sm:grid-cols-3">
+            <dl className="grid grid-cols-2 gap-px border-t border-line bg-line sm:grid-cols-3">
               {[
                 { label: t('kmTraveled'), value: `${numberFormat.format(stats.totalDistance)} km` },
                 { label: t('co2SavedEstimate'), value: `${numberFormat.format(stats.co2Saved)} kg` },
@@ -383,13 +396,13 @@ export default function StatisticsPage() {
                 { label: t('bookingsReceived'), value: numberFormat.format(stats.bookingsReceived) },
                 { label: t('totalPoints'), value: numberFormat.format(stats.totalPoints) },
               ].map((item) => (
-                <div key={item.label} className="-ml-px -mt-px px-5 py-4">
+                <div key={item.label} className="bg-surface px-5 py-4">
                   <dt className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">{item.label}</dt>
                   <dd className="mt-1 font-heading text-2xl text-ink tabular-nums">{item.value}</dd>
                 </div>
               ))}
             </dl>
-            <p className="border-t border-line px-5 py-3 text-xs leading-relaxed text-muted">
+            <p className="border-t border-line bg-surface px-5 py-3 text-xs leading-relaxed text-muted">
               {t('co2Note')}
             </p>
           </section>

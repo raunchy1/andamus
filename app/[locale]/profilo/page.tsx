@@ -194,13 +194,15 @@ function Panel({
   title,
   children,
   className = "",
+  id,
 }: {
   title?: string;
   children: React.ReactNode;
   className?: string;
+  id?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-line bg-surface ${className}`}>
+    <section id={id} className={`scroll-mt-24 rounded-2xl border border-line bg-surface ${className}`}>
       {title && (
         <div className="border-b border-line px-5 py-3.5">
           <Eyebrow>{title}</Eyebrow>
@@ -881,6 +883,7 @@ export default function ProfilePage() {
         title: t("setupPhoneTitle"),
         body: t("setupPhoneBody"),
         done: Boolean(profile?.phone_verified),
+        href: "#account-panel",
       },
       {
         key: "ride",
@@ -1054,7 +1057,7 @@ export default function ProfilePage() {
         <div className="mt-6 px-4 md:px-0">
           {hasHistory ? (
             <Reveal delay={0.05}>
-              <div className="flex items-stretch justify-between divide-x divide-line rounded-2xl border border-line bg-surface">
+              <div className="grid grid-cols-3 divide-x divide-line rounded-2xl border border-line bg-surface">
                 <LedgerCell value={numberFormat.format(tripCount)} label={t("trips")} />
                 <LedgerCell value={`${numberFormat.format(Math.round(totalKm))} km`} label={t("totalKm")} />
                 <LedgerCell
@@ -1182,11 +1185,11 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="mt-4 flex gap-2">
+                      <div className="mt-4 flex gap-2 sm:justify-end">
                         <button
                           onClick={() => handleRejectBooking(request)}
                           disabled={processingBooking === request.id}
-                          className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface text-sm font-medium text-ink transition-colors hover:bg-sand disabled:opacity-50"
+                          className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface text-sm font-medium text-ink transition-colors hover:bg-sand disabled:opacity-50 sm:flex-none sm:px-8"
                         >
                           <X className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                           {t("reject")}
@@ -1194,7 +1197,7 @@ export default function ProfilePage() {
                         <button
                           onClick={() => handleAcceptBooking(request)}
                           disabled={processingBooking === request.id}
-                          className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl bg-green text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                          className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl bg-green text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 sm:flex-none sm:px-8"
                         >
                           {processingBooking === request.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
@@ -1454,7 +1457,7 @@ export default function ProfilePage() {
 
           {/* ── Settings rail ─────────────────────────────────── */}
           <aside className="min-w-0 space-y-4">
-            <Panel title={t("railAccount")}>
+            <Panel title={t("railAccount")} id="account-panel">
               <div className="divide-y divide-line-soft">
                 <div className="px-5 py-4">
                   <div className="flex items-start gap-3">

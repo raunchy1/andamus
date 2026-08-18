@@ -1208,7 +1208,7 @@
     "safety": "Sicurezza",
     "shareLocation": "Condividi posizione",
     "call112": "Chiama il 112",
-    "safetyTips": "Consigli di sicurezza:",
+    "safetyTips": "Consigli di sicurezza",
     "tip1": "Dì a qualcuno con chi viaggi e su che tratta.",
     "tip2": "Leggi profilo e recensioni prima di confermare.",
     "tip3": "Datti appuntamento in un luogo pubblico.",
@@ -1475,13 +1475,13 @@
       "newProfile": "Nuovo profilo"
     },
     "age": {
-      "justArrived": "Appena arrivato",
-      "today": "Oggi",
-      "yesterday": "Ieri",
-      "days": "{count} giorni",
-      "weeks": "{count} settimane",
-      "months": "{count} mesi",
-      "years": "{count} anni"
+      "justArrived": "poco",
+      "today": "oggi",
+      "yesterday": "un giorno",
+      "days": "{count, plural, one {# giorno} other {# giorni}}",
+      "weeks": "{count, plural, one {# settimana} other {# settimane}}",
+      "months": "{count, plural, one {# mese} other {# mesi}}",
+      "years": "{count, plural, one {# anno} other {# anni}}"
     },
     "noCompletionRate": "—",
     "trustScoreLabel": "Affidabilità",
