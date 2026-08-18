@@ -141,7 +141,8 @@
     "dateLabel": "Data",
     "priceAny": "Qualsiasi",
     "tomorrow": "Domani",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "highDemand": "Molto richiesta"
   },
   "offer": {
     "loginRequired": "Accedi per pubblicare un passaggio.",
@@ -1563,6 +1564,8 @@
     "moreFeatures": "+{count}",
     "edit": "Modifica veicolo",
     "delete": "Elimina veicolo",
-    "setPrimary": "Imposta come principale"
+    "setPrimary": "Imposta come principale",
+    "photoAdded": "Foto aggiunta",
+    "descriptionSaved": "Descrizione salvata"
   }
 }

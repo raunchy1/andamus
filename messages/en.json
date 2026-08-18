@@ -141,7 +141,8 @@
     "dateLabel": "Date",
     "priceAny": "Any",
     "tomorrow": "Tomorrow",
-    "retry": "Try again"
+    "retry": "Try again",
+    "highDemand": "In demand"
   },
   "offer": {
     "loginRequired": "Sign in to publish a ride.",
@@ -1563,6 +1564,8 @@
     "moreFeatures": "+{count}",
     "edit": "Edit vehicle",
     "delete": "Delete vehicle",
-    "setPrimary": "Set as primary"
+    "setPrimary": "Set as primary",
+    "photoAdded": "Photo added",
+    "descriptionSaved": "Description saved"
   }
 }

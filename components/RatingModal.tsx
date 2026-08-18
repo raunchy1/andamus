@@ -122,7 +122,7 @@ export function RatingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-      <div className="w-full max-w-md rounded-3xl border border-line bg-elevated p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-elevated p-6 shadow-2xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-xl font-bold text-ink">{t("leaveReview")}</h3>
@@ -136,16 +136,16 @@ export function RatingModal({
 
         {reviewSaved ? (
           <div className="py-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
-              <Star className="h-8 w-8 text-green-400 fill-green-400" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-tint">
+              <Star className="h-8 w-8 text-green fill-green-400" />
             </div>
             <p className="text-lg font-semibold text-ink">{t("reviewSent")}</p>
             <p className="mt-2 text-sm text-muted">{t("thankYou")}</p>
           </div>
         ) : alreadyReviewed ? (
           <div className="py-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/20">
-              <Star className="h-8 w-8 text-yellow-400 fill-yellow-400" />
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sand-deep">
+              <Star className="h-8 w-8 text-pending fill-yellow-400" />
             </div>
             <p className="text-muted">{t("alreadyReviewedMessage")}</p>
           </div>
@@ -189,7 +189,7 @@ export function RatingModal({
                     <Star
                       className={`h-10 w-10 transition-all ${
                         star <= (hoverRating || rating)
-                          ? "fill-yellow-400 text-yellow-400 drop-shadow-lg"
+                          ? "fill-yellow-400 text-pending drop-shadow-lg"
                           : "text-faint"
                       }`}
                     />

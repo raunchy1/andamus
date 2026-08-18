@@ -142,7 +142,7 @@ export default function InvitaPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary-hover mb-4">
+            <div className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-green">
               <Gift className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-ink mb-2">{t("title")}</h1>
@@ -182,21 +182,21 @@ export default function InvitaPage() {
           <div className="grid grid-cols-3 gap-3">
             <button
               onClick={shareWhatsApp}
-              className="flex items-center justify-center gap-2 rounded-xl bg-green-500/20 border border-green-500/30 py-3 text-green-400 hover:bg-green-500/30 transition-colors"
+              className="flex items-center justify-center gap-2 rounded-xl bg-green-tint border border-line py-3 text-green hover:bg-green-tint transition-colors"
             >
               <MessageCircle className="w-5 h-5" />
               <span className="hidden sm:inline">WhatsApp</span>
             </button>
             <button
               onClick={shareTelegram}
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-500/20 border border-blue-500/30 py-3 text-blue-400 hover:bg-blue-500/30 transition-colors"
+              className="flex items-center justify-center gap-2 rounded-xl bg-sand-deep border border-line py-3 text-muted hover:bg-sand-deep transition-colors"
             >
               <Send className="w-5 h-5" />
               <span className="hidden sm:inline">Telegram</span>
             </button>
             <button
               onClick={shareFacebook}
-              className="flex items-center justify-center gap-2 rounded-xl bg-indigo-500/20 border border-indigo-500/30 py-3 text-indigo-400 hover:bg-indigo-500/30 transition-colors"
+              className="flex items-center justify-center gap-2 rounded-xl bg-sand-deep border border-line py-3 text-muted hover:bg-sand-deep transition-colors"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -214,16 +214,16 @@ export default function InvitaPage() {
           className="grid grid-cols-2 gap-4 mb-8"
         >
           <div className="bg-surface border border-line rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-blue-400" />
+            <div className="w-12 h-12 rounded-xl bg-sand-deep flex items-center justify-center mx-auto mb-3">
+              <Users className="w-6 h-6 text-muted" />
             </div>
             <p className="text-3xl font-bold text-ink">{profile?.referrals_count || 0}</p>
             <p className="text-muted text-sm">{t("friendsInvited")}</p>
           </div>
           
           <div className="bg-surface border border-line rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center mx-auto mb-3">
-              <Trophy className="w-6 h-6 text-yellow-400" />
+            <div className="w-12 h-12 rounded-xl bg-sand-deep flex items-center justify-center mx-auto mb-3">
+              <Trophy className="w-6 h-6 text-pending" />
             </div>
             <p className="text-3xl font-bold text-ink">{profile?.referral_points_earned || 0}</p>
             <p className="text-muted text-sm">{t("pointsEarned")}</p>
@@ -277,7 +277,7 @@ export default function InvitaPage() {
           className="bg-surface border border-line rounded-2xl p-6"
         >
           <h2 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-400" />
+            <Trophy className="w-5 h-5 text-pending" />
             {t("leaderboard")}
           </h2>
           
@@ -288,9 +288,9 @@ export default function InvitaPage() {
                 className="flex items-center gap-4 p-3 rounded-xl bg-surface"
               >
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                  index === 0 ? "bg-yellow-500/20 text-yellow-400" :
+                  index === 0 ? "bg-sand-deep text-pending" :
                   index === 1 ? "bg-gray-400/20 text-muted" :
-                  index === 2 ? "bg-orange-600/20 text-orange-400" :
+                  index === 2 ? "bg-sand-deep text-muted" :
                   "bg-surface text-muted"
                 }`}>
                   {index + 1}

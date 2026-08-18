@@ -33,11 +33,11 @@ export default function PrivacyPage() {
         </div>
 
         {/* GDPR Notice */}
-        <div className="bg-green-500/5 border border-green-500/20 rounded-2xl p-6 mb-12">
+        <div className="bg-green-tint border border-line rounded-2xl p-6 mb-12">
           <div className="flex items-start gap-4">
-            <UserCheck className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+            <UserCheck className="w-6 h-6 text-green flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-bold text-green-400 mb-2">Conformità GDPR</h3>
+              <h3 className="font-bold text-green mb-2">Conformità GDPR</h3>
               <p className="text-dim text-sm leading-relaxed">
                 Andamus tratta i tuoi dati personali nel rispetto del Regolamento (UE) 2016/679 
                 (GDPR). Questa informativa ti spiega quali dati raccogliamo, perché li usiamo 

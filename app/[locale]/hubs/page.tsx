@@ -130,7 +130,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
           return (
             <section
               key={hub.id}
-              className="rounded-3xl border border-line bg-surface p-6 transition-colors hover:border-border-strong"
+              className="rounded-2xl border border-line bg-surface p-6 transition-colors hover:border-border-strong"
             >
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent-dim text-accent">

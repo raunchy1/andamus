@@ -170,7 +170,7 @@ export function PostActionModal({
 
   const config: Record<PostActionType, { icon: React.ReactNode; title: string; subtitle: string; primaryLabel: string; accent: string }> = {
     ride_published: {
-      icon: <CheckCircle2 className="w-8 h-8 text-emerald-400" />,
+      icon: <CheckCircle2 className="w-8 h-8 text-green" />,
       title: t("ridePublishedTitle"),
       subtitle: t("ridePublishedSubtitle"),
       primaryLabel: t("shareRide"),
@@ -184,35 +184,35 @@ export function PostActionModal({
       accent: "rose",
     },
     ride_completed: {
-      icon: <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />,
+      icon: <Star className="w-8 h-8 text-pending fill-yellow-400" />,
       title: t("rideCompletedTitle"),
       subtitle: t("rideCompletedSubtitle"),
       primaryLabel: t("shareTrip"),
       accent: "yellow",
     },
     review_submitted: {
-      icon: <Star className="w-8 h-8 text-yellow-400 fill-yellow-400" />,
+      icon: <Star className="w-8 h-8 text-pending fill-yellow-400" />,
       title: t("reviewSubmittedTitle"),
       subtitle: t("reviewSubmittedSubtitle"),
       primaryLabel: t("shareReview"),
       accent: "yellow",
     },
     streak_milestone: {
-      icon: <Zap className="w-8 h-8 text-orange-400" />,
+      icon: <Zap className="w-8 h-8 text-muted" />,
       title: t("streakTitle", { count: context?.streakCount || 0 }),
       subtitle: t("streakSubtitle"),
       primaryLabel: t("shareStreak"),
       accent: "orange",
     },
     premium_upgrade: {
-      icon: <Trophy className="w-8 h-8 text-purple-400" />,
+      icon: <Trophy className="w-8 h-8 text-muted" />,
       title: t("premiumTitle"),
       subtitle: t("premiumSubtitle"),
       primaryLabel: t("sharePremium"),
       accent: "purple",
     },
     referral: {
-      icon: <Share2 className="w-8 h-8 text-blue-400" />,
+      icon: <Share2 className="w-8 h-8 text-muted" />,
       title: t("referralTitle"),
       subtitle: t("referralSubtitle"),
       primaryLabel: t("inviteFriends"),
@@ -222,12 +222,12 @@ export function PostActionModal({
 
   const c = config[type];
   const accentBg = {
-    emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
+    emerald: "bg-green-tint border-line text-green",
     rose: "bg-primary/10 border-primary/20 text-primary",
-    yellow: "bg-yellow-500/10 border-yellow-500/20 text-yellow-400",
-    orange: "bg-orange-500/10 border-orange-500/20 text-orange-400",
-    purple: "bg-purple-500/10 border-purple-500/20 text-purple-400",
-    blue: "bg-blue-500/10 border-blue-500/20 text-blue-400",
+    yellow: "bg-sand-deep border-line text-pending",
+    orange: "bg-sand-deep border-line text-muted",
+    purple: "bg-sand-deep border-line text-muted",
+    blue: "bg-sand-deep border-line text-muted",
   }[c.accent];
 
   return (
@@ -255,7 +255,7 @@ export function PostActionModal({
               <div className="w-10 h-1 rounded-full bg-sand-deep" />
             </div>
 
-            <div className="bg-surface border border-line rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            <div className="bg-surface border border-line rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
               {/* Header */}
               <div className="relative px-6 pt-5 pb-4">
                 <button
@@ -288,7 +288,7 @@ export function PostActionModal({
                         {context.date} · {context.time?.slice(0, 5)} {context.price !== undefined ? `· ${context.price > 0 ? `€${context.price}` : t("free")}` : ""}
                       </p>
                     </div>
-                    <div className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${accentBg}`}>
+                    <div className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-[0.14em] ${accentBg}`}>
                       {type === "ride_published" ? t("live") : type === "booking_confirmed" ? t("confirmed") : t("completed")}
                     </div>
                   </div>
@@ -329,21 +329,21 @@ export function PostActionModal({
                         onClick={handleCopy}
                         className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
-                        {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-muted" />}
+                        {copied ? <Check className="w-5 h-5 text-green" /> : <Link2 className="w-5 h-5 text-muted" />}
                         <span className="text-[10px] text-muted">{copied ? t("copied") : t("copy")}</span>
                       </button>
                       <button
                         onClick={handleWhatsApp}
                         className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
-                        <MessageCircle className="w-5 h-5 text-emerald-400" />
+                        <MessageCircle className="w-5 h-5 text-green" />
                         <span className="text-[10px] text-muted">WhatsApp</span>
                       </button>
                       <button
                         onClick={handleTelegram}
                         className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                       >
-                        <Send className="w-5 h-5 text-blue-400" />
+                        <Send className="w-5 h-5 text-muted" />
                         <span className="text-[10px] text-muted">Telegram</span>
                       </button>
                       <button

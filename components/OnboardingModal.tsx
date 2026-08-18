@@ -137,8 +137,8 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
           <X className="w-4 h-4" />
         </button>
 
-        <div className="relative overflow-hidden rounded-3xl bg-surface border border-line shadow-2xl">
-          <div className={`absolute inset-0 bg-gradient-to-br ${currentColor} opacity-8`} />
+        <div className="relative overflow-hidden rounded-2xl bg-surface border border-line shadow-2xl">
+          
 
           <div className="relative p-6 sm:p-8">
             <AnimatePresence mode="wait">
@@ -156,7 +156,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   transition={{ delay: 0.08, type: "spring" }}
                   className="flex justify-center mb-5"
                 >
-                  <div className={`p-5 rounded-2xl bg-gradient-to-br ${currentColor} bg-opacity-15`}>
+                  <div className="rounded-2xl border border-line bg-green-tint p-5">
                     <IconComponent className="w-14 h-14 text-primary" />
                   </div>
                 </motion.div>

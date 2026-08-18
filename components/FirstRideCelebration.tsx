@@ -54,7 +54,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     first_ride: {
       title: t("firstRideTitle"),
       subtitle: t("firstRideSubtitle"),
-      icon: <Trophy className="w-12 h-12 text-yellow-400" />,
+      icon: <Trophy className="w-12 h-12 text-pending" />,
     },
     first_booking: {
       title: t("firstBookingTitle"),
@@ -64,7 +64,7 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
     level_up: {
       title: title || t("levelUpTitle"),
       subtitle: subtitle || t("levelUpSubtitle"),
-      icon: <Star className="w-12 h-12 text-yellow-400 fill-yellow-400" />,
+      icon: <Star className="w-12 h-12 text-pending fill-yellow-400" />,
     },
     badge_earned: {
       title: title || t("badgeTitle"),
@@ -127,14 +127,14 @@ export function CelebrationModal({ type, title, subtitle, onClose }: Celebration
               <X className="w-5 h-5" />
             </button>
 
-            <div className="relative overflow-hidden rounded-3xl bg-surface border border-line shadow-2xl p-8 text-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+            <div className="relative overflow-hidden rounded-2xl bg-surface border border-line shadow-2xl p-8 text-center">
+              
 
               <motion.div
                 initial={{ scale: 0, rotate: -20 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 15, delay: 0.4 }}
-                className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-[#2D6A4F]/10 border border-primary/20 mb-6"
+                className="relative mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full border border-line bg-green-tint"
               >
                 {content.icon}
               </motion.div>

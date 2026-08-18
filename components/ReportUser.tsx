@@ -70,7 +70,7 @@ export function ReportUser({ reportedId, rideId, reportedName, iconOnly = false 
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur">
-          <div className="w-full max-w-md rounded-3xl border border-line bg-elevated p-6">
+          <div className="w-full max-w-md rounded-2xl border border-line bg-elevated p-6">
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">

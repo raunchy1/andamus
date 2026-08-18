@@ -10,6 +10,7 @@ import type { VehicleWithImages } from "@/lib/types/vehicle";
 import { VEHICLE_FEATURES } from "@/lib/types/vehicle";
 import { VehicleTrustScore } from "./VehicleTrustScore";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface VehicleEditPanelProps {
   vehicle: VehicleWithImages;
@@ -18,6 +19,7 @@ interface VehicleEditPanelProps {
 }
 
 export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPanelProps) {
+  const t = useTranslations("vehicles");
   const [uploading, setUploading] = useState(false);
   const [deletingImg, setDeletingImg] = useState<string | null>(null);
   const [description, setDescription] = useState(vehicle.description ?? "");
@@ -47,7 +49,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
           const err = await res.json().catch(() => ({}));
           throw new Error(err.error ?? "Upload fallito");
         }
-        toast.success("📸 Foto aggiunta!");
+        toast.success(t("photoAdded"));
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Errore upload");
       }
@@ -84,7 +86,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
         body: JSON.stringify({ description }),
       });
       if (!res.ok) throw new Error("Errore salvataggio");
-      toast.success("Descrizione salvata ✓");
+      toast.success(t("descriptionSaved"));
       onRefresh();
     } catch {
       toast.error("Errore nel salvare la descrizione");
@@ -157,7 +159,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
                   />
                   {/* Primary badge */}
                   {img.is_primary && (
-                    <span className="absolute bottom-1 left-1 text-[9px] font-extrabold uppercase bg-primary text-white px-1.5 py-0.5 rounded-md">
+                    <span className="absolute bottom-1 left-1 text-[9px] font-semibold uppercase bg-primary text-white px-1.5 py-0.5 rounded-md">
                       Principale
                     </span>
                   )}
@@ -214,9 +216,9 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
 
           {/* Trust tip */}
           {images.length < 3 && (
-            <div className="mt-3 flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <p className="text-xs text-amber-300">
+            <div className="mt-3 flex items-start gap-2 bg-sand-deep border border-line rounded-xl px-4 py-3">
+              <AlertCircle className="w-4 h-4 text-pending shrink-0 mt-0.5" />
+              <p className="text-xs text-pending">
                 Aggiungi almeno <strong>3 foto</strong> per aumentare il tuo punteggio di fiducia
               </p>
             </div>

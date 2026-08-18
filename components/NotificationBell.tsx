@@ -42,12 +42,12 @@ const notificationIcons = {
 };
 
 const notificationColors = {
-  booking_request: "bg-blue-500/20 text-blue-400",
-  booking_accepted: "bg-green-500/20 text-green-400",
+  booking_request: "bg-sand-deep text-muted",
+  booking_accepted: "bg-green-tint text-green",
   booking_rejected: "bg-bad/20 text-bad",
-  new_message: "bg-purple-500/20 text-purple-400",
-  new_review: "bg-yellow-500/20 text-yellow-400",
-  ride_alert: "bg-orange-500/20 text-orange-400",
+  new_message: "bg-sand-deep text-muted",
+  new_review: "bg-sand-deep text-pending",
+  ride_alert: "bg-sand-deep text-muted",
 };
 
 function timeAgo(date: string, t: (key: string, values?: Record<string, string | number>) => string) {

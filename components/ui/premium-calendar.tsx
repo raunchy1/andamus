@@ -135,7 +135,7 @@ export function PremiumCalendar({
   return (
     <div className="flex flex-col sm:flex-row gap-0 sm:gap-1">
       {/* Left Panel — Selected Day Info + Quick Actions */}
-      <div className="sm:w-52 p-5 sm:border-r border-line flex flex-col justify-between bg-gradient-to-b from-sand-deep/40 to-transparent">
+      <div className="flex flex-col justify-between border-line p-5 sm:w-52 sm:border-r">
         <div>
           <div className="flex items-center gap-2 mb-5">
             <CalendarDays className="w-4 h-4 text-muted" strokeWidth={1.5} />
@@ -225,7 +225,7 @@ export function PremiumCalendar({
         <div className="grid grid-cols-7 mb-2">
           {WEEKDAYS.map((d) => (
             <div key={d} className="h-9 flex items-center justify-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-faint">{d}</span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">{d}</span>
             </div>
           ))}
         </div>
@@ -286,7 +286,7 @@ export function PremiumCalendar({
                   {availCount !== undefined && !isSelected && !isDisabled && availCount > 0 && (
                     <span className={cn(
                       "absolute bottom-1 w-1 h-1 rounded-full",
-                      availCount >= 5 ? "bg-emerald-400" : availCount >= 2 ? "bg-yellow-400" : "bg-sand-deep"
+                      availCount >= 5 ? "bg-green" : availCount >= 2 ? "bg-pending" : "bg-sand-deep"
                     )} />
                   )}
                   {isToday && !isSelected && (
@@ -300,8 +300,8 @@ export function PremiumCalendar({
 
         {/* Legend */}
         <div className="mt-4 pt-3 border-t border-line flex items-center justify-center gap-4">
-          <LegendDot color="bg-emerald-400" label={t("legend5Plus")} />
-          <LegendDot color="bg-yellow-400" label={t("legend2To4")} />
+          <LegendDot color="bg-green" label={t("legend5Plus")} />
+          <LegendDot color="bg-pending" label={t("legend2To4")} />
           <LegendDot color="bg-sand-deep" label={t("legend1")} />
         </div>
       </div>

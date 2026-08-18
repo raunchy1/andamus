@@ -72,7 +72,7 @@ export function MeetYourRide({
 
         <TiltCard
           tiltStrength={3}
-          className="bg-gradient-to-br from-primary/[0.06] via-transparent to-transparent border border-primary/15 rounded-3xl overflow-hidden"
+          className="overflow-hidden rounded-2xl border border-line bg-surface"
         >
           {/* Vehicle gallery */}
           {vehicle.images.length > 0 ? (
@@ -133,21 +133,21 @@ export function MeetYourRide({
               {vehicle.seats_available && (
                 <div className="bg-surface rounded-2xl p-3 flex flex-col items-center gap-1">
                   <Users className="w-5 h-5 text-primary" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Posti</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40">Posti</p>
                   <p className="font-bold text-fg">{vehicle.seats_available}</p>
                 </div>
               )}
               {vehicle.fuel_type && (
                 <div className="bg-surface rounded-2xl p-3 flex flex-col items-center gap-1">
                   <Fuel className="w-5 h-5 text-primary" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Motore</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40">Motore</p>
                   <p className="font-bold text-fg text-center text-sm">{fuelLabel}</p>
                 </div>
               )}
               {vehicle.transmission && (
                 <div className="bg-surface rounded-2xl p-3 flex flex-col items-center gap-1">
                   <Settings className="w-5 h-5 text-primary" />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-fg/40">Cambio</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40">Cambio</p>
                   <p className="font-bold text-fg text-center text-sm">{transLabel}</p>
                 </div>
               )}
@@ -156,9 +156,9 @@ export function MeetYourRide({
             {/* Trust indicators */}
             <div className="flex items-center gap-3 mb-4 flex-wrap">
               {vehicle.verified && (
-                <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                <div className="flex items-center gap-1.5 bg-green-tint border border-line px-3 py-1.5 rounded-full">
+                  <ShieldCheck className="w-3.5 h-3.5 text-green" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-green">
                     Veicolo Verificato
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export function MeetYourRide({
               {score.total >= 80 && (
                 <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 px-3 py-1.5 rounded-full">
                   <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                     Profilo Completo
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export function MeetYourRide({
               {vehicle.rides_count > 0 && (
                 <div className="flex items-center gap-1.5 bg-surface border border-line px-3 py-1.5 rounded-full">
                   <Car className="w-3.5 h-3.5 text-fg/50" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-fg/50">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/50">
                     {vehicle.rides_count} corse effettuate
                   </span>
                 </div>
@@ -193,7 +193,7 @@ export function MeetYourRide({
             {/* Comfort features */}
             {featureIcons.length > 0 && (
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-2">
                   Comfort e dotazioni
                 </p>
                 <div className="flex flex-wrap gap-2">

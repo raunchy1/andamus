@@ -107,7 +107,7 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-[#2D6A4F] mb-6"
+            className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green"
           >
             <Rocket className="w-10 h-10 text-white" />
           </motion.div>
@@ -115,7 +115,7 @@ export default function LaunchPage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl font-extrabold tracking-tight mb-4"
+            className="text-4xl font-semibold tracking-tight mb-4"
           >
             {t("welcome")}
           </motion.h1>
@@ -145,7 +145,7 @@ export default function LaunchPage() {
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="h-full bg-gradient-to-r from-primary to-[#2D6A4F] rounded-full"
+              className="h-full rounded-full bg-green"
             />
           </div>
         </motion.div>
@@ -251,7 +251,7 @@ export default function LaunchPage() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-primary/20 to-[#2D6A4F]/20 border border-primary/30 text-center"
+            className="mt-8 rounded-2xl border border-line bg-green-tint p-6 text-center"
           >
             <h2 className="text-2xl font-bold text-ink mb-2">
               {t("allDone")}

@@ -12,7 +12,7 @@ export function RideDetailSkeleton() {
         </div>
 
         {/* Driver card */}
-        <div className="bg-elevated rounded-3xl p-6 flex items-center gap-4">
+        <div className="bg-elevated rounded-2xl p-6 flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-surface" />
           <div className="flex-1 space-y-2">
             <div className="h-4 w-32 bg-surface rounded" />

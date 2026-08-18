@@ -132,7 +132,7 @@ export function SafetyButton() {
               animate={reduce ? { opacity: 1 } : { y: 0 }}
               exit={reduce ? { opacity: 0 } : { y: "100%" }}
               transition={{ type: "spring", damping: 32, stiffness: 320 }}
-              className="fixed inset-x-0 bottom-0 z-[151] max-h-[88dvh] overflow-y-auto rounded-t-3xl border-t border-line bg-surface pb-[env(safe-area-inset-bottom,0px)] md:inset-x-auto md:right-8 md:bottom-8 md:w-[400px] md:rounded-3xl md:border"
+              className="fixed inset-x-0 bottom-0 z-[151] max-h-[88dvh] overflow-y-auto rounded-t-3xl border-t border-line bg-surface pb-[env(safe-area-inset-bottom,0px)] md:inset-x-auto md:right-8 md:bottom-8 md:w-[400px] md:rounded-2xl md:border"
             >
               <div className="flex justify-center pb-1 pt-3 md:hidden">
                 <div className="h-1 w-10 rounded-full bg-track" />

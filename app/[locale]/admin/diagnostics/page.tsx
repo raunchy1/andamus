@@ -193,7 +193,7 @@ export default function DiagnosticsPage() {
         <p className="font-mono text-[10px] uppercase tracking-widest text-dim">
           admin / diagnostics
         </p>
-        <h1 className="mb-8 mt-1 text-3xl font-extrabold tracking-tighter lowercase">
+        <h1 className="mb-8 mt-1 text-3xl font-semibold tracking-tighter lowercase">
           beta diagnostics
         </h1>
 

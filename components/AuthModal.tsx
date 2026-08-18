@@ -169,7 +169,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       
       <div
         id="auth-modal-content"
-        className={`w-full sm:max-w-md bg-surface rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-200 ${
+        className={`w-full sm:max-w-md bg-surface rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden transition-all duration-200 ${
           isVisible ? "translate-y-0 sm:scale-100" : "translate-y-8 sm:scale-95"
         }`}
         style={{ maxHeight: "92vh", overflowY: "auto" }}
@@ -195,7 +195,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
               <Car size={24} strokeWidth={2.5} />
             </div>
-            <h2 className="text-2xl font-black text-ink tracking-tighter uppercase">
+            <h2 className="text-2xl font-semibold text-ink tracking-tighter uppercase">
               {mode === "login" ? t("loginTitle") : t("registerTitle")}
             </h2>
           </div>
@@ -209,7 +209,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           <div className="flex p-1 bg-surface border border-line rounded-2xl">
             <button
               onClick={() => setMode("login")}
-              className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+              className={`flex-1 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] rounded-xl transition-all ${
                 mode === "login" 
                   ? "bg-primary text-white shadow-lg shadow-primary/20" 
                   : "text-faint hover:text-muted"
@@ -219,7 +219,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             </button>
             <button
               onClick={() => setMode("register")}
-              className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+              className={`flex-1 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] rounded-xl transition-all ${
                 mode === "register" 
                   ? "bg-primary text-white shadow-lg shadow-primary/20" 
                   : "text-faint hover:text-muted"
@@ -234,7 +234,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         <div className="px-6 pb-8 space-y-4">
           {mode === "register" && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
                 {t("nameLabel")}
               </label>
               <div className="relative group">
@@ -253,7 +253,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           )}
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
               {t("emailLabel")}
             </label>
             <div className="relative group">
@@ -271,7 +271,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
               {t("passwordLabel")}
             </label>
             <div className="relative group">
@@ -297,7 +297,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
           {mode === "register" && (
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-faint ml-1">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
                 {t("confirmPasswordLabel")}
               </label>
               <div className="relative group">
@@ -318,7 +318,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           <button
             onClick={mode === "login" ? handleLogin : handleRegister}
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-white font-black uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-white font-semibold uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />

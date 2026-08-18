@@ -180,11 +180,11 @@ export function EmptyStateSearch({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto max-w-md flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-orange-500/20 bg-orange-500/5 text-orange-400 text-xs font-semibold backdrop-blur-md shadow-lg"
+          className="mx-auto max-w-md flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-line bg-sand-deep text-muted text-xs font-semibold backdrop-blur-md shadow-lg"
         >
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sand-deep opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-sand-deep"></span>
           </span>
           {t("othersSearching", { count: recovery.otherSearchersCount })}
         </motion.div>
@@ -202,7 +202,7 @@ export function EmptyStateSearch({
           {recovery.flexibleDates.length > 0 && (
             <div className="p-5 rounded-2xl border border-line bg-surface backdrop-blur-md shadow-2xl">
               <h4 className="text-sm font-semibold text-fg mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 {t("flexibleDatesAvailable")}
@@ -216,7 +216,7 @@ export function EmptyStateSearch({
                       onSelectSuggestion?.(undefined, undefined, item.date);
                       Analytics.trackEvent("empty_search_recovered", { type: "flexible_date", date: item.date });
                     }}
-                    className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface hover:bg-sand-deep hover:border-emerald-500/30 transition duration-200 text-xs text-ink"
+                    className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface hover:bg-sand-deep hover:border-line transition duration-200 text-xs text-ink"
                   >
                     <span className="font-semibold">
                       {new Date(item.date).toLocaleDateString(locale, {
@@ -225,7 +225,7 @@ export function EmptyStateSearch({
                         month: "short",
                       })}
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
+                    <span className="px-2 py-0.5 rounded-full bg-green-tint text-green font-bold border border-line">
                       {item.ride_count} {item.ride_count === 1 ? t("rideSingular") : t("ridePlural")}
                     </span>
                   </button>
@@ -257,7 +257,7 @@ export function EmptyStateSearch({
                   >
                     <div className="flex justify-between items-center w-full mb-1">
                       <span className="font-bold text-green">
-                        {item.from_city} ➔ {item.to_city}
+                        {item.from_city} — {item.to_city}
                       </span>
                       <span className="text-[10px] text-faint font-mono">+{item.distance_diff}km</span>
                     </div>
@@ -272,7 +272,7 @@ export function EmptyStateSearch({
           {recovery.matchingRequests.length > 0 && (
             <div className="col-span-full p-5 rounded-2xl border border-line bg-surface backdrop-blur-md shadow-2xl">
               <h4 className="text-sm font-semibold text-fg mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
                 {t("peopleLookingTitle")}
@@ -286,9 +286,9 @@ export function EmptyStateSearch({
                   >
                     <div className="flex items-center gap-2.5 mb-3">
                       {req.user?.avatar_url ? (
-                        <img src={req.user.avatar_url} alt="" className="w-8 h-8 rounded-full border border-purple-500/30 object-cover" />
+                        <img src={req.user.avatar_url} alt="" className="w-8 h-8 rounded-full border border-line object-cover" />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold font-mono">
+                        <div className="w-8 h-8 rounded-full bg-sand-deep text-muted flex items-center justify-center font-bold font-mono">
                           {req.user?.full_name?.[0] || "?"}
                         </div>
                       )}
@@ -302,10 +302,10 @@ export function EmptyStateSearch({
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center text-[10px] text-purple-300">
+                    <div className="flex justify-between items-center text-[10px] text-muted">
                       <span>{t("seatsLabel", { count: req.seats_needed })}</span>
                       <Link href={`/${locale}/offri?from=${req.from_city}&to=${req.to_city}&date=${req.date}`}>
-                        <span className="px-2 py-1 rounded bg-purple-500/15 border border-purple-500/25 hover:bg-purple-500/30 transition font-semibold text-purple-200">
+                        <span className="px-2 py-1 rounded bg-sand-deep border border-line hover:bg-sand-deep transition font-semibold text-muted">
                           {t("offerRide")}
                         </span>
                       </Link>

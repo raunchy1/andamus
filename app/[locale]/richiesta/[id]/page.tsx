@@ -228,7 +228,7 @@ export default function RequestDetailPage() {
 
             {/* Actions for Drivers */}
             {!isMyRequest && user && (
-              <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/[0.05] via-[#2D6A4F]/[0.02] to-transparent p-8 text-center backdrop-blur-sm">
+              <div className="rounded-2xl border border-line bg-green-tint p-8 text-center">
                 <MapPin className="mx-auto mb-3 h-6 w-6 text-muted" strokeWidth={1.5} aria-hidden />
                 <p className="mb-2 font-heading text-lg text-ink">{t("haveRidePrompt")}</p>
                 <p className="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted">

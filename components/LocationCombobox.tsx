@@ -326,7 +326,7 @@ export function LocationCombobox({
         <MapPin size={20} strokeWidth={1.5} className="text-muted flex-shrink-0" />
         <div className="flex-1 flex flex-col min-w-0">
           {label ? (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-dim -mb-1">{label}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-dim -mb-1">{label}</span>
           ) : null}
           <span
             className={cn(

@@ -142,7 +142,7 @@ export function VehicleMakeCombobox({
                 {/* Popular section */}
                 {!query && makes.some((m) => m.is_popular) && (
                   <>
-                    <p className="px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-fg/30">
+                    <p className="px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/30">
                       Popolari
                     </p>
                     {makes
@@ -156,7 +156,7 @@ export function VehicleMakeCombobox({
                         />
                       ))}
                     <div className="mx-4 my-1 border-t border-line/20" />
-                    <p className="px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-fg/30">
+                    <p className="px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/30">
                       Tutte le marche
                     </p>
                     {makes

@@ -126,7 +126,7 @@ export function PremiumDatePicker({
         <Calendar className="w-5 h-5 text-muted flex-shrink-0" strokeWidth={1.5} />
         <div className="flex flex-col w-full min-w-0">
           {resolvedLabel ? (
-            <span className="text-[10px] font-bold uppercase tracking-widest text-dim mb-0.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-dim mb-0.5">
               {resolvedLabel}
             </span>
           ) : null}

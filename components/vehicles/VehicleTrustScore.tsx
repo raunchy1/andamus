@@ -67,7 +67,7 @@ export function VehicleTrustScore({
         {/* Center label */}
         <div className="absolute flex flex-col items-center">
           <span
-            className={`font-extrabold leading-none ${
+            className={`font-semibold leading-none ${
               size === "sm"
                 ? "text-sm"
                 : size === "md"
@@ -105,8 +105,7 @@ export function VehicleTrustScore({
               key={i}
               className="flex items-start gap-2 text-xs text-fg/60 bg-elevated px-3 py-2 rounded-xl"
             >
-              <span className="text-amber-400 shrink-0" aria-hidden="true">
-                💡
+              <span className="text-pending shrink-0" aria-hidden="true">
               </span>
               <span>{tip}</span>
             </div>

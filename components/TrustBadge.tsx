@@ -30,13 +30,13 @@ export function TrustBadge({ profile, size = "md", showScore = false, showLabel 
 
   if (score >= 80) {
     Icon = Award;
-    colorClass = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+    colorClass = "bg-green-tint text-green border-line";
   } else if (score >= 60) {
     Icon = BadgeCheck;
-    colorClass = "bg-blue-500/10 text-blue-600 border-blue-500/20";
+    colorClass = "bg-sand-deep text-muted border-line";
   } else if (score >= 40) {
     Icon = Star;
-    colorClass = "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+    colorClass = "bg-sand-deep text-pending border-line";
   }
 
   return (

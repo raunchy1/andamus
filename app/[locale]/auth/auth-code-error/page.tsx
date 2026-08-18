@@ -81,7 +81,7 @@ export default async function AuthCodeErrorPage({
 
   return (
     <div className="min-h-[100dvh] bg-bg flex items-center justify-center px-6 py-16">
-      <div className="max-w-md w-full text-center space-y-8 bg-surface border border-line rounded-3xl p-8 shadow-[0_30px_80px_-25px_rgba(45,106,79,0.15)]">
+      <div className="max-w-md w-full text-center space-y-8 bg-surface border border-line rounded-2xl p-8 shadow-[0_30px_80px_-25px_rgba(45,106,79,0.15)]">
         
         {/* Warning Icon */}
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(45,106,79,0.1)]">
@@ -90,7 +90,7 @@ export default async function AuthCodeErrorPage({
 
         {/* Diagnostic Titles */}
         <div className="space-y-3">
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink border-none p-0 m-0">
+          <h1 className="text-2xl font-semibold tracking-tight text-ink border-none p-0 m-0">
             {errorTitle}
           </h1>
           <p className="text-sm text-muted leading-relaxed">
@@ -98,7 +98,7 @@ export default async function AuthCodeErrorPage({
           </p>
           {solutionText && (
             <p className="text-xs text-faint leading-relaxed italic bg-surface p-3 rounded-xl border border-line">
-              💡 {solutionText}
+              {solutionText}
             </p>
           )}
         </div>

@@ -43,7 +43,7 @@ export function AlertModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
       <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6">
-        <h3 className="mb-1 text-xl font-extrabold tracking-tight text-fg">{t("saveAlert")}</h3>
+        <h3 className="mb-1 text-xl font-semibold tracking-tight text-fg">{t("saveAlert")}</h3>
         <p className="mb-4 text-sm text-muted">{t("alertDescription")}</p>
         <form
           onSubmit={async (e) => {

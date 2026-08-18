@@ -135,7 +135,7 @@ function JoinContent() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full text-center"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-6">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-green">
             <Gift className="w-10 h-10 text-accent-fg" />
           </div>
           
@@ -148,7 +148,7 @@ function JoinContent() {
               <p className="text-muted mb-6">
                 {t("referralBonusText")}
               </p>
-              <div className="flex items-center justify-center gap-2 text-green-400 mb-6">
+              <div className="flex items-center justify-center gap-2 text-green mb-6">
                 <CheckCircle className="w-5 h-5" />
                 <span>{t("bonusApplied")}</span>
               </div>
@@ -186,7 +186,7 @@ function JoinContent() {
         </Link>
 
         <div className="text-center mb-8">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-6">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-green">
             <Gift className="w-10 h-10 text-accent-fg" />
           </div>
           
@@ -209,15 +209,15 @@ function JoinContent() {
           <h2 className="text-fg font-semibold mb-4">{t("benefitsTitle")}</h2>
           <ul className="space-y-3">
             <li className="flex items-center gap-3 text-muted">
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-green" />
               <span>{t("benefit1")}</span>
             </li>
             <li className="flex items-center gap-3 text-muted">
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-green" />
               <span>{t("benefit2")}</span>
             </li>
             <li className="flex items-center gap-3 text-muted">
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-green" />
               <span>{t("benefit3")}</span>
             </li>
             {referralCode && (

@@ -95,7 +95,7 @@ export default async function EventsHubPage({
         </h2>
 
         {parsedEvents.length === 0 ? (
-          <div className="mt-8 rounded-3xl border border-dashed border-line py-16 text-center">
+          <div className="mt-8 rounded-2xl border border-dashed border-line py-16 text-center">
             <Calendar className="mx-auto mb-3 h-10 w-10 text-faint" />
             <p className="text-sm text-muted">{t("noEvents")}</p>
           </div>
@@ -105,7 +105,7 @@ export default async function EventsHubPage({
               <Link
                 key={event.id}
                 href={`/${locale}/cerca?event=${event.slug}`}
-                className="group flex flex-col overflow-hidden rounded-3xl border border-line bg-surface transition-colors hover:border-accent/40"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-colors hover:border-accent/40"
               >
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-2">
                   <Image
@@ -124,7 +124,7 @@ export default async function EventsHubPage({
 
                 <div className="flex flex-1 flex-col gap-3 p-5">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
                       {event.category}
                     </p>
                     <h3 className="mt-1 text-base font-semibold leading-snug text-fg">
@@ -158,7 +158,7 @@ export default async function EventsHubPage({
         )}
       </div>
 
-      <section className="mt-20 grid gap-8 rounded-3xl border border-line bg-surface p-8 sm:grid-cols-3">
+      <section className="mt-20 grid gap-8 rounded-2xl border border-line bg-surface p-8 sm:grid-cols-3">
         {trustPoints.map(({ Icon, title, desc }) => (
           <div key={title}>
             <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent-dim text-accent">

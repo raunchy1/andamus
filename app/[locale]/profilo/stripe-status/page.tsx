@@ -195,22 +195,22 @@ export default function StripeStatusPage() {
         </div>
 
         {/* Status Card */}
-        <div className="bg-surface border border-line rounded-3xl p-6 shadow-lg relative overflow-hidden text-fg">
+        <div className="bg-surface border border-line rounded-2xl p-6 shadow-lg relative overflow-hidden text-fg">
           {/* Subtle accent glows */}
-          {isConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />}
-          {isPendingSetup && <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />}
+          {isConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-green-tint rounded-full blur-2xl pointer-events-none" />}
+          {isPendingSetup && <div className="absolute -top-10 -right-10 w-24 h-24 bg-sand-deep rounded-full blur-2xl pointer-events-none" />}
           {isNotConnected && <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />}
 
           <div className="flex flex-col items-center text-center space-y-4 relative z-10">
             {/* Status Icons */}
             {isConnected && (
-              <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-lg shadow-emerald-500/5">
-                <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+              <div className="w-16 h-16 rounded-2xl bg-green-tint border border-line flex items-center justify-center shadow-lg shadow-emerald-500/5">
+                <CheckCircle2 className="w-8 h-8 text-green" />
               </div>
             )}
             {isPendingSetup && (
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-lg shadow-amber-500/5">
-                <AlertTriangle className="w-8 h-8 text-amber-600" />
+              <div className="w-16 h-16 rounded-2xl bg-sand-deep border border-line flex items-center justify-center shadow-lg shadow-amber-500/5">
+                <AlertTriangle className="w-8 h-8 text-pending" />
               </div>
             )}
             {isNotConnected && (
@@ -221,14 +221,14 @@ export default function StripeStatusPage() {
 
             {/* Status Text */}
             <div className="space-y-1">
-              <h2 className="text-xl font-extrabold tracking-tight">
+              <h2 className="text-xl font-semibold tracking-tight">
                 {isConnected && texts.connected}
                 {isPendingSetup && texts.pending}
                 {isNotConnected && texts.notConnected}
               </h2>
-              <p className="text-xs font-bold uppercase tracking-wider opacity-60">
-                {isConnected && <span className="text-emerald-600">{texts.connectedStatus}</span>}
-                {isPendingSetup && <span className="text-amber-600">{texts.pendingStatus}</span>}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] opacity-60">
+                {isConnected && <span className="text-green">{texts.connectedStatus}</span>}
+                {isPendingSetup && <span className="text-pending">{texts.pendingStatus}</span>}
                 {isNotConnected && <span className="text-bad">{texts.notConnectedStatus}</span>}
               </p>
             </div>
@@ -246,7 +246,7 @@ export default function StripeStatusPage() {
                 type="button"
                 onClick={handleOnboard}
                 disabled={isPending}
-                className="w-full mt-4 py-4 px-6 rounded-2xl bg-primary text-white font-extrabold text-sm uppercase tracking-wider hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
+                className="w-full mt-4 py-4 px-6 rounded-2xl bg-primary text-white font-semibold text-sm uppercase tracking-wider hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
               >
                 {isPending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />

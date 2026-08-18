@@ -57,7 +57,7 @@ export function ReportModal({ open, onClose }: ReportModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
-      <div className="w-full sm:w-full sm:max-w-md bg-surface sm:rounded-3xl rounded-t-3xl border border-line shadow-2xl overflow-hidden">
+      <div className="w-full sm:w-full sm:max-w-md bg-surface sm:rounded-2xl rounded-t-3xl border border-line shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export function ReportModal({ open, onClose }: ReportModalProps) {
         <div className="px-5 pb-6 space-y-4">
           {sent ? (
             <div className="py-8 flex flex-col items-center gap-3">
-              <CheckCircle className="w-12 h-12 text-green-400" />
+              <CheckCircle className="w-12 h-12 text-green" />
               <p className="text-ink font-medium">{t("thankYou")}</p>
             </div>
           ) : (

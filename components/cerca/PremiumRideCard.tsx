@@ -7,7 +7,6 @@ import { Car, Star, ChevronRight, BadgeCheck, User, Zap, Sparkles } from "lucide
 import { useLocale } from "next-intl";
 import { Analytics } from "@/lib/analytics";
 import { TiltCard } from "@/components/ui/premium/tilt-card";
-import { GradientText } from "@/components/ui/premium/gradient-text";
 import { getDeterministicDriverMetrics, getDeterministicActivity } from "@/lib/reputation";
 
 interface PremiumRideCardProps {
@@ -72,7 +71,7 @@ export function PremiumRideCard({
         }}
         className={`group relative block overflow-hidden rounded-2xl ${isGrid ? "p-6" : "p-4 sm:p-6"} transition-all duration-300 active:scale-[0.98] cursor-pointer border ${
           isFeatured
-            ? "border-green/20 bg-gradient-to-br from-green/[0.06] via-transparent to-transparent"
+            ? "border-green bg-surface"
             : "border-line bg-surface hover:bg-sand hover:border-line-strong"
         }`}
         style={{
@@ -84,7 +83,7 @@ export function PremiumRideCard({
         {/* Scarcity alert bubble if applicable */}
         {activity.seatsScarcityText && (
           <div className="absolute top-0 right-0 left-0 bg-primary/10 border-b border-primary/15 py-1 px-4 text-center">
-            <span className="text-[9px] font-extrabold tracking-widest text-primary uppercase animate-pulse flex items-center justify-center gap-1">
+            <span className="text-[9px] font-semibold tracking-widest text-primary uppercase animate-pulse flex items-center justify-center gap-1">
               <Zap className="w-2.5 h-2.5 fill-[#2D6A4F]" />
               {activity.seatsScarcityText}
             </span>
@@ -94,13 +93,13 @@ export function PremiumRideCard({
         {/* Top Row: Date/Time + Price */}
         <div className={`flex justify-between items-start ${activity.seatsScarcityText ? "mt-5" : ""} mb-4 sm:mb-6 gap-4`}>
           <div className="space-y-1 min-w-0">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
               {isFeatured && (
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               )}
               {ride.is_boosted && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 border border-primary/50 text-primary text-[8px] tracking-normal font-extrabold animate-pulse mr-1">
-                  🔥 RICHIESTA ALTA
+                <span className="mr-1 inline-flex items-center rounded-full border border-line bg-green-tint px-2 py-0.5 text-[10px] font-medium tracking-normal text-green">
+                  {t('highDemand')}
                 </span>
               )}
               {ride.date === today ? t('availableToday') || t('today') : formatDate(ride.date)}
@@ -114,12 +113,12 @@ export function PremiumRideCard({
           <div className="text-right flex-shrink-0">
             <div className={`font-heading font-bold tracking-tighter ${isGrid ? "text-2xl" : "text-2xl sm:text-3xl"}`}>
               {ride.price === 0 ? (
-                <GradientText>{t('free')}</GradientText>
+                <span className="text-green">{t('free')}</span>
               ) : (
                 <span className="text-ink">{`€${ride.price}`}</span>
               )}
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {t('singleSeat')}
             </div>
           </div>
@@ -128,7 +127,7 @@ export function PremiumRideCard({
         {/* Path Indicator */}
         <div className={`relative flex items-center justify-between ${isGrid ? "py-6 mb-4" : "py-6 sm:py-8"}`}>
           <div className="absolute left-0 right-0 h-[2px] bg-line" />
-          <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-green via-green to-green scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-700 ease-in-out" />
+          
 
           <div className="relative z-10 flex flex-col items-start pr-2 sm:pr-4 max-w-[40%]">
             <span className="text-[10px] sm:text-[11px] font-bold uppercase text-green mb-1 truncate max-w-full">
@@ -178,7 +177,7 @@ export function PremiumRideCard({
               )}
               {/* Online Presence Ring */}
               {metrics.isOnlineNow && (
-                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-surface animate-pulse" />
+                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-green border-2 border-surface animate-pulse" />
               )}
             </div>
 
@@ -195,7 +194,7 @@ export function PremiumRideCard({
                   {ride.profiles.name}
                 </p>
                 {metrics.isOnlineNow && (
-                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" title="Online adesso" />
+                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-green" title="Online adesso" />
                 )}
               </div>
               <div className="flex flex-wrap items-center gap-1.5 mt-0.5">

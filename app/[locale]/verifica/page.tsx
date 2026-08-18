@@ -202,7 +202,7 @@ export default function VerificationPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Status Card */}
-        <div className="mb-8 rounded-3xl bg-gradient-to-br from-primary to-primary-hover p-8 text-white">
+        <div className="mb-8 rounded-2xl bg-green p-8 text-white">
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sand-deep">
               <Shield className="h-10 w-10" />
@@ -233,7 +233,7 @@ export default function VerificationPage() {
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
                   status.email === "verified"
-                    ? "bg-green-500/20 text-green-400"
+                    ? "bg-green-tint text-green"
                     : "bg-sand-deep text-muted"
                 }`}
               >
@@ -246,13 +246,13 @@ export default function VerificationPage() {
                 </p>
               </div>
               {status.email === "verified" && (
-                <CheckCircle className="ml-auto h-6 w-6 text-green-400" />
+                <CheckCircle className="ml-auto h-6 w-6 text-green" />
               )}
             </div>
 
             {status.email !== "verified" && (
-              <div className="rounded-xl bg-yellow-500/10 p-4">
-                <p className="text-sm text-yellow-400">
+              <div className="rounded-xl bg-sand-deep p-4">
+                <p className="text-sm text-pending">
                   {t("emailVerifiedViaGoogle")}
                 </p>
               </div>
@@ -265,9 +265,9 @@ export default function VerificationPage() {
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
                   status.id === "verified"
-                    ? "bg-green-500/20 text-green-400"
+                    ? "bg-green-tint text-green"
                     : status.id === "pending"
-                    ? "bg-yellow-500/20 text-yellow-400"
+                    ? "bg-sand-deep text-pending"
                     : "bg-sand-deep text-muted"
                 }`}
               >
@@ -284,7 +284,7 @@ export default function VerificationPage() {
                 </p>
               </div>
               {status.id === "verified" && (
-                <CheckCircle className="ml-auto h-6 w-6 text-green-400" />
+                <CheckCircle className="ml-auto h-6 w-6 text-green" />
               )}
             </div>
 
@@ -318,9 +318,9 @@ export default function VerificationPage() {
               <div
                 className={`flex h-12 w-12 items-center justify-center rounded-xl ${
                   status.driver === "verified"
-                    ? "bg-green-500/20 text-green-400"
+                    ? "bg-green-tint text-green"
                     : status.driver === "pending"
-                    ? "bg-yellow-500/20 text-yellow-400"
+                    ? "bg-sand-deep text-pending"
                     : "bg-sand-deep text-muted"
                 }`}
               >
@@ -337,7 +337,7 @@ export default function VerificationPage() {
                 </p>
               </div>
               {status.driver === "verified" && (
-                <CheckCircle className="ml-auto h-6 w-6 text-green-400" />
+                <CheckCircle className="ml-auto h-6 w-6 text-green" />
               )}
             </div>
 
@@ -373,7 +373,7 @@ export default function VerificationPage() {
           </h3>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-start gap-3">
-              <Star className="h-5 w-5 text-yellow-400" />
+              <Star className="h-5 w-5 text-pending" />
               <div>
                 <p className="font-medium text-ink">{t("trustBadge")}</p>
                 <p className="text-sm text-muted">
@@ -382,7 +382,7 @@ export default function VerificationPage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Shield className="h-5 w-5 text-green-400" />
+              <Shield className="h-5 w-5 text-green" />
               <div>
                 <p className="font-medium text-ink">{t("moreSecurity")}</p>
                 <p className="text-sm text-muted">

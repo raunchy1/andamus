@@ -141,7 +141,8 @@
     "dateLabel": "Datum",
     "priceAny": "Beliebig",
     "tomorrow": "Morgen",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "highDemand": "Stark gefragt"
   },
   "offer": {
     "loginRequired": "Melde dich an, um eine Mitfahrgelegenheit zu veröffentlichen.",
@@ -1563,6 +1564,8 @@
     "moreFeatures": "+{count}",
     "edit": "Fahrzeug bearbeiten",
     "delete": "Fahrzeug löschen",
-    "setPrimary": "Als Hauptfahrzeug festlegen"
+    "setPrimary": "Als Hauptfahrzeug festlegen",
+    "photoAdded": "Foto hinzugefügt",
+    "descriptionSaved": "Beschreibung gespeichert"
   }
 }

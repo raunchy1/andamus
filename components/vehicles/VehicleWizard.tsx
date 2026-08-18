@@ -19,7 +19,7 @@ import {
 } from "@/lib/types/vehicle";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type WizardStep =
   | "brand"
@@ -70,6 +70,7 @@ const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: 36 }, (_, i) => currentYear - i);
 
 export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
+  const t = useTranslations("vehicles");
   const locale = useLocale();
   const router = useRouter();
 
@@ -255,7 +256,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
 
       if (!res.ok) throw new Error("Failed to save vehicle");
 
-      toast.success("🚗 Veicolo aggiunto con successo!");
+      toast.success(t("added"));
       onSuccess?.(vId);
     } catch (err) {
       toast.error("Errore nel salvare il veicolo");
@@ -280,7 +281,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
         </button>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-bold uppercase tracking-widest text-fg/40">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40">
               {stepIndex + 1} / {STEPS.length} — {STEP_LABELS[currentStep]}
             </span>
             <span className="text-xs font-bold text-primary">{Math.round(progress)}%</span>
@@ -428,7 +429,6 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                   }`}
                 >
                   <span className="text-2xl mb-2 block">
-                    {ft === "electric" ? "⚡" : ft === "hybrid" ? "🔋" : ft === "diesel" ? "🛢️" : ft === "lpg" ? "🟢" : ft === "petrol" ? "⛽" : "🔧"}
                   </span>
                   <span className="font-semibold text-sm">{FUEL_TYPE_LABELS[ft].it}</span>
                 </button>
@@ -458,7 +458,6 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                   }`}
                 >
                   <span className="text-2xl">
-                    {tr === "manual" ? "⚙️" : tr === "automatic" ? "🤖" : "🔄"}
                   </span>
                   <div>
                     <p className={`font-bold text-base ${transmission === tr ? "text-primary" : "text-fg"}`}>
@@ -584,7 +583,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
                       </div>
                     )}
                     {idx === 0 && (
-                      <span className="absolute bottom-1 left-1 text-[9px] font-extrabold uppercase bg-primary text-white px-1.5 py-0.5 rounded-md">
+                      <span className="absolute bottom-1 left-1 text-[9px] font-semibold uppercase bg-primary text-white px-1.5 py-0.5 rounded-md">
                         Principale
                       </span>
                     )}
@@ -688,41 +687,41 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
             {/* Summary cards */}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-elevated rounded-2xl p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-1">Veicolo</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-1">Veicolo</p>
                 <p className="font-bold text-fg">{selectedMake?.name} {selectedModel?.name}</p>
               </div>
               <div className="bg-elevated rounded-2xl p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-1">Anno</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-1">Anno</p>
                 <p className="font-bold text-fg">{year}</p>
               </div>
               {color && (
                 <div className="bg-elevated rounded-2xl p-4 flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full border border-line" style={{ backgroundColor: colorHex }} />
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-0.5">Colore</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-0.5">Colore</p>
                     <p className="font-bold text-fg">{color}</p>
                   </div>
                 </div>
               )}
               {fuelType && (
                 <div className="bg-elevated rounded-2xl p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-1">Carburante</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-1">Carburante</p>
                   <p className="font-bold text-fg">{FUEL_TYPE_LABELS[fuelType].it}</p>
                 </div>
               )}
               <div className="bg-elevated rounded-2xl p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-1">Posti</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-1">Posti</p>
                 <p className="font-bold text-fg">{seatsAvailable} passeggeri</p>
               </div>
               <div className="bg-elevated rounded-2xl p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-1">Foto</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-1">Foto</p>
                 <p className="font-bold text-fg">{images.filter(i => !i.error).length} foto</p>
               </div>
             </div>
 
             {features.length > 0 && (
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-fg/40 mb-2">Comfort</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/40 mb-2">Comfort</p>
                 <div className="flex flex-wrap gap-1.5">
                   {features.map((f) => {
                     const info = VEHICLE_FEATURES.find((fi) => fi.key === f);

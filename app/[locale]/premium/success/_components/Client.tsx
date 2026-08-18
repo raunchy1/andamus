@@ -54,11 +54,11 @@ function PremiumSuccessContent() {
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
-        <div className="mx-auto mb-6 h-20 w-20 rounded-full bg-green-500/20 flex items-center justify-center">
+        <div className="mx-auto mb-6 h-20 w-20 rounded-full bg-green-tint flex items-center justify-center">
           {verifying ? (
-            <Loader2 className="h-10 w-10 text-green-400 animate-spin" />
+            <Loader2 className="h-10 w-10 text-green animate-spin" />
           ) : (
-            <Check className="h-10 w-10 text-green-400" />
+            <Check className="h-10 w-10 text-green" />
           )}
         </div>
         <h1 className="text-3xl font-bold text-ink mb-4">

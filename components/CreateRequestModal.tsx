@@ -137,7 +137,7 @@ export function CreateRequestModal({
               <Sparkles className="h-3 w-3" />
               Cerco passaggio
             </span>
-            <h3 className="text-2xl font-black tracking-tight text-ink">Chiedi un passaggio</h3>
+            <h3 className="text-2xl font-semibold tracking-tight text-ink">Chiedi un passaggio</h3>
             <p className="text-xs text-muted mt-1">
               Lascia che la community ti trovi un passaggio. Gli autisti ti vedranno!
             </p>
@@ -155,7 +155,7 @@ export function CreateRequestModal({
           {/* Route Selector Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 {t("from")}
               </label>
               <LocationCombobox
@@ -167,7 +167,7 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 {t("to")}
               </label>
               <LocationCombobox
@@ -182,7 +182,7 @@ export function CreateRequestModal({
           {/* Date & Time Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 Data del viaggio
               </label>
               <div className="relative">
@@ -199,7 +199,7 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 Orario Indicativo (Opzionale)
               </label>
               <div className="relative">
@@ -217,7 +217,7 @@ export function CreateRequestModal({
           {/* Time Flexibility */}
           {time && (
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 Flessibilità oraria
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -247,7 +247,7 @@ export function CreateRequestModal({
           {/* Seats Needed & Max Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 Posti richiesti
               </label>
               <div className="flex gap-2">
@@ -269,7 +269,7 @@ export function CreateRequestModal({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                 Budget Massimo (Opzionale)
               </label>
               <div className="relative">
@@ -288,7 +288,7 @@ export function CreateRequestModal({
 
           {/* Notes */}
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">
+            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
               Note Aggiuntive (Dettagli, bagagli, etc.)
             </label>
             <textarea

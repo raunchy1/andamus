@@ -206,9 +206,9 @@ function ShareModal({
 
   const trustLabel = (() => {
     if (!ride.trustScore) return null;
-    if (ride.trustScore >= 80) return "🛡️ " + ts("veryReliable");
-    if (ride.trustScore >= 60) return "✅ " + ts("reliable");
-    if (ride.trustScore >= 40) return "🌱 " + ts("newDriver");
+    if (ride.trustScore >= 80) return ts("veryReliable");
+    if (ride.trustScore >= 60) return ts("reliable");
+    if (ride.trustScore >= 40) return ts("newDriver");
     return null;
   })();
 
@@ -246,7 +246,7 @@ function ShareModal({
                   {ride.date} · {ride.time.slice(0, 5)} {ride.price > 0 ? `· €${ride.price}` : `· ${ts("free")}`}
                 </p>
                 {trustLabel && (
-                  <p className="text-[10px] text-emerald-400/80 mt-1.5 font-medium">
+                  <p className="text-[10px] text-green/80 mt-1.5 font-medium">
                     {trustLabel}
                     {ride.driverRides ? ` · ${ride.driverRides} ${ts("ridesCompleted")}` : ""}
                     {ride.driverRating ? ` · ⭐ ${ride.driverRating.toFixed(1)}` : ""}
@@ -259,21 +259,21 @@ function ShareModal({
                   onClick={onCopy}
                   className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
-                  {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Link2 className="w-5 h-5 text-muted" />}
+                  {copied ? <Check className="w-5 h-5 text-green" /> : <Link2 className="w-5 h-5 text-muted" />}
                   <span className="text-[10px] text-muted">{copied ? ts("copied") : ts("copy")}</span>
                 </button>
                 <button
                   onClick={onWhatsApp}
                   className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
-                  <MessageCircle className="w-5 h-5 text-emerald-400" />
+                  <MessageCircle className="w-5 h-5 text-green" />
                   <span className="text-[10px] text-muted">WhatsApp</span>
                 </button>
                 <button
                   onClick={onTelegram}
                   className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-surface hover:bg-sand-deep border border-line transition-colors"
                 >
-                  <Send className="w-5 h-5 text-blue-400" />
+                  <Send className="w-5 h-5 text-muted" />
                   <span className="text-[10px] text-muted">Telegram</span>
                 </button>
                 <button
