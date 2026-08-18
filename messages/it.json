@@ -430,7 +430,43 @@
     "invalidFileType": "Formato non valido. Usa JPG, PNG, WebP o PDF.",
     "pullToRefresh": "Trascina per aggiornare",
     "releaseToRefresh": "Rilascia per aggiornare",
-    "completedRidesLabel": "Corse completate"
+    "completedRidesLabel": "Corse completate",
+    "memberSince": "Su Andamus da {age}",
+    "totalKm": "Chilometri",
+    "pointsCount": "{points, plural, =0 {Nessun punto} one {# punto} other {# punti}}",
+    "pointsToNextLevelNamed": "{points, plural, one {# punto} other {# punti}} a {level}",
+    "loadingProfile": "Caricamento del profilo",
+    "changePhoto": "Cambia foto profilo",
+    "photoUpdated": "Foto aggiornata",
+    "openStats": "Vedi le statistiche",
+    "activityTabsLabel": "La tua attività",
+    "seatsCount": "{count, plural, one {# posto} other {# posti}}",
+    "requestsCount": "{count, plural, =0 {nessuna richiesta} one {# richiesta} other {# richieste}}",
+    "templateOn": "Attivo",
+    "templateOff": "Sospeso",
+    "deleteRecurring": "Elimina il passaggio ricorrente",
+    "deleteAlert": "Elimina l'avviso",
+    "setupTitle": "Comincia da qui",
+    "setupIntro": "Tre cose veloci per farti trovare da chi viaggia sulla tua tratta.",
+    "setupPhotoTitle": "Aggiungi una foto",
+    "setupPhotoBody": "Serve a riconoscersi al punto d'incontro.",
+    "setupPhoneTitle": "Verifica il numero",
+    "setupPhoneBody": "I conducenti confermano più volentieri chi ha il numero verificato.",
+    "setupRideTitle": "Pubblica il primo passaggio",
+    "setupRideBody": "Bastano partenza, arrivo e orario.",
+    "setupNudge": "Ti manca un passo: {task}.",
+    "railAccount": "Account e sicurezza",
+    "railVehicle": "Veicolo",
+    "railNotifications": "Notifiche",
+    "phoneWhy": "Non viene mostrato agli altri utenti.",
+    "paymentsDetail": "Ricevi i contributi delle tue corse",
+    "garageTitle": "I tuoi veicoli",
+    "garageDetail": "Foto, comfort e targa",
+    "vehicleNotSet": "Nessun veicolo salvato",
+    "pushDetail": "Richieste e conferme sul telefono, anche ad app chiusa.",
+    "emailNotifications": "Notifiche email",
+    "emailDetail": "Scegli cosa ricevere",
+    "deleteAccount": "Elimina l'account"
   },
   "chat": {
     "messagePlaceholder": "Scrivi un messaggio...",
@@ -705,7 +741,6 @@
     "totalKm": "Km totali percorsi",
     "ridesAsDriver": "Passaggi come conducente",
     "ridesAsPassenger": "Passaggi come passeggero",
-    "peopleHelped": "Persone aiutate",
     "totalPoints": "Punti totali",
     "badgesUnlocked": "Badge sbloccati",
     "favoriteRoutesTitle": "TRATTE PREFERITE",
@@ -715,8 +750,6 @@
     "backToProfile": "Torna al profilo",
     "myStats": "Le mie statistiche",
     "subtitle": "Il tuo impatto e la tua attività su Andamus",
-    "estimatedEarnings": "Contributi stimati",
-    "acceptanceRate": "Tasso di accettazione",
     "activityLast12Months": "Attività degli ultimi 12 mesi",
     "driver": "Conducente",
     "passenger": "Passeggero",
@@ -734,7 +767,34 @@
     "pendingStatus": "In attesa",
     "completed": "Completato",
     "achievementHistory": "Cronologia dei traguardi",
-    "user": "Utente"
+    "user": "Utente",
+    "loadingStats": "Caricamento delle statistiche",
+    "loadError": "Non siamo riusciti a caricare le statistiche.",
+    "retry": "Riprova",
+    "summaryTitle": "Riepilogo",
+    "co2SavedEstimate": "CO₂ risparmiata",
+    "co2Note": "La CO₂ è una stima: 120 g per chilometro per ogni passeggero che ha viaggiato con te.",
+    "bookingsReceived": "Prenotazioni ricevute",
+    "timesCount": "{count, plural, one {# volta} other {# volte}}",
+    "historyTabsLabel": "Filtra lo storico",
+    "emptyTitle": "Ancora nessun numero",
+    "emptyBody": "Le statistiche compaiono dopo il primo viaggio, come conducente o come passeggero.",
+    "emptySearch": "Cerca un passaggio",
+    "emptyOffer": "Offri un passaggio",
+    "badgeFirstRideName": "Prima corsa",
+    "badgeFirstRideDesc": "Hai pubblicato il tuo primo passaggio.",
+    "badgeWelcomeName": "Benvenuto",
+    "badgeWelcomeDesc": "Hai completato il profilo.",
+    "badgeVerifiedName": "Verificato",
+    "badgeVerifiedDesc": "Hai verificato la tua identità.",
+    "badgeFiveStarsName": "Cinque stelle",
+    "badgeFiveStarsDesc": "Hai ricevuto una recensione da cinque stelle.",
+    "badgeHabitueName": "Habitué",
+    "badgeHabitueDesc": "Viaggi su Andamus con regolarità.",
+    "badgeAmbassadorName": "Ambasciatore",
+    "badgeAmbassadorDesc": "Hai portato nuovi viaggiatori nella community.",
+    "badgeUnknownName": "Traguardo",
+    "badgeUnknownDesc": "Un traguardo raggiunto su Andamus."
   },
   "levels": {
     "traveler": "Viaggiatore",
@@ -744,7 +804,6 @@
     "sardlegend": "Leggenda Sarda"
   },
   "emptyState": {
-    "eyebrow": "Nessun risultato",
     "noRidesFound": "Nessun passaggio trovato",
     "noRidesFiltered": "Nessun passaggio con questi filtri. Prova a rimuoverne qualcuno per vedere più risultati.",
     "noRidesPublished": "Nessun passaggio pubblicato",
@@ -898,7 +957,8 @@
     "userFallback": "Utente",
     "yourLink": "Il tuo link personale",
     "inviteFriends": "Invita i tuoi amici",
-    "share": "Condividi"
+    "share": "Condividi",
+    "summary": "{count, plural, =0 {Nessun amico iscritto} one {# amico iscritto} other {# amici iscritti}} · {points, plural, one {# punto} other {# punti}}"
   },
   "onboarding": {
     "flow": {
@@ -1140,32 +1200,28 @@
     }
   },
   "safety": {
-    "emergencyCall": "Chiamata di emergenza 112",
     "geolocationNotSupported": "Geolocalizzazione non supportata dal browser",
     "shareLocationTitle": "Posizione Andamus",
     "locationShared": "Posizione condivisa",
     "locationCopied": "Posizione copiata. Incollala e inviala ai contatti fidati.",
     "locationError": "Impossibile ottenere la posizione. Controlla i permessi.",
-    "sosSafety": "SOS Sicurezza",
     "safety": "Sicurezza",
-    "emergencyTools": "Strumenti di emergenza",
-    "sosEmergency": "SOS Emergenza",
-    "callOrShare": "Chiama il 112 o condividi la posizione",
     "shareLocation": "Condividi posizione",
-    "sendToContacts": "Invia ai contatti fidati",
     "call112": "Chiama il 112",
-    "emergencyNumber": "Numero di emergenza",
     "safetyTips": "Consigli di sicurezza:",
-    "tip1": "Condividi sempre i dettagli del viaggio con qualcuno",
-    "tip2": "Controlla profilo e recensioni prima di partire",
-    "tip3": "Datti appuntamento in luoghi pubblici",
-    "tip4": "Fidati del tuo istinto",
-    "emergencyQuestion": "Emergenza?",
-    "emergencyDescription": "Se sei in pericolo, chiama subito il 112 o condividi la tua posizione.",
+    "tip1": "Dì a qualcuno con chi viaggi e su che tratta.",
+    "tip2": "Leggi profilo e recensioni prima di confermare.",
+    "tip3": "Datti appuntamento in un luogo pubblico.",
+    "tip4": "Se qualcosa non ti convince, annulla.",
     "cancel": "Annulla",
     "reportProblem": "Segnala un problema",
     "reportDescription": "Aiutaci a migliorare Andamus",
-    "shareLocationText": "La mia posizione attuale: {url}"
+    "shareLocationText": "La mia posizione attuale: {url}",
+    "openSafety": "Sicurezza ed emergenze",
+    "close": "Chiudi",
+    "sheetIntro": "Se qualcosa non va durante un viaggio, parti da qui.",
+    "call112Detail": "Numero unico di emergenza",
+    "shareLocationDetail": "Inviala a chi vuoi con un messaggio."
   },
   "footer": {
     "searchRides": "Cerca passaggi",
@@ -1196,7 +1252,8 @@
     "shareSuccess": "Grazie per aver condiviso",
     "linkCopied": "Link copiato. Incollalo dove preferisci.",
     "inviteFriends": "Invita gli amici",
-    "shareDescription": "Condividi Andamus e aiuta la community a crescere"
+    "shareDescription": "Manda il link a chi viaggia sulle tue stesse tratte.",
+    "shareApp": "Condividi Andamus"
   },
   "map": {
     "addApiKey": "Configura la chiave API di Google Maps",
@@ -1441,5 +1498,58 @@
     "feature3": "Sistema livelli e punti",
     "feature4": "Notifiche push in tempo reale",
     "feature0": "{count} città sarde connesse"
+  },
+  "emailPrefs": {
+    "email_booking_requests": {
+      "label": "Richieste di passaggio",
+      "hint": "Quando qualcuno chiede un posto su una tua corsa."
+    },
+    "email_booking_confirmed": {
+      "label": "Prenotazioni confermate",
+      "hint": "Quando un conducente accetta la tua richiesta."
+    },
+    "email_new_messages": {
+      "label": "Nuovi messaggi",
+      "hint": "Quando ricevi un messaggio in chat."
+    },
+    "email_ride_reminders": {
+      "label": "Promemoria di partenza",
+      "hint": "Il giorno prima di un viaggio."
+    },
+    "email_marketing": {
+      "label": "Novità da Andamus",
+      "hint": "Poche email l'anno, solo per cambiamenti importanti."
+    },
+    "save": "Salva",
+    "saving": "Salvataggio",
+    "saved": "Preferenze salvate",
+    "saveError": "Non siamo riusciti a salvare. Riprova."
+  },
+  "stripeConnect": {
+    "checking": "Verifica in corso",
+    "activeTitle": "Pagamenti attivi",
+    "activeBody": "Ricevi sul tuo conto i contributi delle corse a pagamento.",
+    "startTitle": "Attiva i pagamenti",
+    "startBody": "Collega un conto Stripe per ricevere i contributi dei passeggeri. Andamus trattiene il 10%.",
+    "pendingTitle": "Configurazione da completare",
+    "pendingBody": "Hai iniziato l'attivazione ma non l'hai conclusa.",
+    "startSetup": "Configura",
+    "continueSetup": "Riprendi la configurazione",
+    "redirecting": "Apertura di Stripe",
+    "onboardError": "Non siamo riusciti ad attivare i pagamenti.",
+    "networkError": "Connessione non riuscita. Riprova."
+  },
+  "push": {
+    "checking": "Verifica in corso",
+    "enable": "Attiva le notifiche push",
+    "disable": "Disattiva le notifiche push",
+    "enabled": "Notifiche push attive",
+    "disabled": "Notifiche push disattivate",
+    "enableError": "Non siamo riusciti ad attivare le notifiche.",
+    "disableError": "Non siamo riusciti a disattivare le notifiche.",
+    "blocked": "Le notifiche sono bloccate. Sbloccale dalle impostazioni del sito.",
+    "blockedHint": "Le notifiche sono bloccate nelle impostazioni del browser.",
+    "unsupported": "Questo browser non supporta le notifiche push.",
+    "configMissing": "Notifiche non disponibili al momento."
   }
 }

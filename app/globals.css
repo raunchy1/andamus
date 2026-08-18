@@ -57,6 +57,9 @@
   --color-pending: var(--pending);
   --color-bad: var(--bad);
   /* Andamusu mobile design tokens */
+  /* `ink` had no Tailwind mapping, so every `text-ink` in the app silently
+     produced no rule and only looked right because it inherited body colour. */
+  --color-ink: var(--ink);
   --color-green: var(--green);
   --color-green-dark: var(--green-dark);
   --color-green-tint: var(--green-tint);

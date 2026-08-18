@@ -430,7 +430,43 @@
     "invalidFileType": "Invalid format. Use JPG, PNG, WebP or PDF.",
     "pullToRefresh": "Pull to refresh",
     "releaseToRefresh": "Release to refresh",
-    "completedRidesLabel": "Completed rides"
+    "completedRidesLabel": "Completed rides",
+    "memberSince": "On Andamus for {age}",
+    "totalKm": "Kilometres",
+    "pointsCount": "{points, plural, =0 {No points} one {# point} other {# points}}",
+    "pointsToNextLevelNamed": "{points, plural, one {# point} other {# points}} to {level}",
+    "loadingProfile": "Loading your profile",
+    "changePhoto": "Change profile photo",
+    "photoUpdated": "Photo updated",
+    "openStats": "See your stats",
+    "activityTabsLabel": "Your activity",
+    "seatsCount": "{count, plural, one {# seat} other {# seats}}",
+    "requestsCount": "{count, plural, =0 {no requests} one {# request} other {# requests}}",
+    "templateOn": "Active",
+    "templateOff": "Paused",
+    "deleteRecurring": "Delete recurring ride",
+    "deleteAlert": "Delete alert",
+    "setupTitle": "Start here",
+    "setupIntro": "Three quick things so people on your route can find you.",
+    "setupPhotoTitle": "Add a photo",
+    "setupPhotoBody": "It helps everyone recognise each other at the meeting point.",
+    "setupPhoneTitle": "Verify your number",
+    "setupPhoneBody": "Drivers accept requests more readily from verified numbers.",
+    "setupRideTitle": "Publish your first ride",
+    "setupRideBody": "Departure, destination and time is enough.",
+    "setupNudge": "One step left: {task}.",
+    "railAccount": "Account and safety",
+    "railVehicle": "Vehicle",
+    "railNotifications": "Notifications",
+    "phoneWhy": "It is never shown to other members.",
+    "paymentsDetail": "Get paid for your rides",
+    "garageTitle": "Your vehicles",
+    "garageDetail": "Photos, comfort and plate",
+    "vehicleNotSet": "No vehicle saved",
+    "pushDetail": "Requests and confirmations on your phone, even when the app is closed.",
+    "emailNotifications": "Email notifications",
+    "emailDetail": "Choose what you receive",
+    "deleteAccount": "Delete account"
   },
   "chat": {
     "messagePlaceholder": "Write a message...",
@@ -705,7 +741,6 @@
     "totalKm": "Total km traveled",
     "ridesAsDriver": "Rides as a driver",
     "ridesAsPassenger": "Rides as a passenger",
-    "peopleHelped": "People helped",
     "totalPoints": "Total points",
     "badgesUnlocked": "Badges unlocked",
     "favoriteRoutesTitle": "FAVORITE ROUTES",
@@ -715,8 +750,6 @@
     "backToProfile": "Back to profile",
     "myStats": "My statistics",
     "subtitle": "Your impact and activity on Andamus",
-    "estimatedEarnings": "Estimated contributions",
-    "acceptanceRate": "Acceptance rate",
     "activityLast12Months": "Activity over the last 12 months",
     "driver": "Driver",
     "passenger": "Passenger",
@@ -734,7 +767,34 @@
     "pendingStatus": "Pending",
     "completed": "Completed",
     "achievementHistory": "Achievement history",
-    "user": "User"
+    "user": "User",
+    "loadingStats": "Loading your stats",
+    "loadError": "We could not load your stats.",
+    "retry": "Try again",
+    "summaryTitle": "Summary",
+    "co2SavedEstimate": "CO₂ saved",
+    "co2Note": "CO₂ is an estimate: 120 g per kilometre for each passenger who travelled with you.",
+    "bookingsReceived": "Bookings received",
+    "timesCount": "{count, plural, one {# time} other {# times}}",
+    "historyTabsLabel": "Filter your history",
+    "emptyTitle": "No numbers yet",
+    "emptyBody": "Stats appear after your first trip, as a driver or as a passenger.",
+    "emptySearch": "Find a ride",
+    "emptyOffer": "Offer a ride",
+    "badgeFirstRideName": "First ride",
+    "badgeFirstRideDesc": "You published your first ride.",
+    "badgeWelcomeName": "Welcome",
+    "badgeWelcomeDesc": "You completed your profile.",
+    "badgeVerifiedName": "Verified",
+    "badgeVerifiedDesc": "You verified your identity.",
+    "badgeFiveStarsName": "Five stars",
+    "badgeFiveStarsDesc": "You received a five-star review.",
+    "badgeHabitueName": "Regular",
+    "badgeHabitueDesc": "You travel on Andamus regularly.",
+    "badgeAmbassadorName": "Ambassador",
+    "badgeAmbassadorDesc": "You brought new travellers into the community.",
+    "badgeUnknownName": "Milestone",
+    "badgeUnknownDesc": "A milestone reached on Andamus."
   },
   "levels": {
     "traveler": "Viaggiatore",
@@ -744,7 +804,6 @@
     "sardlegend": "Leggenda Sarda"
   },
   "emptyState": {
-    "eyebrow": "No results",
     "noRidesFound": "No rides found",
     "noRidesFiltered": "No rides match these filters. Try removing some to see more results.",
     "noRidesPublished": "No rides published",
@@ -898,7 +957,8 @@
     "userFallback": "User",
     "yourLink": "Your personal link",
     "inviteFriends": "Invite your friends",
-    "share": "Share"
+    "share": "Share",
+    "summary": "{count, plural, =0 {No friends joined} one {# friend joined} other {# friends joined}} · {points, plural, one {# point} other {# points}}"
   },
   "onboarding": {
     "flow": {
@@ -1140,32 +1200,28 @@
     }
   },
   "safety": {
-    "emergencyCall": "Emergency call 112",
     "geolocationNotSupported": "Geolocation not supported by the browser",
     "shareLocationTitle": "Andamus location",
     "locationShared": "Location shared",
     "locationCopied": "Location copied. Paste it and send it to trusted contacts.",
     "locationError": "Unable to get your location. Check permissions.",
-    "sosSafety": "SOS Safety",
     "safety": "Safety",
-    "emergencyTools": "Emergency tools",
-    "sosEmergency": "SOS Emergency",
-    "callOrShare": "Call 112 or share your location",
     "shareLocation": "Share location",
-    "sendToContacts": "Send to trusted contacts",
     "call112": "Call 112",
-    "emergencyNumber": "Emergency number",
     "safetyTips": "Safety tips:",
-    "tip1": "Always share your trip details with someone",
-    "tip2": "Check profiles and reviews before you leave",
-    "tip3": "Meet in public places",
-    "tip4": "Trust your instincts",
-    "emergencyQuestion": "Emergency?",
-    "emergencyDescription": "If you're in danger, call 112 right away or share your location.",
+    "tip1": "Tell someone who you are travelling with and on which route.",
+    "tip2": "Read the profile and reviews before you confirm.",
+    "tip3": "Arrange to meet in a public place.",
+    "tip4": "If something feels off, cancel.",
     "cancel": "Cancel",
     "reportProblem": "Report a problem",
     "reportDescription": "Help us improve Andamus",
-    "shareLocationText": "My current location: {url}"
+    "shareLocationText": "My current location: {url}",
+    "openSafety": "Safety and emergencies",
+    "close": "Close",
+    "sheetIntro": "If something goes wrong during a trip, start here.",
+    "call112Detail": "Single European emergency number",
+    "shareLocationDetail": "Send it to anyone in a message."
   },
   "footer": {
     "searchRides": "Find rides",
@@ -1196,7 +1252,8 @@
     "shareSuccess": "Thanks for sharing",
     "linkCopied": "Link copied. Paste it where you want.",
     "inviteFriends": "Invite your friends",
-    "shareDescription": "Share Andamus and help the community grow"
+    "shareDescription": "Send the link to people who travel your routes.",
+    "shareApp": "Share Andamus"
   },
   "map": {
     "addApiKey": "Configure the Google Maps API key",
@@ -1441,5 +1498,58 @@
     "feature3": "Levels and points system",
     "feature4": "Real-time push notifications",
     "feature0": "{count} Sardinian towns connected"
+  },
+  "emailPrefs": {
+    "email_booking_requests": {
+      "label": "Ride requests",
+      "hint": "When someone asks for a seat on one of your rides."
+    },
+    "email_booking_confirmed": {
+      "label": "Confirmed bookings",
+      "hint": "When a driver accepts your request."
+    },
+    "email_new_messages": {
+      "label": "New messages",
+      "hint": "When you get a message in chat."
+    },
+    "email_ride_reminders": {
+      "label": "Departure reminders",
+      "hint": "The day before a trip."
+    },
+    "email_marketing": {
+      "label": "News from Andamus",
+      "hint": "A few emails a year, only for changes that matter."
+    },
+    "save": "Save",
+    "saving": "Saving",
+    "saved": "Preferences saved",
+    "saveError": "We could not save. Try again."
+  },
+  "stripeConnect": {
+    "checking": "Checking",
+    "activeTitle": "Payments active",
+    "activeBody": "Contributions from paid rides land in your account.",
+    "startTitle": "Turn on payments",
+    "startBody": "Connect a Stripe account to receive contributions from passengers. Andamus keeps 10%.",
+    "pendingTitle": "Setup unfinished",
+    "pendingBody": "You started the setup but did not finish it.",
+    "startSetup": "Set up",
+    "continueSetup": "Resume setup",
+    "redirecting": "Opening Stripe",
+    "onboardError": "We could not turn on payments.",
+    "networkError": "Connection failed. Try again."
+  },
+  "push": {
+    "checking": "Checking",
+    "enable": "Turn on push notifications",
+    "disable": "Turn off push notifications",
+    "enabled": "Push notifications on",
+    "disabled": "Push notifications off",
+    "enableError": "We could not turn on notifications.",
+    "disableError": "We could not turn off notifications.",
+    "blocked": "Notifications are blocked. Unblock them in your site settings.",
+    "blockedHint": "Notifications are blocked in your browser settings.",
+    "unsupported": "This browser does not support push notifications.",
+    "configMissing": "Notifications are unavailable right now."
   }
 }
