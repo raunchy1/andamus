@@ -90,7 +90,7 @@ function HomeDesktopView({
   return (
     <div className="min-h-screen bg-bg text-fg overflow-x-hidden">
       <section className="max-w-5xl mx-auto px-6 lg:px-10 pt-12 pb-16">
-        <p className="text-eyebrow">{"// "}{t.heroEyebrow}</p>
+        <p className="text-eyebrow">{t.heroEyebrow}</p>
         <h1 className="mt-4 font-hero heading-editorial text-fg">{t.heroHeadline}</h1>
         <p className="mt-4 max-w-xl text-muted lowercase">{departuresSubtitle}</p>
 
@@ -138,7 +138,7 @@ function HomeDesktopView({
       <section className="max-w-5xl mx-auto px-6 lg:px-10 pb-20">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <p className="text-eyebrow">{"// "}{t.today}</p>
+            <p className="text-eyebrow">{t.today}</p>
             <h2 className="mt-2 font-h2 text-fg">{t.todayRides}</h2>
           </div>
           <Link

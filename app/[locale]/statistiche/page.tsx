@@ -4,20 +4,17 @@ import { useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { 
-  ArrowLeft, 
-  Car, 
-  Users, 
-  TreePine, 
-  Route, 
-  Award,
-  Calendar,
-  TrendingUp,
+import {
+  ArrowLeft,
   Download,
-  Trophy,
-  MapPin,
-  Clock,
-  Check
+  Loader2,
+  Award,
+  Car,
+  Users,
+  ShieldCheck,
+  Star,
+  Repeat,
+  Medal,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
@@ -26,7 +23,7 @@ import { toast } from "sonner";
 
 const ActivityChart = dynamic(
   () => import("./_components/ActivityChart").then((m) => m.ActivityChart),
-  { ssr: false, loading: () => <div className="h-full w-full animate-pulse bg-surface rounded-xl" /> }
+  { ssr: false, loading: () => <div className="h-full w-full animate-pulse rounded-xl bg-sand-deep" /> }
 );
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
@@ -70,6 +67,16 @@ interface HistoryItem {
   created_at: string;
 }
 
+/** Badge identity as icon + no colour. One family, one stroke weight. */
+const BADGE_ICONS: Record<string, React.ElementType> = {
+  first_ride: Car,
+  welcome: Users,
+  verified: ShieldCheck,
+  five_stars: Star,
+  habitue: Repeat,
+  ambassador: Award,
+};
+
 export default function StatisticsPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -79,14 +86,12 @@ export default function StatisticsPage() {
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  
-  // Data states
+
   const [myRides, setMyRides] = useState<Ride[]>([]);
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
   const [badges, setBadges] = useState<Badge[]>([]);
   const [activeTab, setActiveTab] = useState<"driver" | "passenger">("driver");
-  
-  // Filter states
+
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedRoute, setSelectedRoute] = useState<string>("all");
@@ -102,7 +107,6 @@ export default function StatisticsPage() {
         }
         setUser(currentUser);
 
-        // Load profile
         const { data: profileData } = await supabase
           .from("profiles")
           .select("*")
@@ -110,16 +114,14 @@ export default function StatisticsPage() {
           .single();
         setProfile(profileData);
 
-        // Load my rides (as driver)
         const { data: ridesData } = await supabase
           .from("rides")
           .select(`*, bookings(count)`)
           .eq("driver_id", currentUser.id)
           .order("date", { ascending: false });
-        
+
         setMyRides(ridesData || []);
 
-        // Load my bookings (as passenger)
         const { data: bookingsData } = await supabase
           .from("bookings")
           .select(`
@@ -128,10 +130,9 @@ export default function StatisticsPage() {
           `)
           .eq("passenger_id", currentUser.id)
           .order("created_at", { ascending: false });
-        
+
         setMyBookings(bookingsData || []);
 
-        // Load badges
         const badgesResult = await getUserBadges(currentUser.id);
         if (badgesResult.success) {
           setBadges(badgesResult.badges || []);
@@ -147,60 +148,64 @@ export default function StatisticsPage() {
     loadData();
   }, [router, supabase]);
 
-  // Calculate statistics
+  /**
+   * Every figure below traces back to a row in Supabase. Two former tiles were
+   * removed rather than restyled: "contributi stimati" summed the asking price
+   * of every published ride whether or not anybody booked it, and the
+   * acceptance rate divided a number by itself and therefore always read 100%.
+   */
   const stats = useMemo(() => {
     const completedRides = myRides.filter(r => r.status === 'active' || new Date(r.date) < new Date());
     const completedBookings = myBookings.filter(b => b.status === 'confirmed');
-    
-    // Calculate total distance
+
     let totalDistance = 0;
-    const ridesWithDistance = [...completedRides, ...completedBookings.map(b => b.rides)];
-    
-    ridesWithDistance.forEach(ride => {
+    // CO2 is accumulated per ride, so each trip is credited with the people who
+    // actually shared it. Multiplying total distance by total passengers, as
+    // this page used to, cross-multiplied unrelated trips and inflated the
+    // figure several times over.
+    let co2Saved = 0;
+
+    completedRides.forEach(ride => {
       const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
       if (dist) {
         totalDistance += dist;
+        co2Saved += calculateCO2Saved(dist, ride.bookings_count || 0);
       }
     });
 
-    // Calculate passengers helped (bookings count for rides)
-    const passengersHelped = completedRides.reduce((sum, ride) => sum + (ride.bookings_count || 0), 0);
-    
-    // CO2 saved
-    const co2Saved = calculateCO2Saved(totalDistance, passengersHelped);
+    completedBookings.forEach(booking => {
+      const dist = getDistanceBetweenCities(booking.rides.from_city, booking.rides.to_city);
+      if (dist) {
+        totalDistance += dist;
+        co2Saved += calculateCO2Saved(dist, 1);
+      }
+    });
 
-    // Estimated earnings
-    const totalEarnings = myRides.reduce((sum, ride) => sum + (ride.price || 0), 0);
+    co2Saved = Math.round(co2Saved * 10) / 10;
 
-    // Booking acceptance rate
-    const totalBookingRequests = myRides.reduce((sum, ride) => sum + (ride.bookings_count || 0), 0);
-    // We don't have confirmed count per ride in this data, so we'll use a proxy
-    const acceptanceRate = totalBookingRequests > 0
-      ? Math.round((passengersHelped / totalBookingRequests) * 100)
-      : 0;
+    // Bookings received on the user's own rides — not "people helped", which
+    // would count requests that were never confirmed.
+    const bookingsReceived = completedRides.reduce((sum, ride) => sum + (ride.bookings_count || 0), 0);
 
-    // Activity data for chart (last 12 months)
     const activityData = [];
     const now = new Date();
     for (let i = 11; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthKey = date.toISOString().slice(0, 7);
-      
+
       const monthRides = myRides.filter(r => r.date.startsWith(monthKey)).length;
       const monthBookings = myBookings.filter(b => b.rides.date.startsWith(monthKey)).length;
-      
+
       activityData.push({
         month: date.toLocaleDateString(locale, { month: 'short' }),
         fullMonth: monthKey,
         driver: monthRides,
         passenger: monthBookings,
-        totale: monthRides + monthBookings
       });
     }
 
-    // Favorite routes
     const routeCounts: Record<string, { count: number; lastDate: string; from: string; to: string }> = {};
-    
+
     [...completedRides, ...completedBookings.map(b => b.rides)].forEach(ride => {
       const routeKey = `${ride.from_city} → ${ride.to_city}`;
       if (!routeCounts[routeKey]) {
@@ -222,17 +227,15 @@ export default function StatisticsPage() {
       co2Saved,
       ridesAsDriver: completedRides.length,
       ridesAsPassenger: completedBookings.length,
-      passengersHelped,
-      totalPoints: profile?.points || 0,
+      bookingsReceived,
+      totalPoints: (profile?.points as number) || 0,
       badgesCount: badges.length,
-      totalEarnings,
-      acceptanceRate,
       activityData,
-      favoriteRoutes
+      activityTotal: activityData.reduce((s, m) => s + m.driver + m.passenger, 0),
+      favoriteRoutes,
     };
   }, [myRides, myBookings, profile, badges, locale]);
 
-  // Filter history
   const filteredHistory = useMemo(() => {
     let items = activeTab === "driver" ? myRides : myBookings.map(b => ({
       id: b.id,
@@ -248,11 +251,11 @@ export default function StatisticsPage() {
     if (selectedYear !== "all") {
       items = items.filter(item => item.date.startsWith(selectedYear));
     }
-    
+
     if (selectedMonth !== "all") {
       items = items.filter(item => item.date.slice(5, 7) === selectedMonth);
     }
-    
+
     if (selectedRoute !== "all") {
       const [from, to] = selectedRoute.split(" → ");
       items = items.filter(item => item.from_city === from && item.to_city === to);
@@ -261,7 +264,6 @@ export default function StatisticsPage() {
     return items;
   }, [activeTab, myRides, myBookings, selectedYear, selectedMonth, selectedRoute]);
 
-  // Unique routes for filter
   const uniqueRoutes = useMemo(() => {
     const routes = new Set<string>();
     [...myRides, ...myBookings.map(b => b.rides)].forEach(ride => {
@@ -270,7 +272,6 @@ export default function StatisticsPage() {
     return Array.from(routes).sort();
   }, [myRides, myBookings]);
 
-  // Years for filter
   const years = useMemo(() => {
     const yearsSet = new Set<string>();
     [...myRides, ...myBookings.map(b => b.rides)].forEach(item => {
@@ -279,12 +280,15 @@ export default function StatisticsPage() {
     return Array.from(yearsSet).sort().reverse();
   }, [myRides, myBookings]);
 
-  const generatePDFReport = () => {
+  const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const hasAnyActivity = myRides.length > 0 || myBookings.length > 0;
+
+  const generateReport = () => {
     const reportLines = [
       t('reportTitle'),
       "=".repeat(40),
       "",
-      `${t('user')}: ${profile?.name || t('user')}`,
+      `${t('user')}: ${(profile?.name as string) || t('user')}`,
       `${t('reportDate')}: ${new Date().toLocaleDateString(locale)}`,
       "",
       t('generalStats'),
@@ -293,17 +297,17 @@ export default function StatisticsPage() {
       `${t('co2Saved')}: ${stats.co2Saved} kg`,
       `${t('ridesAsDriver')}: ${stats.ridesAsDriver}`,
       `${t('ridesAsPassenger')}: ${stats.ridesAsPassenger}`,
-      `${t('peopleHelped')}: ${stats.passengersHelped}`,
+      `${t('bookingsReceived')}: ${stats.bookingsReceived}`,
       `${t('totalPoints')}: ${stats.totalPoints}`,
       `${t('badgesUnlocked')}: ${stats.badgesCount}`,
       "",
       t('favoriteRoutesTitle'),
       "-".repeat(40),
-      ...stats.favoriteRoutes.map((r, i) => `${i + 1}. ${r.name} (${r.count} ${t('times')})`),
+      ...stats.favoriteRoutes.map((r, i) => `${i + 1}. ${r.name} (${t('timesCount', { count: r.count })})`),
       "",
       t('rideHistory'),
       "-".repeat(40),
-      ...filteredHistory.map(item => 
+      ...filteredHistory.map(item =>
         `${item.date} | ${item.from_city} → ${item.to_city} | ${item.price === 0 ? t('free') : item.price + '€'}`
       ),
     ];
@@ -315,388 +319,312 @@ export default function StatisticsPage() {
     a.download = `andamus-report-${new Date().toISOString().split('T')[0]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    
+
     toast.success(t('reportDownloaded'));
   };
 
-  if (error) {
-    return <div className="p-8 text-center text-bad">Errore nel caricamento. Riprova.</div>;
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg pt-20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      <div className="flex min-h-[60vh] items-center justify-center bg-bg">
+        <Loader2 className="h-8 w-8 animate-spin text-green" strokeWidth={1.5} />
+        <span className="sr-only">{t('loadingStats')}</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-4 py-16 text-center md:px-0">
+        <p className="text-sm text-ink">{t('loadError')}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 inline-flex min-h-[44px] items-center rounded-xl border border-line px-5 text-sm font-medium text-ink transition-colors hover:bg-sand"
+        >
+          {t('retry')}
+        </button>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-bg pt-20 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link 
-            href={`/${locale}/profilo`}
-            className="inline-flex items-center gap-2 text-muted hover:text-ink transition-colors mb-4"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            {t('backToProfile')}
-          </Link>
-          <h1 className="text-3xl font-bold text-ink flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-primary" />
-            {t('myStats')}
-          </h1>
-          <p className="text-muted mt-2">{t('subtitle')}</p>
-        </div>
+    <div className="w-full px-4 pb-12 pt-6 md:px-0 md:pt-8">
+      {/* Header */}
+      <header className="mb-8">
+        <Link
+          href={`/${locale}/profilo`}
+          className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+          {t('backToProfile')}
+        </Link>
+        <h1 className="mt-2 font-heading text-[26px] leading-tight text-ink sm:text-3xl">{t('myStats')}</h1>
+        <p className="mt-1 text-sm leading-relaxed text-muted">{t('subtitle')}</p>
+      </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
-          <StatCard 
-            icon={<Route className="w-6 h-6 text-blue-400" />}
-            value={stats.totalDistance}
-            label={t('kmTraveled')}
-            suffix=" km"
-          />
-          <StatCard 
-            icon={<TreePine className="w-6 h-6 text-green-400" />}
-            value={stats.co2Saved}
-            label={t('co2Saved')}
-            suffix=" kg"
-          />
-          <StatCard 
-            icon={<Car className="w-6 h-6 text-primary" />}
-            value={stats.ridesAsDriver}
-            label={t('asDriver')}
-          />
-          <StatCard 
-            icon={<Users className="w-6 h-6 text-purple-400" />}
-            value={stats.ridesAsPassenger}
-            label={t('asPassenger')}
-          />
-          <StatCard 
-            icon={<Users className="w-6 h-6 text-orange-400" />}
-            value={stats.passengersHelped}
-            label={t('peopleHelped')}
-          />
-          <StatCard 
-            icon={<Trophy className="w-6 h-6 text-yellow-400" />}
-            value={stats.badgesCount}
-            label={t('badgesUnlocked')}
-          />
-          <StatCard 
-            icon={<Download className="w-6 h-6 text-pink-400" />}
-            value={stats.totalEarnings}
-            label={t('estimatedEarnings')}
-            suffix="€"
-          />
-          <StatCard 
-            icon={<Check className="w-6 h-6 text-cyan-400" />}
-            value={stats.acceptanceRate}
-            label={t('acceptanceRate')}
-            suffix="%"
-          />
-        </div>
-
-        {/* Activity Chart */}
-        <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-primary" />
-            {t('activityLast12Months')}
-          </h2>
-          <div className="h-64">
-            <ActivityChart
-              data={stats.activityData}
-              driverLabel={t("driver")}
-              passengerLabel={t("passenger")}
-            />
+      {!hasAnyActivity ? (
+        <section className="rounded-2xl border border-line bg-surface px-5 py-12 text-center">
+          <h2 className="font-heading text-xl text-ink">{t('emptyTitle')}</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">{t('emptyBody')}</p>
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              href={`/${locale}/cerca`}
+              className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-green px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              {t('emptySearch')}
+            </Link>
+            <Link
+              href={`/${locale}/offri`}
+              className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-line px-5 text-sm font-medium text-ink transition-colors hover:bg-sand"
+            >
+              {t('emptyOffer')}
+            </Link>
           </div>
-        </div>
-
-        {/* Favorite Routes */}
-        {stats.favoriteRoutes.length > 0 && (
-          <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
-            <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-primary" />
-              {t('favoriteRoutes')}
+        </section>
+      ) : (
+        <>
+          {/* Numbers. No icons, no tile colours — the figures carry themselves. */}
+          <section className="mb-8 overflow-hidden rounded-2xl border border-line bg-surface">
+            <h2 className="border-b border-line px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+              {t('summaryTitle')}
             </h2>
-            <div className="space-y-3">
-              {stats.favoriteRoutes.map((route, index) => (
-                <div 
-                  key={route.name}
-                  className="flex items-center justify-between p-4 bg-surface rounded-xl"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`
-                      w-10 h-10 rounded-full flex items-center justify-center font-bold
-                      ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' : 
-                        index === 1 ? 'bg-gray-400/20 text-muted' : 
-                        'bg-orange-600/20 text-orange-400'}
-                    `}>
+            <dl className="grid grid-cols-2 gap-px border-t border-line bg-line sm:grid-cols-3">
+              {[
+                { label: t('kmTraveled'), value: `${numberFormat.format(stats.totalDistance)} km` },
+                { label: t('co2SavedEstimate'), value: `${numberFormat.format(stats.co2Saved)} kg` },
+                { label: t('asDriver'), value: numberFormat.format(stats.ridesAsDriver) },
+                { label: t('asPassenger'), value: numberFormat.format(stats.ridesAsPassenger) },
+                { label: t('bookingsReceived'), value: numberFormat.format(stats.bookingsReceived) },
+                { label: t('totalPoints'), value: numberFormat.format(stats.totalPoints) },
+              ].map((item) => (
+                <div key={item.label} className="bg-surface px-5 py-4">
+                  <dt className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">{item.label}</dt>
+                  <dd className="mt-1 font-heading text-2xl text-ink tabular-nums">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="border-t border-line bg-surface px-5 py-3 text-xs leading-relaxed text-muted">
+              {t('co2Note')}
+            </p>
+          </section>
+
+          {/* Activity — drawn only when there is something to draw. */}
+          {stats.activityTotal > 0 && (
+            <section className="mb-8 rounded-2xl border border-line bg-surface">
+              <h2 className="border-b border-line px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                {t('activityLast12Months')}
+              </h2>
+              <div className="px-2 py-5 sm:px-4">
+                <div className="h-56 w-full sm:h-64">
+                  <ActivityChart
+                    data={stats.activityData}
+                    driverLabel={t("driver")}
+                    passengerLabel={t("passenger")}
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Favourite routes */}
+          {stats.favoriteRoutes.length > 0 && (
+            <section className="mb-8 rounded-2xl border border-line bg-surface">
+              <h2 className="border-b border-line px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                {t('favoriteRoutes')}
+              </h2>
+              <ol className="divide-y divide-line-soft">
+                {stats.favoriteRoutes.map((route, index) => (
+                  <li key={route.name} className="flex items-center gap-4 px-5 py-4">
+                    <span className="w-5 shrink-0 font-heading text-lg text-faint tabular-nums" aria-hidden>
                       {index + 1}
-                    </div>
-                    <div>
-                      <p className="text-ink font-medium">{route.name}</p>
-                      <p className="text-muted text-sm">
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-ink">{route.name}</p>
+                      <p className="mt-0.5 text-xs text-muted">
                         {t('lastTime')}: {new Date(route.lastDate).toLocaleDateString(locale)}
                       </p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-ink">{route.count}</p>
-                    <p className="text-muted text-sm">{t('times', { count: route.count })}</p>
-                  </div>
-                </div>
-              ))}
+                    <p className="shrink-0 text-sm text-muted tabular-nums">
+                      {t('timesCount', { count: route.count })}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {/* History */}
+          <section className="mb-8 rounded-2xl border border-line bg-surface">
+            <div className="flex flex-col gap-3 border-b border-line px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                {t('fullHistory')}
+              </h2>
+              <button
+                onClick={generateReport}
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 self-start rounded-xl border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-sand sm:min-h-[36px] sm:self-auto"
+              >
+                <Download className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                {t('downloadReport')}
+              </button>
             </div>
-          </div>
-        )}
 
-        {/* History Section */}
-        <div className="bg-surface border border-line rounded-2xl p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <h2 className="text-xl font-semibold text-ink flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              {t('fullHistory')}
-            </h2>
-            
-            {/* Export Button */}
-            <button
-              onClick={generatePDFReport}
-              className="flex items-center justify-center gap-2 bg-primary text-accent-fg rounded-full px-6 py-3 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              <Download className="w-4 h-4" />
-              {t('downloadReport')}
-            </button>
-          </div>
+            <div className="px-5 py-4">
+              <div role="tablist" aria-label={t('historyTabsLabel')} className="flex gap-1 border-b border-line">
+                {(["driver", "passenger"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    role="tab"
+                    aria-selected={activeTab === tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`-mb-px min-h-[44px] border-b-2 px-3 text-sm transition-colors ${
+                      activeTab === tab
+                        ? "border-green font-semibold text-ink"
+                        : "border-transparent font-medium text-muted hover:text-ink"
+                    }`}
+                  >
+                    {tab === "driver" ? t('asDriver') : t('asPassenger')}
+                  </button>
+                ))}
+              </div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setActiveTab("driver")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "driver"
-                  ? "bg-primary text-white"
-                  : "bg-surface text-muted hover:bg-sand-deep"
-              }`}
-            >
-              <Car className="w-4 h-4" />
-              {t('asDriver')}
-            </button>
-            <button
-              onClick={() => setActiveTab("passenger")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "passenger"
-                  ? "bg-primary text-white"
-                  : "bg-surface text-muted hover:bg-sand-deep"
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              {t('asPassenger')}
-            </button>
-          </div>
-
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-green outline-none"
-            >
-              <option value="all">{t('allYears')}</option>
-              {years.map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-            
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-green outline-none"
-            >
-              <option value="all">{t('allMonths')}</option>
-              {Array.from({ length: 12 }, (_, i) => {
-                const monthNum = String(i + 1).padStart(2, '0');
-                const d = new Date(2024, i, 1);
-                return (
-                  <option key={monthNum} value={monthNum}>
-                    {d.toLocaleDateString(locale, { month: 'long' })}
-                  </option>
-                );
-              })}
-            </select>
-            
-            <select
-              value={selectedRoute}
-              onChange={(e) => setSelectedRoute(e.target.value)}
-              className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-green outline-none"
-            >
-              <option value="all">{t('allRoutes')}</option>
-              {uniqueRoutes.map(route => (
-                <option key={route} value={route}>{route}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* History List */}
-          <div className="space-y-2">
-            {filteredHistory.length === 0 ? (
-              <p className="text-center text-faint py-8">{t('noRidesFound')}</p>
-            ) : (
-              filteredHistory.map((item: HistoryItem) => (
-                <div 
-                  key={item.id}
-                  className="flex items-center justify-between p-4 bg-surface rounded-xl hover:bg-sand-deep transition-colors"
+              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <label className="sr-only" htmlFor="filter-year">{t('allYears')}</label>
+                <select
+                  id="filter-year"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className="min-h-[44px] rounded-xl border border-line bg-surface px-3 text-sm text-ink outline-none focus:border-green"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="h-2 w-2 rounded-full bg-primary" />
-                      <div className="h-8 w-0.5 bg-sand-deep" />
-                      <div className="h-2 w-2 rounded-full bg-sand-deep" />
-                    </div>
-                    <div>
-                      <p className="text-ink font-medium">
+                  <option value="all">{t('allYears')}</option>
+                  {years.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+
+                <label className="sr-only" htmlFor="filter-month">{t('allMonths')}</label>
+                <select
+                  id="filter-month"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="min-h-[44px] rounded-xl border border-line bg-surface px-3 text-sm text-ink outline-none focus:border-green"
+                >
+                  <option value="all">{t('allMonths')}</option>
+                  {Array.from({ length: 12 }, (_, i) => {
+                    const monthNum = String(i + 1).padStart(2, '0');
+                    const d = new Date(2024, i, 1);
+                    return (
+                      <option key={monthNum} value={monthNum}>
+                        {d.toLocaleDateString(locale, { month: 'long' })}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                <label className="sr-only" htmlFor="filter-route">{t('allRoutes')}</label>
+                <select
+                  id="filter-route"
+                  value={selectedRoute}
+                  onChange={(e) => setSelectedRoute(e.target.value)}
+                  className="min-h-[44px] rounded-xl border border-line bg-surface px-3 text-sm text-ink outline-none focus:border-green"
+                >
+                  <option value="all">{t('allRoutes')}</option>
+                  {uniqueRoutes.map(route => (
+                    <option key={route} value={route}>{route}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <ul className="divide-y divide-line-soft border-t border-line">
+              {filteredHistory.length === 0 ? (
+                <li className="px-5 py-10 text-center text-sm text-muted">{t('noRidesFound')}</li>
+              ) : (
+                filteredHistory.map((item: HistoryItem) => (
+                  <li key={item.id} className="flex items-center justify-between gap-4 px-5 py-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-ink">
                         {item.from_city} → {item.to_city}
                       </p>
-                      <p className="text-muted text-sm">
-                        {new Date(item.date).toLocaleDateString(locale, { 
-                          weekday: 'short', 
-                          day: 'numeric', 
+                      <p className="mt-0.5 text-xs text-muted">
+                        {new Date(item.date).toLocaleDateString(locale, {
+                          weekday: 'short',
+                          day: 'numeric',
                           month: 'short',
                           year: 'numeric'
                         })}
                         {item.time && ` ${t('at')} ${item.time.slice(0, 5)}`}
                       </p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-ink font-semibold">
-                      {item.price === 0 ? t('free') : `${item.price}€`}
-                    </p>
-                    <p className={`text-xs ${
-                      item.status === 'confirmed' ? 'text-green-400' : 
-                      item.status === 'pending' ? 'text-yellow-400' : 
-                      'text-muted'
-                    }`}>
-                      {item.status === 'confirmed' ? t('confirmed') : 
-                       item.status === 'pending' ? t('pendingStatus') : 
-                       t('completed')}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Achievements Timeline */}
-        {badges.length > 0 && (
-          <div className="bg-surface border border-line rounded-2xl p-6">
-            <h2 className="text-xl font-semibold text-ink mb-6 flex items-center gap-2">
-              <Award className="w-5 h-5 text-primary" />
-              {t('achievementHistory')}
-            </h2>
-            <div className="space-y-4">
-              {badges.map((badge) => {
-                const badgeDetails = getBadgeDetails(badge.type || 'unknown', t);
-                return (
-                  <div 
-                    key={badge.id}
-                    className="flex items-center gap-4 p-4 bg-surface rounded-xl"
-                  >
-                    <div className={`w-12 h-12 rounded-xl ${badgeDetails.color} flex items-center justify-center text-2xl`}>
-                      {badgeDetails.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-ink font-medium">{badgeDetails.name}</p>
-                      <p className="text-muted text-sm">{badgeDetails.description}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-muted text-sm">
-                        {new Date(badge.earned_at || '2024-01-01').toLocaleDateString(locale, {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
+                    <div className="shrink-0 text-right">
+                      <p className="text-sm font-medium text-ink tabular-nums">
+                        {item.price === 0 ? t('free') : `${item.price}€`}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {item.status === 'confirmed' ? t('confirmed') :
+                          item.status === 'pending' ? t('pendingStatus') :
+                            t('completed')}
                       </p>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
-  );
-}
+                  </li>
+                ))
+              )}
+            </ul>
+          </section>
 
-// Helper component for stat cards
-function StatCard({ 
-  icon, 
-  value, 
-  label, 
-  suffix = "" 
-}: { 
-  icon: React.ReactNode; 
-  value: number; 
-  label: string; 
-  suffix?: string;
-}) {
-  return (
-    <div className="bg-surface border border-line rounded-2xl p-4 text-center">
-      <div className="flex justify-center mb-2">{icon}</div>
-      <p className="text-2xl font-bold text-ink">{value.toLocaleString()}{suffix}</p>
-      <p className="text-muted text-xs">{label}</p>
+          {/* Badges */}
+          {badges.length > 0 && (
+            <section className="rounded-2xl border border-line bg-surface">
+              <h2 className="border-b border-line px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                {t('achievementHistory')}
+              </h2>
+              <ul className="divide-y divide-line-soft">
+                {badges.map((badge) => {
+                  const type = badge.type || 'unknown';
+                  const Icon = BADGE_ICONS[type] || Medal;
+                  return (
+                    <li key={badge.id} className="flex items-center gap-4 px-5 py-4">
+                      <Icon className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-ink">{badgeName(type, t)}</p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-muted">{badgeDescription(type, t)}</p>
+                      </div>
+                      {badge.earned_at && (
+                        <p className="shrink-0 text-xs text-muted tabular-nums">
+                          {new Date(badge.earned_at).toLocaleDateString(locale, {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+        </>
+      )}
     </div>
   );
 }
 
-// Helper function for badge details
-function getBadgeDetails(type: string, translate: ReturnType<typeof useTranslations>) {
-  const badges: Record<string, { name: string; description: string; icon: string; color: string }> = {
-    'first_ride': {
-      name: translate('badgeFirstRideName'),
-      description: translate('badgeFirstRideDesc'),
-      icon: "🚗",
-      color: "bg-blue-500",
-    },
-    'welcome': {
-      name: translate('badgeWelcomeName'),
-      description: translate('badgeWelcomeDesc'),
-      icon: "👋",
-      color: "bg-green-500",
-    },
-    'verified': {
-      name: translate('badgeVerifiedName'),
-      description: translate('badgeVerifiedDesc'),
-      icon: "✅",
-      color: "bg-purple-500",
-    },
-    'five_stars': {
-      name: translate('badgeFiveStarsName'),
-      description: translate('badgeFiveStarsDesc'),
-      icon: "⭐",
-      color: "bg-yellow-500",
-    },
-    'habitue': {
-      name: translate('badgeHabitueName'),
-      description: translate('badgeHabitueDesc'),
-      icon: "🎯",
-      color: "bg-orange-500",
-    },
-    'ambassador': {
-      name: translate('badgeAmbassadorName'),
-      description: translate('badgeAmbassadorDesc'),
-      icon: "🏆",
-      color: "bg-bad",
-    },
-  };
-  
-  return badges[type] || {
-    name: type,
-    description: "",
-    icon: "🏅",
-    color: "bg-elevated",
-  };
+type Translate = ReturnType<typeof useTranslations>;
+
+const BADGE_KEYS: Record<string, { name: string; desc: string }> = {
+  first_ride: { name: 'badgeFirstRideName', desc: 'badgeFirstRideDesc' },
+  welcome: { name: 'badgeWelcomeName', desc: 'badgeWelcomeDesc' },
+  verified: { name: 'badgeVerifiedName', desc: 'badgeVerifiedDesc' },
+  five_stars: { name: 'badgeFiveStarsName', desc: 'badgeFiveStarsDesc' },
+  habitue: { name: 'badgeHabitueName', desc: 'badgeHabitueDesc' },
+  ambassador: { name: 'badgeAmbassadorName', desc: 'badgeAmbassadorDesc' },
+};
+
+function badgeName(type: string, translate: Translate): string {
+  const keys = BADGE_KEYS[type];
+  return keys ? translate(keys.name) : translate('badgeUnknownName');
+}
+
+function badgeDescription(type: string, translate: Translate): string {
+  const keys = BADGE_KEYS[type];
+  return keys ? translate(keys.desc) : translate('badgeUnknownDesc');
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bell, BellOff, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updatePushPreference } from "@/lib/user-preferences";
 
@@ -17,6 +18,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export function PushNotificationToggle() {
+  const t = useTranslations("push");
   const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ export function PushNotificationToggle() {
       const registration = await navigator.serviceWorker.ready;
       const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidKey) {
-        toast.error("Configurazione VAPID mancante");
+        toast.error(t("configMissing"));
         return;
       }
 
@@ -77,12 +79,12 @@ export function PushNotificationToggle() {
 
       setIsSubscribed(true);
       await updatePushPreference(true);
-      toast.success("Notifiche push attivate");
+      toast.success(t("enabled"));
     } catch (err) {
       if (err instanceof DOMException && err.name === "NotAllowedError") {
-        toast.error("Notifiche bloccate. Abilita i permessi nelle impostazioni del browser.");
+        toast.error(t("blocked"));
       } else {
-        toast.error("Errore nell'attivazione delle notifiche");
+        toast.error(t("enableError"));
       }
     } finally {
       setProcessing(false);
@@ -105,9 +107,9 @@ export function PushNotificationToggle() {
       }
       setIsSubscribed(false);
       await updatePushPreference(false);
-      toast.success("Notifiche push disattivate");
+      toast.success(t("disabled"));
     } catch {
-      toast.error("Errore nella disattivazione");
+      toast.error(t("disableError"));
     } finally {
       setProcessing(false);
     }
@@ -115,24 +117,19 @@ export function PushNotificationToggle() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin" />
-        Caricamento...
-      </div>
+      <p className="flex items-center gap-2 text-sm text-muted" aria-busy="true">
+        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+        {t("checking")}
+      </p>
     );
   }
 
   if (!isSupported) {
-    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "denied") {
-      return (
-        <p className="text-sm text-muted-foreground">
-          Le notifiche sono bloccate nelle impostazioni del browser. Rimuovi il blocco per attivarle.
-        </p>
-      );
-    }
+    const denied =
+      typeof window !== "undefined" && "Notification" in window && Notification.permission === "denied";
     return (
-      <p className="text-sm text-muted-foreground">
-        Il tuo browser non supporta le notifiche push.
+      <p className="text-xs leading-relaxed text-muted">
+        {denied ? t("blockedHint") : t("unsupported")}
       </p>
     );
   }
@@ -142,20 +139,20 @@ export function PushNotificationToggle() {
       type="button"
       onClick={isSubscribed ? handleUnsubscribe : handleSubscribe}
       disabled={processing}
-      className={`flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition-colors disabled:opacity-50 ${
+      className={`flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 ${
         isSubscribed
-          ? "border border-border bg-card text-foreground hover:bg-muted"
-          : "bg-accent text-white hover:bg-accent/90"
+          ? "border border-line bg-surface font-medium text-ink hover:bg-sand"
+          : "bg-green text-white hover:opacity-90"
       }`}
     >
       {processing ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
       ) : isSubscribed ? (
-        <BellOff className="h-4 w-4" />
+        <BellOff className="h-4 w-4" strokeWidth={1.5} aria-hidden />
       ) : (
-        <Bell className="h-4 w-4" />
+        <Bell className="h-4 w-4" strokeWidth={1.5} aria-hidden />
       )}
-      {isSubscribed ? "Disattiva notifiche push" : "Attiva notifiche push"}
+      {isSubscribed ? t("disable") : t("enable")}
     </button>
   );
 }

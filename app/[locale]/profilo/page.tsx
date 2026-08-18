@@ -6,7 +6,28 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Loader2, Check, X, Trash2, MessageCircle, Star, User, LogOut, Car, Route, Leaf, Bell, Repeat, Shield, CreditCard, RefreshCw, Gift, Share2, Copy, Users, ChevronRight } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  X,
+  Trash2,
+  MessageCircle,
+  Star,
+  User,
+  LogOut,
+  Car,
+  Bell,
+  ShieldCheck,
+  CreditCard,
+  RefreshCw,
+  Mail,
+  ChevronRight,
+  ChevronDown,
+  Camera,
+  Phone,
+  MapPin,
+  BarChart3,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -16,7 +37,7 @@ import dynamic from "next/dynamic";
 
 const PostActionModal = dynamic(() => import("@/components/PostActionModal").then(m => m.PostActionModal), { ssr: false });
 import { acceptBooking, rejectBooking } from "@/lib/booking-lifecycle";
-import { getDistanceBetweenCities, calculateCO2Saved } from "@/lib/sardinia-cities";
+import { getDistanceBetweenCities } from "@/lib/sardinia-cities";
 import { ProductAnalytics } from "@/lib/posthog";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { PhoneVerification } from "@/components/PhoneVerification";
@@ -25,6 +46,11 @@ import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getLevelInfo, completeGamificationAction } from "@/lib/gamification";
 import { computeTrustScore, getTrustLevel, getAccountAge, getCompletionRate } from "@/lib/reputation";
+import { Haptic } from "@/lib/haptic";
+import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
+import { StripeConnectBanner } from "@/components/StripeConnectBanner";
+import { ShareApp } from "@/components/ShareApp";
+import { Reveal } from "@/components/ui/premium/reveal";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -33,19 +59,6 @@ function getWeekKey(date: Date): string {
   d.setDate(d.getDate() - day + 1);
   return d.toISOString().split("T")[0];
 }
-import { Haptic } from "@/lib/haptic";
-import { useDeviceType } from "@/components/view-mode";
-import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
-import { StripeConnectBanner } from "@/components/StripeConnectBanner";
-import { ShareApp } from "@/components/ShareApp";
-import { AuroraBackground } from "@/components/ui/premium/aurora-background";
-import { Spotlight } from "@/components/ui/premium/spotlight";
-import { OrbGlow } from "@/components/ui/premium/orb-glow";
-import { GradientText } from "@/components/ui/premium/gradient-text";
-import { MagneticButton } from "@/components/ui/premium/magnetic-button";
-import { TiltCard } from "@/components/ui/premium/tilt-card";
-import { AnimatedCounter } from "@/components/ui/premium/animated-counter";
-import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
 interface Profile {
   id: string;
@@ -66,7 +79,6 @@ interface Profile {
   referral_code?: string | null;
   referrals_count?: number | null;
   referral_points_earned?: number | null;
-  // Car info
   car_model?: string | null;
   car_color?: string | null;
   car_plate?: string | null;
@@ -160,7 +172,119 @@ interface RideTemplate {
   created_at: string;
 }
 
-// RideRequestItem type removed - not currently used
+/* ─────────────────────────────────────────────────────────────
+   Shared building blocks.
+
+   Icon discipline for this whole cluster: one family (lucide),
+   one stroke weight (1.5), two sizes (16 / 20). Icons are ink or
+   muted; green marks a state that is genuinely satisfied and
+   terracotta is reserved for leaving, deleting and emergencies.
+   No coloured chip ever sits behind an icon just to fill space.
+   ───────────────────────────────────────────────────────────── */
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+      {children}
+    </p>
+  );
+}
+
+function Panel({
+  title,
+  children,
+  className = "",
+  id,
+}: {
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  return (
+    <section id={id} className={`scroll-mt-24 rounded-2xl border border-line bg-surface ${className}`}>
+      {title && (
+        <div className="border-b border-line px-5 py-3.5">
+          <Eyebrow>{title}</Eyebrow>
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
+
+/** A settings row that navigates somewhere else. */
+function LinkRow({
+  href,
+  icon: Icon,
+  label,
+  detail,
+}: {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  detail?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex min-h-[56px] items-center gap-3 px-5 py-3.5 transition-colors hover:bg-sand active:bg-sand"
+    >
+      <Icon className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium text-ink">{label}</span>
+        {detail && <span className="mt-0.5 block truncate text-xs text-muted">{detail}</span>}
+      </span>
+      <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={1.5} aria-hidden />
+    </Link>
+  );
+}
+
+/**
+ * A settings row that expands in place. Native <details> so it stays
+ * keyboard-operable and works before hydration.
+ */
+function DisclosureRow({
+  icon: Icon,
+  label,
+  detail,
+  children,
+  defaultOpen = false,
+}: {
+  icon: React.ElementType;
+  label: string;
+  detail?: React.ReactNode;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details className="group" open={defaultOpen}>
+      <summary className="flex min-h-[56px] cursor-pointer list-none items-center gap-3 px-5 py-3.5 transition-colors hover:bg-sand [&::-webkit-details-marker]:hidden">
+        <Icon className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-ink">{label}</span>
+          {detail && <span className="mt-0.5 block truncate text-xs text-muted">{detail}</span>}
+        </span>
+        <ChevronDown
+          className="h-5 w-5 shrink-0 text-faint transition-transform group-open:rotate-180"
+          strokeWidth={1.5}
+          aria-hidden
+        />
+      </summary>
+      <div className="border-t border-line-soft bg-sand/40 px-5 py-4">{children}</div>
+    </details>
+  );
+}
+
+/** One number in the ledger strip. Tabular figures keep the row from jittering. */
+function LedgerCell({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex flex-col gap-1 px-4 py-4 text-center first:pl-5 last:pr-5">
+      <span className="font-heading text-2xl text-ink tabular-nums sm:text-3xl">{value}</span>
+      <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">{label}</span>
+    </div>
+  );
+}
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -178,7 +302,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("rides");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [processingBooking, setProcessingBooking] = useState<string | null>(null);
-  
+
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingRideId, setRatingRideId] = useState<string>("");
   const [ratingUser, setRatingUser] = useState<{ id: string; name: string; avatar_url: string | null }>({ id: "", name: "", avatar_url: null });
@@ -194,6 +318,10 @@ export default function ProfilePage() {
   const [togglingTemplateId, setTogglingTemplateId] = useState<string | null>(null);
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
 
+  // Avatar upload
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
   // Pull-to-refresh state
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullStartY, setPullStartY] = useState(0);
@@ -203,7 +331,6 @@ export default function ProfilePage() {
   const [supabase] = useState(() => createClient());
   const isMountedRef = useRef(true);
 
-  const deviceType = useDeviceType();
   const t = useTranslations("profile");
   const tl = useTranslations("levels");
   const tRep = useTranslations("reputation");
@@ -217,14 +344,14 @@ export default function ProfilePage() {
   useEffect(() => {
     const loadUserData = async () => {
       setLoading(true);
-      
+
       const { data: { user: currentUser } } = await supabase.auth.getUser();
-      
+
       if (!currentUser) {
         if (isMountedRef.current) router.push(`/${locale}/join`);
         return;
       }
-      
+
       if (!isMountedRef.current) return;
       setUser(currentUser);
 
@@ -467,7 +594,7 @@ export default function ProfilePage() {
 
   const handleSaveCarInfo = async (carData: { car_model?: string | null; car_color?: string | null; car_plate?: string | null; car_year?: number | null }) => {
     if (!user) return;
-    
+
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -477,13 +604,50 @@ export default function ProfilePage() {
         car_year: carData.car_year,
       })
       .eq("id", user.id);
-    
+
     if (error) {
       toast.error(t("errorSavingCarInfo"));
     } else {
       toast.success(t("carSavedSuccess"));
-      // Update local profile state
       setProfile(prev => prev ? { ...prev, ...carData } : null);
+    }
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      toast.error(t("invalidFileType"));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t("fileTooLarge"));
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const path = `${user.id}/avatar-${Date.now()}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { cacheControl: "3600", upsert: true, contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
+      if (updateError) throw updateError;
+
+      setProfile((prev) => (prev ? { ...prev, avatar_url: publicUrl } : prev));
+      toast.success(t("photoUpdated"));
+    } catch {
+      toast.error(t("uploadError"));
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -586,13 +750,13 @@ export default function ProfilePage() {
 
   // Pull-to-refresh handlers
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (mainRef.current && mainRef.current.scrollTop === 0) {
+    if (window.scrollY === 0) {
       setPullStartY(e.touches[0].clientY);
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (pullStartY > 0 && mainRef.current && mainRef.current.scrollTop === 0) {
+    if (pullStartY > 0 && window.scrollY === 0) {
       const diff = e.touches[0].clientY - pullStartY;
       if (diff > 0) {
         setPullDistance(Math.min(diff * 0.5, 80));
@@ -626,17 +790,19 @@ export default function ProfilePage() {
   }, [user, profile]);
 
   const formatDate = useCallback((dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(locale, { 
-      weekday: "short", day: "numeric", month: "short" 
+    return new Date(dateStr).toLocaleDateString(locale, {
+      weekday: "short", day: "numeric", month: "short"
     });
   }, [locale]);
 
+  const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "confirmed": return "text-ok";
-      case "pending": return "text-primary";
-      case "rejected": return "text-bad";
-      case "cancelled": return "text-bad";
+      case "confirmed": return "text-green";
+      case "pending": return "text-pending";
+      case "rejected": return "text-terracotta";
+      case "cancelled": return "text-terracotta";
       default: return "text-muted";
     }
   };
@@ -660,18 +826,14 @@ export default function ProfilePage() {
     return date < new Date();
   };
 
-  const { completedRides, completedBookings, totalKm, co2Saved, levelInfo, trustScore, trustLabel, completionRate } = useMemo(() => {
+  const { totalKm, levelInfo, trustLabel, completionRate } = useMemo(() => {
     const cRides = myRides.filter(r => r.status === 'active' || isRideCompleted(r.date, r.time));
     const cBookings = myBookings.filter(b => b.status === 'confirmed');
     let km = 0;
-    let passengers = 0;
 
     cRides.forEach(ride => {
       const dist = getDistanceBetweenCities(ride.from_city, ride.to_city);
-      if (dist) {
-        km += dist;
-        passengers += (ride.bookings_count || 0);
-      }
+      if (dist) km += dist;
     });
 
     cBookings.forEach(booking => {
@@ -680,379 +842,342 @@ export default function ProfilePage() {
     });
 
     const score = profile ? computeTrustScore(profile) : 0;
-    const label = getTrustLevel(score);
     const rate = profile ? getCompletionRate(profile.completed_rides_count ?? null, profile.rides_count ?? null) : null;
 
     return {
-      completedRides: cRides,
-      completedBookings: cBookings,
       totalKm: km,
-      co2Saved: calculateCO2Saved(km, passengers),
+      // The trust score is a heuristic, not a measurement. We show the band it
+      // falls into and deliberately not a percentage, which would claim a
+      // precision the number does not have.
+      trustLabel: getTrustLevel(score),
       levelInfo: profile ? getLevelInfo(profile.points) : null,
-      trustScore: score,
-      trustLabel: label,
       completionRate: rate,
     };
   }, [myRides, myBookings, profile]);
 
+  const tripCount = myRides.length + myBookings.length;
+  const hasHistory = tripCount > 0;
+  const reviewCount = profile?.review_count ?? 0;
+
+  const setupSteps: {
+    key: string;
+    icon: React.ElementType;
+    title: string;
+    body: string;
+    done: boolean;
+    href?: string;
+    onClick?: () => void;
+  }[] = useMemo(
+    () => [
+      {
+        key: "photo",
+        icon: Camera,
+        title: t("setupPhotoTitle"),
+        body: t("setupPhotoBody"),
+        done: Boolean(userAvatar),
+        onClick: () => avatarInputRef.current?.click(),
+      },
+      {
+        key: "phone",
+        icon: Phone,
+        title: t("setupPhoneTitle"),
+        body: t("setupPhoneBody"),
+        done: Boolean(profile?.phone_verified),
+        href: "#account-panel",
+      },
+      {
+        key: "ride",
+        icon: MapPin,
+        title: t("setupRideTitle"),
+        body: t("setupRideBody"),
+        done: hasHistory,
+        href: `/${locale}/offri`,
+      },
+    ],
+    [t, locale, userAvatar, profile?.phone_verified, hasHistory]
+  );
+
+  const pendingSteps = setupSteps.filter((s) => !s.done);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      <div className="flex min-h-[60vh] items-center justify-center bg-bg">
+        <Loader2 className="h-8 w-8 animate-spin text-green" strokeWidth={1.5} />
+        <span className="sr-only">{t("loadingProfile")}</span>
       </div>
     );
   }
 
-  function ProfileMobile() {
-    return (
-      <div className="min-h-screen bg-bg">
+  const tabs = [
+    { id: "rides", label: t("tabRides"), count: myRides.length },
+    { id: "bookings", label: t("tabBookings"), count: myBookings.length },
+    { id: "templates", label: t("tabRecurring"), count: rideTemplates.length },
+    { id: "alerts", label: t("tabAlerts"), count: rideAlerts.length },
+  ];
+
+  return (
+    <ErrorBoundary>
+      <div
+        ref={mainRef}
+        className="w-full pb-12"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
+      >
         {/* Pull to refresh indicator */}
         <div
-          className="flex justify-center items-center h-0 overflow-visible transition-all duration-200 fixed top-0 left-0 right-0 z-50 pointer-events-none"
-          style={{ height: pullDistance > 0 ? pullDistance : 0, opacity: pullDistance > 0 ? 1 : 0 }}
+          className="pointer-events-none fixed inset-x-0 top-16 z-30 flex items-center justify-center overflow-hidden transition-all duration-200"
+          style={{ height: pullDistance, opacity: pullDistance > 0 ? 1 : 0 }}
         >
-          <div className={`flex items-center gap-2 text-fg/60 transition-opacity ${pullDistance > 60 ? 'opacity-100' : 'opacity-50'}`}>
-            <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 2}deg)` }} />
-            <span className="text-sm">{pullDistance > 60 ? t("releaseToRefresh") : t("pullToRefresh")}</span>
-          </div>
+          <span className="flex items-center gap-2 text-xs font-medium text-muted">
+            <RefreshCw
+              className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              strokeWidth={1.5}
+              style={{ transform: `rotate(${pullDistance * 2}deg)` }}
+            />
+            {pullDistance > 60 ? t("releaseToRefresh") : t("pullToRefresh")}
+          </span>
         </div>
-        <main
-          ref={mainRef}
-          className="min-h-screen overflow-y-auto"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onTouchCancel={handleTouchCancel}
-        >
-        <AuroraBackground className="border-b border-white/5">
-          <OrbGlow className="-top-10 -right-20" color="var(--accent)" size={260} opacity={0.32} />
-          <header className="relative text-primary flex justify-between items-end w-full px-4 sm:px-6 pt-4 pb-4">
-            <div className="flex items-center gap-3">
-              <Link href={`/${locale}/profilo`} className="w-10 h-10 bg-white/[0.06] rounded-full overflow-hidden border border-white/15 flex items-center justify-center backdrop-blur-md">
-                {userAvatar ? (
-                  <Image
-                    src={userAvatar!}
-                    alt={t("profilePhotoAlt")}
-                    width={40}
-                    height={40}
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = 'flex';
-                    }}
-                  />
-                ) : null}
-                <div className={`w-full h-full items-center justify-center ${userAvatar ? 'hidden' : 'flex'}`}>
-                  <User className="w-5 h-5 text-muted" />
-                </div>
-              </Link>
-              <h1 className="text-2xl font-extrabold tracking-tighter text-fg uppercase"><GradientText>Andamus</GradientText></h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="text-primary p-2">
-                <ShareApp variant="icon" className="text-primary" />
-              </div>
-              <button
-                onClick={() => setShowLogoutConfirm(true)}
-                className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md text-accent hover:bg-white/[0.08] transition-all active:scale-95"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
-            </div>
-          </header>
-        </AuroraBackground>
 
-        <main className="max-w-md mx-auto">
-          <Reveal>
-          <section className="px-4 sm:px-6 py-8 flex flex-col items-center overflow-x-hidden">
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              <svg className="custom-ring w-full h-full absolute">
-                <circle className="text-line" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="4" />
-                <circle
-                  className="text-accent"
-                  cx="80"
-                  cy="80"
-                  fill="transparent"
-                  r="74"
-                  stroke="currentColor"
-                  strokeDasharray="465"
-                  strokeDashoffset={profile ? 465 - (465 * Math.min((profile.points % 100) / 100, 1)) : 120}
-                  strokeWidth="6"
-                  style={{ filter: "drop-shadow(0 0 8px rgba(255,179,177,0.5))" }}
+        {/* ── Identity ──────────────────────────────────────────── */}
+        <Reveal>
+          <header className="px-4 pt-6 md:px-0 md:pt-8">
+            <div className="flex items-start gap-4 sm:gap-5">
+              <div className="relative shrink-0">
+                <div className="h-16 w-16 overflow-hidden rounded-full border border-line bg-sand-deep sm:h-20 sm:w-20">
+                  {userAvatar ? (
+                    <Image
+                      src={userAvatar}
+                      alt={t("profilePhotoAlt")}
+                      width={80}
+                      height={80}
+                      className="h-full w-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center">
+                      <User className="h-7 w-7 text-faint" strokeWidth={1.5} aria-hidden />
+                    </span>
+                  )}
+                </div>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  onChange={handleAvatarChange}
                 />
-              </svg>
-              <div className="text-center z-10">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-accent mb-1">{t("level")}</span>
-                <span className="text-4xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  aria-label={t("changePhoto")}
+                  className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface text-muted transition-colors hover:text-ink disabled:opacity-60"
+                >
+                  {uploadingAvatar ? (
+                    <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+                  ) : (
+                    <Camera className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                  )}
+                </button>
               </div>
-              <div className="absolute -bottom-2 bg-accent text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-xl shadow-accent/40">
-                {t("pointsBadge", { points: profile?.points ?? 0 })}
-              </div>
-            </div>
-            <div className="mt-8 text-center">
-              <h2 className="text-4xl font-extrabold tracking-tight mb-1 text-fg">{userName}</h2>
-              <p className="text-muted text-sm font-medium opacity-80 uppercase tracking-widest">
-                {t("memberSince", {
-                  age: (() => {
-                    const a = getAccountAge(profile?.created_at || user?.created_at);
-                    return tRep(`age.${a.unit}`, { count: a.count });
-                  })(),
-                })}
-              </p>
-              {streak && streak.current > 1 && (
-                <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
-                  {t("streakActive", { count: streak.current })}
-                </div>
-              )}
-            </div>
-            
-            {/* Onboarding Milestone Banner */}
-            {profile && (!profile.avatar_url || !profile.car_model || !profile.phone_verified) && (
-              <div 
-                className="w-full mt-6 bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
-                onClick={() => document.getElementById("profile-settings")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                <div className="flex-1">
-                  <h4 className="text-sm font-bold text-white mb-1">Completa il tuo profilo</h4>
-                  <p className="text-xs text-white/70 leading-relaxed">
-                    Aggiungi {!profile.avatar_url ? "una foto" : !profile.phone_verified ? "il tuo numero" : "la tua auto"} per aumentare la fiducia e ricevere più prenotazioni.
-                  </p>
-                </div>
-                <div className="ml-4 shrink-0 bg-accent/20 p-2 rounded-full">
-                  <ChevronRight className="w-4 h-4 text-accent" />
-                </div>
-              </div>
-            )}
-          </section>
-          </Reveal>
 
-          <section className="px-4 sm:px-6 mb-12">
-            <RevealStagger className="grid grid-cols-2 gap-3">
-              <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
-                  <Car className="w-5 h-5 text-accent" />
+              <div className="min-w-0 flex-1">
+                <h1 className="font-heading text-[26px] leading-tight text-ink sm:text-3xl">
+                  {userName}
+                </h1>
+                <p className="mt-1 text-sm text-muted">
+                  {t("memberSince", {
+                    age: (() => {
+                      const a = getAccountAge(profile?.created_at || user?.created_at);
+                      return tRep(`age.${a.unit}`, { count: a.count });
+                    })(),
+                  })}
+                </p>
+                <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-sand px-2.5 py-1 text-xs font-medium text-ink">
+                    <ShieldCheck className="h-3.5 w-3.5 text-muted" strokeWidth={1.5} aria-hidden />
+                    {tRep(`trust.${trustLabel.label}`)}
+                  </span>
+                  {reviewCount > 0 && (
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted">
+                      <Star className="h-3.5 w-3.5 text-ink" strokeWidth={1.5} aria-hidden />
+                      <span className="font-medium text-ink tabular-nums">
+                        {(profile?.rating ?? 5).toFixed(1)}
+                      </span>
+                      {tRep("reviewCount", { count: reviewCount })}
+                    </span>
+                  )}
+                  {streak && streak.current > 1 && (
+                    <span className="text-xs text-muted">
+                      {t("streakActive", { count: streak.current })}
+                    </span>
+                  )}
                 </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-fg">
-                    <AnimatedCounter value={myRides.length + myBookings.length} />
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("trips")}</p>
-                </div>
-              </TiltCard>
-              </RevealItem>
-              <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
-                  <Route className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-fg">
-                    <GradientText><AnimatedCounter value={Math.round(totalKm)} suffix="km" /></GradientText>
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("totalKm")}</p>
-                </div>
-              </TiltCard>
-              </RevealItem>
-              <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
-                  <Star className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-fg">
-                    {(profile?.review_count ?? 0) > 0 ? <AnimatedCounter value={profile?.rating || 5.0} decimals={1} /> : "—"}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("rating")}{(profile?.review_count ?? 0) > 0 && <span className="text-white/30"> ({profile?.review_count})</span>}</p>
-                </div>
-              </TiltCard>
-              </RevealItem>
-              <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-gradient-to-br from-primary/[0.07] to-transparent border border-primary/15 p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 ring-1 ring-primary/20">
-                  <Shield className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-fg">
-                    <AnimatedCounter value={trustScore} suffix="%" />
-                  </p>
-                  <p className={`text-[10px] font-bold uppercase tracking-wider ${trustLabel.color}`}>{tRep(`trust.${trustLabel.label}`)}</p>
-                </div>
-              </TiltCard>
-              </RevealItem>
-              <RevealItem>
-              <TiltCard tiltStrength={5} className="bg-surface border border-line p-4 rounded-2xl flex flex-col justify-between min-h-[110px]">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent-dim ring-1 ring-accent/20">
-                  <Repeat className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-fg">
-                    {completionRate === null
-                      ? tRep("noCompletionRate")
-                      : <AnimatedCounter value={completionRate} suffix="%" />}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted">{t("completedRidesLabel")}</p>
-                </div>
-              </TiltCard>
-              </RevealItem>
-            </RevealStagger>
-          </section>
-
-          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-2 p-4 rounded-xl space-y-4">
-              <h3 className="text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                <Shield className="w-5 h-5 text-primary" />
-                {t("verificationAndSecurity")}
-              </h3>
-              
-              {/* Phone Verification */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-fg">{t("phoneNumber")}</p>
-                  <p className="text-xs text-muted">
-                    {user?.phone ? user.phone : t("notVerified")}
-                  </p>
-                </div>
-                <PhoneVerification 
-                  userId={user?.id || ""}
-                  currentPhone={user?.phone}
-                  isVerified={profile?.phone_verified}
-                  onVerified={() => {
-                    // Refresh profile data
-                    supabase.from("profiles")
-                      .select("*")
-                      .eq("id", user?.id)
-                      .single()
-                      .then(({ data }: { data: Record<string, unknown> | null }) => {
-                        if (data) setProfile(data as unknown as Profile);
-                      });
-                  }}
-                />
               </div>
             </div>
-          </section>
 
-          {/* Stripe Connect */}
-          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-2 p-4 rounded-xl">
-              <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                <CreditCard className="w-5 h-5 text-primary" />
-                {t("payments")}
-              </h3>
-              <StripeConnectBanner />
-            </div>
-          </section>
-
-          {/* NEW: Vehicle Identity System — Link to garage */}
-          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <Reveal>
-            <Link href={`/${locale}/profilo/veicoli`} className="block">
-              <div className="bg-gradient-to-br from-accent/[0.08] to-transparent border border-accent/20 rounded-2xl p-5 flex items-center gap-4 hover:border-accent/40 hover:from-accent/[0.12] transition-all group">
-                <div className="w-14 h-14 rounded-2xl bg-accent-dim ring-1 ring-accent/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <Car className="w-7 h-7 text-accent" />
+            {/* Level: one quiet line, not a hero ornament */}
+            {profile && levelInfo && (
+              <div className="mt-6">
+                <div className="flex items-baseline justify-between gap-4">
+                  <p className="text-sm font-medium text-ink">{tl(levelInfo.current.key)}</p>
+                  <p className="text-xs text-muted tabular-nums">
+                    {t("pointsCount", { points: profile.points })}
+                  </p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-headline font-bold text-lg text-fg">I tuoi Veicoli</p>
-                  <p className="text-sm text-fg/50 truncate">Gestisci il tuo garage, aggiungi foto e comfort</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-accent mt-1">Nuovo ✨</p>
-                </div>
-                <ChevronRight className="w-6 h-6 text-fg/30 group-hover:text-accent group-hover:translate-x-1 transition-all flex-shrink-0" />
-              </div>
-            </Link>
-            </Reveal>
-          </section>
-
-          {/* Car Info Section (legacy — preserved for backward compat) */}
-          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-2 p-4 rounded-xl">
-              <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                <Car className="w-5 h-5 text-primary" />
-                {t("yourVehicle")}
-              </h3>
-              <CarInfoForm
-                initialData={{
-                  car_model: profile?.car_model,
-                  car_color: profile?.car_color,
-                  car_plate: profile?.car_plate,
-                  car_year: profile?.car_year,
-                }}
-                onSave={handleSaveCarInfo}
-              />
-            </div>
-          </section>
-
-
-          <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-            <div className="bg-surface-2 p-4 rounded-xl">
-              <h3 className="mb-3 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                <Bell className="w-5 h-5 text-primary" />
-                {t("pushNotifications")}
-              </h3>
-              <PushNotificationToggle />
-            </div>
-          </section>
-
-          <ReferralCard locale={locale} profile={profile} />
-
-          {user && (
-            <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-              <EmailPreferences userId={user.id} />
-            </section>
-          )}
-
-          {profile && levelInfo && (
-            <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-              <div className="bg-surface-2 p-4 rounded-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                    <p className="font-extrabold text-fg">{tl(levelInfo.current.key)}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-primary">{t("points")}</p>
-                    <p className="font-extrabold text-primary text-xl">{profile.points}</p>
-                  </div>
-                </div>
-                <div className="relative h-2 bg-elevated rounded-full overflow-hidden">
-                  <div 
-                    className="absolute inset-y-0 left-0 bg-primary rounded-full"
-                    style={{ width: `${(() => {
-                      const range = levelInfo.next ? levelInfo.next.min - levelInfo.current.min : 100;
-                      const progress = profile.points - levelInfo.current.min;
-                      return Math.min(100, Math.max(0, (progress / range) * 100));
-                    })()}%` }}
+                <div
+                  className="mt-2 h-1 w-full overflow-hidden rounded-full bg-track"
+                  role="progressbar"
+                  aria-valuenow={Math.round(levelInfo.progress)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={tl(levelInfo.current.key)}
+                >
+                  <div
+                    className="h-full rounded-full bg-green transition-[width] duration-500"
+                    style={{ width: `${Math.max(2, levelInfo.progress)}%` }}
                   />
                 </div>
-                <p className="text-xs text-muted mt-2">
+                <p className="mt-2 text-xs text-muted">
                   {levelInfo.next
-                    ? t("pointsToNextLevel", { points: levelInfo.next.min - profile.points })
+                    ? t("pointsToNextLevelNamed", {
+                        points: levelInfo.next.min - profile.points,
+                        level: tl(levelInfo.next.key),
+                      })
                     : t("maxLevelReached")}
                 </p>
               </div>
-            </section>
-          )}
+            )}
+          </header>
+        </Reveal>
 
-          {bookingRequests.length > 0 && (
-            <section className="px-4 sm:px-6 mb-8 overflow-x-hidden">
-              <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-fg">
-                {t("pendingRequestsCount", { count: bookingRequests.length })}
-              </h3>
-              <div className="space-y-3">
-                {bookingRequests.map((request) => (
-                  <div key={request.id} className="rounded-xl bg-surface-2 p-4">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center overflow-hidden">
-                          {request.passenger.avatar_url ? (
-                            <Image src={request.passenger.avatar_url} alt={request.passenger.name} width={40} height={40} className="w-full h-full object-cover rounded-full" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        {/* ── Ledger, or a real first-run start ─────────────────── */}
+        <div className="mt-6 px-4 md:px-0">
+          {hasHistory ? (
+            <Reveal delay={0.05}>
+              <div className="grid grid-cols-3 divide-x divide-line rounded-2xl border border-line bg-surface">
+                <LedgerCell value={numberFormat.format(tripCount)} label={t("trips")} />
+                <LedgerCell value={`${numberFormat.format(Math.round(totalKm))} km`} label={t("totalKm")} />
+                <LedgerCell
+                  value={completionRate === null ? "—" : `${completionRate}%`}
+                  label={t("completedRidesLabel")}
+                />
+              </div>
+              <Link
+                href={`/${locale}/statistiche`}
+                className="mt-2 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-green hover:underline"
+              >
+                <BarChart3 className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                {t("openStats")}
+              </Link>
+            </Reveal>
+          ) : (
+            <Reveal delay={0.05}>
+              <Panel title={t("setupTitle")}>
+                <p className="px-5 pt-4 text-sm leading-relaxed text-muted">{t("setupIntro")}</p>
+                <ol className="mt-3 divide-y divide-line-soft">
+                  {setupSteps.map((step) => {
+                    const inner = (
+                      <>
+                        <span
+                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
+                            step.done ? "border-green bg-green" : "border-line-strong"
+                          }`}
+                          aria-hidden
+                        >
+                          {step.done ? (
+                            <Check className="h-3.5 w-3.5 text-white" strokeWidth={2} />
                           ) : (
-                            <User className="w-5 h-5 text-muted" />
+                            <step.icon className="h-3.5 w-3.5 text-muted" strokeWidth={1.5} />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span
+                            className={`block text-sm font-medium ${
+                              step.done ? "text-muted line-through" : "text-ink"
+                            }`}
+                          >
+                            {step.title}
+                          </span>
+                          {!step.done && (
+                            <span className="mt-0.5 block text-xs leading-relaxed text-muted">
+                              {step.body}
+                            </span>
+                          )}
+                        </span>
+                        {!step.done && (step.href || step.onClick) && (
+                          <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={1.5} aria-hidden />
+                        )}
+                      </>
+                    );
+                    const rowClass =
+                      "flex w-full min-h-[56px] items-start gap-3 px-5 py-3.5 text-left transition-colors hover:bg-sand";
+                    return (
+                      <li key={step.key}>
+                        {step.done ? (
+                          <div className="flex min-h-[56px] items-start gap-3 px-5 py-3.5">{inner}</div>
+                        ) : step.href ? (
+                          <Link href={step.href} className={rowClass}>{inner}</Link>
+                        ) : step.onClick ? (
+                          <button type="button" onClick={step.onClick} className={rowClass}>{inner}</button>
+                        ) : (
+                          <div className="flex min-h-[56px] items-start gap-3 px-5 py-3.5">{inner}</div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              </Panel>
+            </Reveal>
+          )}
+        </div>
+
+        {/* Slim nudge once the user is active but the profile is still thin */}
+        {hasHistory && pendingSteps.length > 0 && (
+          <div className="mt-4 px-4 md:px-0">
+            <p className="rounded-xl border border-line bg-green-tint px-4 py-3 text-sm leading-relaxed text-ink">
+              {t("setupNudge", { task: pendingSteps[0].title.toLowerCase() })}
+            </p>
+          </div>
+        )}
+
+        {/* ── Two columns from lg up ────────────────────────────── */}
+        <div className="mt-8 grid grid-cols-1 gap-8 px-4 md:px-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="min-w-0 space-y-8">
+            {/* Pending booking requests — the only thing on this page that
+                needs an answer today, so it sits above the tabs. */}
+            {bookingRequests.length > 0 && (
+              <section>
+                <h2 className="mb-3 font-heading text-lg text-ink">
+                  {t("pendingRequestsCount", { count: bookingRequests.length })}
+                </h2>
+                <div className="space-y-3">
+                  {bookingRequests.map((request) => (
+                    <article
+                      key={request.id}
+                      className="rounded-2xl border border-line bg-surface p-4 sm:p-5"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-sand-deep">
+                          {request.passenger.avatar_url ? (
+                            <Image
+                              src={request.passenger.avatar_url}
+                              alt=""
+                              width={40}
+                              height={40}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="flex h-full w-full items-center justify-center">
+                              <User className="h-5 w-5 text-faint" strokeWidth={1.5} aria-hidden />
+                            </span>
                           )}
                         </div>
-                        <div>
-                          <p className="font-bold text-fg">{request.passenger.name}</p>
-                          <p className="text-sm text-muted">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-ink">{request.passenger.name}</p>
+                          <p className="truncate text-sm text-muted">
                             {request.ride.from_city} → {request.ride.to_city}
                           </p>
                           <p className="text-xs text-muted">
@@ -1060,126 +1185,133 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="mt-4 flex gap-2 sm:justify-end">
                         <button
                           onClick={() => handleRejectBooking(request)}
                           disabled={processingBooking === request.id}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-elevated px-4 py-2 text-sm font-semibold text-fg hover:bg-elevated disabled:opacity-50"
+                          className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface text-sm font-medium text-ink transition-colors hover:bg-sand disabled:opacity-50 sm:flex-none sm:px-8"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                           {t("reject")}
                         </button>
                         <button
                           onClick={() => handleAcceptBooking(request)}
                           disabled={processingBooking === request.id}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-accent-fg hover:opacity-90 disabled:opacity-50"
+                          className="flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl bg-green text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 sm:flex-none sm:px-8"
                         >
                           {processingBooking === request.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
                           ) : (
-                            <Check className="h-4 w-4" />
+                            <Check className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                           )}
                           {t("accept")}
                         </button>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          <section className="px-4 sm:px-6 mb-6 overflow-x-hidden">
-            <div className="flex border-b border-elevated overflow-x-auto no-scrollbar">
-              {[
-                { id: "rides", label: t("tabRides") },
-                { id: "bookings", label: t("tabBookings") },
-                { id: "templates", label: t("tabRecurring") },
-                { id: "alerts", label: t("tabAlerts") },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`pb-4 px-4 text-xs font-bold uppercase tracking-widest relative whitespace-nowrap ${
-                    activeTab === tab.id ? "text-primary" : "text-muted hover:text-fg"
-                  } transition-colors`}
-                >
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <span className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section className="px-4 sm:px-6 space-y-4 pb-8 overflow-x-hidden">
-            {activeTab === "rides" && (
-              <>
-                {myRides.length === 0 ? (
-                  <EmptyStateProfile type="rides" />
-                ) : (
-                  myRides.map((ride) => (
-                    <Link
-                      key={ride.id}
-                      href={`/${locale}/corsa/${ride.id}`}
-                      className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-primary shadow-sm active:scale-[0.98] transition-transform"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">
-                            {formatDate(ride.date)} · {ride.time.slice(0, 5)}
-                          </span>
-                          <h3 className="text-xl font-extrabold tracking-tight text-fg">{ride.from_city} — {ride.to_city}</h3>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xl font-extrabold text-fg">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
-                          <p className="text-[10px] font-bold text-muted uppercase tracking-tighter">
-                            {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
-                          <User className="w-3.5 h-3.5 text-muted" />
-                        </div>
-                        <span className="text-[11px] font-semibold text-muted">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
-                      </div>
-                    </Link>
-                  ))
-                )}
-              </>
+                    </article>
+                  ))}
+                </div>
+              </section>
             )}
 
-            {activeTab === "bookings" && (
-              <>
-                {myBookings.length === 0 ? (
-                  <EmptyStateProfile type="bookings" />
-                ) : (
-                  myBookings.map((booking) => {
-                    const completed = isRideCompleted(booking.rides.date);
-                    return (
-                      <div key={booking.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-elevated">
-                        <div className="flex justify-between items-start">
-                          <div className="flex flex-col">
-                            <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
-                              {getStatusLabel(booking.status)}
-                            </span>
-                            <h3 className="text-xl font-extrabold tracking-tight text-fg">{booking.rides.from_city} — {booking.rides.to_city}</h3>
+            {/* Tabs */}
+            <section>
+              <div
+                role="tablist"
+                aria-label={t("activityTabsLabel")}
+                className="-mx-4 flex gap-1 overflow-x-auto border-b border-line px-4 no-scrollbar md:mx-0 md:px-0"
+              >
+                {tabs.map((tab) => {
+                  const selected = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      role="tab"
+                      aria-selected={selected}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`relative -mb-px min-h-[44px] whitespace-nowrap border-b-2 px-3 text-sm transition-colors ${
+                        selected
+                          ? "border-green font-semibold text-ink"
+                          : "border-transparent font-medium text-muted hover:text-ink"
+                      }`}
+                    >
+                      {tab.label}
+                      {tab.count > 0 && (
+                        <span className="ml-1.5 text-xs text-faint tabular-nums">{tab.count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {activeTab === "rides" && (
+                  myRides.length === 0 ? (
+                    <EmptyStateProfile type="rides" />
+                  ) : (
+                    myRides.map((ride) => (
+                      <Link
+                        key={ride.id}
+                        href={`/${locale}/corsa/${ride.id}`}
+                        className="block rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-line-strong sm:p-5"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted">
+                              {formatDate(ride.date)} · {ride.time.slice(0, 5)}
+                            </p>
+                            <h3 className="mt-1 font-heading text-lg text-ink">
+                              {ride.from_city} — {ride.to_city}
+                            </h3>
                           </div>
-                          <div className="text-right">
-                            <span className="text-xl font-extrabold text-fg">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
-                            {completed && <p className="text-[10px] font-bold text-ok uppercase tracking-tighter">{t("rideCompleted")}</p>}
+                          <div className="shrink-0 text-right">
+                            <p className="font-heading text-lg text-ink tabular-nums">
+                              {ride.price === 0 ? t("free") : `€${ride.price}`}
+                            </p>
+                            <p className="text-xs text-muted">
+                              {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
+                            </p>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
-                              <User className="w-3.5 h-3.5 text-muted" />
+                        <p className="mt-3 text-xs text-muted">
+                          {t("seatsCount", { count: ride.seats })} · {t("requestsCount", { count: ride.bookings_count || 0 })}
+                        </p>
+                      </Link>
+                    ))
+                  )
+                )}
+
+                {activeTab === "bookings" && (
+                  myBookings.length === 0 ? (
+                    <EmptyStateProfile type="bookings" />
+                  ) : (
+                    myBookings.map((booking) => {
+                      const completed = isRideCompleted(booking.rides.date);
+                      return (
+                        <article
+                          key={booking.id}
+                          className="rounded-2xl border border-line bg-surface p-4 sm:p-5"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className={`text-xs font-medium uppercase tracking-[0.08em] ${getStatusColor(booking.status)}`}>
+                                {getStatusLabel(booking.status)}
+                              </p>
+                              <h3 className="mt-1 font-heading text-lg text-ink">
+                                {booking.rides.from_city} — {booking.rides.to_city}
+                              </h3>
+                              <p className="mt-1 text-xs text-muted">
+                                {booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}
+                              </p>
                             </div>
-                            <span className="text-[11px] font-semibold text-muted">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
+                            <div className="shrink-0 text-right">
+                              <p className="font-heading text-lg text-ink tabular-nums">
+                                {booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}
+                              </p>
+                              {completed && <p className="text-xs text-muted">{t("rideCompleted")}</p>}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
+
+                          <div className="mt-4 flex flex-wrap gap-2">
                             {completed && !reviewedRides.has(booking.rides.id) ? (
                               <button
                                 onClick={() => openRatingModal(booking.rides.id, {
@@ -1187,137 +1319,284 @@ export default function ProfilePage() {
                                   name: booking.rides.profiles.name,
                                   avatar_url: booking.rides.profiles.avatar_url
                                 })}
-                                className="flex items-center gap-1 rounded-full bg-primary/20 px-3 py-1.5 text-sm font-bold text-primary"
+                                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-sand"
                               >
-                                <Star className="h-3 w-3" />
+                                <Star className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                                 {t("review")}
                               </button>
-                            ) : (
+                            ) : booking.status !== "cancelled" ? (
                               <>
-                                {booking.status !== "cancelled" && (
-                                  <>
-                                    <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-bold text-accent-fg">
-                                      <MessageCircle className="h-3 w-3" />
-                                      {t("chat")}
-                                    </Link>
-                                    <Link
-                                      href={`/${locale}/cancella/${booking.id}`}
-                                      className="flex items-center gap-1 rounded-full bg-bad/20 px-3 py-1.5 text-sm font-bold text-bad"
-                                    >
-                                      {t("cancel")}
-                                    </Link>
-                                  </>
-                                )}
+                                <Link
+                                  href={`/${locale}/chat/${booking.id}`}
+                                  className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-green px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                                >
+                                  <MessageCircle className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                                  {t("chat")}
+                                </Link>
+                                <Link
+                                  href={`/${locale}/cancella/${booking.id}`}
+                                  className="inline-flex min-h-[44px] items-center rounded-xl border border-line px-4 text-sm font-medium text-terracotta transition-colors hover:bg-sand"
+                                >
+                                  {t("cancel")}
+                                </Link>
                               </>
-                            )}
+                            ) : null}
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })
+                        </article>
+                      );
+                    })
+                  )
                 )}
-              </>
-            )}
 
-            {activeTab === "templates" && (
-              <>
-                {rideTemplates.length === 0 ? (
-                  <EmptyState
-                    title={t("noRecurringRides")}
-                    description={t("noRecurringRidesDescription")}
-                    icon={<Repeat className="w-12 h-12 text-accent" />}
-                    action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
-                  />
-                ) : (
-                  rideTemplates.map((template) => (
-                    <div key={template.id} className="bg-surface p-5 rounded-xl flex flex-col gap-4 border-l-4 border-elevated">
-                      <div className="flex justify-between items-start">
-                        <div className="flex flex-col">
-                          <h3 className="text-xl font-extrabold tracking-tight text-fg">{template.from_city} — {template.to_city}</h3>
-                          <p className="text-sm text-muted mt-1">
-                            {template.time.slice(0, 5)} · {template.seats} {t("seats")} · {template.price === 0 ? t("free") : `€${template.price}`}
-                          </p>
-                          <p className="text-xs text-muted mt-1">
-                            {template.recurrence_days.map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" })).join(", ")}
-                          </p>
+                {activeTab === "templates" && (
+                  rideTemplates.length === 0 ? (
+                    <EmptyState
+                      title={t("noRecurringRides")}
+                      description={t("noRecurringRidesDescription")}
+                      action={{ label: t("createRecurring"), href: `/${locale}/offri`, variant: "outline" }}
+                    />
+                  ) : (
+                    rideTemplates.map((template) => (
+                      <article
+                        key={template.id}
+                        className="rounded-2xl border border-line bg-surface p-4 sm:p-5"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <h3 className="font-heading text-lg text-ink">
+                              {template.from_city} — {template.to_city}
+                            </h3>
+                            <p className="mt-1 text-sm text-muted">
+                              {template.time.slice(0, 5)} · {t("seatsCount", { count: template.seats })} · {template.price === 0 ? t("free") : `€${template.price}`}
+                            </p>
+                            <p className="mt-1 text-xs text-muted">
+                              {template.recurrence_days
+                                .map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" }))
+                                .join(", ")}
+                            </p>
+                          </div>
+                          <span
+                            className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
+                              template.is_active ? "bg-green-tint text-green" : "bg-sand-deep text-muted"
+                            }`}
+                          >
+                            {template.is_active ? t("templateOn") : t("templateOff")}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="mt-4 flex gap-2">
                           <button
                             onClick={() => handleToggleTemplate(template)}
                             disabled={togglingTemplateId === template.id}
-                            className={`rounded-full px-3 py-1.5 text-sm font-bold ${template.is_active ? 'bg-elevated text-fg' : 'bg-primary text-accent-fg'} disabled:opacity-50`}
+                            className="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-ink transition-colors hover:bg-sand disabled:opacity-50"
                           >
-                            {togglingTemplateId === template.id ? <Loader2 className="h-3 w-3 animate-spin" /> : (template.is_active ? t("suspend") : t("activate"))}
+                            {togglingTemplateId === template.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+                            ) : template.is_active ? t("suspend") : t("activate")}
                           </button>
                           <button
                             onClick={() => handleDeleteTemplate(template.id)}
                             disabled={deletingTemplateId === template.id}
-                            className="p-2 rounded-full bg-bad/20 text-bad disabled:opacity-50"
+                            aria-label={t("deleteRecurring")}
+                            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-terracotta transition-colors hover:bg-sand disabled:opacity-50"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            {deletingTemplateId === template.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+                            ) : (
+                              <Trash2 className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                            )}
                           </button>
                         </div>
-                      </div>
-                    </div>
-                  ))
+                      </article>
+                    ))
+                  )
                 )}
-              </>
-            )}
 
-            {activeTab === "alerts" && (
-              <>
-                {rideAlerts.length === 0 ? (
-                  <EmptyState
-                    title={t("noAlerts")}
-                    description={t("noAlertsDescription")}
-                    icon={<Bell className="w-12 h-12 text-accent" />}
-                    action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
-                  />
-                ) : (
-                  rideAlerts.map((alert) => (
-                    <div key={alert.id} className="bg-surface p-5 rounded-xl flex items-center justify-between border-l-4 border-elevated">
-                      <div>
-                        <h3 className="font-bold text-fg">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
-                        <p className="text-sm text-muted">
-                          {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
-                          {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
-                          {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats} ${t("seats")}`}
-                          {alert.max_price !== null && ` · ${t("max")} ${alert.max_price}€`}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleDeleteAlert(alert.id)}
-                        disabled={deletingAlertId === alert.id}
-                        className="p-2 rounded-full bg-bad/20 text-bad disabled:opacity-50"
+                {activeTab === "alerts" && (
+                  rideAlerts.length === 0 ? (
+                    <EmptyState
+                      title={t("noAlerts")}
+                      description={t("noAlertsDescription")}
+                      action={{ label: t("searchAndCreateAlert"), href: `/${locale}/cerca`, variant: "outline" }}
+                    />
+                  ) : (
+                    rideAlerts.map((alert) => (
+                      <article
+                        key={alert.id}
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4 sm:p-5"
                       >
-                        {deletingAlertId === alert.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  ))
+                        <div className="min-w-0">
+                          <h3 className="font-heading text-base text-ink">
+                            {alert.from_city || t("any")} → {alert.to_city || t("any")}
+                          </h3>
+                          <p className="mt-1 text-sm text-muted">
+                            {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
+                            {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
+                            {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats}`}
+                            {alert.max_price !== null && ` · ${t("max")} ${alert.max_price}€`}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteAlert(alert.id)}
+                          disabled={deletingAlertId === alert.id}
+                          aria-label={t("deleteAlert")}
+                          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line text-terracotta transition-colors hover:bg-sand disabled:opacity-50"
+                        >
+                          {deletingAlertId === alert.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+                          ) : (
+                            <Trash2 className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                          )}
+                        </button>
+                      </article>
+                    ))
+                  )
                 )}
-              </>
-            )}
-          </section>
-        </main>
+              </div>
+            </section>
+          </div>
 
+          {/* ── Settings rail ─────────────────────────────────── */}
+          <aside className="min-w-0 space-y-4">
+            <Panel title={t("railAccount")} id="account-panel">
+              <div className="divide-y divide-line-soft">
+                <div className="px-5 py-4">
+                  <div className="flex items-start gap-3">
+                    <ShieldCheck
+                      className={`h-5 w-5 shrink-0 ${profile?.phone_verified ? "text-green" : "text-muted"}`}
+                      strokeWidth={1.5}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-ink">{t("phoneNumber")}</p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {profile?.phone_verified
+                          ? profile?.phone || user?.phone || t("phoneVerified")
+                          : t("phoneWhy")}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <PhoneVerification
+                      userId={user?.id || ""}
+                      currentPhone={profile?.phone || user?.phone}
+                      isVerified={profile?.phone_verified}
+                      onVerified={() => {
+                        supabase.from("profiles")
+                          .select("*")
+                          .eq("id", user?.id)
+                          .single()
+                          .then(({ data }: { data: Record<string, unknown> | null }) => {
+                            if (data) setProfile(data as unknown as Profile);
+                          });
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <DisclosureRow icon={CreditCard} label={t("payments")} detail={t("paymentsDetail")}>
+                  <StripeConnectBanner />
+                </DisclosureRow>
+              </div>
+            </Panel>
+
+            <Panel title={t("railVehicle")}>
+              <div className="divide-y divide-line-soft">
+                <LinkRow
+                  href={`/${locale}/profilo/veicoli`}
+                  icon={Car}
+                  label={t("garageTitle")}
+                  detail={t("garageDetail")}
+                />
+                <DisclosureRow
+                  icon={Car}
+                  label={t("yourVehicle")}
+                  detail={profile?.car_model || t("vehicleNotSet")}
+                >
+                  <CarInfoForm
+                    initialData={{
+                      car_model: profile?.car_model,
+                      car_color: profile?.car_color,
+                      car_plate: profile?.car_plate,
+                      car_year: profile?.car_year,
+                    }}
+                    onSave={handleSaveCarInfo}
+                  />
+                </DisclosureRow>
+              </div>
+            </Panel>
+
+            <Panel title={t("railNotifications")}>
+              <div className="divide-y divide-line-soft">
+                <div className="px-5 py-4">
+                  <div className="flex items-start gap-3">
+                    <Bell className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-ink">{t("pushNotifications")}</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-muted">{t("pushDetail")}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <PushNotificationToggle />
+                  </div>
+                </div>
+
+                {user && (
+                  <DisclosureRow icon={Mail} label={t("emailNotifications")} detail={t("emailDetail")}>
+                    <EmailPreferences userId={user.id} />
+                  </DisclosureRow>
+                )}
+              </div>
+            </Panel>
+
+            <ReferralCard locale={locale} profile={profile} />
+
+            <ShareApp variant="card" />
+
+            <Panel>
+              <div className="divide-y divide-line-soft">
+                <button
+                  onClick={() => setShowLogoutConfirm(true)}
+                  className="flex min-h-[56px] w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-sand"
+                >
+                  <LogOut className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+                  <span className="flex-1 text-sm font-medium text-ink">{t("logout")}</span>
+                </button>
+                <Link
+                  href={`/${locale}/elimina-account`}
+                  className="flex min-h-[56px] items-center gap-3 px-5 py-3.5 transition-colors hover:bg-sand"
+                >
+                  <Trash2 className="h-5 w-5 shrink-0 text-terracotta" strokeWidth={1.5} aria-hidden />
+                  <span className="flex-1 text-sm font-medium text-terracotta">{t("deleteAccount")}</span>
+                </Link>
+              </div>
+            </Panel>
+          </aside>
+        </div>
+
+        {/* ── Dialogs ───────────────────────────────────────────── */}
         {showLogoutConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
-              <h3 className="text-lg font-extrabold text-fg mb-2">{t("wantToLeave")}</h3>
-              <p className="text-sm text-muted mb-6">{t("loginAgainToUseApp")}</p>
-              <div className="flex gap-3">
+          <div className="fixed inset-0 z-modal flex items-end justify-center bg-[var(--bg-overlay)] p-4 sm:items-center">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="logout-title"
+              className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6"
+            >
+              <h2 id="logout-title" className="font-heading text-xl text-ink">{t("wantToLeave")}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{t("loginAgainToUseApp")}</p>
+              <div className="mt-6 flex gap-3">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
+                  className="min-h-[44px] flex-1 rounded-xl border border-line text-sm font-medium text-ink transition-colors hover:bg-sand"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="min-h-[44px] flex-1 rounded-xl bg-terracotta text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
-                  {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("logout")}
+                  {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" strokeWidth={1.5} /> : t("logout")}
                 </button>
               </div>
             </div>
@@ -1325,610 +1604,38 @@ export default function ProfilePage() {
         )}
 
         {cancelBookingId && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
-              <h3 className="text-lg font-extrabold text-fg mb-2">{t("cancelBookingTitle")}</h3>
-              <p className="text-sm text-muted mb-4">{t("enterCancellationReason")}</p>
+          <div className="fixed inset-0 z-modal flex items-end justify-center bg-[var(--bg-overlay)] p-4 sm:items-center">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="cancel-title"
+              className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6"
+            >
+              <h2 id="cancel-title" className="font-heading text-xl text-ink">{t("cancelBookingTitle")}</h2>
+              <label htmlFor="cancel-reason" className="mt-2 block text-sm leading-relaxed text-muted">
+                {t("enterCancellationReason")}
+              </label>
               <textarea
+                id="cancel-reason"
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                className="w-full bg-elevated rounded-xl p-3 text-sm text-fg border-none focus:ring-1 focus:ring-primary resize-none"
+                className="mt-3 w-full resize-none rounded-xl border border-line bg-sand p-3 text-sm text-ink outline-none focus:border-green"
                 rows={3}
                 placeholder={t("reasonPlaceholder")}
               />
-              <div className="flex gap-3 mt-4">
+              <div className="mt-4 flex gap-3">
                 <button
                   onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
-                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
+                  className="min-h-[44px] flex-1 rounded-xl border border-line text-sm font-medium text-ink transition-colors hover:bg-sand"
                 >
                   {t("cancel")}
                 </button>
                 <button
                   onClick={handleCancelBooking}
                   disabled={!cancelReason.trim() || isCancelling}
-                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
+                  className="min-h-[44px] flex-1 rounded-xl bg-terracotta text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
-                  {isCancelling ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("confirm")}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showRatingModal && user && (
-          <RatingModal
-            isOpen={showRatingModal}
-            onClose={() => setShowRatingModal(false)}
-            rideId={ratingRideId}
-            reviewedUser={ratingUser}
-            currentUserId={user.id}
-            onSuccess={handleReviewSuccess}
-          />
-        )}
-        {showPostAction && (
-          <Suspense fallback={null}>
-            <PostActionModal
-              type={postActionType}
-              open={showPostAction}
-              onClose={() => setShowPostAction(false)}
-              context={postActionContext}
-            />
-          </Suspense>
-        )}
-        </main>
-      </div>
-    );
-  }
-  function ProfileDesktop() {
-    return (
-      <div className="min-h-screen bg-bg text-fg pb-16 relative">
-        <AuroraBackground className="absolute inset-x-0 top-0 h-[520px] -z-10 pointer-events-none" showRadialMask={false}>
-          <OrbGlow className="-top-20 -left-20" color="var(--accent)" size={340} opacity={0.30} />
-        </AuroraBackground>
-        <div className="max-w-6xl mx-auto px-8 py-10 relative">
-          <Reveal>
-          <section className="flex items-center gap-10 mb-12">
-            <div className="relative w-48 h-48 flex items-center justify-center">
-              <svg className="custom-ring w-full h-full absolute">
-                <circle className="text-line" cx="96" cy="96" fill="transparent" r="90" stroke="currentColor" strokeWidth="4" />
-                <circle
-                  className="text-accent"
-                  cx="96"
-                  cy="96"
-                  fill="transparent"
-                  r="90"
-                  stroke="currentColor"
-                  strokeDasharray="565"
-                  strokeDashoffset={profile ? 565 - (565 * Math.min((profile.points % 100) / 100, 1)) : 120}
-                  strokeWidth="6"
-                  style={{ filter: "drop-shadow(0 0 10px rgba(255,179,177,0.5))" }}
-                />
-              </svg>
-              <div className="text-center z-10">
-                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-accent mb-1">{t("level")}</span>
-                <span className="text-5xl font-extrabold tracking-tighter text-fg">{(levelInfo ? tl(levelInfo.current.key) : "Novice")}</span>
-              </div>
-              <div className="absolute -bottom-2 bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest shadow-xl shadow-accent/40">
-                {t("pointsBadge", { points: profile?.points ?? 0 })}
-              </div>
-            </div>
-            <div>
-              <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight mb-2 text-fg">
-                <GradientText>{userName}</GradientText>
-              </h2>
-              <p className="text-muted text-base font-medium opacity-80 uppercase tracking-widest">
-                {t("memberSince", {
-                  age: (() => {
-                    const a = getAccountAge(profile?.created_at || user?.created_at);
-                    return tRep(`age.${a.unit}`, { count: a.count });
-                  })(),
-                })}
-              </p>
-              {streak && streak.current > 1 && (
-                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold">
-                  {t("streakActive", { count: streak.current })}
-                </div>
-              )}
-            </div>
-          </section>
-          </Reveal>
-
-          <RevealStagger className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-surface border border-line p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-dim ring-1 ring-accent/20">
-                <Car className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-4xl font-extrabold text-fg">
-                  <AnimatedCounter value={myRides.length + myBookings.length} />
-                </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("trips")}</p>
-              </div>
-            </TiltCard>
-            </RevealItem>
-            <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-surface border border-line p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-dim ring-1 ring-accent/20">
-                <Route className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-4xl font-extrabold">
-                  <GradientText><AnimatedCounter value={Math.round(totalKm)} suffix="km" /></GradientText>
-                </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("totalKm")}</p>
-              </div>
-            </TiltCard>
-            </RevealItem>
-            <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-surface border border-line p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-dim ring-1 ring-accent/20">
-                <Star className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <p className="text-4xl font-extrabold text-fg">
-                  {(profile?.review_count ?? 0) > 0 ? <AnimatedCounter value={profile?.rating || 5.0} decimals={1} /> : "—"}
-                </p>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("rating")}{(profile?.review_count ?? 0) > 0 && <span className="text-white/30"> ({profile?.review_count})</span>}</p>
-              </div>
-            </TiltCard>
-            </RevealItem>
-            <RevealItem>
-            <TiltCard tiltStrength={6} className="bg-gradient-to-br from-primary/[0.08] to-transparent border border-primary/15 p-6 rounded-2xl flex flex-col justify-between min-h-[150px] backdrop-blur-sm">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 ring-1 ring-primary/20">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-4xl font-extrabold text-fg">
-                  <AnimatedCounter value={trustScore} suffix="%" />
-                </p>
-                <p className={`text-xs font-bold uppercase tracking-wider ${trustLabel.color}`}>{tRep(`trust.${trustLabel.label}`)}</p>
-              </div>
-            </TiltCard>
-            </RevealItem>
-          </RevealStagger>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              {bookingRequests.length > 0 && (
-                <section>
-                  <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-fg">
-                    {t("pendingRequestsCount", { count: bookingRequests.length })}
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    {bookingRequests.map((request) => (
-                      <div key={request.id} className="rounded-2xl bg-surface-2 p-6">
-                        <div className="flex flex-col gap-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-elevated flex items-center justify-center overflow-hidden">
-                              {request.passenger.avatar_url ? (
-                                <Image src={request.passenger.avatar_url} alt="" width={48} height={48} className="w-full h-full object-cover" />
-                              ) : (
-                                <User className="w-5 h-5 text-muted" />
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-bold text-lg text-fg">{request.passenger.name}</p>
-                              <p className="text-sm text-muted">
-                                {request.ride.from_city} → {request.ride.to_city}
-                              </p>
-                              <p className="text-xs text-muted">
-                                {t("dateAtTime", { date: formatDate(request.ride.date), time: request.ride.time.slice(0, 5) })}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3">
-                            <button
-                              onClick={() => handleRejectBooking(request)}
-                              disabled={processingBooking === request.id}
-                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-elevated px-4 py-3 text-sm font-semibold text-fg hover:bg-elevated disabled:opacity-50"
-                            >
-                              <X className="h-4 w-4" />
-                              {t("reject")}
-                            </button>
-                            <button
-                              onClick={() => handleAcceptBooking(request)}
-                              disabled={processingBooking === request.id}
-                              className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-accent-fg hover:opacity-90 disabled:opacity-50"
-                            >
-                              {processingBooking === request.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Check className="h-4 w-4" />
-                              )}
-                              {t("accept")}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              <section>
-                <div className="flex border-b border-elevated overflow-x-auto no-scrollbar">
-                  {[
-                    { id: "rides", label: t("tabRides") },
-                    { id: "bookings", label: t("tabBookings") },
-                    { id: "templates", label: t("tabRecurring") },
-                    { id: "alerts", label: t("tabAlerts") },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`pb-4 px-6 text-sm font-bold uppercase tracking-widest relative whitespace-nowrap ${
-                        activeTab === tab.id ? "text-primary" : "text-muted hover:text-fg"
-                      } transition-colors`}
-                    >
-                      {tab.label}
-                      {activeTab === tab.id && (
-                        <span className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className="space-y-6">
-                {activeTab === "rides" && (
-                  <>
-                    {myRides.length === 0 ? (
-                      <EmptyStateProfile type="rides" />
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {myRides.map((ride) => (
-                          <Link
-                            key={ride.id}
-                            href={`/${locale}/corsa/${ride.id}`}
-                            className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-primary shadow-sm hover:scale-[1.01] transition-transform"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div className="flex flex-col">
-                                <span className="text-xs font-bold text-primary uppercase tracking-widest mb-1">
-                                  {formatDate(ride.date)} · {ride.time.slice(0, 5)}
-                                </span>
-                                <h3 className="text-2xl font-extrabold tracking-tight text-fg">{ride.from_city} — {ride.to_city}</h3>
-                              </div>
-                              <div className="text-right">
-                                <span className="text-2xl font-extrabold text-fg">{ride.price === 0 ? t("free") : `€${ride.price}`}</span>
-                                <p className="text-xs font-bold text-muted uppercase tracking-tighter">
-                                  {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
-                                <User className="w-3.5 h-3.5 text-muted" />
-                              </div>
-                              <span className="text-sm font-semibold text-muted">{ride.seats} {t("seats")} · {(ride.bookings_count || 0)} {t("requests")}</span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {activeTab === "bookings" && (
-                  <>
-                    {myBookings.length === 0 ? (
-                      <EmptyStateProfile type="bookings" />
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {myBookings.map((booking) => {
-                          const completed = isRideCompleted(booking.rides.date);
-                          return (
-                            <div key={booking.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-elevated">
-                              <div className="flex justify-between items-start">
-                                <div className="flex flex-col">
-                                  <span className={`text-xs font-bold uppercase tracking-widest mb-1 ${getStatusColor(booking.status)}`}>
-                                    {getStatusLabel(booking.status)}
-                                  </span>
-                                  <h3 className="text-2xl font-extrabold tracking-tight text-fg">{booking.rides.from_city} — {booking.rides.to_city}</h3>
-                                </div>
-                                <div className="text-right">
-                                  <span className="text-2xl font-extrabold text-fg">{booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}</span>
-                                  {completed && <p className="text-xs font-bold text-ok uppercase tracking-tighter">{t("rideCompleted")}</p>}
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-6 h-6 rounded-full bg-elevated flex items-center justify-center">
-                                    <User className="w-3.5 h-3.5 text-muted" />
-                                  </div>
-                                  <span className="text-sm font-semibold text-muted">{booking.rides.time.slice(0, 5)} · {booking.rides.profiles.name}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {completed && !reviewedRides.has(booking.rides.id) ? (
-                                    <button
-                                      onClick={() => openRatingModal(booking.rides.id, {
-                                        id: booking.rides.profiles.id,
-                                        name: booking.rides.profiles.name,
-                                        avatar_url: booking.rides.profiles.avatar_url
-                                      })}
-                                      className="flex items-center gap-1 rounded-full bg-primary/20 px-4 py-2 text-sm font-bold text-primary"
-                                    >
-                                      <Star className="h-4 w-4" />
-                                      {t("review")}
-                                    </button>
-                                  ) : (
-                                    <>
-                                      {booking.status !== "cancelled" && (
-                                        <>
-                                          <Link href={`/${locale}/chat/${booking.id}`} className="flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-bold text-accent-fg">
-                                            <MessageCircle className="h-4 w-4" />
-                                            {t("chat")}
-                                          </Link>
-                                          <Link
-                                            href={`/${locale}/cancella/${booking.id}`}
-                                            className="flex items-center gap-1 rounded-full bg-bad/20 px-4 py-2 text-sm font-bold text-bad"
-                                          >
-                                            {t("cancel")}
-                                          </Link>
-                                        </>
-                                      )}
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {activeTab === "templates" && (
-                  <>
-                    {rideTemplates.length === 0 ? (
-                      <EmptyState
-                        title={t("noRecurringRides")}
-                        description={t("noRecurringRidesDescription")}
-                        icon={<Repeat className="w-12 h-12 text-accent" />}
-                        action={{ label: t("createRecurring"), href: "/offri", variant: "outline" }}
-                      />
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {rideTemplates.map((template) => (
-                          <div key={template.id} className="bg-surface p-6 rounded-2xl flex flex-col gap-4 border-l-4 border-elevated">
-                            <div className="flex justify-between items-start">
-                              <div className="flex flex-col">
-                                <h3 className="text-2xl font-extrabold tracking-tight text-fg">{template.from_city} — {template.to_city}</h3>
-                                <p className="text-sm text-muted mt-1">
-                                  {template.time.slice(0, 5)} · {template.seats} {t("seats")} · {template.price === 0 ? t("free") : `€${template.price}`}
-                                </p>
-                                <p className="text-xs text-muted mt-1">
-                                  {template.recurrence_days.map((d) => new Date(2023, 0, d + 1).toLocaleDateString(locale, { weekday: "short" })).join(", ")}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => handleToggleTemplate(template)}
-                                  className={`rounded-full px-4 py-2 text-sm font-bold ${template.is_active ? 'bg-elevated text-fg' : 'bg-primary text-accent-fg'}`}
-                                >
-                                  {template.is_active ? t("suspend") : t("activate")}
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteTemplate(template.id)}
-                                  className="p-2 rounded-full bg-bad/20 text-bad"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {activeTab === "alerts" && (
-                  <>
-                    {rideAlerts.length === 0 ? (
-                      <EmptyState
-                        title={t("noAlerts")}
-                        description={t("noAlertsDescription")}
-                        icon={<Bell className="w-12 h-12 text-accent" />}
-                        action={{ label: t("searchAndCreateAlert"), href: "/cerca", variant: "outline" }}
-                      />
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {rideAlerts.map((alert) => (
-                          <div key={alert.id} className="bg-surface p-6 rounded-2xl flex items-center justify-between border-l-4 border-elevated">
-                            <div>
-                              <h3 className="font-bold text-lg text-fg">{alert.from_city || t("any")} → {alert.to_city || t("any")}</h3>
-                              <p className="text-sm text-muted">
-                                {alert.start_date && `${t("fromDate")} ${formatDate(alert.start_date)}`}
-                                {alert.end_date && ` ${t("toDate")} ${formatDate(alert.end_date)}`}
-                                {alert.min_seats !== null && ` · ${t("min")} ${alert.min_seats} ${t("seats")}`}
-                                {alert.max_price !== null && ` · ${t("max")} ${alert.max_price}€`}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => handleDeleteAlert(alert.id)}
-                              disabled={deletingAlertId === alert.id}
-                              className="p-3 rounded-full bg-bad/20 text-bad disabled:opacity-50"
-                            >
-                              {deletingAlertId === alert.id ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              </section>
-            </div>
-
-            <div className="lg:col-span-1 space-y-8">
-              <div className="bg-surface-2 p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                  <Shield className="w-5 h-5 text-primary" />
-                  {t("verificationAndSecurity")}
-                </h3>
-                
-                {/* Phone Verification - Desktop */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-fg">{t("phoneNumber")}</p>
-                      <p className="text-xs text-muted">
-                        {user?.phone ? user.phone : t("notVerified")}
-                      </p>
-                    </div>
-                  </div>
-                  <PhoneVerification 
-                    userId={user?.id || ""}
-                    currentPhone={user?.phone}
-                    isVerified={profile?.phone_verified}
-                    onVerified={() => {
-                      // Refresh profile data
-                      supabase.from("profiles")
-                        .select("*")
-                        .eq("id", user?.id)
-                        .single()
-                        .then(({ data }: { data: Record<string, unknown> | null }) => {
-                          if (data) setProfile(data as unknown as Profile);
-                        });
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Stripe Connect - Desktop */}
-              <div className="bg-surface-2 p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                  <CreditCard className="w-5 h-5 text-primary" />
-                  {t("payments")}
-                </h3>
-                <StripeConnectBanner />
-              </div>
-
-              {/* Car Info - Desktop */}
-              <div className="bg-surface-2 p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                  <Car className="w-5 h-5 text-primary" />
-                  {t("yourVehicle")}
-                </h3>
-                <CarInfoForm
-                  initialData={{
-                    car_model: profile?.car_model,
-                    car_color: profile?.car_color,
-                    car_plate: profile?.car_plate,
-                    car_year: profile?.car_year,
-                  }}
-                  onSave={handleSaveCarInfo}
-                />
-              </div>
-
-              <div className="bg-surface-2 p-6 rounded-2xl">
-                <h3 className="mb-4 text-sm font-extrabold text-fg flex items-center gap-2 uppercase tracking-wider">
-                  <Bell className="w-5 h-5 text-primary" />
-                  {t("pushNotifications")}
-                </h3>
-                <PushNotificationToggle />
-              </div>
-
-              {user && (
-                <div className="bg-surface-2 p-6 rounded-2xl">
-                  <EmailPreferences userId={user.id} />
-                </div>
-              )}
-
-              {profile && levelInfo && (
-                <div className="bg-surface-2 p-6 rounded-2xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("currentLevel")}</p>
-                      <p className="font-extrabold text-fg">{tl(levelInfo.current.key)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold uppercase tracking-widest text-primary">{t("points")}</p>
-                      <p className="font-extrabold text-primary text-2xl">{profile.points}</p>
-                    </div>
-                  </div>
-                  <div className="relative h-3 bg-elevated rounded-full overflow-hidden">
-                    <div 
-                      className="absolute inset-y-0 left-0 bg-primary rounded-full"
-                      style={{ width: `${(() => {
-                        const range = levelInfo.next ? levelInfo.next.min - levelInfo.current.min : 100;
-                        const progress = profile.points - levelInfo.current.min;
-                        return Math.min(100, Math.max(0, (progress / range) * 100));
-                      })()}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-muted mt-3">
-                    {levelInfo.next
-                      ? t("pointsToNextLevel", { points: levelInfo.next.min - profile.points })
-                      : t("maxLevelReached")}
-                  </p>
-                </div>
-              )}
-
-              <ShareApp variant="card" />
-
-              <button
-                onClick={() => setShowLogoutConfirm(true)}
-                className="w-full bg-bad/10 text-bad rounded-2xl p-4 font-bold uppercase tracking-widest text-sm hover:bg-bad/20 transition-colors"
-              >
-                {t("logout")}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {showLogoutConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
-              <h3 className="text-lg font-extrabold text-fg mb-2">{t("wantToLeave")}</h3>
-              <p className="text-sm text-muted mb-6">{t("loginAgainToUseApp")}</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
-                >
-                  {t("cancel")}
-                </button>
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
-                >
-                  {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("logout")}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {cancelBookingId && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-surface p-6">
-              <h3 className="text-lg font-extrabold text-fg mb-2">{t("cancelBookingTitle")}</h3>
-              <p className="text-sm text-muted mb-4">{t("enterCancellationReason")}</p>
-              <textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="w-full bg-elevated rounded-xl p-3 text-sm text-fg border-none focus:ring-1 focus:ring-primary resize-none"
-                rows={3}
-                placeholder={t("reasonPlaceholder")}
-              />
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={() => { setCancelBookingId(null); setCancelReason(""); }}
-                  className="flex-1 rounded-xl bg-elevated py-3 text-sm font-bold text-fg"
-                >
-                  {t("cancel")}
-                </button>
-                <button
-                  onClick={handleCancelBooking}
-                  disabled={!cancelReason.trim()}
-                  className="flex-1 rounded-xl bg-bad py-3 text-sm font-bold text-white disabled:opacity-50"
-                >
-                  {t("confirm")}
+                  {isCancelling ? <Loader2 className="mx-auto h-4 w-4 animate-spin" strokeWidth={1.5} /> : t("confirm")}
                 </button>
               </div>
             </div>
@@ -1956,12 +1663,6 @@ export default function ProfilePage() {
           </Suspense>
         )}
       </div>
-    );
-  }
-
-  return (
-    <ErrorBoundary>
-      {deviceType === "desktop" ? <ProfileDesktop /> : <ProfileMobile />}
     </ErrorBoundary>
   );
 }

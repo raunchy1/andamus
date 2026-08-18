@@ -430,7 +430,43 @@
     "invalidFileType": "Ungültiges Format. JPG, PNG, WebP oder PDF.",
     "pullToRefresh": "Zum Aktualisieren ziehen",
     "releaseToRefresh": "Loslassen zum Aktualisieren",
-    "completedRidesLabel": "Abgeschlossene Fahrten"
+    "completedRidesLabel": "Abgeschlossene Fahrten",
+    "memberSince": "Seit {age} bei Andamus",
+    "totalKm": "Kilometer",
+    "pointsCount": "{points, plural, =0 {Keine Punkte} one {# Punkt} other {# Punkte}}",
+    "pointsToNextLevelNamed": "{points, plural, one {# Punkt} other {# Punkte}} bis {level}",
+    "loadingProfile": "Profil wird geladen",
+    "changePhoto": "Profilbild ändern",
+    "photoUpdated": "Foto aktualisiert",
+    "openStats": "Statistiken ansehen",
+    "activityTabsLabel": "Deine Aktivität",
+    "seatsCount": "{count, plural, one {# Platz} other {# Plätze}}",
+    "requestsCount": "{count, plural, =0 {keine Anfragen} one {# Anfrage} other {# Anfragen}}",
+    "templateOn": "Aktiv",
+    "templateOff": "Pausiert",
+    "deleteRecurring": "Wiederkehrende Fahrt löschen",
+    "deleteAlert": "Benachrichtigung löschen",
+    "setupTitle": "Hier anfangen",
+    "setupIntro": "Drei kurze Schritte, damit dich Mitfahrende auf deiner Strecke finden.",
+    "setupPhotoTitle": "Foto hinzufügen",
+    "setupPhotoBody": "So erkennt ihr euch am Treffpunkt.",
+    "setupPhoneTitle": "Nummer bestätigen",
+    "setupPhoneBody": "Fahrerinnen und Fahrer bestätigen Anfragen mit geprüfter Nummer eher.",
+    "setupRideTitle": "Erste Fahrt veröffentlichen",
+    "setupRideBody": "Start, Ziel und Uhrzeit genügen.",
+    "setupNudge": "Ein Schritt fehlt noch: {task}.",
+    "railAccount": "Konto und Sicherheit",
+    "railVehicle": "Fahrzeug",
+    "railNotifications": "Benachrichtigungen",
+    "phoneWhy": "Sie wird anderen Mitgliedern nie angezeigt.",
+    "paymentsDetail": "Beiträge für deine Fahrten erhalten",
+    "garageTitle": "Deine Fahrzeuge",
+    "garageDetail": "Fotos, Komfort und Kennzeichen",
+    "vehicleNotSet": "Kein Fahrzeug gespeichert",
+    "pushDetail": "Anfragen und Bestätigungen aufs Handy, auch bei geschlossener App.",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "emailDetail": "Wähle, was du bekommst",
+    "deleteAccount": "Konto löschen"
   },
   "chat": {
     "messagePlaceholder": "Nachricht schreiben...",
@@ -705,7 +741,6 @@
     "totalKm": "Gefahrene km gesamt",
     "ridesAsDriver": "Mitfahrgelegenheiten als Fahrer",
     "ridesAsPassenger": "Mitfahrgelegenheiten als Mitfahrer",
-    "peopleHelped": "Geholfenen Personen",
     "totalPoints": "Punkte gesamt",
     "badgesUnlocked": "Freigeschaltete Badges",
     "favoriteRoutesTitle": "LIEBLINGSSTRECKEN",
@@ -715,8 +750,6 @@
     "backToProfile": "Zurück zum Profil",
     "myStats": "Meine Statistiken",
     "subtitle": "Deine Wirkung und Aktivität auf Andamus",
-    "estimatedEarnings": "Geschätzte Kostenbeiträge",
-    "acceptanceRate": "Annahmequote",
     "activityLast12Months": "Aktivität der letzten 12 Monate",
     "driver": "Fahrer",
     "passenger": "Mitfahrer",
@@ -734,7 +767,34 @@
     "pendingStatus": "Ausstehend",
     "completed": "Abgeschlossen",
     "achievementHistory": "Verlauf der Erfolge",
-    "user": "Benutzer"
+    "user": "Benutzer",
+    "loadingStats": "Statistiken werden geladen",
+    "loadError": "Die Statistiken konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "summaryTitle": "Überblick",
+    "co2SavedEstimate": "CO₂ gespart",
+    "co2Note": "CO₂ ist eine Schätzung: 120 g pro Kilometer für jede Person, die mitgefahren ist.",
+    "bookingsReceived": "Erhaltene Buchungen",
+    "timesCount": "{count, plural, one {# Mal} other {# Mal}}",
+    "historyTabsLabel": "Verlauf filtern",
+    "emptyTitle": "Noch keine Zahlen",
+    "emptyBody": "Statistiken erscheinen nach der ersten Fahrt, als Fahrer oder als Mitfahrer.",
+    "emptySearch": "Fahrt suchen",
+    "emptyOffer": "Fahrt anbieten",
+    "badgeFirstRideName": "Erste Fahrt",
+    "badgeFirstRideDesc": "Du hast deine erste Fahrt veröffentlicht.",
+    "badgeWelcomeName": "Willkommen",
+    "badgeWelcomeDesc": "Du hast dein Profil vervollständigt.",
+    "badgeVerifiedName": "Verifiziert",
+    "badgeVerifiedDesc": "Du hast deine Identität bestätigt.",
+    "badgeFiveStarsName": "Fünf Sterne",
+    "badgeFiveStarsDesc": "Du hast eine Fünf-Sterne-Bewertung bekommen.",
+    "badgeHabitueName": "Stammgast",
+    "badgeHabitueDesc": "Du fährst regelmäßig mit Andamus.",
+    "badgeAmbassadorName": "Botschafter",
+    "badgeAmbassadorDesc": "Du hast neue Mitfahrende in die Community geholt.",
+    "badgeUnknownName": "Meilenstein",
+    "badgeUnknownDesc": "Ein Meilenstein bei Andamus."
   },
   "levels": {
     "traveler": "Viaggiatore",
@@ -744,7 +804,6 @@
     "sardlegend": "Leggenda Sarda"
   },
   "emptyState": {
-    "eyebrow": "Keine Ergebnisse",
     "noRidesFound": "Keine Mitfahrgelegenheiten gefunden",
     "noRidesFiltered": "Keine Mitfahrgelegenheit mit diesen Filtern. Entferne einige Filter, um mehr Ergebnisse zu sehen.",
     "noRidesPublished": "Keine Mitfahrgelegenheiten veröffentlicht",
@@ -898,7 +957,8 @@
     "userFallback": "Benutzer",
     "yourLink": "Dein persönlicher Link",
     "inviteFriends": "Lade deine Freunde ein",
-    "share": "Teilen"
+    "share": "Teilen",
+    "summary": "{count, plural, =0 {Noch niemand beigetreten} one {# Person beigetreten} other {# Personen beigetreten}} · {points, plural, one {# Punkt} other {# Punkte}}"
   },
   "onboarding": {
     "flow": {
@@ -1140,32 +1200,28 @@
     }
   },
   "safety": {
-    "emergencyCall": "Notruf 112",
     "geolocationNotSupported": "Geolokalisierung wird vom Browser nicht unterstützt",
     "shareLocationTitle": "Andamus Standort",
     "locationShared": "Standort geteilt",
     "locationCopied": "Standort kopiert. Füge ihn ein und sende ihn an vertraute Kontakte.",
     "locationError": "Standort konnte nicht ermittelt werden. Prüfe die Berechtigungen.",
-    "sosSafety": "SOS Sicherheit",
     "safety": "Sicherheit",
-    "emergencyTools": "Notfall-Tools",
-    "sosEmergency": "SOS Notfall",
-    "callOrShare": "Rufe die 112 an oder teile deinen Standort",
     "shareLocation": "Standort teilen",
-    "sendToContacts": "An vertrauenswürdige Kontakte senden",
     "call112": "112 anrufen",
-    "emergencyNumber": "Notrufnummer",
-    "safetyTips": "Sicherheitstipps:",
-    "tip1": "Teile die Details der Fahrt immer mit jemandem",
-    "tip2": "Prüfe Profil und Bewertungen vor der Abfahrt",
-    "tip3": "Triff dich an öffentlichen Orten",
-    "tip4": "Vertraue deinem Instinkt",
-    "emergencyQuestion": "Notfall?",
-    "emergencyDescription": "Wenn du in Gefahr bist, rufe sofort die 112 an oder teile deinen Standort.",
+    "safetyTips": "Sicherheitstipps",
+    "tip1": "Sag jemandem, mit wem und auf welcher Strecke du fährst.",
+    "tip2": "Lies Profil und Bewertungen, bevor du bestätigst.",
+    "tip3": "Trefft euch an einem öffentlichen Ort.",
+    "tip4": "Wenn sich etwas falsch anfühlt, sag ab.",
     "cancel": "Abbrechen",
     "reportProblem": "Problem melden",
     "reportDescription": "Hilf uns, Andamus zu verbessern",
-    "shareLocationText": "Mein aktueller Standort: {url}"
+    "shareLocationText": "Mein aktueller Standort: {url}",
+    "openSafety": "Sicherheit und Notfälle",
+    "close": "Schließen",
+    "sheetIntro": "Wenn während einer Fahrt etwas nicht stimmt, fang hier an.",
+    "call112Detail": "Einheitliche Notrufnummer",
+    "shareLocationDetail": "Schick sie per Nachricht an wen du willst."
   },
   "footer": {
     "searchRides": "Mitfahrgelegenheiten suchen",
@@ -1196,7 +1252,8 @@
     "shareSuccess": "Danke fürs Teilen",
     "linkCopied": "Link kopiert. Füge ihn ein, wo du willst.",
     "inviteFriends": "Freunde einladen",
-    "shareDescription": "Teile Andamus und hilf der Community zu wachsen"
+    "shareDescription": "Schick den Link an Leute, die deine Strecken fahren.",
+    "shareApp": "Andamus teilen"
   },
   "map": {
     "addApiKey": "Google Maps API-Schlüssel konfigurieren",
@@ -1418,13 +1475,13 @@
       "newProfile": "Neues Profil"
     },
     "age": {
-      "justArrived": "Gerade beigetreten",
-      "today": "Heute",
-      "yesterday": "Gestern",
-      "days": "{count} Tage",
-      "weeks": "{count} Wochen",
-      "months": "{count} Monate",
-      "years": "{count} Jahre"
+      "justArrived": "kurzem",
+      "today": "heute",
+      "yesterday": "einem Tag",
+      "days": "{count, plural, one {# Tag} other {# Tagen}}",
+      "weeks": "{count, plural, one {# Woche} other {# Wochen}}",
+      "months": "{count, plural, one {# Monat} other {# Monaten}}",
+      "years": "{count, plural, one {# Jahr} other {# Jahren}}"
     },
     "noCompletionRate": "—",
     "trustScoreLabel": "Vertrauenswert",
@@ -1441,5 +1498,58 @@
     "feature3": "Level- und Punktesystem",
     "feature4": "Push-Benachrichtigungen in Echtzeit",
     "feature0": "{count} sardische Orte verbunden"
+  },
+  "emailPrefs": {
+    "email_booking_requests": {
+      "label": "Mitfahranfragen",
+      "hint": "Wenn jemand einen Platz in deiner Fahrt anfragt."
+    },
+    "email_booking_confirmed": {
+      "label": "Bestätigte Buchungen",
+      "hint": "Wenn eine Fahrerin oder ein Fahrer deine Anfrage annimmt."
+    },
+    "email_new_messages": {
+      "label": "Neue Nachrichten",
+      "hint": "Wenn du eine Nachricht im Chat bekommst."
+    },
+    "email_ride_reminders": {
+      "label": "Erinnerung vor Abfahrt",
+      "hint": "Am Tag vor einer Fahrt."
+    },
+    "email_marketing": {
+      "label": "Neues von Andamus",
+      "hint": "Wenige E-Mails im Jahr, nur bei wichtigen Änderungen."
+    },
+    "save": "Speichern",
+    "saving": "Wird gespeichert",
+    "saved": "Einstellungen gespeichert",
+    "saveError": "Speichern nicht möglich. Versuch es noch einmal."
+  },
+  "stripeConnect": {
+    "checking": "Wird geprüft",
+    "activeTitle": "Zahlungen aktiv",
+    "activeBody": "Beiträge aus bezahlten Fahrten gehen auf dein Konto.",
+    "startTitle": "Zahlungen aktivieren",
+    "startBody": "Verbinde ein Stripe-Konto, um Beiträge von Mitfahrenden zu erhalten. Andamus behält 10%.",
+    "pendingTitle": "Einrichtung unvollständig",
+    "pendingBody": "Du hast die Einrichtung begonnen, aber nicht abgeschlossen.",
+    "startSetup": "Einrichten",
+    "continueSetup": "Einrichtung fortsetzen",
+    "redirecting": "Stripe wird geöffnet",
+    "onboardError": "Zahlungen konnten nicht aktiviert werden.",
+    "networkError": "Verbindung fehlgeschlagen. Versuch es noch einmal."
+  },
+  "push": {
+    "checking": "Wird geprüft",
+    "enable": "Push-Benachrichtigungen aktivieren",
+    "disable": "Push-Benachrichtigungen deaktivieren",
+    "enabled": "Push-Benachrichtigungen aktiv",
+    "disabled": "Push-Benachrichtigungen aus",
+    "enableError": "Benachrichtigungen konnten nicht aktiviert werden.",
+    "disableError": "Benachrichtigungen konnten nicht deaktiviert werden.",
+    "blocked": "Benachrichtigungen sind blockiert. Gib sie in den Website-Einstellungen frei.",
+    "blockedHint": "Benachrichtigungen sind in den Browser-Einstellungen blockiert.",
+    "unsupported": "Dieser Browser unterstützt keine Push-Benachrichtigungen.",
+    "configMissing": "Benachrichtigungen sind gerade nicht verfügbar."
   }
 }

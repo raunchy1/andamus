@@ -36,19 +36,18 @@ export function EmptyState({
   tertiaryAction,
   className = "",
 }: EmptyStateProps) {
-  const tBase = useTranslations("emptyState");
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
-      className={`flex flex-col items-center justify-center py-16 px-4 text-center border border-line rounded-[var(--radius)] bg-surface ${className}`}
+      className={`flex flex-col items-center justify-center rounded-2xl border border-line bg-surface px-5 py-14 text-center ${className}`}
     >
-      <p className="text-eyebrow mb-3">{"// "}{tBase("eyebrow")}</p>
-      <h3 className="font-h3 text-fg mb-3 max-w-md">{title}</h3>
-      <p className="text-muted max-w-md mb-8 leading-relaxed text-sm">{description}</p>
+      {icon && <div className="mb-4 text-faint">{icon}</div>}
+      <h3 className="max-w-md font-heading text-xl text-ink">{title}</h3>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">{description}</p>
 
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+      <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
         {action && (
           action.href ? (
             <Link href={action.href}>
@@ -349,11 +348,6 @@ export function EmptyStateProfile({ type }: { type: "rides" | "bookings" | "requ
     <EmptyState
       title={config.title}
       description={config.description}
-      icon={
-        <svg className="w-12 h-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      }
       action={config.action}
     />
   );
@@ -366,11 +360,6 @@ export function EmptyStateChat() {
     <EmptyState
       title={t("noMessages")}
       description={t("chatAvailable")}
-      icon={
-        <svg className="w-12 h-12 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      }
       action={{
         label: t("searchRidesBtn"),
         href: `/${locale}/cerca`,

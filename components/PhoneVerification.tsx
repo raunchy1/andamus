@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Phone, Shield, Check, Loader2, X } from "lucide-react";
+import { Phone, Check, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
@@ -144,13 +144,10 @@ export function PhoneVerification({
 
   if (isVerified) {
     return (
-      <div className="flex items-center gap-2 text-sm text-ok">
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-ok/20">
-          <Check className="w-3 h-3 text-ok" />
-        </div>
-        <span>{t("phoneVerified")}</span>
-        <span className="text-muted">{currentPhone}</span>
-      </div>
+      <p className="flex items-center gap-2 text-sm text-muted">
+        <Check className="h-4 w-4 shrink-0 text-green" strokeWidth={1.5} aria-hidden />
+        {t("phoneVerified")}
+      </p>
     );
   }
 
@@ -159,27 +156,24 @@ export function PhoneVerification({
       {/* Trigger Button */}
       <button
         onClick={() => setShowModal(true)}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-elevated text-fg hover:bg-elevated transition-colors text-sm font-medium"
+        className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-line text-sm font-medium text-ink transition-colors hover:bg-sand"
       >
-        <Shield className="w-4 h-4 text-primary" />
-        <span>{t("verifyPhone")}</span>
+        {t("verifyPhone")}
       </button>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="relative w-full max-w-md bg-surface rounded-2xl shadow-2xl border border-line overflow-hidden">
+        <div className="fixed inset-0 z-modal flex items-end justify-center bg-[var(--bg-overlay)] p-4 sm:items-center">
+          <div role="dialog" aria-modal="true" aria-labelledby="phone-verify-title" className="relative w-full max-w-md overflow-hidden rounded-2xl border border-line bg-surface">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-line">
+            <div className="flex items-start justify-between gap-4 border-b border-line p-6">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                  <Phone className="w-5 h-5 text-primary" />
-                </div>
+                <Phone className="mt-1 h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
                 <div>
-                  <h3 className="text-lg font-bold text-fg">
+                  <h3 id="phone-verify-title" className="font-heading text-lg text-ink">
                     {isOtpSent ? t("enterOtpTitle") : t("verifyYourNumber")}
                   </h3>
-                  <p className="text-sm text-muted">
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
                     {isOtpSent 
                       ? t("receivedSmsCode") 
                       : t("addSecurityToProfile")}
@@ -188,9 +182,10 @@ export function PhoneVerification({
               </div>
               <button
                 onClick={handleClose}
-                className="p-2 rounded-full hover:bg-elevated transition-colors"
+                aria-label={t("cancel")}
+                className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-sand hover:text-ink"
               >
-                <X className="w-5 h-5 text-muted" />
+                <X className="h-5 w-5" strokeWidth={1.5} aria-hidden />
               </button>
             </div>
 
@@ -200,20 +195,21 @@ export function PhoneVerification({
                 // Step 1: Phone Input
                 <>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-fg">
+                    <label htmlFor="phone-input" className="text-sm font-medium text-ink">
                       {t("phoneNumber")}
                     </label>
                     <div className="relative">
                       <input
+                        id="phone-input"
                         type="tel"
+                        autoComplete="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+39 340 1234567"
-                        className="w-full h-12 px-4 rounded-xl bg-elevated border-none focus:ring-2 focus:ring-primary text-fg placeholder:text-muted"
+                        className="h-12 w-full rounded-xl border border-line bg-sand px-4 text-base text-ink outline-none placeholder:text-faint focus:border-green"
                       />
-                      <Phone className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
                     </div>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs leading-relaxed text-muted">
                       {t("enterPhoneWithPrefix")}
                     </p>
                   </div>
@@ -221,18 +217,15 @@ export function PhoneVerification({
                   <button
                     onClick={sendOtp}
                     disabled={isLoading}
-                    className="w-full h-12 bg-primary text-accent-fg font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-green text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
                         {t("sending")}
                       </>
                     ) : (
-                      <>
-                        {t("sendOtpCode")}
-                        <ChevronRight className="w-5 h-5" />
-                      </>
+                      t("sendOtpCode")
                     )}
                   </button>
                 </>
@@ -240,18 +233,21 @@ export function PhoneVerification({
                 // Step 2: OTP Input
                 <>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-fg">
+                    <label htmlFor="otp-input" className="text-sm font-medium text-ink">
                       {t("otpCode")}
                     </label>
                     <input
+                      id="otp-input"
                       type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder="000000"
                       maxLength={6}
-                      className="w-full h-12 px-4 text-center text-2xl tracking-widest rounded-xl bg-elevated border-none focus:ring-2 focus:ring-primary text-fg placeholder:text-muted"
+                      className="h-12 w-full rounded-xl border border-line bg-sand px-4 text-center text-2xl tabular-nums tracking-[0.3em] text-ink outline-none placeholder:text-faint focus:border-green"
                     />
-                    <p className="text-xs text-muted text-center">
+                    <p className="text-center text-xs leading-relaxed text-muted">
                       {t("enter6DigitCode")}
                     </p>
                   </div>
@@ -260,11 +256,11 @@ export function PhoneVerification({
                     <button
                       onClick={verifyOtp}
                       disabled={isLoading || otp.length !== 6}
-                      className="w-full h-12 bg-primary text-accent-fg font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-green text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
                           {t("verifying")}
                         </>
                       ) : (
@@ -278,7 +274,7 @@ export function PhoneVerification({
                     <button
                       onClick={() => setIsOtpSent(false)}
                       disabled={isLoading}
-                      className="w-full h-12 text-sm font-medium text-muted hover:text-fg transition-colors"
+                      className="h-12 w-full text-sm font-medium text-muted transition-colors hover:text-ink"
                     >
                       {t("changeNumber")}
                     </button>
@@ -288,8 +284,8 @@ export function PhoneVerification({
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 bg-surface rounded-b-2xl">
-              <p className="text-xs text-center text-muted">
+            <div className="border-t border-line bg-sand px-6 py-4">
+              <p className="text-center text-xs leading-relaxed text-muted">
                 {t("phoneVerificationFooter")}
               </p>
             </div>
@@ -297,23 +293,5 @@ export function PhoneVerification({
         </div>
       )}
     </>
-  );
-}
-
-// ChevronRight component for the button
-function ChevronRight({ className }: { className?: string }) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
   );
 }
