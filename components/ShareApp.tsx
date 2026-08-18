@@ -1,6 +1,6 @@
 "use client";
 
-import { Share2, Link2, Check } from "lucide-react";
+import { Share2, Check, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -41,10 +41,10 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`p-2 rounded-full transition-colors hover:bg-sand-deep ${className}`}
-        title={t("share")}
+        className={`flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-sand hover:text-ink ${className}`}
+        aria-label={t("share")}
       >
-        <Share2 className="w-5 h-5" />
+        <Share2 className="h-5 w-5" strokeWidth={1.5} aria-hidden />
       </button>
     );
   }
@@ -53,10 +53,10 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-current transition-colors hover:bg-sand-deep ${className}`}
+        className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-sand ${className}`}
       >
-        <Share2 className="w-4 h-4" />
-        <span className="text-sm font-medium">{t("share")}</span>
+        <Share2 className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+        {t("share")}
       </button>
     );
   }
@@ -65,16 +65,18 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
     return (
       <button
         onClick={handleShare}
-        className={`w-full flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-[#2D6A4F]/10 border border-primary/20 transition-all hover:from-primary/20 hover:to-[#2D6A4F]/20 ${className}`}
+        className={`flex min-h-[56px] w-full items-center gap-3 rounded-2xl border border-line bg-surface px-5 py-4 text-left transition-colors hover:bg-sand ${className}`}
       >
-        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-          <Share2 className="w-5 h-5 text-primary" />
-        </div>
-        <div className="flex-1 text-left">
-          <p className="font-semibold text-ink">{t("inviteFriends")}</p>
-          <p className="text-sm text-muted">{t("shareDescription")}</p>
-        </div>
-        {copied ? <Check className="w-5 h-5 text-green-400" /> : <Link2 className="w-5 h-5 text-faint" />}
+        <Share2 className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-ink">{t("shareApp")}</span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-muted">{t("shareDescription")}</span>
+        </span>
+        {copied ? (
+          <Check className="h-5 w-5 shrink-0 text-green" strokeWidth={1.5} aria-hidden />
+        ) : (
+          <ChevronRight className="h-5 w-5 shrink-0 text-faint" strokeWidth={1.5} aria-hidden />
+        )}
       </button>
     );
   }
@@ -83,10 +85,10 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
   return (
     <button
       onClick={handleShare}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white font-medium transition-colors hover:bg-primary-hover ${className}`}
+      className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-green px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 ${className}`}
     >
-      <Share2 className="w-4 h-4" />
-      <span>{t("share")}</span>
+      <Share2 className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+      {t("share")}
     </button>
   );
 }

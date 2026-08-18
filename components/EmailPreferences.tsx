@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, Check, Loader2, Inbox, CalendarCheck, MessageCircle, Bell, Megaphone } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface EmailPreferencesProps {
@@ -17,15 +18,34 @@ interface Preferences {
   email_marketing: boolean;
 }
 
-const preferenceOptions = [
-  { key: "email_booking_requests", label: "Richieste di passaggio", Icon: Inbox },
-  { key: "email_booking_confirmed", label: "Conferme di prenotazione", Icon: CalendarCheck },
-  { key: "email_new_messages", label: "Nuovi messaggi", Icon: MessageCircle },
-  { key: "email_ride_reminders", label: "Promemoria corse", Icon: Bell },
-  { key: "email_marketing", label: "Novità da Andamus", Icon: Megaphone },
+const preferenceKeys = [
+  "email_booking_requests",
+  "email_booking_confirmed",
+  "email_new_messages",
+  "email_ride_reminders",
+  "email_marketing",
 ] as const;
 
+/** Token-driven switch. Sits on any surface, unlike the old white-knob build. */
+function Switch({ checked }: { checked: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`relative inline-block h-6 w-11 shrink-0 rounded-full transition-colors ${
+        checked ? "bg-green" : "bg-track"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow-sm transition-transform ${
+          checked ? "translate-x-[22px]" : "translate-x-0.5"
+        }`}
+      />
+    </span>
+  );
+}
+
 export function EmailPreferences({ userId }: EmailPreferencesProps) {
+  const t = useTranslations("emailPrefs");
   const [preferences, setPreferences] = useState<Preferences>({
     email_booking_requests: true,
     email_booking_confirmed: true,
@@ -35,6 +55,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
   const [supabase] = useState(() => createClient());
 
@@ -59,7 +80,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
           });
         }
       } catch {
-        // Error fetching preferences
+        // Preferences fall back to the defaults above.
       } finally {
         setLoading(false);
       }
@@ -70,6 +91,7 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
 
   const handleToggle = (key: keyof Preferences) => {
     setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
+    setDirty(true);
   };
 
   const handleSave = async () => {
@@ -81,9 +103,10 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
         .eq("id", userId);
 
       if (error) throw error;
-      toast.success("Preferenze salvate!");
+      setDirty(false);
+      toast.success(t("saved"));
     } catch {
-      toast.error("Errore nel salvare le preferenze");
+      toast.error(t("saveError"));
     } finally {
       setSaving(false);
     }
@@ -91,69 +114,43 @@ export function EmailPreferences({ userId }: EmailPreferencesProps) {
 
   if (loading) {
     return (
-      <div className="bg-surface-2 rounded-2xl p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Mail className="w-5 h-5 text-primary" />
-          <h3 className="font-bold text-fg">Notifiche email</h3>
-        </div>
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-12 bg-surface rounded-xl animate-pulse" />
-          ))}
-        </div>
+      <div className="space-y-2" aria-busy="true">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-11 animate-pulse rounded-xl bg-sand-deep" />
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="bg-surface-2 rounded-2xl p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Mail className="w-5 h-5 text-primary" />
-        <h3 className="font-bold text-fg">Notifiche email</h3>
-      </div>
-
-      <div className="space-y-3 mb-6">
-        {preferenceOptions.map((option) => (
-          <label
-            key={option.key}
-            className="flex items-center justify-between p-4 bg-elevated rounded-xl cursor-pointer hover:bg-elevated transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <option.Icon className="w-5 h-5 text-muted" />
-              <span className="text-fg">{option.label}</span>
-            </div>
-            <div
-              className={`w-12 h-6 rounded-full relative transition-colors ${
-                preferences[option.key] ? "bg-primary" : "bg-sand-deep"
-              }`}
-              onClick={() => handleToggle(option.key)}
-            >
-              <div
-                className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                  preferences[option.key] ? "left-7" : "left-1"
-                }`}
+    <div>
+      <ul className="divide-y divide-line-soft">
+        {preferenceKeys.map((key) => (
+          <li key={key}>
+            <label className="flex min-h-[56px] cursor-pointer items-center gap-4 py-2.5">
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-ink">{t(`${key}.label`)}</span>
+                <span className="mt-0.5 block text-xs leading-relaxed text-muted">{t(`${key}.hint`)}</span>
+              </span>
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={preferences[key]}
+                onChange={() => handleToggle(key)}
               />
-            </div>
-          </label>
+              <Switch checked={preferences[key]} />
+            </label>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <button
         onClick={handleSave}
-        disabled={saving}
-        className="w-full py-3 bg-primary text-accent-fg font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+        disabled={saving || !dirty}
+        className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-green text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
       >
-        {saving ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Salvataggio...
-          </>
-        ) : (
-          <>
-            <Check className="w-4 h-4" />
-            Salva preferenze
-          </>
-        )}
+        {saving && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />}
+        {saving ? t("saving") : t("save")}
       </button>
     </div>
   );
