@@ -33,7 +33,7 @@ export default function VehiclesPage() {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.push(`/${locale}/auth/login`);
+        router.push(`/${locale}/join`);
         return;
       }
 
