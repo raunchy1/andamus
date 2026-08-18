@@ -11,7 +11,6 @@ export interface RideProfile {
   review_count?: number | null;
   rides_count: number;
   completed_rides_count?: number | null;
-  phone_verified?: boolean;
   id_verified?: boolean;
 }
 
@@ -127,7 +126,7 @@ export async function getRideById(rideId: string): Promise<Ride | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("rides")
-    .select(`*, profiles(name, avatar_url, rating, rides_count, review_count, phone_verified, id_verified)`)
+    .select(`*, profiles(name, avatar_url, rating, rides_count, review_count, id_verified)`)
     .eq("id", rideId)
     .maybeSingle();
 
@@ -161,7 +160,6 @@ export async function getRideById(rideId: string): Promise<Ride | null> {
     rating: typeof profileObj?.rating === "number" ? profileObj.rating : 0,
     rides_count: typeof profileObj?.rides_count === "number" ? profileObj.rides_count : 0,
     review_count: typeof profileObj?.review_count === "number" ? profileObj.review_count : null,
-    phone_verified: profileObj?.phone_verified === true,
     id_verified: profileObj?.id_verified === true,
   };
 
@@ -295,7 +293,7 @@ export async function searchRides(filters: SearchFilters): Promise<Ride[]> {
       music_preference,
       women_only,
       students_only,
-      profiles!inner(name, avatar_url, rating, review_count, rides_count, phone_verified, id_verified)
+      profiles!inner(name, avatar_url, rating, review_count, rides_count, id_verified)
     `)
     .eq("status", "active")
     .or(buildNotExpiredOrFilter());
@@ -320,9 +318,7 @@ export async function searchRides(filters: SearchFilters): Promise<Ride[]> {
   let results = (data || []) as unknown as Ride[];
 
   if (filters.verifiedOnly) {
-    results = results.filter(
-      (ride) => ride.profiles.phone_verified || ride.profiles.id_verified
-    );
+    results = results.filter((ride) => ride.profiles.id_verified);
   }
 
   // Dynamic Marketplace Balancing: Boost rides on underserved/high-demand routes

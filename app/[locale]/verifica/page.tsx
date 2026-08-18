@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import {
   Shield,
   CheckCircle,
-  // Phone,
   Mail,
   IdCard,
   Car,
@@ -21,7 +20,6 @@ import Link from "next/link";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface VerificationStatus {
-  phone: "none" | "pending" | "verified";
   email: "none" | "pending" | "verified";
   id: "none" | "pending" | "verified";
   driver: "none" | "pending" | "verified";
@@ -38,10 +36,8 @@ export default function VerificationPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  // Phone verification states removed (BUG-036)
   const [uploading, setUploading] = useState<string | null>(null);
   const [status, setStatus] = useState<VerificationStatus>({
-    phone: "none",
     email: "none",
     id: "none",
     driver: "none",
@@ -66,8 +62,6 @@ export default function VerificationPage() {
           .eq("id", user.id)
           .single();
 
-        // setPhoneNumber(profileData?.phone_number || ""); // removed (BUG-036)
-
         // Load verification status
         const { data: verifications } = await supabase
           .from("verifications")
@@ -75,7 +69,6 @@ export default function VerificationPage() {
           .eq("user_id", user.id);
 
         const newStatus: VerificationStatus = {
-          phone: profileData?.phone_verified ? "verified" : "none",
           email: profileData?.email_verified ? "verified" : "none",
           id: profileData?.id_verified ? "verified" : "none",
           driver: profileData?.driver_verified ? "verified" : "none",
@@ -83,11 +76,9 @@ export default function VerificationPage() {
 
         verifications?.forEach((v: Verification) => {
           if (v.status === "approved") {
-            if (v.type === "phone") newStatus.phone = "verified";
             if (v.type === "id_document") newStatus.id = "verified";
             if (v.type === "driver_license") newStatus.driver = "verified";
           } else if (v.status === "pending") {
-            if (v.type === "phone") newStatus.phone = "pending";
             if (v.type === "id_document") newStatus.id = "pending";
             if (v.type === "driver_license") newStatus.driver = "pending";
           }
@@ -104,8 +95,6 @@ export default function VerificationPage() {
 
     loadData();
   }, [router, supabase]);
-
-  // handlePhoneVerify removed — phone verification is dead code (BUG-036)
 
   const handleFileUpload = async (type: "id" | "driver", file: File) => {
     if (!file || !user) return;
@@ -170,7 +159,6 @@ export default function VerificationPage() {
 
   const getVerificationLevel = () => {
     let level = 0;
-    if (status.phone === "verified") level++;
     if (status.email === "verified") level++;
     if (status.id === "verified") level++;
     if (status.driver === "verified") level++;
@@ -179,10 +167,9 @@ export default function VerificationPage() {
 
   const getBadgeTitle = () => {
     const level = getVerificationLevel();
-    if (level === 4) return t("userPlatinum");
-    if (level === 3) return t("userGold");
-    if (level === 2) return t("userSilver");
-    if (level === 1) return t("userBronze");
+    if (level === 3) return t("userPlatinum");
+    if (level === 2) return t("userGold");
+    if (level === 1) return t("userSilver");
     return t("userBase");
   };
 
@@ -226,7 +213,7 @@ export default function VerificationPage() {
                 {t("verificationLevel", { level: getVerificationLevel() })}
               </p>
               <div className="mt-3 flex gap-1">
-                {[1, 2, 3, 4].map((i) => (
+                {[1, 2, 3].map((i) => (
                   <div
                     key={i}
                     className={`h-2 w-8 rounded-full ${
@@ -240,8 +227,6 @@ export default function VerificationPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {/* TODO: Phone verification — implement Supabase OTP or Twilio when ready */}
-
           {/* Email Verification */}
           <div className="rounded-2xl border border-line bg-elevated p-6">
             <div className="mb-4 flex items-center gap-3">

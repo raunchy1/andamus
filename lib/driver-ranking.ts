@@ -11,7 +11,6 @@ export interface RankableDriver {
   completed_rides_count: number;
   created_at: string;
   last_active_at: string | null;
-  phone_verified: boolean;
   email_verified: boolean;
   id_verified: boolean;
   driver_verified: boolean;
@@ -50,8 +49,8 @@ export function rankDrivers(drivers: RankableDriver[]): DriverRank[] {
     const ridesNormalized = Math.min((driver.completed_rides_count / 50) * 100, 100);
     const reviewsNormalized = Math.min((driver.review_count / 20) * 100, 100);
     const verificationsNormalized =
-      [driver.email_verified, driver.phone_verified, driver.id_verified, driver.driver_verified]
-        .filter(Boolean).length * 25;
+      ([driver.email_verified, driver.id_verified, driver.driver_verified]
+        .filter(Boolean).length / 3) * 100;
 
     const accountAgeDays = Math.floor(
       (now - new Date(driver.created_at).getTime()) / (1000 * 60 * 60 * 24)

@@ -113,7 +113,6 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
     rides_count: number;
     completed_rides_count: number;
     created_at: string;
-    phone_verified: boolean;
     email_verified: boolean;
     id_verified: boolean;
     driver_verified: boolean;
@@ -196,7 +195,6 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
           completed_rides_count: profile.completed_rides_count,
           created_at: profile.created_at,
           accountAge,
-          phone_verified: profile.phone_verified,
           email_verified: profile.email_verified,
           id_verified: profile.id_verified,
           driver_verified: profile.driver_verified,

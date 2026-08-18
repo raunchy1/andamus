@@ -116,14 +116,14 @@ export async function searchUsers(
 
   let dbQuery = supabase
     .from("profiles")
-    .select("id, name, avatar_url, rating, review_count, rides_count, slug, phone_verified, id_verified")
+    .select("id, name, avatar_url, rating, review_count, rides_count, slug, id_verified")
     .or(`name.ilike.%${normalized}%,slug.ilike.%${normalized}%`)
     .gt("rides_count", 0)
     .order("rating", { ascending: false })
     .limit(limit);
 
   if (options?.verifiedOnly) {
-    dbQuery = dbQuery.or("phone_verified.eq.true,id_verified.eq.true");
+    dbQuery = dbQuery.eq("id_verified", true);
   }
 
   const { data, error } = await dbQuery;

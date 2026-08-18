@@ -13,7 +13,6 @@ export interface Profile {
   rides_count?: number | null;
   completed_rides_count?: number | null;
   created_at?: string | null;
-  phone_verified?: boolean;
   email_verified?: boolean;
   id_verified?: boolean;
   driver_verified?: boolean;

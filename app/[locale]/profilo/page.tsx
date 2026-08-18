@@ -24,7 +24,6 @@ import {
   ChevronRight,
   ChevronDown,
   Camera,
-  Phone,
   MapPin,
   BarChart3,
 } from "lucide-react";
@@ -40,7 +39,6 @@ import { acceptBooking, rejectBooking } from "@/lib/booking-lifecycle";
 import { getDistanceBetweenCities } from "@/lib/sardinia-cities";
 import { ProductAnalytics } from "@/lib/posthog";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
-import { PhoneVerification } from "@/components/PhoneVerification";
 import { EmailPreferences } from "@/components/EmailPreferences";
 import { CarInfoForm } from "@/components/CarInfoForm";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -71,11 +69,9 @@ interface Profile {
   rides_count?: number | null;
   completed_rides_count?: number | null;
   created_at?: string | null;
-  phone_verified?: boolean;
   email_verified?: boolean;
   id_verified?: boolean;
   driver_verified?: boolean;
-  phone?: string | null;
   referral_code?: string | null;
   referrals_count?: number | null;
   referral_points_earned?: number | null;
@@ -289,6 +285,7 @@ function LedgerCell({ value, label }: { value: string; label: string }) {
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const emailConfirmed = Boolean(user?.email_confirmed_at);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [myRides, setMyRides] = useState<Ride[]>([]);
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
@@ -878,14 +875,6 @@ export default function ProfilePage() {
         onClick: () => avatarInputRef.current?.click(),
       },
       {
-        key: "phone",
-        icon: Phone,
-        title: t("setupPhoneTitle"),
-        body: t("setupPhoneBody"),
-        done: Boolean(profile?.phone_verified),
-        href: "#account-panel",
-      },
-      {
         key: "ride",
         icon: MapPin,
         title: t("setupRideTitle"),
@@ -894,7 +883,7 @@ export default function ProfilePage() {
         href: `/${locale}/offri`,
       },
     ],
-    [t, locale, userAvatar, profile?.phone_verified, hasHistory]
+    [t, locale, userAvatar, hasHistory]
   );
 
   const pendingSteps = setupSteps.filter((s) => !s.done);
@@ -1462,34 +1451,17 @@ export default function ProfilePage() {
                 <div className="px-5 py-4">
                   <div className="flex items-start gap-3">
                     <ShieldCheck
-                      className={`h-5 w-5 shrink-0 ${profile?.phone_verified ? "text-green" : "text-muted"}`}
+                      className={`h-5 w-5 shrink-0 ${emailConfirmed ? "text-green" : "text-muted"}`}
                       strokeWidth={1.5}
                       aria-hidden
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-ink">{t("phoneNumber")}</p>
-                      <p className="mt-0.5 text-xs text-muted">
-                        {profile?.phone_verified
-                          ? profile?.phone || user?.phone || t("phoneVerified")
-                          : t("phoneWhy")}
+                      <p className="text-sm font-medium text-ink">{t("email")}</p>
+                      <p className="mt-0.5 truncate text-xs text-muted">{user?.email}</p>
+                      <p className="mt-1 text-xs text-muted">
+                        {emailConfirmed ? t("emailConfirmed") : t("emailNotConfirmed")}
                       </p>
                     </div>
-                  </div>
-                  <div className="mt-3">
-                    <PhoneVerification
-                      userId={user?.id || ""}
-                      currentPhone={profile?.phone || user?.phone}
-                      isVerified={profile?.phone_verified}
-                      onVerified={() => {
-                        supabase.from("profiles")
-                          .select("*")
-                          .eq("id", user?.id)
-                          .single()
-                          .then(({ data }: { data: Record<string, unknown> | null }) => {
-                            if (data) setProfile(data as unknown as Profile);
-                          });
-                      }}
-                    />
                   </div>
                 </div>
 

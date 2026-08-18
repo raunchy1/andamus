@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     // 5. Fetch passenger's profile details to get verified state and name
     const { data: passengerProfile, error: passengerError } = await serviceRole
       .from("profiles")
-      .select("name, rating, phone_verified")
+      .select("name, rating, id_verified")
       .eq("id", user.id)
       .single();
 
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       driverName: bookingData.ride.driver.name || "Driver",
       passengerName: passengerProfile.name || "Passenger",
       passengerRating: Number(passengerProfile.rating) || 5.0,
-      passengerVerified: passengerProfile.phone_verified || false,
+      passengerVerified: passengerProfile.id_verified || false,
       fromCity: bookingData.ride.from_city,
       toCity: bookingData.ride.to_city,
       date: bookingData.ride.date,

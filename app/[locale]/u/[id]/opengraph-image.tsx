@@ -42,7 +42,6 @@ export default async function Image({ params }: { params: Promise<{ id: string; 
         rides_count: 0,
         completed_rides_count: completedRides,
         created_at: new Date().toISOString(),
-        phone_verified: false,
         email_verified: false,
         id_verified: false,
         driver_verified: false,

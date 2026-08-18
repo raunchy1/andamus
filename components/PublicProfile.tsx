@@ -31,7 +31,6 @@ interface PublicProfile {
   completed_rides_count: number;
   created_at: string;
   accountAge: string;
-  phone_verified: boolean;
   email_verified: boolean;
   id_verified: boolean;
   driver_verified: boolean;

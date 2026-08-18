@@ -17,7 +17,6 @@ export interface ReputationMetrics {
   bookingsConfirmed: number;
   streakWeeks: number;
   verifiedFlags: {
-    phone: boolean;
     email: boolean;
     id: boolean;
     driver: boolean;
@@ -60,7 +59,7 @@ export async function calculateReputation(userId: string): Promise<ReputationMet
     activityRes,
     reportsRes,
   ] = await Promise.all([
-    sr.from("profiles").select("rating, review_count, rides_count, completed_rides_count, phone_verified, email_verified, id_verified, driver_verified, created_at").eq("id", userId).single(),
+    sr.from("profiles").select("rating, review_count, rides_count, completed_rides_count, email_verified, id_verified, driver_verified, created_at").eq("id", userId).single(),
     sr.from("rides").select("id", { count: "exact", head: true }).eq("driver_id", userId),
     sr.from("rides").select("id", { count: "exact", head: true }).eq("driver_id", userId).eq("status", "completed"),
     sr.from("bookings").select("id", { count: "exact", head: true }).eq("passenger_id", userId),
@@ -156,10 +155,11 @@ export async function calculateReputation(userId: string): Promise<ReputationMet
   trustScore += Math.min(10, ridesCompleted * 2);
 
   // Verifications (max 20)
-  if (profile?.email_verified) trustScore += 5;
-  if (profile?.phone_verified) trustScore += 5;
-  if (profile?.id_verified) trustScore += 5;
-  if (profile?.driver_verified) trustScore += 5;
+  // Phone verification was removed (it required a paid SMS provider); its 5
+  // points are redistributed so this block still tops out at 20.
+  if (profile?.email_verified) trustScore += 6;
+  if (profile?.id_verified) trustScore += 7;
+  if (profile?.driver_verified) trustScore += 7;
 
   // Reliability bonuses (max 15)
   if (completionRate >= 0.9) trustScore += 5;
@@ -187,7 +187,6 @@ export async function calculateReputation(userId: string): Promise<ReputationMet
     bookingsConfirmed,
     streakWeeks,
     verifiedFlags: {
-      phone: !!profile?.phone_verified,
       email: !!profile?.email_verified,
       id: !!profile?.id_verified,
       driver: !!profile?.driver_verified,

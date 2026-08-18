@@ -25,7 +25,6 @@ interface AdminUserRow {
   name: string;
   phone: string;
   created_at: string;
-  phone_verified: boolean;
 }
 
 interface AdminRideRow {
@@ -74,7 +73,7 @@ function UsersList({ supabase }: { supabase: AdminSupabase }) {
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("id, name, phone, created_at, phone_verified")
+      .select("id, name, phone, created_at")
       .order("created_at", { ascending: false })
       .limit(50)
       .then(({ data }) => {
@@ -116,11 +115,6 @@ function UsersList({ supabase }: { supabase: AdminSupabase }) {
               <p className="font-mono text-[10px] text-dim">
                 {new Date(user.created_at).toLocaleDateString("it")}
               </p>
-              {user.phone_verified && (
-                <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-ok/30 bg-ok/10 px-2 py-0.5 font-mono text-[10px] text-ok">
-                  verificato
-                </span>
-              )}
             </div>
           </div>
         ))}

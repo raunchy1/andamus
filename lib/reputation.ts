@@ -9,7 +9,6 @@ export interface ReputationProfile {
   rides_count: number | null;
   completed_rides_count: number | null;
   created_at?: string | null;
-  phone_verified?: boolean | null;
   email_verified?: boolean | null;
   id_verified?: boolean | null;
   driver_verified?: boolean | null;
@@ -43,10 +42,12 @@ export function computeTrustScore(profile: Partial<ReputationProfile>): number {
   score += Math.min(10, completed * 2); // 2 pts per completed ride, max 10
 
   // Verifications (max 20 pts)
-  if (profile.email_verified) score += 5;
-  if (profile.phone_verified) score += 5;
-  if (profile.id_verified) score += 5;
-  if (profile.driver_verified) score += 5;
+  // Phone verification was removed: it required a paid SMS provider and never
+  // worked in production. Its 5 points are redistributed across the remaining
+  // three so the block still tops out at 20 and the trust bands don't shift.
+  if (profile.email_verified) score += 6;
+  if (profile.id_verified) score += 7;
+  if (profile.driver_verified) score += 7;
 
   // Review diversity bonus (max 15 pts)
   if (reviewCount >= 5) score += 10;

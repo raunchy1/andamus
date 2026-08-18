@@ -25,7 +25,6 @@ export interface Ride {
     rating: number;
     review_count?: number | null;
     rides_count?: number | null;
-    phone_verified?: boolean;
     id_verified?: boolean;
   };
 }
