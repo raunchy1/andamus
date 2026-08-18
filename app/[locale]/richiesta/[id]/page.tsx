@@ -19,11 +19,6 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { AuroraBackground } from "@/components/ui/premium/aurora-background";
-import { OrbGlow } from "@/components/ui/premium/orb-glow";
-import { GradientText } from "@/components/ui/premium/gradient-text";
-import { MagneticButton } from "@/components/ui/premium/magnetic-button";
-import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal } from "@/components/ui/premium/reveal";
 
 interface RideRequest {
@@ -134,59 +129,55 @@ export default function RequestDetailPage() {
 
   return (
     <div className="min-h-screen bg-bg text-fg">
-      {/* Header — Premium Aurora */}
-      <AuroraBackground className="border-b border-line px-4 py-8 lg:py-12 relative" showRadialMask={false}>
-        <OrbGlow className="-top-20 -right-32" color="#2D6A4F" size={300} opacity={0.30} />
-        <div className="mx-auto max-w-3xl relative">
+      <header className="border-b border-line px-4 py-8 lg:py-10">
+        <div className="mx-auto max-w-3xl">
           <Reveal>
-            <div className="mb-4 flex items-center gap-2">
-              <Link href={`/${locale}/richieste`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-primary transition-colors">
-                <ArrowLeft className="h-4 w-4" />
-                {t("backToRequests")}
-              </Link>
-            </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary backdrop-blur-md mb-4">
-              <Sparkles className="h-3 w-3" />
-              {t("lookingForRide")}
-            </span>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-fg">
-              {request.from_city} <GradientText>→</GradientText> {request.to_city}
+            <Link
+              href={`/${locale}/richieste`}
+              className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+            >
+              <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+              {t("backToRequests")}
+            </Link>
+            <h1 className="mt-2 font-heading text-[26px] leading-tight text-ink sm:text-3xl">
+              {request.from_city} — {request.to_city}
             </h1>
+            <p className="mt-1 text-sm leading-relaxed text-muted">{t("lookingForRide")}</p>
           </Reveal>
         </div>
-      </AuroraBackground>
+      </header>
 
       {/* Detail Content */}
       <div className="mx-auto max-w-3xl px-4 py-8">
         <Reveal>
           <div className="space-y-6">
             {/* Meta Info */}
-            <div className="rounded-3xl border border-line bg-surface p-6 backdrop-blur-sm">
+            <div className="rounded-2xl border border-line bg-surface p-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface border border-line overflow-hidden">
                     {request.profiles?.avatar_url ? (
                       <img src={request.profiles.avatar_url} alt={request.profiles.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-lg font-bold text-primary">
+                      <span className="text-lg font-medium text-green">
                         {request.profiles?.name?.charAt(0)?.toUpperCase() ?? '?'}
                       </span>
                     )}
                   </div>
                   <div>
-                    <p className="font-bold text-lg text-fg">{request.profiles.name}</p>
+                    <p className="font-heading text-lg text-ink">{request.profiles.name}</p>
                     <p className="text-xs text-muted">{t("lookingForRide")}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5 text-sm text-fg">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-primary" />
+                    <Calendar className="h-4 w-4 text-muted" strokeWidth={1.5} aria-hidden />
                     <span className="capitalize">{formatDate(request.date)}</span>
                   </div>
                   {request.time && (
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-primary" />
+                      <Clock className="h-4 w-4 text-muted" strokeWidth={1.5} aria-hidden />
                       <span>{request.time.slice(0, 5)}</span>
                       <span className="text-xs text-faint">({flexibilityLabel(request.time_flexibility)})</span>
                     </div>
@@ -197,37 +188,37 @@ export default function RequestDetailPage() {
 
             {/* Quick Stats Grid */}
             <div className="grid gap-4 sm:grid-cols-3">
-              <TiltCard tiltStrength={4} className="rounded-2xl border border-line bg-surface p-5">
+              <div className="rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("seatsNeeded")}</p>
+                  <Users className="h-4 w-4 text-muted" strokeWidth={1.5} aria-hidden />
+                  <p className="text-xs text-muted">{t("seatsNeeded")}</p>
                 </div>
-                <p className="text-2xl font-black text-fg">{request.seats_needed}</p>
-              </TiltCard>
+                <p className="font-heading text-2xl text-ink">{request.seats_needed}</p>
+              </div>
 
-              <TiltCard tiltStrength={4} className="rounded-2xl border border-line bg-surface p-5">
+              <div className="rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <Euro className="h-4 w-4 text-primary" />
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("maxBudget")}</p>
+                  <Euro className="h-4 w-4 text-muted" strokeWidth={1.5} aria-hidden />
+                  <p className="text-xs text-muted">{t("maxBudget")}</p>
                 </div>
-                <p className="text-2xl font-black text-fg">
+                <p className="font-heading text-2xl text-ink">
                   {request.max_price !== null ? `${request.max_price}€` : "-"}
                 </p>
-              </TiltCard>
+              </div>
 
-              <TiltCard tiltStrength={4} className="rounded-2xl border border-line bg-surface p-5">
+              <div className="rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted">{t("flexibilityLabel") || t("flexibility")}</p>
+                  <Clock className="h-4 w-4 text-muted" strokeWidth={1.5} aria-hidden />
+                  <p className="text-xs text-muted">{t("flexibilityLabel") || t("flexibility")}</p>
                 </div>
-                <p className="text-lg font-bold text-fg truncate">{flexibilityLabel(request.time_flexibility)}</p>
-              </TiltCard>
+                <p className="truncate font-heading text-lg text-ink">{flexibilityLabel(request.time_flexibility)}</p>
+              </div>
             </div>
 
             {/* Notes Section */}
             {request.notes && (
-              <div className="rounded-3xl border border-line bg-surface p-6 backdrop-blur-sm flex gap-4">
-                <FileText className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
+              <div className="flex gap-4 rounded-2xl border border-line bg-surface p-5">
+                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
                 <div>
                   <p className="font-bold text-fg mb-1">{t("notes")}</p>
                   <p className="text-fg leading-relaxed text-sm">{request.notes}</p>
@@ -238,30 +229,30 @@ export default function RequestDetailPage() {
             {/* Actions for Drivers */}
             {!isMyRequest && user && (
               <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/[0.05] via-[#2D6A4F]/[0.02] to-transparent p-8 text-center backdrop-blur-sm">
-                <MapPin className="h-10 w-10 text-primary mx-auto mb-3" />
-                <p className="text-lg font-bold text-fg mb-2">{t("haveRidePrompt")}</p>
-                <p className="text-sm text-muted mb-6 max-w-md mx-auto">
-                  Pubblica una corsa che corrisponde alle esigenze di questo passeggero. Verrà notificato istantaneamente!
+                <MapPin className="mx-auto mb-3 h-6 w-6 text-muted" strokeWidth={1.5} aria-hidden />
+                <p className="mb-2 font-heading text-lg text-ink">{t("haveRidePrompt")}</p>
+                <p className="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted">
+                  {t("haveRideBody")}
                 </p>
                 <div className="inline-flex justify-center">
-                  <MagneticButton
+                  <button
+                    type="button"
                     onClick={() => window.location.assign(`/${locale}/offri?from=${request.from_city}&to=${request.to_city}&date=${request.date}`)}
-                    strength={12}
-                    className="h-12 px-6 text-sm"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-green px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                   >
-                    <MapPin className="h-4 w-4 mr-2" />
+                    <MapPin className="h-4 w-4" strokeWidth={1.5} aria-hidden />
                     {t("publishRide")}
-                  </MagneticButton>
+                  </button>
                 </div>
               </div>
             )}
 
             {/* Information for Request Owner */}
             {isMyRequest && (
-              <div className="rounded-3xl border border-line bg-surface p-6 text-center backdrop-blur-sm">
-                <Sparkles className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm font-bold text-fg">{t("yourRequest")}</p>
-                <p className="text-xs text-muted mt-1 max-w-sm mx-auto">{t("notificationInfo")}</p>
+              <div className="rounded-2xl border border-line bg-surface p-5 text-center">
+                <Sparkles className="mx-auto mb-2 h-5 w-5 text-muted" strokeWidth={1.5} aria-hidden />
+                <p className="text-sm font-medium text-ink">{t("yourRequest")}</p>
+                <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted">{t("notificationInfo")}</p>
               </div>
             )}
           </div>

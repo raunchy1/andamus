@@ -658,7 +658,9 @@
     "notificationInfo": "We'll notify you when a driver publishes a matching ride.",
     "publishRide": "Publish a ride",
     "seatsNeeded": "Seats needed",
-    "yourRequest": "This is your request"
+    "yourRequest": "This is your request",
+    "createRequest": "Create request",
+    "haveRideBody": "Publish a ride on this route and the passenger gets a notification."
   },
   "premium": {
     "choosePlan": "Choose your plan",
@@ -1535,5 +1537,32 @@
     "blockedHint": "Notifications are blocked in your browser settings.",
     "unsupported": "This browser does not support push notifications.",
     "configMissing": "Notifications are unavailable right now."
+  },
+  "vehicles": {
+    "backToProfile": "Back to profile",
+    "title": "Your vehicles",
+    "count": "{count, plural, one {# vehicle} other {# vehicles}}",
+    "add": "Add",
+    "addFirst": "Add your first vehicle",
+    "emptyTitle": "No vehicles yet",
+    "emptyBody": "Passengers want to know which car they are getting into. Add your vehicle with a few photos.",
+    "photoTip": "Three photos and a description are enough for passengers to recognise the car at the meeting point.",
+    "loadError": "We couldn't load your vehicles.",
+    "confirmRemove": "Remove this vehicle?",
+    "removed": "Vehicle removed",
+    "removeError": "We couldn't remove the vehicle.",
+    "primaryUpdated": "Primary vehicle updated",
+    "updateError": "We couldn't update the vehicle.",
+    "added": "Vehicle added",
+    "noPhoto": "No photo",
+    "primary": "Primary",
+    "verified": "Verified",
+    "morePhotos": "{count, plural, one {+# photo} other {+# photos}}",
+    "seats": "{count, plural, one {# seat} other {# seats}}",
+    "rides": "{count, plural, one {# ride} other {# rides}}",
+    "moreFeatures": "+{count}",
+    "edit": "Edit vehicle",
+    "delete": "Delete vehicle",
+    "setPrimary": "Set as primary"
   }
 }

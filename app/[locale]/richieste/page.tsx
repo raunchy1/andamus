@@ -16,13 +16,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
-import { AuroraBackground } from "@/components/ui/premium/aurora-background";
-import { OrbGlow } from "@/components/ui/premium/orb-glow";
-import { GradientText } from "@/components/ui/premium/gradient-text";
-import { MagneticButton } from "@/components/ui/premium/magnetic-button";
-import { TiltCard } from "@/components/ui/premium/tilt-card";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
-import { Sparkles } from "lucide-react";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { CreateRequestModal } from "@/components/CreateRequestModal";
 import { LocationCombobox } from "@/components/LocationCombobox";
@@ -103,27 +97,23 @@ function RequestsContent() {
 
   return (
     <div className="min-h-screen bg-bg text-fg">
-      {/* Header — Premium Aurora */}
-      <AuroraBackground className="border-b border-line px-4 py-8 lg:py-12 relative" showRadialMask={false}>
-        <OrbGlow className="-top-20 -right-32" color="#2D6A4F" size={300} opacity={0.30} />
-        <div className="mx-auto max-w-5xl relative">
+      <header className="border-b border-line px-4 py-8 lg:py-10">
+        <div className="mx-auto max-w-5xl">
           <Reveal>
-          <div className="mb-4 flex items-center gap-2">
-            <Link href={`/${locale}/cerca`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-primary transition-colors">
-              <ArrowLeft className="h-4 w-4" />
+            <Link
+              href={`/${locale}/cerca`}
+              className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+            >
+              <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden />
               {t("backToSearch")}
             </Link>
-          </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-primary backdrop-blur-md mb-4">
-            <Sparkles className="h-3 w-3" />
-            {t("subtitle")}
-          </span>
-          <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tighter text-fg">
-            <GradientText>{t("title")}</GradientText>
-          </h1>
+            <h1 className="mt-2 font-heading text-[26px] leading-tight text-ink sm:text-3xl">
+              {t("title")}
+            </h1>
+            <p className="mt-1 text-sm leading-relaxed text-muted">{t("subtitle")}</p>
           </Reveal>
         </div>
-      </AuroraBackground>
+      </header>
 
       {/* Search bar */}
       <div className="border-b border-line bg-surface/95 backdrop-blur-xl px-4 py-5 sticky top-0 z-30">
@@ -131,7 +121,7 @@ function RequestsContent() {
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex-1 min-w-[200px]">
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("from")}</label>
+              <label className="mb-1.5 block text-xs font-medium text-muted">{t("from")}</label>
               <LocationCombobox
                 value={origin}
                 onChange={setOrigin}
@@ -140,7 +130,7 @@ function RequestsContent() {
               />
             </div>
             <div className="flex-1 min-w-[200px]">
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("to")}</label>
+              <label className="mb-1.5 block text-xs font-medium text-muted">{t("to")}</label>
               <LocationCombobox
                 value={destination}
                 onChange={setDestination}
@@ -149,7 +139,7 @@ function RequestsContent() {
               />
             </div>
             <div className="min-w-[140px]">
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-primary">{t("date")}</label>
+              <label className="mb-1.5 block text-xs font-medium text-muted">{t("date")}</label>
               <PremiumDatePicker
                 date={date}
                 onSelect={setDate}
@@ -161,14 +151,18 @@ function RequestsContent() {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="h-12 rounded-xl border border-line bg-surface px-4 text-primary hover:bg-sand-deep hover:border-primary/30 transition-all"
+              className="h-12 rounded-xl border border-line bg-surface px-4 text-muted transition-colors hover:bg-sand hover:text-ink"
             >
               <SlidersHorizontal className="h-5 w-5" />
             </button>
-            <MagneticButton onClick={() => setShowCreateModal(true)} strength={12} className="h-12 px-4 py-0 text-xs">
-              <PlusCircle className="h-4 w-4" />
-              Crea Richiesta
-            </MagneticButton>
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex h-12 items-center gap-2 rounded-xl bg-green px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              <PlusCircle className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+              {t("createRequest")}
+            </button>
           </div>
         </div>
         </Reveal>
@@ -179,34 +173,27 @@ function RequestsContent() {
         <div className="mx-auto max-w-5xl">
           {loading ? (
             <div className="py-20 text-center">
-              <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary" />
+              <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted" strokeWidth={1.5} aria-hidden />
             </div>
           ) : requests.length === 0 ? (
             <Reveal>
-            <div className="py-20 text-center rounded-3xl border border-line bg-surface">
-              <User className="mx-auto h-14 w-14 text-faint" />
-              <p className="mt-4 text-lg font-bold text-fg">{t("noRequests")}</p>
-              <p className="mt-1 text-sm text-fg/55">{t("tryDifferentFilters")}</p>
+            <div className="rounded-2xl border border-line bg-surface px-5 py-12 text-center">
+              <User className="mx-auto h-6 w-6 text-muted" strokeWidth={1.5} aria-hidden />
+              <p className="mt-4 font-heading text-xl text-ink">{t("noRequests")}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{t("tryDifferentFilters")}</p>
             </div>
             </Reveal>
           ) : (
             <RevealStagger className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {requests.map((req, idx) => (
                 <RevealItem key={req.id}>
-                <TiltCard
-                  tiltStrength={5}
-                  className={`relative h-full rounded-3xl border ${
-                    idx === 0
-                      ? "border-primary/25 bg-gradient-to-br from-primary/[0.07] via-[#2D6A4F]/[0.04] to-transparent"
-                      : "border-line bg-surface"
-                  } backdrop-blur-sm`}
-                >
+                <div className="relative h-full rounded-2xl border border-line bg-surface">
                 <Link
                   href={`/${locale}/richiesta/${req.id}`}
                   className="group block p-6"
                 >
                   <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                    <div className="flex items-center gap-2 text-xs text-muted">
                       <Calendar className="h-3.5 w-3.5" />
                       <span>{formatDate(req.date)}</span>
                       {req.time && (
@@ -219,17 +206,17 @@ function RequestsContent() {
                       )}
                     </div>
                   </div>
-                  <h3 className="text-2xl font-extrabold tracking-tight text-fg mb-3">
-                    {req.from_city} <GradientText>→</GradientText> {req.to_city}
+                  <h3 className="mb-3 font-heading text-lg text-ink">
+                    {req.from_city} — {req.to_city}
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted mb-4">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-2.5 py-1">
-                      <Users className="h-3.5 w-3.5 text-primary" />
+                      <Users className="h-3.5 w-3.5 text-muted" strokeWidth={1.5} aria-hidden />
                       {seatLabel(req.seats_needed)}
                     </span>
                     {req.max_price !== null && (
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-2.5 py-1">
-                        <Euro className="h-3.5 w-3.5 text-primary" />
+                        <Euro className="h-3.5 w-3.5 text-muted" strokeWidth={1.5} aria-hidden />
                         {t("maxPrice", { price: req.max_price })}
                       </span>
                     )}
@@ -239,12 +226,12 @@ function RequestsContent() {
                       <div className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center overflow-hidden">
                         <User className="w-4 h-4 text-muted" />
                       </div>
-                      <p className="text-sm font-bold text-fg">{req.profiles.name}</p>
+                      <p className="text-sm font-medium text-ink">{req.profiles.name}</p>
                     </div>
                     <ChevronRight className="h-5 w-5 text-faint group-hover:translate-x-1 group-hover:text-primary transition-all" />
                   </div>
                 </Link>
-                </TiltCard>
+                </div>
                 </RevealItem>
               ))}
             </RevealStagger>

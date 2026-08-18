@@ -658,7 +658,9 @@
     "notificationInfo": "Ti avvisiamo quando un conducente pubblica un passaggio compatibile.",
     "publishRide": "Pubblica un passaggio",
     "seatsNeeded": "Posti richiesti",
-    "yourRequest": "Questa è la tua richiesta"
+    "yourRequest": "Questa è la tua richiesta",
+    "createRequest": "Crea richiesta",
+    "haveRideBody": "Pubblica una corsa su questa tratta: il passeggero riceve una notifica."
   },
   "premium": {
     "choosePlan": "Scegli il tuo piano",
@@ -1535,5 +1537,32 @@
     "blockedHint": "Le notifiche sono bloccate nelle impostazioni del browser.",
     "unsupported": "Questo browser non supporta le notifiche push.",
     "configMissing": "Notifiche non disponibili al momento."
+  },
+  "vehicles": {
+    "backToProfile": "Torna al profilo",
+    "title": "I tuoi veicoli",
+    "count": "{count, plural, one {# veicolo} other {# veicoli}}",
+    "add": "Aggiungi",
+    "addFirst": "Aggiungi il primo veicolo",
+    "emptyTitle": "Nessun veicolo",
+    "emptyBody": "Chi prenota vuole sapere in che auto sale. Aggiungi il tuo veicolo con qualche foto.",
+    "photoTip": "Tre foto e una descrizione bastano: i passeggeri riconoscono l'auto al punto d'incontro.",
+    "loadError": "Non siamo riusciti a caricare i tuoi veicoli.",
+    "confirmRemove": "Vuoi rimuovere questo veicolo?",
+    "removed": "Veicolo rimosso",
+    "removeError": "Non siamo riusciti a rimuovere il veicolo.",
+    "primaryUpdated": "Veicolo principale aggiornato",
+    "updateError": "Non siamo riusciti ad aggiornare il veicolo.",
+    "added": "Veicolo aggiunto",
+    "noPhoto": "Nessuna foto",
+    "primary": "Principale",
+    "verified": "Verificato",
+    "morePhotos": "{count, plural, one {+# foto} other {+# foto}}",
+    "seats": "{count, plural, one {# posto} other {# posti}}",
+    "rides": "{count, plural, one {# corsa} other {# corse}}",
+    "moreFeatures": "+{count}",
+    "edit": "Modifica veicolo",
+    "delete": "Elimina veicolo",
+    "setPrimary": "Imposta come principale"
   }
 }

@@ -658,7 +658,9 @@
     "notificationInfo": "Wir benachrichtigen dich, wenn ein Fahrer eine passende Mitfahrgelegenheit veröffentlicht.",
     "publishRide": "Mitfahrgelegenheit veröffentlichen",
     "seatsNeeded": "Benötigte Plätze",
-    "yourRequest": "Das ist deine Anfrage"
+    "yourRequest": "Das ist deine Anfrage",
+    "createRequest": "Anfrage erstellen",
+    "haveRideBody": "Veröffentliche eine Fahrt auf dieser Strecke — der Mitfahrer wird benachrichtigt."
   },
   "premium": {
     "choosePlan": "Wähle deinen Plan",
@@ -1535,5 +1537,32 @@
     "blockedHint": "Benachrichtigungen sind in den Browser-Einstellungen blockiert.",
     "unsupported": "Dieser Browser unterstützt keine Push-Benachrichtigungen.",
     "configMissing": "Benachrichtigungen sind gerade nicht verfügbar."
+  },
+  "vehicles": {
+    "backToProfile": "Zurück zum Profil",
+    "title": "Deine Fahrzeuge",
+    "count": "{count, plural, one {# Fahrzeug} other {# Fahrzeuge}}",
+    "add": "Hinzufügen",
+    "addFirst": "Erstes Fahrzeug hinzufügen",
+    "emptyTitle": "Noch keine Fahrzeuge",
+    "emptyBody": "Mitfahrende wollen wissen, in welches Auto sie steigen. Füge dein Fahrzeug mit ein paar Fotos hinzu.",
+    "photoTip": "Drei Fotos und eine Beschreibung reichen, damit Mitfahrende das Auto am Treffpunkt erkennen.",
+    "loadError": "Wir konnten deine Fahrzeuge nicht laden.",
+    "confirmRemove": "Dieses Fahrzeug entfernen?",
+    "removed": "Fahrzeug entfernt",
+    "removeError": "Wir konnten das Fahrzeug nicht entfernen.",
+    "primaryUpdated": "Hauptfahrzeug aktualisiert",
+    "updateError": "Wir konnten das Fahrzeug nicht aktualisieren.",
+    "added": "Fahrzeug hinzugefügt",
+    "noPhoto": "Kein Foto",
+    "primary": "Hauptfahrzeug",
+    "verified": "Verifiziert",
+    "morePhotos": "{count, plural, one {+# Foto} other {+# Fotos}}",
+    "seats": "{count, plural, one {# Platz} other {# Plätze}}",
+    "rides": "{count, plural, one {# Fahrt} other {# Fahrten}}",
+    "moreFeatures": "+{count}",
+    "edit": "Fahrzeug bearbeiten",
+    "delete": "Fahrzeug löschen",
+    "setPrimary": "Als Hauptfahrzeug festlegen"
   }
 }

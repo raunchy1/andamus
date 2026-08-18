@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import {
   ArrowLeft, Plus, Car, Loader2, AlertCircle,
@@ -11,15 +11,12 @@ import { createClient } from "@/lib/supabase/client";
 import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { VehicleWizard } from "@/components/vehicles/VehicleWizard";
 import { VehicleEditPanel } from "@/components/vehicles/VehicleEditPanel";
-import { VehicleTrustScore } from "@/components/vehicles/VehicleTrustScore";
 import { toast } from "sonner";
 import type { VehicleWithImages } from "@/lib/types/vehicle";
-import { AuroraBackground } from "@/components/ui/premium/aurora-background";
-import { GradientText } from "@/components/ui/premium/gradient-text";
-import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 
 export default function VehiclesPage() {
   const locale = useLocale();
+  const t = useTranslations("vehicles");
   const router = useRouter();
 
   const [vehicles, setVehicles] = useState<VehicleWithImages[]>([]);
@@ -45,7 +42,7 @@ export default function VehiclesPage() {
       const data = await res.json();
       setVehicles(data.vehicles ?? []);
     } catch (err) {
-      setError("Errore nel caricamento dei veicoli");
+      setError(t("loadError"));
     } finally {
       setLoading(false);
     }
@@ -54,15 +51,15 @@ export default function VehiclesPage() {
   useEffect(() => { fetchVehicles(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDelete = async (vehicleId: string) => {
-    if (!confirm("Sei sicuro di voler rimuovere questo veicolo?")) return;
+    if (!confirm(t("confirmRemove"))) return;
     setDeleting(vehicleId);
     try {
       const res = await fetch(`/api/vehicles/${vehicleId}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
-      toast.success("Veicolo rimosso");
+      toast.success(t("removed"));
       setVehicles((prev) => prev.filter((v) => v.id !== vehicleId));
     } catch {
-      toast.error("Errore nella rimozione del veicolo");
+      toast.error(t("removeError"));
     } finally {
       setDeleting(null);
     }
@@ -72,16 +69,16 @@ export default function VehiclesPage() {
     try {
       const res = await fetch(`/api/vehicles/${vehicleId}/primary`, { method: "POST" });
       if (!res.ok) throw new Error("Failed");
-      toast.success("Veicolo principale aggiornato");
+      toast.success(t("primaryUpdated"));
       await fetchVehicles();
     } catch {
-      toast.error("Errore nell'aggiornamento");
+      toast.error(t("updateError"));
     }
   };
 
   const handleWizardSuccess = async (newVehicleId: string) => {
     setShowWizard(false);
-    toast.success("🚗 Veicolo aggiunto al tuo profilo!");
+    toast.success(t("added"));
     await fetchVehicles();
   };
 
@@ -116,146 +113,94 @@ export default function VehiclesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface pb-28">
-      {/* Header */}
-      <AuroraBackground className="relative h-44" showRadialMask={false}>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-surface" />
-        <div className="absolute inset-x-0 top-0 px-5 pt-14 flex items-center justify-between">
-          <Link
-            href={`/${locale}/profilo`}
-            className="p-3 rounded-2xl bg-surface backdrop-blur-xl border border-line text-fg hover:bg-sand-deep transition-all"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-          <button
-            onClick={() => setShowWizard(true)}
-            className="flex items-center gap-2 px-4 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all active:scale-95"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="text-sm">Aggiungi</span>
-          </button>
-        </div>
-      </AuroraBackground>
-
-      <div className="max-w-2xl mx-auto px-5 -mt-8">
-        {/* Title */}
-        <Reveal>
-          <div className="mb-6">
-            <p className="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-fg/40">
-              Il tuo garage
-            </p>
-            <h1 className="font-headline font-extrabold text-4xl text-fg">
-              I tuoi <GradientText>Veicoli</GradientText>
+    <div className="w-full px-4 pb-12 pt-6 md:px-0 md:pt-8">
+      <header className="mb-8">
+        <Link
+          href={`/${locale}/profilo`}
+          className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+          {t("backToProfile")}
+        </Link>
+        <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="font-heading text-[26px] leading-tight text-ink sm:text-3xl">
+              {t("title")}
             </h1>
             {vehicles.length > 0 && (
-              <p className="text-sm text-fg/50 mt-1">
-                {vehicles.length} veicolo{vehicles.length !== 1 ? "i" : ""} nel tuo profilo
+              <p className="mt-1 text-sm leading-relaxed text-muted">
+                {t("count", { count: vehicles.length })}
               </p>
             )}
           </div>
-        </Reveal>
-
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
-        )}
-
-        {/* Error */}
-        {error && !loading && (
-          <div className="flex items-center gap-3 bg-bad/10 border border-bad/20 rounded-2xl px-4 py-4 mb-6">
-            <AlertCircle className="w-5 h-5 text-bad shrink-0" />
-            <p className="text-sm text-bad">{error}</p>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && vehicles.length === 0 && !error && (
-          <Reveal>
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-24 h-24 rounded-3xl bg-elevated flex items-center justify-center mb-6">
-                <Car className="w-12 h-12 text-fg/20" />
-              </div>
-              <h2 className="font-headline font-bold text-2xl text-fg mb-2">
-                Nessun veicolo
-              </h2>
-              <p className="text-fg/50 text-sm mb-8 max-w-xs">
-                Aggiungi il tuo veicolo per aumentare la fiducia dei passeggeri e personalizzare il tuo profilo.
-              </p>
-              <button
-                onClick={() => setShowWizard(true)}
-                className="flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all active:scale-95"
-              >
-                <Plus className="w-5 h-5" />
-                Aggiungi il tuo primo veicolo
-              </button>
-
-              {/* Benefits */}
-              <div className="mt-10 grid grid-cols-1 gap-3 w-full text-left">
-                {[
-                  { icon: "🔒", title: "Più fiducia", desc: "I passeggeri sanno esattamente in che auto salgono" },
-                  { icon: "📈", title: "Più prenotazioni", desc: "I profili con veicolo ricevono il 40% di prenotazioni in più" },
-                  { icon: "⭐", title: "Profilo completo", desc: "Raggiungi il 100% di completamento del profilo" },
-                ].map((benefit) => (
-                  <div key={benefit.icon} className="flex items-start gap-4 bg-surface rounded-2xl p-4">
-                    <span className="text-2xl">{benefit.icon}</span>
-                    <div>
-                      <p className="font-bold text-fg">{benefit.title}</p>
-                      <p className="text-sm text-fg/50">{benefit.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        )}
-
-        {/* Vehicle list */}
-        {!loading && vehicles.length > 0 && (
-          <RevealStagger className="space-y-5">
-            {vehicles.map((vehicle) => (
-              <RevealItem key={vehicle.id}>
-                <div className={deleting === vehicle.id ? "opacity-50 pointer-events-none" : ""}>
-                  <VehicleCard
-                    vehicle={vehicle}
-                    locale={locale}
-                    onEdit={(v) => setEditingVehicle(v)}
-                    onDelete={handleDelete}
-                    onSetPrimary={handleSetPrimary}
-                  />
-                </div>
-              </RevealItem>
-            ))}
-          </RevealStagger>
-        )}
-
-        {/* Add another CTA */}
-        {!loading && vehicles.length > 0 && vehicles.length < 5 && (
-          <Reveal>
+          {vehicles.length > 0 && vehicles.length < 5 && (
             <button
+              type="button"
               onClick={() => setShowWizard(true)}
-              className="w-full mt-5 flex items-center justify-center gap-2 py-4 border-2 border-dashed border-line/30 rounded-2xl text-fg/50 hover:border-primary/30 hover:text-primary transition-all"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-green px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
-              <Plus className="w-5 h-5" />
-              <span className="font-semibold">Aggiungi un altro veicolo</span>
+              <Plus className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+              {t("add")}
             </button>
-          </Reveal>
-        )}
+          )}
+        </div>
+      </header>
 
-        {/* Trust info */}
-        {!loading && vehicles.length > 0 && (
-          <Reveal>
-            <div className="mt-8 bg-surface rounded-3xl p-5">
-              <p className="font-bold text-sm text-fg mb-1">💡 Suggerimento</p>
-              <p className="text-sm text-fg/60">
-                Aggiungi almeno 3 foto del tuo veicolo e una descrizione per raggiungere
-                il <span className="font-bold text-primary">punteggio massimo</span> e aumentare la fiducia dei passeggeri.
-              </p>
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-muted" strokeWidth={1.5} aria-hidden />
+        </div>
+      )}
+
+      {error && !loading && (
+        <p className="mb-6 flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm text-terracotta">
+          <AlertCircle className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
+          {error}
+        </p>
+      )}
+
+      {!loading && vehicles.length === 0 && !error && (
+        <section className="rounded-2xl border border-line bg-surface px-5 py-12 text-center">
+          <Car className="mx-auto h-6 w-6 text-muted" strokeWidth={1.5} aria-hidden />
+          <h2 className="mt-4 font-heading text-xl text-ink">{t("emptyTitle")}</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
+            {t("emptyBody")}
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowWizard(true)}
+            className="mt-6 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-green px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            <Plus className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+            {t("addFirst")}
+          </button>
+        </section>
+      )}
+
+      {!loading && vehicles.length > 0 && (
+        <div className="space-y-4">
+          {vehicles.map((vehicle) => (
+            <div
+              key={vehicle.id}
+              className={deleting === vehicle.id ? "pointer-events-none opacity-50" : ""}
+            >
+              <VehicleCard
+                vehicle={vehicle}
+                locale={locale}
+                onEdit={(v) => setEditingVehicle(v)}
+                onDelete={handleDelete}
+                onSetPrimary={handleSetPrimary}
+              />
             </div>
-          </Reveal>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {!loading && vehicles.length > 0 && (
+        <p className="mt-8 rounded-xl border border-line bg-green-tint px-4 py-3 text-sm leading-relaxed text-ink">
+          {t("photoTip")}
+        </p>
+      )}
     </div>
   );
 }
