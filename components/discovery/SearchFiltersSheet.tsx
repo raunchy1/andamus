@@ -148,7 +148,7 @@ function SearchFiltersSheet({
             <div className="mb-2 flex items-center justify-between">
               <p className="text-eyebrow">{t("maxPriceLabel")}</p>
               <span className="font-mono text-xs text-fg">
-                {maxPrice === 50 ? t("priceAny") : `€${maxPrice}`}
+                {maxPrice === 50 ? t("priceAny") : `${maxPrice} €`}
               </span>
             </div>
             <Slider

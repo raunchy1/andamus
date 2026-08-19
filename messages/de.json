@@ -663,7 +663,16 @@
     "descriptionPlaceholder": "Z. B. Gruppe für tägliche Pendler...",
     "groupColor": "Gruppenfarbe",
     "creating": "Wird erstellt...",
-    "searchPlaceholder": "Nach Name oder Strecke suchen..."
+    "searchPlaceholder": "Nach Name oder Strecke suchen...",
+    "backToGroups": "Zurück zu den Gruppen",
+    "notFound": "Gruppe nicht gefunden",
+    "searchRides": "Fahrten suchen",
+    "offerRide": "Fahrt anbieten",
+    "joining": "Beitreten…",
+    "joinCta": "Der Gruppe beitreten",
+    "youAreMember": "Du bist Mitglied",
+    "membersCount": "{count, plural, =0 {Keine Mitglieder} one {1 Mitglied} other {# Mitglieder}}",
+    "noMembers": "Noch keine Mitglieder. Du kannst die erste Person sein."
   },
   "requests": {
     "title": "Wer eine Mitfahrt sucht",
@@ -984,7 +993,8 @@
     "yourLink": "Dein persönlicher Link",
     "inviteFriends": "Lade deine Freunde ein",
     "share": "Teilen",
-    "summary": "{count, plural, =0 {Noch niemand beigetreten} one {# Person beigetreten} other {# Personen beigetreten}} · {points, plural, one {# Punkt} other {# Punkte}}"
+    "summary": "{count, plural, =0 {Noch niemand beigetreten} one {# Person beigetreten} other {# Personen beigetreten}} · {points, plural, one {# Punkt} other {# Punkte}}",
+    "linkPending": "Dein Link ist gleich bereit."
   },
   "onboarding": {
     "flow": {
@@ -1382,7 +1392,8 @@
     "vehicle": "Fahrzeug",
     "activeRides": "Aktive Fahrten",
     "free": "Kostenlos",
-    "noPublicActivity": "Noch keine öffentliche Aktivität."
+    "noPublicActivity": "Noch keine öffentliche Aktivität.",
+    "noReviewsYet": "Noch keine Bewertungen"
   },
   "calendar": {
     "selectedDate": "Ausgewähltes Datum",

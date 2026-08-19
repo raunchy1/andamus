@@ -115,7 +115,7 @@ export default function EventDetailPage() {
               Cerca passaggi
             </Link>
             <Link
-              href={`/offri?to=${encodeURIComponent(event.city)}&date=${event.start_date}`}
+              href={`/${locale}/offri?to=${encodeURIComponent(event.city)}&date=${event.start_date}`}
               className="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted"
             >
               Offri un passaggio

@@ -37,7 +37,7 @@ export async function generateMetadata({
     // Fallback to defaults
   }
 
-  const priceText = price > 0 ? `€${price}` : locale === "it" ? "Gratis" : locale === "de" ? "Kostenlos" : "Free";
+  const priceText = price > 0 ? `${price} €` : locale === "it" ? "Gratis" : locale === "de" ? "Kostenlos" : "Free";
 
   const title = fromCity && toCity
     ? `${fromCity} → ${toCity} · ${priceText} · Andamus`

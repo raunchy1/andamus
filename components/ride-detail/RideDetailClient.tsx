@@ -595,7 +595,7 @@ function RideDetailSimilarRides({
               </p>
             </div>
             <span className="ml-3 shrink-0 font-mono text-sm tabular-nums text-fg">
-              {similar.price === 0 ? t("free") : `€${similar.price}`}
+              {similar.price === 0 ? t("free") : `${similar.price} €`}
             </span>
           </Link>
         ))}

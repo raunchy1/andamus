@@ -663,7 +663,16 @@
     "descriptionPlaceholder": "E.g. Group for daily commuters...",
     "groupColor": "Group color",
     "creating": "Creating...",
-    "searchPlaceholder": "Search by name or route..."
+    "searchPlaceholder": "Search by name or route...",
+    "backToGroups": "Back to groups",
+    "notFound": "Group not found",
+    "searchRides": "Search rides",
+    "offerRide": "Offer a ride",
+    "joining": "Joining…",
+    "joinCta": "Join the group",
+    "youAreMember": "You're a member",
+    "membersCount": "{count, plural, =0 {No members} one {1 member} other {# members}}",
+    "noMembers": "No members yet. You can be the first."
   },
   "requests": {
     "title": "Who is looking for a ride",
@@ -984,7 +993,8 @@
     "yourLink": "Your personal link",
     "inviteFriends": "Invite your friends",
     "share": "Share",
-    "summary": "{count, plural, =0 {No friends joined} one {# friend joined} other {# friends joined}} · {points, plural, one {# point} other {# points}}"
+    "summary": "{count, plural, =0 {No friends joined} one {# friend joined} other {# friends joined}} · {points, plural, one {# point} other {# points}}",
+    "linkPending": "Your link will be ready shortly."
   },
   "onboarding": {
     "flow": {
@@ -1382,7 +1392,8 @@
     "vehicle": "Vehicle",
     "activeRides": "Active rides",
     "free": "Free",
-    "noPublicActivity": "No public activity yet."
+    "noPublicActivity": "No public activity yet.",
+    "noReviewsYet": "No reviews yet"
   },
   "calendar": {
     "selectedDate": "Selected date",

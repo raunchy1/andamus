@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Group {
   id: string;
@@ -28,6 +30,8 @@ interface Member {
 }
 
 export default function GroupDetailPage() {
+  const t = useTranslations("groups");
+  const locale = useLocale();
   const params = useParams();
   const groupId = params.id as string;
   const supabase = createClient();
@@ -100,9 +104,9 @@ export default function GroupDetailPage() {
     return (
       <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-4">
         <AlertCircle className="h-16 w-16 text-bad mb-4" strokeWidth={1.5} />
-        <h1 className="text-2xl font-bold text-fg heading-editorial">Gruppo non trovato</h1>
-        <Link href="/gruppi" className="mt-6 flex items-center gap-2 text-accent">
-          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> Torna ai gruppi
+        <h1 className="text-2xl font-bold tracking-[-0.02em] text-ink">{t("notFound")}</h1>
+        <Link href={`/${locale}/gruppi`} className="mt-6 flex items-center gap-2 text-accent">
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.5} /> {t("backToGroups")}
         </Link>
       </div>
     );
@@ -110,37 +114,29 @@ export default function GroupDetailPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="border-b border-line bg-surface px-4 py-6">
-        <div className="mx-auto max-w-3xl">
-          <Link href="/gruppi" className="inline-flex items-center gap-2 text-sm text-muted hover:text-fg transition-colors mb-4">
-            <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-            Torna ai gruppi
-          </Link>
-          <h1 className="text-2xl font-bold text-fg heading-editorial">{group.name}</h1>
-          <div className="mt-2 flex items-center gap-2 text-sm text-muted">
-            <MapPin className="h-4 w-4" strokeWidth={1.5} />
-            <span>{group.city}</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        back={{ href: `/${locale}/gruppi`, label: t("backToGroups") }}
+        title={group.name}
+        subtitle={group.city}
+      />
 
       <div className="mx-auto max-w-3xl px-4 py-8">
         <p className="text-dim leading-relaxed">{group.description}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            href={`/cerca?to=${encodeURIComponent(group.city)}`}
+            href={`/${locale}/cerca?to=${encodeURIComponent(group.city)}`}
             className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-fg hover:opacity-90"
           >
             <Search className="h-4 w-4" strokeWidth={1.5} />
-            Cerca passaggi
+            {t("searchRides")}
           </Link>
           <Link
-            href={`/offri?to=${encodeURIComponent(group.city)}`}
+            href={`/${locale}/offri?to=${encodeURIComponent(group.city)}`}
             className="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 text-sm font-semibold text-fg hover:bg-surface-2"
           >
             <PlusCircle className="h-4 w-4" strokeWidth={1.5} />
-            Offri passaggio
+            {t("offerRide")}
           </Link>
           {!isMember ? (
             <button
@@ -148,20 +144,20 @@ export default function GroupDetailPage() {
               disabled={joining}
               className="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 text-sm font-semibold text-fg hover:bg-surface-2 disabled:opacity-50"
             >
-              {joining ? "Iscrizione in corso..." : "Unisciti al gruppo"}
+              {joining ? t("joining") : t("joinCta")}
             </button>
           ) : (
             <Badge variant="ok" className="px-5 py-3 text-sm font-semibold">
               <Check className="h-4 w-4" strokeWidth={1.5} />
-              Sei membro
+              {t("youAreMember")}
             </Badge>
           )}
         </div>
 
         <div className="mt-10 border-t border-line pt-8">
-          <h2 className="text-lg font-semibold text-fg mb-4 heading-editorial">membri ({members.length})</h2>
+          <h2 className="mb-4 text-lg font-semibold tracking-[-0.01em] text-ink">{t("membersCount", { count: members.length })}</h2>
           {members.length === 0 ? (
-            <p className="text-muted">Nessun membro ancora. Sii il primo!</p>
+            <p className="text-sm text-muted">{t("noMembers")}</p>
           ) : (
             <div className="flex flex-wrap gap-3">
               {members.map((member, idx) => (

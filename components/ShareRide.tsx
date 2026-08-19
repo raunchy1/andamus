@@ -36,7 +36,7 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
   const appUrl = typeof window !== "undefined" ? window.location.origin : "https://andamus.it";
   const rideUrl = `${appUrl}/api/share/${ride.id}`;
 
-  const priceText = ride.price > 0 ? `€${ride.price}` : ts("free");
+  const priceText = ride.price > 0 ? `${ride.price} €` : ts("free");
 
   const formattedDate = (() => {
     try {
@@ -55,7 +55,7 @@ export function ShareRide({ ride, variant = "button", className = "" }: ShareRid
 📍 *Da:* ${ride.from_city}
 🏁 *A:* ${ride.to_city}
 📅 *Quando:* ${formattedDate} ${ride.time.slice(0, 5)}
-💰 *Contributo:* ${ride.price > 0 ? `€${ride.price}` : "Gratis"}
+💰 *Contributo:* ${ride.price > 0 ? `${ride.price} €` : "Gratis"}
 ${ride.driverName ? `👤 *Autista:* ${ride.driverName}` : ""}
 
 👇 *Vedi e prenota qui:*`;
@@ -243,7 +243,7 @@ function ShareModal({
                   {ride.from_city} → {ride.to_city}
                 </p>
                 <p className="text-xs text-faint mt-0.5">
-                  {ride.date} · {ride.time.slice(0, 5)} {ride.price > 0 ? `· €${ride.price}` : `· ${ts("free")}`}
+                  {ride.date} · {ride.time.slice(0, 5)} {ride.price > 0 ? `· ${ride.price} €` : `· ${ts("free")}`}
                 </p>
                 {trustLabel && (
                   <p className="text-[10px] text-green/80 mt-1.5 font-medium">

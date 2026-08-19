@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Share2, ChevronLeft } from "lucide-react";
+import { Share2, ChevronLeft, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ReportUser } from "@/components/ReportUser";
@@ -161,16 +161,25 @@ export function PublicProfileView({
                 {verified && <Badge verified>Verificato</Badge>}
               </div>
 
-              <div className="mt-2 flex flex-wrap items-center justify-center gap-2 font-mono text-sm sm:justify-start">
-                <span className="tabular-nums text-fg">{profile.rating.toFixed(1)}</span>
-                <span className="text-muted">
-                  · {profile.review_count} {t("reviews")}
-                </span>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5 text-sm sm:justify-start">
+                {profile.review_count > 0 ? (
+                  <>
+                    <Star className="size-3.5 fill-pending text-pending" strokeWidth={0} />
+                    <span className="font-mono tabular-nums text-ink">
+                      {profile.rating.toFixed(1)}
+                    </span>
+                    <span className="text-muted">
+                      · {profile.review_count} {t("reviews").toLowerCase()}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted">{t("noReviewsYet")}</span>
+                )}
               </div>
 
               <div className="mt-4 flex flex-col gap-1 text-[13px] text-muted">
                 <p>
-                  {profile.rides_count} {t("activeRides").toLowerCase()}
+                  {activeRides.length} {t("activeRides").toLowerCase()}
                 </p>
                 <p>{t("memberSince", { age: profile.accountAge })}</p>
               </div>
@@ -184,7 +193,7 @@ export function PublicProfileView({
             transition={{ ...fadeUp.transition, delay: 0.05 }}
             className="mb-8"
           >
-            <p className="text-eyebrow mb-3">{t("vehicle")}</p>
+            <h2 className="mb-2 text-[15px] font-semibold text-ink">{t("vehicle")}</h2>
             <p className="text-sm text-fg">
               {[profile.car_model, profile.car_color, profile.car_year]
                 .filter(Boolean)
@@ -199,10 +208,10 @@ export function PublicProfileView({
           transition={{ ...fadeUp.transition, delay: 0.1 }}
           className="mb-8"
         >
-          <p className="text-eyebrow mb-4">{t("activeRides")}</p>
+          <h2 className="mb-3 text-[15px] font-semibold text-ink">{t("activeRides")}</h2>
 
           {activeRides.length === 0 ? (
-            <p className="font-mono text-sm text-muted">{t("noPublicActivity")}</p>
+            <p className="text-sm text-muted">{t("noPublicActivity")}</p>
           ) : (
             <div className="space-y-3">
               {activeRides.map((ride, index) => (
@@ -212,13 +221,14 @@ export function PublicProfileView({
                   index={index}
                   departureTime={ride.time.slice(0, 5)}
                   arrivalTime=""
-                  price={ride.price === 0 ? t("free") : `€${ride.price}`}
+                  price={ride.price === 0 ? t("free") : `${ride.price} €`}
+                  free={ride.price === 0}
                   origin={{ name: ride.from_city, time: ride.time.slice(0, 5) }}
                   destination={{ name: ride.to_city }}
                   driverName={profile.name}
                   driverAvatar={profile.avatar_url}
                   verified={verified}
-                  rating={profile.rating.toFixed(1)}
+                  rating={profile.review_count > 0 ? profile.rating.toFixed(1) : undefined}
                   seatsLabel={`${ride.seats} posti`}
                 />
               ))}
@@ -231,10 +241,10 @@ export function PublicProfileView({
           transition={{ ...fadeUp.transition, delay: 0.15 }}
           className="mb-8"
         >
-          <p className="text-eyebrow mb-4">{t("reviews")}</p>
+          <h2 className="mb-3 text-[15px] font-semibold text-ink">{t("reviews")}</h2>
 
           {reviews.length === 0 ? (
-            <p className="font-mono text-sm text-muted">{t("noPublicActivity")}</p>
+            <p className="text-sm text-muted">{t("noPublicActivity")}</p>
           ) : (
             <div className="divide-y divide-line">
               {reviews.map((review) => (

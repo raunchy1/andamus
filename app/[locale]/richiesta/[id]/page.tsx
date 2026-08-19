@@ -202,7 +202,7 @@ export default function RequestDetailPage() {
                   <p className="text-xs text-muted">{t("maxBudget")}</p>
                 </div>
                 <p className="font-heading text-2xl text-ink">
-                  {request.max_price !== null ? `${request.max_price}€` : "-"}
+                  {request.max_price !== null ? `${request.max_price} €` : "—"}
                 </p>
               </div>
 

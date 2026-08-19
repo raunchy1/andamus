@@ -60,7 +60,7 @@ export function PostActionModal({
           : "";
         const priceText = context.price !== undefined
           ? context.price > 0
-            ? `€${context.price}`
+            ? `${context.price} €`
             : t("free")
           : "";
         const dateTime = context.date && context.time
@@ -285,7 +285,7 @@ export function PostActionModal({
                         {context.fromCity} → {context.toCity}
                       </p>
                       <p className="text-xs text-faint mt-0.5">
-                        {context.date} · {context.time?.slice(0, 5)} {context.price !== undefined ? `· ${context.price > 0 ? `€${context.price}` : t("free")}` : ""}
+                        {context.date} · {context.time?.slice(0, 5)} {context.price !== undefined ? `· ${context.price > 0 ? `${context.price} €` : t("free")}` : ""}
                       </p>
                     </div>
                     <div className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold uppercase tracking-[0.14em] ${accentBg}`}>

@@ -663,7 +663,16 @@
     "descriptionPlaceholder": "Es. Gruppo per pendolari giornalieri...",
     "groupColor": "Colore del gruppo",
     "creating": "Creazione in corso...",
-    "searchPlaceholder": "Cerca per nome o tratta..."
+    "searchPlaceholder": "Cerca per nome o tratta...",
+    "backToGroups": "Torna ai gruppi",
+    "notFound": "Gruppo non trovato",
+    "searchRides": "Cerca passaggi",
+    "offerRide": "Offri un passaggio",
+    "joining": "Iscrizione…",
+    "joinCta": "Unisciti al gruppo",
+    "youAreMember": "Sei membro",
+    "membersCount": "{count, plural, =0 {Nessun membro} one {1 membro} other {# membri}}",
+    "noMembers": "Nessun membro, per ora. Puoi essere il primo."
   },
   "requests": {
     "title": "Chi cerca un passaggio",
@@ -984,7 +993,8 @@
     "yourLink": "Il tuo link personale",
     "inviteFriends": "Invita i tuoi amici",
     "share": "Condividi",
-    "summary": "{count, plural, =0 {Nessun amico iscritto} one {# amico iscritto} other {# amici iscritti}} · {points, plural, one {# punto} other {# punti}}"
+    "summary": "{count, plural, =0 {Nessun amico iscritto} one {# amico iscritto} other {# amici iscritti}} · {points, plural, one {# punto} other {# punti}}",
+    "linkPending": "Il tuo link sarà pronto tra poco."
   },
   "onboarding": {
     "flow": {
@@ -1382,7 +1392,8 @@
     "vehicle": "Veicolo",
     "activeRides": "Passaggi attivi",
     "free": "Gratis",
-    "noPublicActivity": "Nessuna attività pubblica ancora."
+    "noPublicActivity": "Nessuna attività pubblica ancora.",
+    "noReviewsYet": "Nessuna recensione"
   },
   "calendar": {
     "selectedDate": "Data selezionata",

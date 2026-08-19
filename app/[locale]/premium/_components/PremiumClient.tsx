@@ -246,7 +246,7 @@ export function PremiumClient() {
 
               <div className="mb-6">
                 <span className="text-4xl font-bold font-mono text-fg">
-                  {plan.price === 0 ? t("freeName") : `€${plan.price}`}
+                  {plan.price === 0 ? t("freeName") : `${plan.price} €`}
                 </span>
                 <span className="text-muted font-mono text-sm ml-1">
                   {plan.period}

@@ -163,12 +163,13 @@ export default function InvitaPage() {
           </h2>
           
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <div className="flex-1 bg-sand border border-line rounded-xl px-4 py-3 text-ink font-mono text-sm break-all">
-              {referralLink}
+            <div className="flex-1 break-all rounded-xl border border-line bg-sand px-4 py-3 font-mono text-sm text-ink">
+              {referralLink || <span className="font-sans text-muted">{t("linkPending")}</span>}
             </div>
             <Button
               onClick={copyLink}
-              className="bg-primary hover:bg-primary-hover text-white"
+              disabled={!referralLink}
+              className="bg-primary hover:bg-primary-hover text-white disabled:opacity-50"
             >
               {copied ? (
                 <><Check className="w-4 h-4 mr-2" /> {t("copied")}</>
@@ -182,21 +183,24 @@ export default function InvitaPage() {
           <div className="grid grid-cols-3 gap-3">
             <button
               onClick={shareWhatsApp}
-              className="flex items-center justify-center gap-2 rounded-xl bg-green-tint border border-line py-3 text-green hover:bg-green-tint transition-colors"
+              disabled={!referralLink}
+              className="flex items-center justify-center gap-2 rounded-xl bg-green-tint border border-line py-3 text-green transition-colors hover:bg-green-tint disabled:opacity-40"
             >
               <MessageCircle className="w-5 h-5" />
               <span className="hidden sm:inline">WhatsApp</span>
             </button>
             <button
               onClick={shareTelegram}
-              className="flex items-center justify-center gap-2 rounded-xl bg-sand-deep border border-line py-3 text-muted hover:bg-sand-deep transition-colors"
+              disabled={!referralLink}
+              className="flex items-center justify-center gap-2 rounded-xl bg-sand-deep border border-line py-3 text-muted transition-colors hover:bg-sand-deep disabled:opacity-40"
             >
               <Send className="w-5 h-5" />
               <span className="hidden sm:inline">Telegram</span>
             </button>
             <button
               onClick={shareFacebook}
-              className="flex items-center justify-center gap-2 rounded-xl bg-sand-deep border border-line py-3 text-muted hover:bg-sand-deep transition-colors"
+              disabled={!referralLink}
+              className="flex items-center justify-center gap-2 rounded-xl bg-sand-deep border border-line py-3 text-muted transition-colors hover:bg-sand-deep disabled:opacity-40"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>

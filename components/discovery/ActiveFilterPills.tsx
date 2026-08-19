@@ -86,7 +86,7 @@ function buildSearchFilterPills(
     })
   }
   if (props.maxPrice < 50) {
-    pills.push({ id: "maxPrice", label: `≤ €${props.maxPrice}`, onClear: () => props.setMaxPrice(50) })
+    pills.push({ id: "maxPrice", label: `≤ ${props.maxPrice} €`, onClear: () => props.setMaxPrice(50) })
   }
   if (props.minSeats != null) {
     pills.push({

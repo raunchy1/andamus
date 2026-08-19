@@ -1268,7 +1268,7 @@ export default function ProfilePage() {
                           </div>
                           <div className="shrink-0 text-right">
                             <p className="font-heading text-lg text-ink tabular-nums">
-                              {ride.price === 0 ? t("free") : `€${ride.price}`}
+                              {ride.price === 0 ? t("free") : `${ride.price} €`}
                             </p>
                             <p className="text-xs text-muted">
                               {isRideCompleted(ride.date) ? t("rideCompleted") : t("rideActive")}
@@ -1308,7 +1308,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="shrink-0 text-right">
                               <p className="font-heading text-lg text-ink tabular-nums">
-                                {booking.rides.price === 0 ? t("free") : `€${booking.rides.price}`}
+                                {booking.rides.price === 0 ? t("free") : `${booking.rides.price} €`}
                               </p>
                               {completed && <p className="text-xs text-muted">{t("rideCompleted")}</p>}
                             </div>
@@ -1370,7 +1370,7 @@ export default function ProfilePage() {
                               {template.from_city} — {template.to_city}
                             </h3>
                             <p className="mt-1 text-sm text-muted">
-                              {template.time.slice(0, 5)} · {t("seatsCount", { count: template.seats })} · {template.price === 0 ? t("free") : `€${template.price}`}
+                              {template.time.slice(0, 5)} · {t("seatsCount", { count: template.seats })} · {template.price === 0 ? t("free") : `${template.price} €`}
                             </p>
                             <p className="mt-1 text-xs text-muted">
                               {template.recurrence_days

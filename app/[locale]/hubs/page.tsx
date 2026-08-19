@@ -74,6 +74,11 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
 
   const supabase = await createClient();
 
+  // Rides that already departed keep status "active" in the table, so both the
+  // list and the badge filter on the date — otherwise a hub showed "1 attive"
+  // above an empty "nessuna partenza in programma".
+  const today = new Date().toISOString().slice(0, 10);
+
   const hubsWithRides = await Promise.all(
     HUBS.map(async (hub) => {
       const cityFilter = `from_city.ilike.%${hub.city}%,to_city.ilike.%${hub.city}%`;
@@ -88,6 +93,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
             "id, from_city, to_city, date, time, price, seats_available, profiles:driver_id (name, avatar_url)"
           )
           .eq("status", "active")
+          .gte("date", today)
           .or(cityFilter)
           .order("date", { ascending: true })
           .order("time", { ascending: true })
@@ -96,6 +102,7 @@ export default async function HubsPage({ params }: { params: Promise<{ locale: s
           .from("rides")
           .select("id", { count: "exact", head: true })
           .eq("status", "active")
+          .gte("date", today)
           .or(cityFilter),
       ]);
 
