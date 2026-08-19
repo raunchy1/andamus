@@ -92,7 +92,7 @@
   },
   "search": {
     "title": "Cerca un passaggio",
-    "seats": "posti",
+    "seats": "{count} posti",
     "today": "Oggi",
     "saveAlert": "Salva avviso",
     "alertDescription": "Ricevi una notifica quando un conducente pubblica un passaggio su questa tratta.",
@@ -142,7 +142,8 @@
     "priceAny": "Qualsiasi",
     "tomorrow": "Domani",
     "retry": "Riprova",
-    "highDemand": "Molto richiesta"
+    "highDemand": "Molto richiesta",
+    "resultsFound": "{count, plural, =0 {nessun passaggio} one {1 passaggio} other {# passaggi}}"
   },
   "offer": {
     "errors": {
@@ -660,15 +661,15 @@
     "searchPlaceholder": "Cerca per nome o tratta..."
   },
   "requests": {
-    "title": "Persone che cercano un passaggio",
-    "subtitle": "Trova passeggeri per il tuo viaggio",
+    "title": "Chi cerca un passaggio",
+    "subtitle": "Rispondi a una richiesta e proponi il tuo viaggio.",
     "backToSearch": "Torna alla ricerca",
     "from": "Da",
     "to": "A",
     "date": "Data",
     "any": "Qualsiasi",
-    "noRequests": "Nessuna richiesta trovata",
-    "tryDifferentFilters": "Prova a modificare i filtri di ricerca.",
+    "noRequests": "Ancora nessuna richiesta",
+    "tryDifferentFilters": "Quando qualcuno cerca un passaggio su questa tratta lo vedi qui.",
     "flexibleTime": "Orario flessibile",
     "exactTime": "Orario preciso",
     "oneSeat": "1 posto",
@@ -692,8 +693,9 @@
     "publishRide": "Pubblica un passaggio",
     "seatsNeeded": "Posti richiesti",
     "yourRequest": "Questa è la tua richiesta",
-    "createRequest": "Crea richiesta",
-    "haveRideBody": "Pubblica una corsa su questa tratta: il passeggero riceve una notifica."
+    "createRequest": "Chiedi",
+    "haveRideBody": "Pubblica una corsa su questa tratta: il passeggero riceve una notifica.",
+    "filters": "Filtri"
   },
   "premium": {
     "choosePlan": "Scegli il tuo piano",

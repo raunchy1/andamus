@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 import Image from "next/image";
 import { Calendar, MapPin, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -46,16 +47,11 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card px-4 py-8">
-        <div className="mx-auto max-w-5xl">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
-            <ArrowLeft className="h-4 w-4" />
-            {tc("back")}
-          </Link>
-          <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
-          <p className="mt-2 text-muted-foreground">{t("subtitle")}</p>
-        </div>
-      </div>
+      <PageHeader
+        back={{ href: "/", label: tc("back") }}
+        title={t("title")}
+        subtitle={t("subtitle")}
+      />
 
       <div className="px-4 py-8">
         <div className="mx-auto max-w-5xl">
@@ -64,9 +60,11 @@ export default function EventsPage() {
               <Loader2 className="mx-auto h-10 w-10 animate-spin text-accent" />
             </div>
           ) : events.length === 0 ? (
-            <div className="py-20 text-center">
-              <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50" />
-              <p className="mt-4 text-lg font-medium text-foreground">{t("noEvents")}</p>
+            <div className="flex min-h-[46vh] flex-col items-center justify-center gap-4 py-10 text-center">
+              <div className="flex size-14 items-center justify-center rounded-full bg-surface-2">
+                <Calendar className="size-6 text-muted" strokeWidth={1.5} />
+              </div>
+              <p className="text-lg font-semibold tracking-[-0.01em] text-ink">{t("noEvents")}</p>
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

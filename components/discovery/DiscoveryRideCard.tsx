@@ -40,7 +40,8 @@ function DiscoveryRideCard({
   const profile = ride.profiles
   const driverName = profile?.name?.trim() || "Conducente"
   const departureTime = ride.time?.slice(0, 5) || "—"
-  const priceLabel = ride.price === 0 ? freeLabel : `€${ride.price}`
+  const isFree = ride.price === 0
+  const priceLabel = isFree ? freeLabel : `${ride.price} €`
 
   const rating =
     profile?.rating != null && Number(profile.rating) > 0
@@ -68,6 +69,7 @@ function DiscoveryRideCard({
       price={priceLabel}
       origin={{ name: ride.from_city, time: departureTime }}
       destination={{ name: ride.to_city }}
+      free={isFree}
       routeMeta={routeMeta}
       driverName={driverName}
       driverAvatar={profile?.avatar_url ?? null}

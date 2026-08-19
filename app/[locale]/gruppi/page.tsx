@@ -7,6 +7,7 @@ import { Users, Plus, MapPin, Search, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { LocationCombobox } from "@/components/LocationCombobox";
 import { Avatar } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -191,29 +192,21 @@ export default function GruppiPage() {
   return (
     <div className="min-h-screen bg-bg pb-28">
 
-      {/* Header */}
-      <div className="px-5 pb-4 pt-6">
-        <button
-          onClick={() => window.history.back()}
-          className="mb-4 flex items-center gap-1 text-sm text-muted hover:text-fg transition-colors"
-        >
-          <ArrowLeft size={14} strokeWidth={1.5} />
-          Indietro
-        </button>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-fg heading-editorial">{t("title")}</h1>
-            <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
-          </div>
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        action={
           <button
+            type="button"
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-accent-fg transition-opacity hover:opacity-90"
+            className="inline-flex h-[38px] items-center gap-1.5 rounded-xl bg-accent px-3.5 text-sm font-semibold text-accent-fg transition-opacity hover:opacity-90"
           >
-            <Plus size={18} strokeWidth={1.5} />
-            {t("createGroup")}
+            <Plus size={15} strokeWidth={1.9} />
+            <span className="whitespace-nowrap">{t("createGroup")}</span>
           </button>
-        </div>
-      </div>
+        }
+        className="mb-4"
+      />
 
       {/* Search */}
       <div className="mb-4 px-5">
@@ -241,13 +234,18 @@ export default function GruppiPage() {
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-surface border border-line" />
           ))
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Users size={48} strokeWidth={1.5} className="mb-3 text-muted opacity-40" />
-            <p className="text-lg font-medium text-dim">{t("noGroups")}</p>
-            <p className="mt-1 text-sm text-muted">{t("createFirst")}</p>
+          <div className="flex min-h-[46vh] flex-col items-center justify-center gap-4 py-10 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-surface-2">
+              <Users size={24} strokeWidth={1.5} className="text-muted" />
+            </div>
+            <div className="flex max-w-sm flex-col gap-1.5">
+              <p className="text-lg font-semibold tracking-[-0.01em] text-ink">{t("noGroups")}</p>
+              <p className="text-sm leading-relaxed text-muted">{t("createFirst")}</p>
+            </div>
             <button
+              type="button"
               onClick={() => setShowCreateModal(true)}
-              className="mt-5 rounded-xl bg-accent px-6 py-3 font-semibold text-accent-fg"
+              className="inline-flex h-[46px] items-center rounded-xl border border-line bg-surface px-5 text-[15px] font-semibold text-ink transition-colors hover:border-line-strong"
             >
               {t("createGroup")}
             </button>

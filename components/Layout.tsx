@@ -1,9 +1,21 @@
 "use client";
 
 import { useDeviceType } from "./view-mode";
-import { BottomNav } from "./BottomNav";
+import { BottomNav, isBottomNavVisible } from "./BottomNav";
 import { Footer } from "./footer";
 import { usePathname } from "next/navigation";
+import { useLocale } from "next-intl";
+
+/** Routes where the long marketing footer belongs. Everywhere else is an app
+ *  screen, and on the phone that footer only added two screens of dead scroll
+ *  below the tab bar. */
+const FOOTER_ROUTES = ["/", "/termini-e-condizioni", "/privacy-policy", "/lansare", "/join"];
+
+function wantsFooter(pathname: string | null, locale: string) {
+  if (!pathname) return false;
+  const path = pathname.replace(`/${locale}`, "") || "/";
+  return FOOTER_ROUTES.includes(path);
+}
 
 /** Active conversation thread — not the inbox list. */
 function isChatThread(pathname: string | null) {
@@ -27,6 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function MobileLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const locale = useLocale();
   const isOnboarding = pathname?.includes("/onboarding") ?? false;
   const chatThread = isChatThread(pathname);
 
@@ -53,12 +66,21 @@ function MobileLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-bg overflow-x-hidden">
       <div className="relative w-full min-h-screen overflow-x-hidden">
-        <main className="flex-1 w-full pt-16 min-h-[100dvh] overflow-x-hidden">
+        <main
+          className="flex-1 w-full pt-16 min-h-[100dvh] overflow-x-hidden"
+          style={
+            isBottomNavVisible(pathname, locale) && !wantsFooter(pathname, locale)
+              ? { paddingBottom: "calc(84px + env(safe-area-inset-bottom, 0px))" }
+              : undefined
+          }
+        >
           {children}
         </main>
-        <div className="pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
-          <Footer />
-        </div>
+        {wantsFooter(pathname, locale) && (
+          <div className="pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
+            <Footer />
+          </div>
+        )}
         <BottomNav />
       </div>
     </div>

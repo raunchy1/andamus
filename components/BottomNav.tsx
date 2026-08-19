@@ -25,6 +25,17 @@ const HIDE_ON = [
   "/notifiche",
 ];
 
+/** Whether the tab bar shows for a path — the layout needs it to reserve room. */
+export function isBottomNavVisible(pathname: string | null, locale: string) {
+  if (!pathname) return false;
+  const localePath = pathname.replace(`/${locale}`, "") || "/";
+  const hidden =
+    HIDE_ON.some((p) => localePath.startsWith(p)) ||
+    /* thread chat: /chat/[bookingId] — nu lista /chat */
+    (localePath.startsWith("/chat/") && localePath.length > "/chat/".length);
+  return !hidden;
+}
+
 export function BottomNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -32,11 +43,7 @@ export function BottomNav() {
 
   const localePath = pathname.replace(`/${locale}`, "") || "/";
 
-  const hidden = HIDE_ON.some((p) => localePath.startsWith(p)) ||
-    /* thread chat: /chat/[bookingId] — nu lista /chat */
-    (localePath.startsWith("/chat/") && localePath.length > "/chat/".length);
-
-  if (hidden) return null;
+  if (!isBottomNavVisible(pathname, locale)) return null;
 
   const activeIndex = navItems.findIndex((item) =>
     item.href === "/"

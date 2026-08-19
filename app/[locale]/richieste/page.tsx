@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/premium/reveal";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
+import { PageHeader } from "@/components/PageHeader";
 import { CreateRequestModal } from "@/components/CreateRequestModal";
 import { LocationCombobox } from "@/components/LocationCombobox";
 
@@ -97,30 +98,28 @@ function RequestsContent() {
 
   return (
     <div className="min-h-screen bg-bg text-fg">
-      <header className="border-b border-line px-4 py-8 lg:py-10">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
-            <Link
-              href={`/${locale}/cerca`}
-              className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
-            >
-              <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden />
-              {t("backToSearch")}
-            </Link>
-            <h1 className="mt-2 font-heading text-[26px] leading-tight text-ink sm:text-3xl">
-              {t("title")}
-            </h1>
-            <p className="mt-1 text-sm leading-relaxed text-muted">{t("subtitle")}</p>
-          </Reveal>
-        </div>
-      </header>
+      <PageHeader
+        back={{ href: `/${locale}/cerca`, label: t("backToSearch") }}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        action={
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex h-[38px] items-center gap-1.5 rounded-xl bg-accent px-3.5 text-sm font-semibold text-accent-fg transition-opacity hover:opacity-90"
+          >
+            <PlusCircle className="size-[15px]" strokeWidth={1.8} aria-hidden />
+            <span className="whitespace-nowrap">{t("createRequest")}</span>
+          </button>
+        }
+      />
 
       {/* Search bar */}
       <div className="border-b border-line bg-surface/95 backdrop-blur-xl px-4 py-5 sticky top-0 z-30">
         <Reveal>
         <div className="mx-auto max-w-5xl">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex-1 min-w-[200px]">
+          <div className="grid grid-cols-2 items-end gap-3 lg:flex lg:flex-wrap">
+            <div className="lg:flex-1 lg:min-w-[200px]">
               <label className="mb-1.5 block text-xs font-medium text-muted">{t("from")}</label>
               <LocationCombobox
                 value={origin}
@@ -129,7 +128,7 @@ function RequestsContent() {
                 buttonClassName="h-12 border-line bg-surface text-sm"
               />
             </div>
-            <div className="flex-1 min-w-[200px]">
+            <div className="lg:flex-1 lg:min-w-[200px]">
               <label className="mb-1.5 block text-xs font-medium text-muted">{t("to")}</label>
               <LocationCombobox
                 value={destination}
@@ -138,7 +137,7 @@ function RequestsContent() {
                 buttonClassName="h-12 border-line bg-surface text-sm"
               />
             </div>
-            <div className="min-w-[140px]">
+            <div className="lg:min-w-[140px]">
               <label className="mb-1.5 block text-xs font-medium text-muted">{t("date")}</label>
               <PremiumDatePicker
                 date={date}
@@ -151,17 +150,10 @@ function RequestsContent() {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="h-12 rounded-xl border border-line bg-surface px-4 text-muted transition-colors hover:bg-sand hover:text-ink"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-medium text-muted transition-colors hover:border-line-strong hover:text-ink lg:w-auto"
             >
-              <SlidersHorizontal className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex h-12 items-center gap-2 rounded-xl bg-green px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            >
-              <PlusCircle className="h-4 w-4" strokeWidth={1.5} aria-hidden />
-              {t("createRequest")}
+              <SlidersHorizontal className="size-[18px]" strokeWidth={1.6} />
+              <span className="lg:hidden">{t("filters")}</span>
             </button>
           </div>
         </div>
@@ -177,10 +169,21 @@ function RequestsContent() {
             </div>
           ) : requests.length === 0 ? (
             <Reveal>
-            <div className="rounded-2xl border border-line bg-surface px-5 py-12 text-center">
-              <User className="mx-auto h-6 w-6 text-muted" strokeWidth={1.5} aria-hidden />
-              <p className="mt-4 font-heading text-xl text-ink">{t("noRequests")}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{t("tryDifferentFilters")}</p>
+            <div className="flex min-h-[46vh] flex-col items-center justify-center gap-4 px-6 py-10 text-center">
+              <div className="flex size-14 items-center justify-center rounded-full bg-surface-2">
+                <User className="size-6 text-muted" strokeWidth={1.5} aria-hidden />
+              </div>
+              <div className="flex max-w-sm flex-col gap-1.5">
+                <p className="text-lg font-semibold tracking-[-0.01em] text-ink">{t("noRequests")}</p>
+                <p className="text-sm leading-relaxed text-muted">{t("tryDifferentFilters")}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex h-[46px] items-center rounded-xl border border-line bg-surface px-5 text-[15px] font-semibold text-ink transition-colors hover:border-line-strong"
+              >
+                {t("createRequest")}
+              </button>
             </div>
             </Reveal>
           ) : (

@@ -1,9 +1,10 @@
 "use client"
 
-import { RefreshCw, Bell, SlidersHorizontal } from "lucide-react"
+import { ArrowRight, RefreshCw, Bell, SlidersHorizontal } from "lucide-react"
 import { useTranslations, useLocale } from "next-intl"
 
 import { LocationCombobox } from "@/components/LocationCombobox"
+import { PageHeader } from "@/components/PageHeader"
 import { Button } from "@/components/ui/button"
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton"
 import { AlertModal } from "@/components/cerca/AlertModal"
@@ -84,40 +85,41 @@ export function SearchMobileView(props: SearchViewProps) {
   const routeTitle = [origin, destination].filter(Boolean).join(" → ") || t("title")
   const subtitleParts = [
     dateFrom ? formatDate?.(dateFrom) : null,
-    minSeats > 1 ? `${minSeats} posti` : null,
-    rides.length > 0 ? `${rides.length} passaggi` : null,
+    minSeats > 1 ? t("seats", { count: minSeats }) : null,
   ].filter(Boolean)
 
   return (
     <div style={{ background: "var(--sand)", minHeight: "100dvh" }} className="overflow-x-hidden">
       {/* ── Sticky header ──────────────────────────────── */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 30,
-          background: "var(--sand)",
-          borderBottom: "1px solid var(--line)",
-          padding: "60px 22px 14px",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: 17,
-            fontWeight: 600,
-            color: "var(--ink)",
-            margin: "0 0 2px",
-            letterSpacing: "-0.3px",
-          }}
-        >
-          {routeTitle}
-        </h1>
-        {subtitleParts.length > 0 && (
-          <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
-            {subtitleParts.join(" · ")}
-          </p>
-        )}
-      </header>
+      <PageHeader
+        sticky
+        eyebrow={rides.length > 0 ? t("resultsFound", { count: rides.length }) : undefined}
+        title={
+          origin || destination ? (
+            <span className="flex items-center gap-2">
+              <span className="truncate">{origin || t("fromLabel")}</span>
+              <ArrowRight className="size-[15px] shrink-0 text-faint" strokeWidth={1.8} />
+              <span className="truncate">{destination || t("toLabel")}</span>
+            </span>
+          ) : (
+            t("title")
+          )
+        }
+        subtitle={subtitleParts.length > 0 ? subtitleParts.join(" · ") : undefined}
+        action={
+          <button
+            type="button"
+            onClick={handleRefresh}
+            aria-label={t("loading")}
+            className="flex size-[38px] items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:border-line-strong"
+          >
+            <RefreshCw
+              className={`size-[17px] ${isRefreshing ? "animate-spin" : ""}`}
+              strokeWidth={1.6}
+            />
+          </button>
+        }
+      />
 
       {/* ── Chip filter row ────────────────────────────── */}
       <div

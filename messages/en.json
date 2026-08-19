@@ -92,7 +92,7 @@
   },
   "search": {
     "title": "Find a ride",
-    "seats": "seats",
+    "seats": "{count} seats",
     "today": "Today",
     "saveAlert": "Save alert",
     "alertDescription": "Get notified when a driver publishes a ride on this route.",
@@ -142,7 +142,8 @@
     "priceAny": "Any",
     "tomorrow": "Tomorrow",
     "retry": "Try again",
-    "highDemand": "In demand"
+    "highDemand": "In demand",
+    "resultsFound": "{count, plural, =0 {no rides} one {1 ride} other {# rides}}"
   },
   "offer": {
     "errors": {
@@ -660,15 +661,15 @@
     "searchPlaceholder": "Search by name or route..."
   },
   "requests": {
-    "title": "People looking for a ride",
-    "subtitle": "Find passengers for your trip",
+    "title": "Who is looking for a ride",
+    "subtitle": "Answer a request and offer your trip.",
     "backToSearch": "Back to search",
     "from": "From",
     "to": "To",
     "date": "Date",
     "any": "Any",
-    "noRequests": "No requests found",
-    "tryDifferentFilters": "Try changing your search filters.",
+    "noRequests": "No requests yet",
+    "tryDifferentFilters": "When someone looks for a ride on this route, it shows up here.",
     "flexibleTime": "Flexible time",
     "exactTime": "Exact time",
     "oneSeat": "1 seat",
@@ -692,8 +693,9 @@
     "publishRide": "Publish a ride",
     "seatsNeeded": "Seats needed",
     "yourRequest": "This is your request",
-    "createRequest": "Create request",
-    "haveRideBody": "Publish a ride on this route and the passenger gets a notification."
+    "createRequest": "Ask",
+    "haveRideBody": "Publish a ride on this route and the passenger gets a notification.",
+    "filters": "Filters"
   },
   "premium": {
     "choosePlan": "Choose your plan",
