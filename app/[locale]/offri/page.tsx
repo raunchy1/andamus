@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useLocale, useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import { ShareRide } from "@/components/ShareRide";
+import { RoutePhotos } from "@/components/LocationPhoto";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
 import dynamic from "next/dynamic";
 
@@ -480,6 +481,14 @@ export default function OfferPage() {
               </p>
             </div>
           </div>
+
+          {publishedRideData && (
+            <RoutePhotos
+              from={publishedRideData.from_city}
+              to={publishedRideData.to_city}
+              credit={false}
+            />
+          )}
 
           {publishedRideData && (
             <div className="flex flex-col gap-3.5 rounded-2xl border border-line bg-surface p-4">

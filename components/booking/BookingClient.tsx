@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Check, Minus, Plus, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+import { RoutePhotos } from "@/components/LocationPhoto";
 
 import { Analytics } from "@/lib/analytics";
 
@@ -133,6 +134,8 @@ export function BookingClient({
       </header>
 
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <RoutePhotos from={fromCity} to={toCity} credit={false} />
+
         {/* ── Card posti ──────────────────────────────── */}
         <section
           style={{

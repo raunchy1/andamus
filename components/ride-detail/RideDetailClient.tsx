@@ -36,6 +36,7 @@ import { Analytics } from "@/lib/analytics";
 import { ReportUser } from "@/components/ReportUser";
 import { SARDINIA_CITIES } from "@/lib/sardinia-cities";
 import { RouteLine } from "@/components/ui/route-line";
+import { RoutePhotos } from "@/components/LocationPhoto";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -222,6 +223,14 @@ function RideDetailRouteHero({
 
   return (
     <motion.section {...fadeUp} className="px-4 py-8 md:px-0 md:py-10">
+      <RoutePhotos
+        from={ride.from_city}
+        to={ride.to_city}
+        fromLabel={t("from")}
+        toLabel={t("to")}
+        className="mb-5"
+      />
+
       <div className="mb-4 flex items-center gap-2">
         <span className="inline-flex items-center rounded-lg bg-accent-dim px-2.5 py-1 text-xs font-medium text-accent">
           {getRideStatusLabel(rideStatus)}

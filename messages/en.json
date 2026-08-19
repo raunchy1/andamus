@@ -315,7 +315,9 @@
     "noReviewsYet": "no reviews",
     "publishedOn": "Published on {date}",
     "noReviewsHint": "After the trip you can leave the first one.",
-    "driver": "Who is driving"
+    "driver": "Who is driving",
+    "from": "From",
+    "to": "To"
   },
   "profile": {
     "cancel": "Cancel",

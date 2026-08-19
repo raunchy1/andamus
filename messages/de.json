@@ -315,7 +315,9 @@
     "noReviewsYet": "keine Bewertungen",
     "publishedOn": "Veröffentlicht am {date}",
     "noReviewsHint": "Nach der Fahrt kannst du die erste schreiben.",
-    "driver": "Wer fährt"
+    "driver": "Wer fährt",
+    "from": "Start",
+    "to": "Ziel"
   },
   "profile": {
     "cancel": "Abbrechen",

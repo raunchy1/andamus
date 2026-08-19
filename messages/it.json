@@ -315,7 +315,9 @@
     "noReviewsYet": "nessuna recensione",
     "publishedOn": "Pubblicato il {date}",
     "noReviewsHint": "Dopo il viaggio potrai lasciare la prima.",
-    "driver": "Chi guida"
+    "driver": "Chi guida",
+    "from": "Partenza",
+    "to": "Arrivo"
   },
   "profile": {
     "cancel": "Annulla",
