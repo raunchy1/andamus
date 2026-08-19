@@ -9,6 +9,7 @@ import {
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Location, getAllLocations } from "@/lib/server/actions/locations";
+import { useVisualViewport } from "@/lib/hooks/useVisualViewport";
 import { Analytics } from "@/lib/analytics";
 
 interface LocationComboboxProps {
@@ -48,11 +49,10 @@ export function LocationCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [allLocations, setAllLocations] = useState<Location[]>([]);
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
   // The sheet is sized against the *visual* viewport, not the layout viewport:
   // on Android the on-screen keyboard overlays the layout viewport, so 100dvh
   // still runs underneath the keys and hides the bottom of the list.
-  const [viewport, setViewport] = useState<{ height: number; offsetTop: number } | null>(null);
+  const { height: viewportHeight, offsetTop, keyboardOpen } = useVisualViewport(isOpen);
   const [recentLocations, setRecentLocations] = useState<Location[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -68,31 +68,6 @@ export function LocationCombobox({
       if (stored) setRecentLocations(JSON.parse(stored));
     } catch (e) {}
   }, []);
-
-  // Detect mobile keyboard via visualViewport
-  useEffect(() => {
-    if (!isOpen) {
-      requestAnimationFrame(() => setKeyboardOpen(false));
-      return;
-    }
-    const handleResize = () => {
-      const vv = window.visualViewport;
-      if (!vv) {
-        setKeyboardOpen(false);
-        setViewport(null);
-        return;
-      }
-      setKeyboardOpen(vv.height < window.innerHeight - 150);
-      setViewport({ height: vv.height, offsetTop: vv.offsetTop });
-    };
-    handleResize();
-    window.visualViewport?.addEventListener("resize", handleResize);
-    window.visualViewport?.addEventListener("scroll", handleResize);
-    return () => {
-      window.visualViewport?.removeEventListener("resize", handleResize);
-      window.visualViewport?.removeEventListener("scroll", handleResize);
-    };
-  }, [isOpen]);
 
   const filtered = useMemo(() => {
     const query = search.toLowerCase().trim();
@@ -185,8 +160,8 @@ export function LocationCombobox({
         keyboardOpen ? "justify-start" : "justify-end"
       )}
       style={
-        viewport
-          ? { top: viewport.offsetTop, height: viewport.height }
+        viewportHeight !== null
+          ? { top: offsetTop, height: viewportHeight }
           : { top: 0, bottom: 0 }
       }
       onClick={handleClose}
@@ -195,16 +170,16 @@ export function LocationCombobox({
         className={cn(
           "w-full sm:w-[30rem] sm:mx-auto bg-surface flex flex-col shadow-2xl transition-all duration-300 border border-line",
           keyboardOpen
-            ? "h-full max-h-full sm:h-auto sm:max-h-[85vh] sm:rounded-[var(--radius)]"
+            ? "h-full max-h-full rounded-t-[var(--radius)] sm:h-auto sm:max-h-[85vh] sm:rounded-[var(--radius)]"
             : "max-h-[85%] sm:max-h-[85vh] rounded-t-[var(--radius)] sm:rounded-[var(--radius)]"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-center pt-3 pb-1 sm:hidden">
+        <div className={cn("flex justify-center sm:hidden", keyboardOpen ? "pt-2" : "pt-3 pb-1")}>
           <div className="w-10 h-1 bg-line rounded-full" />
         </div>
 
-        <div className="flex items-center justify-between px-5 py-3 flex-shrink-0">
+        <div className={cn("flex items-center justify-between px-5 flex-shrink-0", keyboardOpen ? "py-2" : "py-3")}>
           <span className="font-semibold text-fg text-lg lowercase">
             {placeholder || label || t("selectCity")}
           </span>
@@ -240,9 +215,12 @@ export function LocationCombobox({
           </div>
         </div>
 
-        <div className="overflow-y-auto pb-8" style={{ flex: 1, minHeight: 0, overscrollBehavior: "contain" }}>
+        <div
+          className={cn("overflow-y-auto", keyboardOpen ? "pb-2" : "pb-8")}
+          style={{ flex: 1, minHeight: 0, overscrollBehavior: "contain" }}
+        >
           {search === "" && recentLocations.length > 0 && (
-            <div className="px-5 mb-6">
+            <div className={cn("px-5", keyboardOpen ? "mb-4" : "mb-6")}>
               <div className="flex items-center gap-2 mb-3">
                 <History size={14} strokeWidth={1.5} className="text-muted" />
                 <h4 className="text-eyebrow">recenti</h4>

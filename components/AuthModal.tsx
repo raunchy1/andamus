@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useVisualViewport } from "@/lib/hooks/useVisualViewport";
 import { X, Mail, Lock, User, Eye, EyeOff, Loader2, Car } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  // Size the modal against the visual viewport so the on-screen keyboard never
+  // covers the form fields on mobile.
+  const { height: viewportHeight, offsetTop, keyboardOpen } = useVisualViewport(isOpen);
 
   // Sync mode with defaultTab when the modal is re-opened
   useEffect(() => {
@@ -159,9 +163,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
   const modal = (
     <div
-      className={`fixed inset-0 z-modal flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-200 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`fixed left-0 right-0 z-modal flex justify-center p-0 sm:p-4 transition-opacity duration-200 ${
+        keyboardOpen ? "items-start" : "items-end sm:items-center"
+      } ${isVisible ? "opacity-100" : "opacity-0"}`}
+      style={
+        viewportHeight !== null
+          ? { top: offsetTop, height: viewportHeight }
+          : { top: 0, bottom: 0 }
+      }
       onClick={handleClose}
     >
       {/* Backdrop blur */}
@@ -172,7 +181,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         className={`w-full sm:max-w-md bg-surface rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden transition-all duration-200 ${
           isVisible ? "translate-y-0 sm:scale-100" : "translate-y-8 sm:scale-95"
         }`}
-        style={{ maxHeight: "92vh", overflowY: "auto" }}
+        style={{ maxHeight: "92%", overflowY: "auto", overscrollBehavior: "contain" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Progress Bar (if loading) */}
