@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 import { ChatList, type ChatConversation } from "@/components/chat/ChatList";
+import { PageHeader } from "@/components/PageHeader";
 
 export function ChatInbox() {
   const t = useTranslations("chat");
@@ -101,10 +102,7 @@ export function ChatInbox() {
 
   return (
     <div className="mx-auto w-full max-w-2xl bg-bg">
-      <header className="border-b border-line px-4 py-6 sm:px-6">
-        <p className="text-eyebrow">{t("inboxEyebrow")}</p>
-        <h1 className="heading-editorial text-2xl text-fg">{t("inboxTitle")}</h1>
-      </header>
+      <PageHeader eyebrow={t("inboxEyebrow")} title={t("inboxTitle")} />
       <ChatList conversations={conversations} />
     </div>
   );

@@ -49,7 +49,7 @@ export function ChatList({ conversations, className }: ChatListProps) {
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center px-6 py-16 text-center",
+          "flex min-h-[52vh] flex-col items-center justify-center px-6 py-10 text-center",
           className
         )}
       >

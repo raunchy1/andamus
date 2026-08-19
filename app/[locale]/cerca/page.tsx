@@ -20,7 +20,6 @@ import { Analytics } from "@/lib/analytics";
 import { trackSearchInHistory } from "@/lib/commute-suggestions";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RideCardSkeleton } from "@/components/cerca/RideCardSkeleton";
-import { PremiumRideCard } from "@/components/cerca/PremiumRideCard";
 import { AlertModal } from "@/components/cerca/AlertModal";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { CreateRequestModal } from "@/components/CreateRequestModal";

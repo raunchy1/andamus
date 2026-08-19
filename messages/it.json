@@ -310,7 +310,12 @@
     "driverPaymentsNotSetup": "Il conducente non ha ancora attivato i pagamenti",
     "noSeatsAvailable": "Non ci sono posti liberi",
     "rideCompleted": "Passaggio concluso",
-    "rideUnavailable": "Passaggio non disponibile"
+    "rideUnavailable": "Passaggio non disponibile",
+    "memberSince": "Su Andamus dal {year}",
+    "noReviewsYet": "nessuna recensione",
+    "publishedOn": "Pubblicato il {date}",
+    "noReviewsHint": "Dopo il viaggio potrai lasciare la prima.",
+    "driver": "Chi guida"
   },
   "profile": {
     "cancel": "Annulla",

@@ -310,7 +310,12 @@
     "driverPaymentsNotSetup": "The driver has not set up payments",
     "noSeatsAvailable": "No seats left",
     "rideCompleted": "Ride finished",
-    "rideUnavailable": "Ride unavailable"
+    "rideUnavailable": "Ride unavailable",
+    "memberSince": "On Andamus since {year}",
+    "noReviewsYet": "no reviews",
+    "publishedOn": "Published on {date}",
+    "noReviewsHint": "After the trip you can leave the first one.",
+    "driver": "Who is driving"
   },
   "profile": {
     "cancel": "Cancel",

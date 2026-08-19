@@ -93,7 +93,7 @@ export function BookingClient({
   };
 
   return (
-    <div style={{ background: "var(--sand)", minHeight: "100dvh" }} className="pb-32">
+    <div style={{ background: "var(--sand)", minHeight: "100dvh" }} className="pb-40">
       {/* ── Header ─────────────────────────────────────── */}
       <header style={{ padding: "60px 22px 20px" }}>
         <button

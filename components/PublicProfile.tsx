@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl";
 import { ReportUser } from "@/components/ReportUser";
 import { Analytics } from "@/lib/analytics";
 import { Haptic } from "@/lib/haptic";
-import { getDeterministicDriverMetrics } from "@/lib/reputation";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -78,8 +77,6 @@ export function PublicProfileView({
 }: PublicProfileViewProps) {
   const t = useTranslations("publicProfile");
   const [copied, setCopied] = useState(false);
-  const metrics = getDeterministicDriverMetrics(profile.id, profile.rating);
-  const speaksSardo = metrics.languages.some((l) => l.toLowerCase().includes("sardo"));
   const verified =
     profile.driver_verified ||
     profile.rating >= 4.5 ||
@@ -171,20 +168,11 @@ export function PublicProfileView({
                 </span>
               </div>
 
-              {speaksSardo && (
-                <span className="mt-3 inline-flex rounded-full border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted">
-                  Parla sardo
-                </span>
-              )}
-
-              <div className="mt-4 space-y-1 font-mono text-xs text-dim">
+              <div className="mt-4 flex flex-col gap-1 text-[13px] text-muted">
                 <p>
                   {profile.rides_count} {t("activeRides").toLowerCase()}
                 </p>
-                <p>
-                  {t("memberSince", { age: profile.accountAge })} · membro dal {memberYear}
-                </p>
-                <p>{metrics.responseTimeText}</p>
+                <p>{t("memberSince", { age: profile.accountAge })}</p>
               </div>
             </div>
           </div>

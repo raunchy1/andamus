@@ -19,13 +19,13 @@ import {
   GraduationCap,
   Music,
   Clock,
+  MapPin,
 } from "lucide-react";
 import { ShareRide } from "@/components/ShareRide";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
 import type { VehicleWithImages } from "@/lib/types/vehicle";
 import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
-import { getDeterministicDriverMetrics, getDeterministicActivity } from "@/lib/reputation";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notification-actions";
 import { useDeviceType } from "@/components/view-mode";
@@ -222,18 +222,16 @@ function RideDetailRouteHero({
 
   return (
     <motion.section {...fadeUp} className="px-4 py-8 md:px-0 md:py-10">
-      <div className="mb-4">
-        <span
-          className={`inline-flex items-center rounded-full border px-2.5 py-0.5 font-mono text-[11px] ${getRideStatusColor(rideStatus)}`}
-        >
+      <div className="mb-4 flex items-center gap-2">
+        <span className="inline-flex items-center rounded-lg bg-accent-dim px-2.5 py-1 text-xs font-medium text-accent">
           {getRideStatusLabel(rideStatus)}
         </span>
+        <span className="text-[13px] text-muted">{dateLabel}</span>
       </div>
 
       <RouteLine
         hero
         animate
-        dateLabel={dateLabel}
         origin={{ name: ride.from_city, time: departureTime }}
         destination={{ name: ride.to_city, time: arrivalTime || undefined }}
         stops={intermediateStops}
@@ -241,9 +239,13 @@ function RideDetailRouteHero({
       />
 
       {ride.meeting_point && (
-        <p className="mt-6 font-mono text-xs text-dim">
-          {t("pickupPoint")}: {ride.meeting_point}
-        </p>
+        <div className="mt-6 flex items-center gap-2.5 rounded-2xl border border-line bg-surface px-3.5 py-3">
+          <MapPin className="size-[17px] shrink-0 text-muted" strokeWidth={1.6} />
+          <div className="flex min-w-0 flex-col gap-px">
+            <span className="text-[11px] text-faint">{t("pickupPoint")}</span>
+            <span className="truncate text-sm font-medium text-ink">{ride.meeting_point}</span>
+          </div>
+        </div>
       )}
     </motion.section>
   );
@@ -255,11 +257,11 @@ function RideDetailPriceSeats({ ride }: { ride: Ride }) {
   return (
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="px-4 md:px-0">
       <div className="flex items-center justify-between py-4">
-        <span className="font-mono text-2xl font-medium tabular-nums text-fg">
-          {ride.price === 0 ? t("free") : `€${ride.price}`}
+        <span className="text-2xl font-bold tracking-[-0.02em] text-ink">
+          {ride.price === 0 ? t("free") : `${ride.price} €`}
         </span>
-        <div className="flex items-center gap-2 font-mono text-sm text-muted">
-          <Users className="size-4" strokeWidth={1.5} />
+        <div className="flex items-center gap-2 text-sm text-muted">
+          <Users className="size-4" strokeWidth={1.6} />
           <span className="tabular-nums">
             {ride.seats} {t("seatsAvailable").toLowerCase()}
           </span>
@@ -283,17 +285,25 @@ function RideDetailDriverTrust({
 }) {
   const router = useRouter();
   const t = useTranslations("ride");
-  const metrics = getDeterministicDriverMetrics(ride.driver_id, ride.profiles.rating);
-  const activity = getDeterministicActivity(ride.id);
   const verified =
     (ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5;
-  const speaksSardo = metrics.languages.some((l) => l.toLowerCase().includes("sardo"));
   const memberYear = ride.created_at
     ? new Date(ride.created_at).getFullYear()
     : new Date().getFullYear();
+  // Real publication time — the page used to print an invented one derived from
+  // a hash of the ride id.
+  const publishedLabel = ride.created_at
+    ? t("publishedOn", {
+        date: new Date(ride.created_at).toLocaleDateString(locale, {
+          day: "numeric",
+          month: "long",
+        }),
+      })
+    : null;
 
   return (
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }} className="px-4 md:px-0">
+        <h2 className="mb-3 text-[15px] font-semibold text-ink">{t("driver")}</h2>
         <Card
           tappable
           className="p-5"
@@ -320,19 +330,12 @@ function RideDetailDriverTrust({
                   </h3>
                   {verified && <Badge verified>Verificato</Badge>}
                 </div>
-                <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-sm">
-                  <span className="tabular-nums text-fg">
-                    {ride.profiles.rating.toFixed(1)}
-                  </span>
-                  <span className="text-muted">
-                    · {ride.profiles.review_count || 0} {t("reviews").toLowerCase()}
-                  </span>
-                </div>
-                {speaksSardo && (
-                  <span className="mt-2 inline-flex rounded-full border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted">
-                    Parla sardo
-                  </span>
-                )}
+                <p className="mt-1 text-[13px] text-muted">
+                  {t("memberSince", { year: memberYear })}
+                  {(ride.profiles.review_count || 0) > 0
+                    ? ` · ${ride.profiles.rating.toFixed(1)} (${ride.profiles.review_count})`
+                    : ` · ${t("noReviewsYet")}`}
+                </p>
               </div>
             </div>
 
@@ -362,16 +365,12 @@ function RideDetailDriverTrust({
             </div>
           </div>
 
-          <Separator className="my-4" />
-
-          <div className="space-y-1.5 font-mono text-xs text-dim">
-            <p>membro dal {memberYear}</p>
-            <p className="flex items-center gap-1.5">
-              <Clock className="size-3.5" strokeWidth={1.5} />
-              {metrics.responseTimeText}
-            </p>
-            <p>{activity.publishedText}</p>
-          </div>
+          {publishedLabel && (
+            <>
+              <Separator className="my-4" />
+              <p className="text-xs text-faint">{publishedLabel}</p>
+            </>
+          )}
         </Card>
     </motion.section>
   );
@@ -442,12 +441,12 @@ function RideDetailAmenities({ ride }: { ride: Ride }) {
       transition={{ ...fadeUp.transition, delay: 0.15 }}
       className="px-4 py-6 md:px-0"
     >
-      <p className="text-eyebrow mb-3">{t("preferences")}</p>
+      <h2 className="mb-3 text-[15px] font-semibold text-ink">{t("preferences")}</h2>
       <div className="flex flex-wrap gap-2">
         {items.map((item) => (
           <span
             key={item.label}
-            className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-surface-2 px-2.5 py-1.5 text-[13px] text-ink"
           >
             {item.icon}
             {item.label}
@@ -522,10 +521,13 @@ function RideDetailReviews({
       transition={{ ...fadeUp.transition, delay: 0.22 }}
       className="px-4 py-6 md:px-0"
     >
-      <p className="text-eyebrow mb-4">{t("reviews")}</p>
+      <h2 className="mb-3 text-[15px] font-semibold text-ink">{t("reviews")}</h2>
 
       {reviews.length === 0 ? (
-        <p className="font-mono text-sm text-muted">{t("noReviews")}</p>
+        <div className="flex flex-col gap-1 rounded-2xl border border-dashed border-line px-4 py-5">
+          <p className="text-sm font-medium text-ink">{t("noReviews")}</p>
+          <p className="text-[13px] leading-relaxed text-muted">{t("noReviewsHint")}</p>
+        </div>
       ) : (
         <div className="divide-y divide-line">
           {reviews.map((review) => (
@@ -626,13 +628,13 @@ function RideDetailStickyCTA({
   const router = useRouter();
   const t = useTranslations("ride");
 
-  const priceLabel = ride.price === 0 ? t("free") : `€${ride.price}`;
+  const priceLabel = ride.price === 0 ? t("free") : `${ride.price} €`;
 
   const action = (() => {
     if (isMyRide) {
       return (
         <Button
-          className="w-full md:w-auto"
+          className="w-full"
           variant="outline"
           onClick={() => router.push(`/${locale}/profilo`)}
         >
@@ -643,7 +645,7 @@ function RideDetailStickyCTA({
     if (existingBooking) {
       return (
         <Button
-          className="w-full md:w-auto"
+          className="w-full"
           onClick={() => router.push(`/${locale}/chat/${existingBooking.id}`)}
         >
           {t("openChat")}
@@ -652,14 +654,14 @@ function RideDetailStickyCTA({
     }
     if (!canBook) {
       return (
-        <Button className="w-full md:w-auto" disabled>
+        <Button className="w-full" disabled>
           {rideStatus === "completed" ? t("rideCompleted") : t("rideUnavailable")}
         </Button>
       );
     }
     return (
       <Button
-        className="w-full md:w-auto"
+        className="w-full"
         onClick={handleRequestRide}
         disabled={requesting}
       >
@@ -669,12 +671,14 @@ function RideDetailStickyCTA({
   })();
 
   const bar = (
-    <div className="flex items-center justify-between gap-4 px-4 py-3 md:px-5">
-      <div>
-        <p className="font-mono text-xs text-dim">{t("pricePerSeat")}</p>
-        <p className="font-mono text-xl tabular-nums text-fg">{priceLabel}</p>
+    <div className="flex items-center gap-3.5 px-4 py-3 md:px-5">
+      <div className="flex shrink-0 flex-col gap-px">
+        <span className="text-[11px] text-faint">{t("pricePerSeat")}</span>
+        <span className="text-xl font-bold tabular-nums tracking-[-0.02em] text-ink">
+          {priceLabel}
+        </span>
       </div>
-      {action}
+      <div className="min-w-0 flex-1 [&_button]:w-full">{action}</div>
     </div>
   );
 
@@ -688,7 +692,7 @@ function RideDetailStickyCTA({
 
   return (
     <div
-      className="fixed inset-x-0 bottom-16 z-40 border-t border-line bg-bg md:bottom-0"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       {bar}
