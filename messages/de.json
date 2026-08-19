@@ -1357,7 +1357,11 @@
     "legend5Plus": "5+ Mitfahrgelegenheiten",
     "legend2To4": "2-4 Mitfahrgelegenheiten",
     "legend1": "1 Mitfahrgelegenheit",
-    "confirm": "Bestätigen"
+    "confirm": "Bestätigen",
+    "ridesOnDay": "{count} Mitfahrgelegenheiten",
+    "close": "Schließen",
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat"
   },
   "cookies": {
     "title": "Cookies und Datenschutz",

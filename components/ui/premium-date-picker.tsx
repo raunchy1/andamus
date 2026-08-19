@@ -63,7 +63,8 @@ export function PremiumDatePicker({
 
   const handleSelect = (d: Date) => {
     onSelect(formatDate(d));
-    setOpen(false);
+    // On mobile the sheet keeps the day summary visible and closes on Conferma.
+    if (!isMobile) setOpen(false);
   };
 
   const handleClear = () => {
@@ -181,49 +182,47 @@ export function PremiumDatePicker({
                   : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius)]"
               )}
               style={{
-                width: isMobile ? "100%" : "auto",
-                maxWidth: isMobile ? "100%" : "520px",
+                width: isMobile ? "100%" : "380px",
+                maxWidth: isMobile ? "100%" : "420px",
               }}
             >
               <div
                 className={cn(
-                  "bg-elevated/95 backdrop-blur-2xl border border-line shadow-2xl",
-                  isMobile ? "pb-[env(safe-area-inset-bottom)]" : ""
+                  "bg-surface border border-line shadow-2xl flex flex-col",
+                  isMobile ? "max-h-[88dvh] pb-[env(safe-area-inset-bottom)]" : "max-h-[86vh]"
                 )}
               >
-                {/* Mobile drag handle */}
-                {isMobile && (
-                  <div className="flex justify-center pt-3 pb-1">
-                    <div className="w-10 h-1 rounded-full bg-line" />
-                  </div>
-                )}
-
-                {/* Header */}
-                <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                  <span className="text-sm font-semibold text-fg lowercase">{t("selectDate")}</span>
+                {/* Grabber / close */}
+                <div className="relative flex items-center justify-center pt-2.5 pb-1 flex-shrink-0">
+                  {isMobile && <div className="w-10 h-1 rounded-full bg-line" />}
                   <button
                     onClick={() => setOpen(false)}
-                    className="p-1.5 rounded-lg hover:bg-surface-2 transition-colors"
+                    className={cn(
+                      "absolute right-3 p-2 rounded-full text-muted hover:text-ink hover:bg-surface-2 transition-colors",
+                      isMobile ? "top-1.5" : "top-2"
+                    )}
                     type="button"
+                    aria-label={t("close")}
                   >
-                    <X className="w-4 h-4 text-muted" strokeWidth={1.5} />
+                    <X className="w-4 h-4" strokeWidth={1.6} />
                   </button>
                 </div>
 
                 {/* Calendar */}
-                <div className="px-2 pb-4">
+                <div className="flex-1 min-h-0 overflow-y-auto pt-2" style={{ overscrollBehavior: "contain" }}>
                   <PremiumCalendar
                     selected={selectedDate}
                     onSelect={handleSelect}
                     disabled={isDisabled}
                     availabilityData={availabilityData}
+                    label={resolvedLabel || resolvedPlaceholder}
                     onClose={() => setOpen(false)}
                   />
                 </div>
 
                 {/* Mobile sticky action */}
                 {isMobile && (
-                  <div className="px-4 pb-4 pt-2 border-t border-line">
+                  <div className="px-5 pt-3 pb-4 flex-shrink-0">
                     <Button
                       type="button"
                       variant="primary"

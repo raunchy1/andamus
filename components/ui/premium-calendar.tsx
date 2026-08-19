@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, CalendarDays, Sparkles, Sun, CloudSun, Sunrise } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -14,6 +14,8 @@ export interface PremiumCalendarProps {
   max?: Date;
   onClose?: () => void;
   availabilityData?: Record<string, number>; // "YYYY-MM-DD" -> count
+  /** Eyebrow above the month title — the field this calendar fills in. */
+  label?: string;
 }
 
 function getDaysInMonth(year: number, month: number): number {
@@ -42,8 +44,8 @@ export function PremiumCalendar({
   disabled,
   min,
   max,
-  onClose,
   availabilityData,
+  label,
 }: PremiumCalendarProps) {
   const locale = useLocale();
   const t = useTranslations("calendar");
@@ -53,19 +55,13 @@ export function PremiumCalendar({
     return Array.from({ length: 7 }, (_, i) => {
       // 2026-05-25 is a Monday
       const d = new Date(2026, 4, 25 + i);
-      const dayStr = formatter.format(d);
-      const clean = dayStr.replace(/\.$/, "");
-      return clean.charAt(0).toUpperCase() + clean.slice(1);
+      return formatter.format(d).replace(/\.$/, "");
     });
   }, [locale]);
 
   const MONTHS = React.useMemo(() => {
     const formatter = new Intl.DateTimeFormat(locale, { month: "long" });
-    return Array.from({ length: 12 }, (_, i) => {
-      const d = new Date(2026, i, 1);
-      const monthStr = formatter.format(d);
-      return monthStr.charAt(0).toUpperCase() + monthStr.slice(1);
-    });
+    return Array.from({ length: 12 }, (_, i) => formatter.format(new Date(2026, i, 1)));
   }, [locale]);
 
   const [currentMonth, setCurrentMonth] = React.useState(() => {
@@ -78,6 +74,11 @@ export function PremiumCalendar({
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
+  const isOutOfRange = React.useCallback(
+    (d: Date) => Boolean(disabled?.(d)) || (min ? d < min : false) || (max ? d > max : false),
+    [disabled, min, max]
+  );
+
   const navigateMonth = (delta: number) => {
     setDirection(delta);
     setCurrentMonth(new Date(year, month + delta, 1));
@@ -85,249 +86,239 @@ export function PremiumCalendar({
 
   const handleSelect = (day: number) => {
     const date = new Date(year, month, day);
-    if (disabled?.(date)) return;
-    if (min && date < min) return;
-    if (max && date > max) return;
+    if (isOutOfRange(date)) return;
     onSelect?.(date);
   };
 
-  const handleQuickSelect = (type: "today" | "tomorrow" | "weekend") => {
+  const quickDates = React.useMemo(() => {
     const now = new Date();
-    let target: Date;
-    if (type === "today") {
-      target = now;
-    } else if (type === "tomorrow") {
-      target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    } else {
-      // Next Saturday
-      const day = now.getDay();
-      const daysUntilSat = day === 0 ? 6 : 6 - day;
-      target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSat);
-    }
-    if (disabled?.(target)) return;
-    if (min && target < min) return;
-    if (max && target > max) return;
-    onSelect?.(target);
+    const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const tomorrow = startOfDay(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+    // Next Saturday (today, when today is a Saturday)
+    const weekday = now.getDay();
+    const untilSaturday = weekday === 6 ? 0 : (6 - weekday + 7) % 7;
+    const saturday = startOfDay(new Date(now.getFullYear(), now.getMonth(), now.getDate() + untilSaturday));
+    return [
+      { key: "today", label: t("today"), date: startOfDay(now) },
+      { key: "tomorrow", label: t("tomorrow"), date: tomorrow },
+      { key: "weekend", label: t("weekend"), date: saturday },
+    ];
+  }, [t]);
+
+  const handleQuickSelect = (date: Date) => {
+    if (isOutOfRange(date)) return;
+    setDirection(date > currentMonth ? 1 : -1);
+    setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+    onSelect?.(date);
   };
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const selectedDayInfo = selected
-    ? {
-        weekday: selected.toLocaleDateString(locale, { weekday: "long" }),
-        day: selected.getDate(),
-        month: MONTHS[selected.getMonth()],
-        year: selected.getFullYear(),
-      }
-    : null;
-
-  const totalAvailable = availabilityData
-    ? Object.values(availabilityData).reduce((a, b) => a + b, 0)
-    : null;
+  // Availability is optional: without it the cells lose the count line and tighten up.
+  const hasAvailability = Boolean(availabilityData && Object.keys(availabilityData).length > 0);
+  const cellHeight = hasAvailability ? "h-[54px]" : "h-12";
+  const selectedCount = selected && availabilityData ? availabilityData[formatDateKey(selected)] : undefined;
 
   const monthVariants = {
-    enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
+    enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
+    exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-0 sm:gap-1">
-      {/* Left Panel — Selected Day Info + Quick Actions */}
-      <div className="flex flex-col justify-between border-line p-5 sm:w-52 sm:border-r">
-        <div>
-          <div className="flex items-center gap-2 mb-5">
-            <CalendarDays className="w-4 h-4 text-muted" strokeWidth={1.5} />
-            <span className="text-eyebrow">{t("selectedDate")}</span>
-          </div>
-
-          {selectedDayInfo ? (
-            <motion.div
-              key={selected?.toISOString()}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center sm:text-left"
-            >
-              <p className="text-xs text-muted capitalize">{selectedDayInfo.weekday}</p>
-              <p className="text-5xl font-heading font-bold text-ink tracking-tighter leading-none mt-1">{selectedDayInfo.day}</p>
-              <p className="text-sm font-semibold text-muted mt-1">{selectedDayInfo.month} {selectedDayInfo.year}</p>
-            </motion.div>
-          ) : (
-            <div className="text-center sm:text-left py-4">
-              <p className="text-sm text-faint">{t("selectDate")}</p>
-            </div>
-          )}
-
-          {/* Quick Actions */}
-          <div className="mt-6 space-y-2">
-            <QuickButton icon={<Sun className="w-3.5 h-3.5" />} label={t("today")} onClick={() => handleQuickSelect("today")} />
-            <QuickButton icon={<Sunrise className="w-3.5 h-3.5" />} label={t("tomorrow")} onClick={() => handleQuickSelect("tomorrow")} />
-            <QuickButton icon={<CloudSun className="w-3.5 h-3.5" />} label={t("weekend")} onClick={() => handleQuickSelect("weekend")} />
-          </div>
-        </div>
-
-        {/* Insights */}
-        <div className="mt-6 pt-4 border-t border-line">
-          {totalAvailable !== null && (
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-accent" strokeWidth={1.5} />
-              <span className="text-[11px] text-muted">
-                {t("ridesAvailable", { count: totalAvailable })}
-              </span>
-            </div>
-          )}
-          <p className="text-[10px] text-faint mt-2 leading-relaxed">
-            {t("calendarInfo")}
-          </p>
-        </div>
-      </div>
-
-      {/* Right Panel — Calendar Grid */}
-      <div className="flex-1 p-4 sm:p-5">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => navigateMonth(-1)}
-            className="w-9 h-9 rounded-xl bg-surface-2 border border-line flex items-center justify-center text-muted hover:text-fg hover:bg-surface hover:border-line-strong transition-all"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </motion.button>
-
+    <div className="flex flex-col">
+      {/* Month header */}
+      <div className="flex items-end justify-between gap-3 px-5 pb-3.5">
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint truncate">
+            {label || t("selectDate")}
+          </span>
           <AnimatePresence mode="wait" custom={direction}>
-            <motion.span
+            <motion.div
               key={`${year}-${month}`}
               custom={direction}
               variants={monthVariants}
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="text-ink font-bold text-base tracking-tight"
+              transition={{ type: "spring", stiffness: 320, damping: 32 }}
+              className="flex items-baseline gap-1.5"
             >
-              {MONTHS[month]} <span className="text-faint font-semibold">{year}</span>
-            </motion.span>
+              <span className="text-[26px] leading-none font-bold tracking-[-0.03em] text-ink lowercase">
+                {MONTHS[month]}
+              </span>
+              <span className="text-[26px] leading-none font-medium tracking-[-0.03em] text-faint">{year}</span>
+            </motion.div>
           </AnimatePresence>
+        </div>
 
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => navigateMonth(1)}
-            className="w-9 h-9 rounded-xl bg-surface-2 border border-line flex items-center justify-center text-muted hover:text-fg hover:bg-surface hover:border-line-strong transition-all"
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            onClick={() => navigateMonth(-1)}
+            aria-label={t("prevMonth")}
+            className="w-10 h-10 rounded-xl border border-line bg-surface flex items-center justify-center text-muted hover:text-ink hover:border-line-strong transition-colors"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={1.6} />
+          </motion.button>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            onClick={() => navigateMonth(1)}
+            aria-label={t("nextMonth")}
+            className="w-10 h-10 rounded-xl border border-line bg-surface flex items-center justify-center text-ink hover:border-line-strong transition-colors"
+          >
+            <ChevronRight className="w-[18px] h-[18px]" strokeWidth={1.6} />
           </motion.button>
         </div>
+      </div>
 
-        {/* Weekday headers */}
-        <div className="grid grid-cols-7 mb-2">
-          {WEEKDAYS.map((d) => (
-            <div key={d} className="h-9 flex items-center justify-center">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">{d}</span>
-            </div>
-          ))}
-        </div>
+      {/* Quick picks */}
+      <div className="flex gap-2 px-5 pb-3.5">
+        {quickDates.map((q) => {
+          const active = selected ? isSameDay(selected, q.date) : false;
+          const unavailable = isOutOfRange(q.date);
+          return (
+            <motion.button
+              key={q.key}
+              type="button"
+              whileTap={!unavailable ? { scale: 0.97 } : {}}
+              onClick={() => handleQuickSelect(q.date)}
+              disabled={unavailable}
+              className={cn(
+                "h-[34px] px-3.5 rounded-[10px] border text-[13px] font-medium transition-colors",
+                active
+                  ? "border-accent bg-accent-dim text-accent"
+                  : "border-line bg-surface text-muted hover:border-line-strong hover:text-ink",
+                unavailable && "opacity-40 cursor-not-allowed"
+              )}
+            >
+              {q.label}
+            </motion.button>
+          );
+        })}
+      </div>
 
-        {/* Days grid */}
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={`${year}-${month}`}
-            custom={direction}
-            variants={monthVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="grid grid-cols-7 gap-1"
+      {/* Weekday header */}
+      <div className="grid grid-cols-7 px-3.5 pb-1.5 border-b border-line-soft">
+        {WEEKDAYS.map((d, i) => (
+          <span
+            key={d}
+            className={cn(
+              "text-center font-mono text-[10px] uppercase tracking-[0.1em]",
+              i > 4 ? "text-faint/70" : "text-faint"
+            )}
           >
-            {/* Empty cells */}
-            {Array.from({ length: firstDay }).map((_, i) => (
-              <div key={`e-${i}`} className="h-11" />
-            ))}
+            {d}
+          </span>
+        ))}
+      </div>
 
-            {/* Days */}
-            {Array.from({ length: daysInMonth }, (_, i) => {
-              const day = i + 1;
-              const date = new Date(year, month, day);
-              const isSelected = selected && isSameDay(date, selected);
-              const isToday = isSameDay(date, today);
-              const isDisabled = disabled?.(date) || (min && date < min) || (max && date > max);
-              const availCount = availabilityData?.[formatDateKey(date)];
+      {/* Days */}
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={`${year}-${month}`}
+          custom={direction}
+          variants={monthVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ type: "spring", stiffness: 320, damping: 32 }}
+          className="grid grid-cols-7 gap-0.5 px-3.5 pt-1.5 pb-2"
+        >
+          {Array.from({ length: firstDay }).map((_, i) => (
+            <div key={`e-${i}`} className={cellHeight} />
+          ))}
 
-              return (
-                <motion.button
-                  key={day}
-                  whileHover={!isDisabled ? { scale: 1.08 } : {}}
-                  whileTap={!isDisabled ? { scale: 0.95 } : {}}
-                  onClick={() => handleSelect(day)}
-                  disabled={isDisabled}
+          {Array.from({ length: daysInMonth }, (_, i) => {
+            const day = i + 1;
+            const date = new Date(year, month, day);
+            const isSelected = selected ? isSameDay(date, selected) : false;
+            const isToday = isSameDay(date, today);
+            const unavailable = isOutOfRange(date);
+            const count = availabilityData?.[formatDateKey(date)];
+            const showCount = !unavailable && count !== undefined && count > 0;
+
+            return (
+              <motion.button
+                key={day}
+                type="button"
+                whileTap={!unavailable ? { scale: 0.94 } : {}}
+                onClick={() => handleSelect(day)}
+                disabled={unavailable}
+                aria-current={isToday ? "date" : undefined}
+                className={cn(
+                  cellHeight,
+                  "rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
+                  isSelected && "bg-accent",
+                  !isSelected && isToday && "bg-accent-dim",
+                  !isSelected && !isToday && !unavailable && "hover:bg-surface-2",
+                  unavailable && "cursor-not-allowed"
+                )}
+              >
+                <span
                   className={cn(
-                    "relative h-11 rounded-xl flex flex-col items-center justify-center transition-colors duration-200",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
-                    isSelected && [
-                      "bg-accent text-accent-fg",
-                      "border border-accent/30"
-                    ],
-                    !isSelected && isToday && [
-                      "border border-accent/50",
-                      "text-accent font-bold",
-                      "bg-accent-dim"
-                    ],
-                    !isSelected && !isToday && !isDisabled && [
-                      "text-muted hover:bg-sand-deep hover:text-ink",
-                      "bg-surface"
-                    ],
-                    isDisabled && "opacity-20 cursor-not-allowed text-faint"
+                    "text-[15px] tracking-[-0.01em]",
+                    isSelected || isToday ? "font-bold" : "font-medium",
+                    isSelected
+                      ? "text-accent-fg"
+                      : unavailable
+                        ? "text-faint/45"
+                        : isToday
+                          ? "text-accent"
+                          : "text-ink"
                   )}
                 >
-                  <span className={cn("text-sm font-semibold", isSelected && "text-white")}>{day}</span>
-                  {availCount !== undefined && !isSelected && !isDisabled && availCount > 0 && (
-                    <span className={cn(
-                      "absolute bottom-1 w-1 h-1 rounded-full",
-                      availCount >= 5 ? "bg-green" : availCount >= 2 ? "bg-pending" : "bg-sand-deep"
-                    )} />
+                  {day}
+                </span>
+                {hasAvailability && (
+                <span
+                  className={cn(
+                    "font-mono text-[10px] leading-none min-h-[10px]",
+                    isSelected
+                      ? "text-accent-fg/75"
+                      : !showCount
+                        ? "text-transparent"
+                        : count >= 5
+                          ? "text-accent"
+                          : count >= 2
+                            ? "text-pending"
+                            : "text-faint"
                   )}
-                  {isToday && !isSelected && (
-                    <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-accent" />
-                  )}
-                </motion.button>
-              );
-            })}
+                >
+                  {showCount ? count : ""}
+                </span>
+                )}
+              </motion.button>
+            );
+          })}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Selected day summary */}
+      {selected && (
+        <div className="px-5 pt-3 pb-1 border-t border-line-soft">
+          <motion.div
+            key={selected.toISOString()}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18 }}
+            className="flex flex-col gap-0.5"
+          >
+            <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink lowercase">
+              {selected.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
+            </span>
+            {selectedCount !== undefined && (
+              <span className="font-mono text-[11px] text-muted">
+                {t("ridesOnDay", { count: selectedCount })}
+              </span>
+            )}
           </motion.div>
-        </AnimatePresence>
-
-        {/* Legend */}
-        <div className="mt-4 pt-3 border-t border-line flex items-center justify-center gap-4">
-          <LegendDot color="bg-green" label={t("legend5Plus")} />
-          <LegendDot color="bg-pending" label={t("legend2To4")} />
-          <LegendDot color="bg-sand-deep" label={t("legend1")} />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function QuickButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.02, x: 2 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl bg-surface-2 border border-line hover:bg-surface hover:border-line-strong transition-all group"
-    >
-      <span className="text-muted group-hover:text-accent transition-colors">{icon}</span>
-      <span className="text-xs font-medium text-muted group-hover:text-ink transition-colors">{label}</span>
-    </motion.button>
-  );
-}
-
-function LegendDot({ color, label }: { color: string; label: string }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className={cn("w-1.5 h-1.5 rounded-full", color)} />
-      <span className="text-[10px] text-faint">{label}</span>
+      )}
     </div>
   );
 }

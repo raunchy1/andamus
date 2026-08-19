@@ -1357,7 +1357,11 @@
     "legend5Plus": "5+ passaggi",
     "legend2To4": "2-4 passaggi",
     "legend1": "1 passaggio",
-    "confirm": "Conferma"
+    "confirm": "Conferma",
+    "ridesOnDay": "{count} passaggi",
+    "close": "Chiudi",
+    "prevMonth": "Mese precedente",
+    "nextMonth": "Mese successivo"
   },
   "cookies": {
     "title": "Cookie e privacy",

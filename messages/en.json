@@ -1357,7 +1357,11 @@
     "legend5Plus": "5+ rides",
     "legend2To4": "2-4 rides",
     "legend1": "1 ride",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "ridesOnDay": "{count} rides",
+    "close": "Close",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
   },
   "cookies": {
     "title": "Cookies and privacy",
