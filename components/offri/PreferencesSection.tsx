@@ -1,18 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  Cigarette,
-  PawPrint,
-  Luggage,
-  UserCircle,
-  Music,
-  VolumeX,
-  MessageCircle,
-} from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import { ToggleRow } from "@/components/offri/ToggleRow";
 
 interface FormData {
   smokingAllowed: boolean;
@@ -25,24 +16,9 @@ interface FormData {
 interface PreferencesSectionProps {
   formData: FormData;
   onChange: (field: string, value: string | boolean | string[] | number[]) => void;
-  variant?: "mobile" | "desktop";
   className?: string;
   errors?: { musicPreference?: string };
 }
-
-const toggles = [
-  { key: "smokingAllowed", icon: Cigarette },
-  { key: "petsAllowed", icon: PawPrint },
-  { key: "largeLuggage", icon: Luggage },
-  { key: "womenOnly", icon: UserCircle },
-] as const;
-
-const musicOptions = [
-  { value: "", icon: Music },
-  { value: "quiet", icon: VolumeX },
-  { value: "music", icon: Music },
-  { value: "talk", icon: MessageCircle },
-] as const;
 
 export function PreferencesSection({
   formData,
@@ -52,78 +28,62 @@ export function PreferencesSection({
 }: PreferencesSectionProps) {
   const t = useTranslations("offer");
 
-  const musicLabels: Record<string, string> = {
-    "": t("musicAny"),
-    quiet: t("musicQuiet"),
-    music: t("musicMusic"),
-    talk: t("musicTalk"),
-  };
+  const toggles = [
+    { key: "petsAllowed", label: t("step3.pets"), hint: t("step3.petsHint") },
+    { key: "largeLuggage", label: t("step3.luggage"), hint: t("step3.luggageHint") },
+    { key: "smokingAllowed", label: t("step3.smoking"), hint: t("step3.smokingHint") },
+    { key: "womenOnly", label: t("step3.womenOnly"), hint: t("step3.womenOnlyHint") },
+  ] as const;
+
+  const moods = [
+    { value: "", label: t("step3.moodAny") },
+    { value: "quiet", label: t("step3.moodQuiet") },
+    { value: "music", label: t("step3.moodMusic") },
+    { value: "talk", label: t("step3.moodTalk") },
+  ];
 
   return (
-    <section className={cn("space-y-4", className)}>
-      <p className="text-eyebrow">{t("travelPreferences")}</p>
-
-      <div className="flex flex-wrap gap-2">
-        {toggles.map(({ key, icon: Icon }) => {
-          const active = formData[key as keyof FormData] as boolean;
-          const label =
-            key === "smokingAllowed"
-              ? t("smokersAllowed")
-              : key === "petsAllowed"
-                ? t("petsAllowed")
-                : key === "largeLuggage"
-                  ? t("largeLuggage")
-                  : t("womenOnly");
-
-          return (
-            <button
+    <div className={cn("flex flex-col gap-6", className)}>
+      <section className="flex flex-col gap-2">
+        <h2 className="text-[15px] font-semibold text-ink">{t("step3.onboard")}</h2>
+        <div className="rounded-2xl border border-line bg-surface px-4">
+          {toggles.map(({ key, label, hint }, i) => (
+            <ToggleRow
               key={key}
-              type="button"
-              onClick={() => onChange(key, !active)}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-2 font-mono text-xs transition-colors",
-                active
-                  ? "border-accent text-accent"
-                  : "border-line text-muted hover:border-line-strong hover:text-fg"
-              )}
-            >
-              <Icon className="size-4" strokeWidth={1.5} />
-              {label}
-            </button>
-          );
-        })}
-      </div>
+              label={label}
+              hint={hint}
+              checked={formData[key as keyof FormData] as boolean}
+              onChange={(next) => onChange(key, next)}
+              last={i === toggles.length - 1}
+            />
+          ))}
+        </div>
+      </section>
 
-      <Separator />
-
-      <div className="space-y-2">
-        <p className="text-eyebrow">{t("music")}</p>
-        <div className="flex flex-wrap gap-2">
-          {musicOptions.map(({ value, icon: Icon }) => {
-            const active = formData.musicPreference === value;
+      <section className="flex flex-col gap-2">
+        <h2 className="text-[15px] font-semibold text-ink">{t("step3.mood")}</h2>
+        <div className="grid grid-cols-4 gap-0.5 rounded-xl bg-surface-2 p-[3px]">
+          {moods.map((m) => {
+            const active = formData.musicPreference === m.value;
             return (
               <button
-                key={value || "any"}
+                key={m.value || "any"}
                 type="button"
-                onClick={() => onChange("musicPreference", value)}
+                onClick={() => onChange("musicPreference", m.value)}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full border px-3 py-2 font-mono text-xs transition-colors",
+                  "flex h-10 items-center justify-center rounded-[9px] px-1 text-center text-xs leading-tight transition-colors",
                   active
-                    ? "border-accent text-accent"
-                    : "border-line text-muted hover:border-line-strong hover:text-fg"
+                    ? "bg-surface font-semibold text-ink shadow-[0_1px_3px_rgba(22,33,28,0.08)]"
+                    : "font-medium text-muted"
                 )}
               >
-                <Icon className="size-4" strokeWidth={1.5} />
-                {musicLabels[value]}
+                {m.label}
               </button>
             );
           })}
         </div>
-      </div>
-
-      {errors?.musicPreference && (
-        <p className="text-sm text-bad">{errors.musicPreference}</p>
-      )}
-    </section>
+        {errors?.musicPreference && <p className="text-sm text-bad">{errors.musicPreference}</p>}
+      </section>
+    </div>
   );
 }

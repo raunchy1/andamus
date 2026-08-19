@@ -8,7 +8,7 @@ import { signInWithGoogle } from "@/lib/auth";
 import { completeGamificationAction } from "@/lib/gamification";
 import { createRide } from "@/lib/ride-actions";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useDeviceType } from "@/components/view-mode";
 import { ShareRide } from "@/components/ShareRide";
 import { CelebrationModal } from "@/components/FirstRideCelebration";
@@ -19,11 +19,22 @@ import { Analytics } from "@/lib/analytics";
 import { getFriendlyErrorMessage } from "@/lib/client/error-handler";
 import { OfferMobile, OfferDesktop } from "@/components/offri/OfferFormViews";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+
+/** "2026-08-27" → "mer 27 ago", in the reader's language. */
+function formatRideDate(date: string, locale: string): string {
+  const [y, m, d] = date.split("-").map(Number);
+  if (!y || !m || !d) return date;
+  return new Date(y, m - 1, d).toLocaleDateString(locale, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
 
 export default function OfferPage() {
   const t = useTranslations('offer');
+  const locale = useLocale();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const deviceType = useDeviceType();
@@ -426,45 +437,80 @@ export default function OfferPage() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-bg px-4 sm:px-6">
-        <Card className="mx-auto max-w-md p-8 text-center">
-          <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full border border-line bg-surface-2">
-            <Car className="size-8 text-muted" strokeWidth={1.5} />
+      <div className="flex min-h-screen flex-col justify-center bg-bg px-5">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+          <div className="flex size-13 items-center justify-center rounded-2xl bg-accent-dim">
+            <Car className="size-6 text-accent" strokeWidth={1.6} />
           </div>
-          <h1 className="heading-editorial mb-3 text-2xl text-fg">{t("offerRide")}</h1>
-          <p className="mb-8 text-sm text-muted">{t("loginRequired")}</p>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-ink">
+              {t("login.title")}
+            </h1>
+            <p className="text-[15px] leading-relaxed text-muted">{t("login.body")}</p>
+          </div>
           <Button type="button" onClick={handleLogin} className="w-full">
-            {t("loginWithGoogle")}
+            {t("login.google")}
           </Button>
-          <div className="mt-6">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-fg"
-            >
-              <ArrowLeft className="size-4" strokeWidth={1.5} />
-              {t("success.backHome")}
-            </Link>
-          </div>
-        </Card>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-ink"
+          >
+            <ArrowLeft className="size-4" strokeWidth={1.5} />
+            {t("success.backHome")}
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (isSubmitted) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-bg px-4">
-        <Card className="mx-auto max-w-md p-8 text-center">
-          <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full border border-line bg-surface-2">
-            <Check className="size-10 text-accent" strokeWidth={1.5} />
+      <div className="flex min-h-screen flex-col bg-bg px-5 pb-10 pt-12">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6">
+          <div className="flex flex-col gap-3.5">
+            <div className="flex size-13 items-center justify-center rounded-full bg-accent">
+              <Check className="size-6 text-accent-fg" strokeWidth={2} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-ink">
+                {t("success.title")}
+              </h1>
+              <p className="text-[15px] leading-relaxed text-muted">
+                {isFirstRide ? t("success.firstRide") : t("success.subtitle")}
+              </p>
+            </div>
           </div>
-          <h1 className="heading-editorial mb-2 text-3xl text-fg">{t("ridePublished")}</h1>
-          {isFirstRide && (
-            <p className="mb-4 text-sm text-muted">{t("firstRideMessage")}</p>
-          )}
-          <p className="mb-6 text-sm text-muted">{t("manageSoon")}</p>
 
-          <div className="mb-6 rounded-[var(--radius)] border border-line bg-surface p-5">
-            <p className="mb-3 text-sm font-medium text-fg">{t("shareRidePrompt")}</p>
+          {publishedRideData && (
+            <div className="flex flex-col gap-3.5 rounded-2xl border border-line bg-surface p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-faint">
+                  {formatRideDate(publishedRideData.date, locale)} · {publishedRideData.time}
+                </span>
+                <span className="text-[15px] font-bold text-ink">
+                  {publishedRideData.price > 0 ? `${publishedRideData.price} €` : t("summaryFree")}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="flex flex-col items-center gap-[3px]">
+                  <span className="size-2 rounded-full border-2 border-accent" />
+                  <span className="h-[22px] w-px bg-line" />
+                  <span className="size-2 rounded-full bg-accent" />
+                </span>
+                <span className="flex flex-1 flex-col gap-3.5">
+                  <span className="text-base font-semibold leading-none text-ink">
+                    {publishedRideData.from_city}
+                  </span>
+                  <span className="text-base font-semibold leading-none text-ink">
+                    {publishedRideData.to_city}
+                  </span>
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2.5">
+            <h2 className="text-[15px] font-semibold text-ink">{t("success.shareTitle")}</h2>
             {publishedRideId && publishedRideData && (
               <ShareRide
                 ride={{
@@ -481,19 +527,25 @@ export default function OfferPage() {
             )}
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button type="button" onClick={() => window.location.assign("/profilo")}>
-              {t("goToProfile")}
-            </Button>
-            <Link
-              href="/cerca"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-line px-5 text-base font-semibold lowercase text-fg transition-colors hover:border-line-strong hover:bg-surface-2"
+          <div className="mt-auto flex flex-col gap-2.5 pt-6">
+            <Button
+              type="button"
+              onClick={() =>
+                window.location.assign(publishedRideId ? `/corsa/${publishedRideId}` : "/profilo")
+              }
+              className="w-full"
             >
-              <ArrowLeft className="size-4" strokeWidth={1.5} />
-              {t("searchOtherRides")}
-            </Link>
+              {t("success.view")}
+            </Button>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="flex h-12 items-center justify-center text-base font-semibold text-muted transition-colors hover:text-ink"
+            >
+              {t("success.again")}
+            </button>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }

@@ -19,6 +19,8 @@ interface LocationComboboxProps {
   label?: string;
   disabled?: boolean;
   buttonClassName?: string;
+  /** Hide the leading pin when the caller draws its own route marker. */
+  showIcon?: boolean;
 }
 
 const TYPE_ICONS = {
@@ -44,6 +46,7 @@ export function LocationCombobox({
   label,
   disabled = false,
   buttonClassName,
+  showIcon = true,
 }: LocationComboboxProps) {
   const t = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
@@ -318,7 +321,7 @@ export function LocationCombobox({
           buttonClassName
         )}
       >
-        <MapPin size={20} strokeWidth={1.5} className="text-muted flex-shrink-0" />
+        {showIcon && <MapPin size={20} strokeWidth={1.5} className="text-muted flex-shrink-0" />}
         <div className="flex-1 flex flex-col min-w-0">
           {label ? (
             <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-dim -mb-1">{label}</span>

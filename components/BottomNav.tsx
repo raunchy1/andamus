@@ -18,6 +18,7 @@ const navItems = [
 /** Rute pe care tab bar-ul nu apare */
 const HIDE_ON = [
   "/onboarding",
+  "/offri",
   "/corsa/",
   "/prenotazione",
   "/conferma",
