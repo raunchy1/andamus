@@ -191,7 +191,7 @@ export async function getDriverReviews(driverId: string, limit = 3): Promise<Rev
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("reviews")
-    .select(`id, rating, comment, created_at, reviewer:profiles(name, avatar_url)`)
+    .select(`id, rating, comment, created_at, reviewer:profiles!reviews_reviewer_id_fkey(name, avatar_url)`)
     .eq("reviewed_id", driverId)
     .order("created_at", { ascending: false })
     .limit(limit);

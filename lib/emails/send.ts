@@ -411,13 +411,13 @@ export async function wasRecentlyOnline(userId: string): Promise<boolean> {
     const supabase = await createClient();
     const { data: profile } = await supabase
       .from("profiles")
-      .select("last_seen")
+      .select("last_active_at")
       .eq("id", userId)
       .single();
 
-    if (!profile?.last_seen) return false;
+    if (!profile?.last_active_at) return false;
 
-    const lastSeen = new Date(profile.last_seen);
+    const lastSeen = new Date(profile.last_active_at);
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
     return lastSeen > fiveMinutesAgo;
   } catch {

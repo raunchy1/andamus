@@ -125,6 +125,21 @@ export default async function middleware(request: NextRequest) {
 
   // ── 4. API route protection ──
   if (isAdminApi || isPushApi) {
+    // vercel.json schedules /api/admin/refresh-rides daily. A Vercel cron
+    // request carries only `Authorization: Bearer $CRON_SECRET` — it has no
+    // Supabase session cookie, so the session check below rejected it with a
+    // 401 long before the route could verify the secret itself. The seeded
+    // rides stopped being refreshed as a result. Let a request bearing the
+    // cron secret through; the route still validates it fail-closed.
+    const cronSecret = process.env.CRON_SECRET;
+    const isCronRequest =
+      Boolean(cronSecret) &&
+      request.headers.get("authorization") === `Bearer ${cronSecret}`;
+
+    if (isCronRequest) {
+      return supabaseResponse;
+    }
+
     if (!userId) {
       return jsonError("Authentication required", "UNAUTHORIZED", 401);
     }
