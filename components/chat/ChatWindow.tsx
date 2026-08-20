@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { sendMessage, markMessagesAsRead } from "@/lib/chat-actions";
-import { staticMapStyleQuery } from "@/lib/sardinia-cities";
+
 import {
   Loader2,
   X,
@@ -255,30 +255,21 @@ const MessageBubble = memo(function MessageBubble({
                 </div>
               </div>
               <a
-                href={`https://maps.google.com/?q=${message.location_lat},${message.location_lng}`}
+                href={`https://www.openstreetmap.org/?mlat=${message.location_lat}&mlon=${message.location_lng}#map=15/${message.location_lat}/${message.location_lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block"
               >
-                {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
-                  <div className="w-full h-32 rounded-lg overflow-hidden bg-elevated relative">
-                    <Image
-                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&${staticMapStyleQuery}&markers=color:0x2D6A4F%7C${message.location_lat},${message.location_lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
-                      alt={t("locationMapAlt")}
-                      fill
-                      className="object-cover grayscale opacity-60"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-32 rounded-lg overflow-hidden bg-elevated flex items-center justify-center">
-                    <div className="text-center text-muted">
-                      <MapPin className="w-8 h-8 mx-auto mb-2" />
-                      <span className="text-xs">{t("sharedLocation")}</span>
-                    </div>
-                  </div>
-                )}
-                <div className="flex items-center gap-2 mt-2 text-sm text-primary">
-                  <MapPin className="w-4 h-4" />
+                <div className="relative h-32 w-full overflow-hidden rounded-lg bg-elevated">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://staticmap.openstreetmap.de/staticmap.php?center=${message.location_lat},${message.location_lng}&zoom=15&size=300x150&maptype=mapnik&markers=${message.location_lat},${message.location_lng},ol-marker`}
+                    alt={t("locationMapAlt")}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-sm text-primary">
+                  <MapPin className="h-4 w-4" />
                   <span>{t("openInGoogleMaps")}</span>
                 </div>
               </a>

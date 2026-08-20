@@ -317,7 +317,9 @@
     "noReviewsHint": "Dopo il viaggio potrai lasciare la prima.",
     "driver": "Chi guida",
     "from": "Partenza",
-    "to": "Arrivo"
+    "to": "Arrivo",
+    "route": "Il percorso",
+    "via": "Passa da"
   },
   "profile": {
     "cancel": "Annulla",
@@ -520,7 +522,7 @@
     "audioUploadError": "Caricamento dell'audio non riuscito",
     "sharedImageAlt": "Immagine condivisa",
     "locationMapAlt": "Mappa della posizione",
-    "openInGoogleMaps": "Apri in Google Maps",
+    "openInGoogleMaps": "Apri la mappa",
     "sending": "Invio in corso...",
     "failed": "Non inviato",
     "cancel": "Annulla",
@@ -1323,9 +1325,8 @@
     "shareApp": "Condividi Andamus"
   },
   "map": {
-    "addApiKey": "Configura la chiave API di Google Maps",
     "loadingMap": "Caricamento mappa...",
-    "noCoordinates": "Coordinate non disponibili"
+    "noCoordinates": "Percorso non disponibile"
   },
   "offline": {
     "youAreOffline": "Sei offline",

@@ -317,7 +317,9 @@
     "noReviewsHint": "After the trip you can leave the first one.",
     "driver": "Who is driving",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "route": "The route",
+    "via": "Via"
   },
   "profile": {
     "cancel": "Cancel",
@@ -520,7 +522,7 @@
     "audioUploadError": "Audio upload failed",
     "sharedImageAlt": "Shared image",
     "locationMapAlt": "Location map",
-    "openInGoogleMaps": "Open in Google Maps",
+    "openInGoogleMaps": "Open map",
     "sending": "Sending...",
     "failed": "Not sent",
     "cancel": "Cancel",
@@ -1323,9 +1325,8 @@
     "shareApp": "Share Andamus"
   },
   "map": {
-    "addApiKey": "Configure the Google Maps API key",
     "loadingMap": "Loading map...",
-    "noCoordinates": "Coordinates not available"
+    "noCoordinates": "Route not available"
   },
   "offline": {
     "youAreOffline": "You are offline",

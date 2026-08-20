@@ -107,7 +107,7 @@ export default function OfferPage() {
   const today = new Date().toISOString().split("T")[0];
   const [supabase] = useState(() => createClient());
 
-  // Intelligent Price Calculator using Google Maps Distance Matrix API
+  // Suggested price from the cached OSRM driving distance.
   useEffect(() => {
     const calculateDistanceAndPrice = async () => {
       if (!formData.origin || !formData.destination || formData.origin === formData.destination) {

@@ -18,7 +18,6 @@ import {
   UserCircle,
   GraduationCap,
   Music,
-  Clock,
   MapPin,
 } from "lucide-react";
 import { ShareRide } from "@/components/ShareRide";
@@ -34,7 +33,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { computeRideStatus, isRideBookable, getRideStatusLabel, getRideStatusColor } from "@/lib/ride-status";
 import { Analytics } from "@/lib/analytics";
 import { ReportUser } from "@/components/ReportUser";
-import { SARDINIA_CITIES } from "@/lib/sardinia-cities";
 import { RouteLine } from "@/components/ui/route-line";
 import { RoutePhotos } from "@/components/LocationPhoto";
 import { Card } from "@/components/ui/card";
@@ -42,6 +40,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  addMinutesToTime,
+  formatDistanceKm,
+  formatDurationMinutes,
+} from "@/lib/routing/format";
+import type { RideRoute } from "@/lib/routing/types";
+import { RouteItinerary, RouteJourneyStrip } from "@/components/ride-detail/RouteItinerary";
 
 const PostActionModal = dynamic(() => import("@/components/PostActionModal").then((m) => m.PostActionModal), { ssr: false });
 const RouteMap = dynamic(() => import("@/components/RouteMap").then((m) => m.RouteMap), { ssr: false });
@@ -52,44 +57,13 @@ const fadeUp = {
   transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as const },
 };
 
-function haversineKm(
-  a: { lat: number; lng: number },
-  b: { lat: number; lng: number }
-): number {
-  const R = 6371;
-  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
-  const lat1 = (a.lat * Math.PI) / 180;
-  const lat2 = (b.lat * Math.PI) / 180;
-  const h =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
-}
-
-function formatDurationMinutes(mins: number): string {
-  if (mins < 60) return `${mins} min`;
-  const hours = Math.floor(mins / 60);
-  const remainder = mins % 60;
-  return remainder > 0 ? `${hours}h ${remainder}m` : `${hours}h`;
-}
-
-function addMinutesToTime(time: string, minutes: number): string {
-  const [h, m] = time.slice(0, 5).split(":").map(Number);
-  const total = h * 60 + m + minutes;
-  return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-
-function getRouteTiming(fromCity: string, toCity: string, departureTime: string) {
-  const from = SARDINIA_CITIES[fromCity];
-  const to = SARDINIA_CITIES[toCity];
-  if (!from || !to) {
+function getRouteTiming(departureTime: string, route: RideRoute | null) {
+  if (!route || route.distance_m == null || route.duration_s == null) {
     return { meta: "", arrivalTime: "" };
   }
-  const km = haversineKm(from, to);
-  const durationMins = Math.max(15, Math.round((km / 75) * 60));
+  const durationMins = route.duration_s / 60;
   return {
-    meta: `${Math.round(km)} km · ${formatDurationMinutes(durationMins)}`,
+    meta: `${formatDistanceKm(route.distance_m)} · ${formatDurationMinutes(durationMins)}`,
     arrivalTime: addMinutesToTime(departureTime, durationMins),
   };
 }
@@ -161,6 +135,7 @@ interface RideDetailViewProps {
   formatReviewDate: (dateStr: string) => string;
   rideStatus: import("@/lib/ride-status").ComputedRideStatus;
   canBook: boolean;
+  route: RideRoute | null;
 }
 
 function RideDetailTopBar({
@@ -203,15 +178,17 @@ function RideDetailRouteHero({
   ride,
   stops,
   rideStatus,
+  route,
 }: {
   ride: Ride;
   stops: { city: string; order_index: number }[];
   rideStatus: import("@/lib/ride-status").ComputedRideStatus;
+  route: RideRoute | null;
 }) {
   const t = useTranslations("ride");
   const heroLocale = useLocale();
   const departureTime = ride.time.slice(0, 5);
-  const { meta, arrivalTime } = getRouteTiming(ride.from_city, ride.to_city, departureTime);
+  const { meta, arrivalTime } = getRouteTiming(departureTime, route);
 
   const intermediateStops = stops
     .filter((s) => s.city !== ride.from_city && s.city !== ride.to_city)
@@ -503,15 +480,42 @@ function RideDetailVehicle({
   );
 }
 
-function RideDetailMapSection({ ride }: { ride: Ride }) {
+function RideDetailMapSection({
+  ride,
+  route,
+}: {
+  ride: Ride;
+  route: RideRoute | null;
+}) {
+  const t = useTranslations("ride");
+  const departureTime = ride.time.slice(0, 5);
+
   return (
     <motion.section
       {...fadeUp}
       transition={{ ...fadeUp.transition, delay: 0.2 }}
       className="px-4 py-6 md:px-0"
     >
+      <h2 className="mb-3 text-[15px] font-semibold text-ink">{t("route")}</h2>
       <div className="overflow-hidden rounded-[var(--radius)] border border-line bg-surface">
-        <RouteMap fromCity={ride.from_city} toCity={ride.to_city} height="240px" />
+        <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(15.5rem,0.85fr)]">
+          <div className="relative order-2 h-[280px] md:order-1 md:h-full md:min-h-[340px] md:border-r md:border-line">
+            <RouteMap
+              fromCity={ride.from_city}
+              toCity={ride.to_city}
+              height="100%"
+              route={route}
+            />
+          </div>
+          <div className="order-1 md:order-2">
+            <RouteItinerary
+              route={route}
+              departureTime={departureTime}
+              meetingPoint={ride.meeting_point}
+            />
+          </div>
+        </div>
+        <RouteJourneyStrip route={route} departureTime={departureTime} />
       </div>
     </motion.section>
   );
@@ -755,6 +759,7 @@ function RideDetailMobile(props: RideDetailViewProps) {
           ride={props.ride}
           stops={props.stops}
           rideStatus={props.rideStatus}
+          route={props.route}
         />
         <RideDetailPriceSeats ride={props.ride} />
         <RideDetailDriverTrust
@@ -765,7 +770,7 @@ function RideDetailMobile(props: RideDetailViewProps) {
         />
         <RideDetailAmenities ride={props.ride} />
         <RideDetailVehicle ride={props.ride} vehicle={props.vehicle} />
-        <RideDetailMapSection ride={props.ride} />
+        <RideDetailMapSection ride={props.ride} route={props.route} />
         <RideDetailReviews
           reviews={props.reviews}
           formatReviewDate={props.formatReviewDate}
@@ -808,6 +813,7 @@ function RideDetailDesktop(props: RideDetailViewProps) {
               ride={props.ride}
               stops={props.stops}
               rideStatus={props.rideStatus}
+              route={props.route}
             />
             <RideDetailPriceSeats ride={props.ride} />
             <RideDetailDriverTrust
@@ -818,7 +824,7 @@ function RideDetailDesktop(props: RideDetailViewProps) {
             />
             <RideDetailAmenities ride={props.ride} />
             <RideDetailVehicle ride={props.ride} vehicle={props.vehicle} />
-            <RideDetailMapSection ride={props.ride} />
+            <RideDetailMapSection ride={props.ride} route={props.route} />
             <RideDetailReviews
               reviews={props.reviews}
               formatReviewDate={props.formatReviewDate}
@@ -862,6 +868,7 @@ export interface RideDetailClientProps {
   rideId: string;
   locale: string;
   vehicle?: VehicleWithImages | null;
+  route?: RideRoute | null;
 }
 
 export function RideDetailClient({
@@ -874,6 +881,7 @@ export function RideDetailClient({
   rideId,
   locale,
   vehicle,
+  route = null,
 }: RideDetailClientProps) {
   const router = useRouter();
   const deviceType = useDeviceType();
@@ -1112,6 +1120,7 @@ export function RideDetailClient({
     formatReviewDate,
     rideStatus,
     canBook,
+    route,
   };
 
   return (

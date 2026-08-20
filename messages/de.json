@@ -317,7 +317,9 @@
     "noReviewsHint": "Nach der Fahrt kannst du die erste schreiben.",
     "driver": "Wer fährt",
     "from": "Start",
-    "to": "Ziel"
+    "to": "Ziel",
+    "route": "Die Strecke",
+    "via": "Über"
   },
   "profile": {
     "cancel": "Abbrechen",
@@ -520,7 +522,7 @@
     "audioUploadError": "Audio-Upload fehlgeschlagen",
     "sharedImageAlt": "Geteiltes Bild",
     "locationMapAlt": "Karte des Standorts",
-    "openInGoogleMaps": "In Google Maps öffnen",
+    "openInGoogleMaps": "Karte öffnen",
     "sending": "Wird gesendet...",
     "failed": "Nicht gesendet",
     "cancel": "Abbrechen",
@@ -1323,9 +1325,8 @@
     "shareApp": "Andamus teilen"
   },
   "map": {
-    "addApiKey": "Google Maps API-Schlüssel konfigurieren",
     "loadingMap": "Karte wird geladen...",
-    "noCoordinates": "Koordinaten nicht verfügbar"
+    "noCoordinates": "Strecke nicht verfügbar"
   },
   "offline": {
     "youAreOffline": "Du bist offline",

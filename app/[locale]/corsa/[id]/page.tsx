@@ -12,8 +12,10 @@ import {
   type Review,
 } from "@/lib/server/data/rides";
 import { getVehicleForRide } from "@/lib/server/data/vehicles";
+import { getRouteForRide } from "@/lib/server/routing/osrm";
 import { RideDetailClient } from "@/components/ride-detail/RideDetailClient";
 import type { VehicleWithImages } from "@/lib/types/vehicle";
+import type { RideRoute } from "@/lib/routing/types";
 import { isRideExpired } from "@/lib/date-utils";
 
 export const dynamic = "force-dynamic";
@@ -83,23 +85,35 @@ export default async function RideDetailPage({ params }: Props) {
   let similarRides: Ride[] = [];
   let existingBooking: Awaited<ReturnType<typeof getRideBookingForUser>> = null;
   let vehicle: VehicleWithImages | null = null;
+  let route: RideRoute | null = null;
 
   try {
     const rideWithVehicle = ride as { vehicle_id?: string | null };
-    const [stopsRes, reviewsRes, similarRidesRes, existingBookingRes, vehicleRes] = await Promise.all([
-      getRideStops(id).catch(() => []),
+    const stopsRes = await getRideStops(id).catch(() => [] as RideStop[]);
+    stops = stopsRes;
+
+    const via = stopsRes
+      .filter((s) => s.city !== ride.from_city && s.city !== ride.to_city)
+      .sort((a, b) => a.order_index - b.order_index)
+      .map((s) => s.city);
+
+    const [reviewsRes, similarRidesRes, existingBookingRes, vehicleRes, routeRes] = await Promise.all([
       getDriverReviews(ride.driver_id, 3).catch(() => []),
       getSimilarRides(ride, 3).catch(() => []),
       getRideBookingForUser(id, user?.id).catch(() => null),
       rideWithVehicle.vehicle_id
         ? getVehicleForRide(rideWithVehicle.vehicle_id).catch(() => null)
         : Promise.resolve(null),
+      getRouteForRide(ride.from_city, ride.to_city, via).catch((err) => {
+        console.error("getRouteForRide failed:", err);
+        return null;
+      }),
     ]);
-    stops = stopsRes;
     reviews = reviewsRes;
     similarRides = similarRidesRes;
     existingBooking = existingBookingRes;
     vehicle = vehicleRes;
+    route = routeRes;
   } catch (err) {
     console.error("Secondary details fetch failed in RideDetailPage:", err);
   }
@@ -115,6 +129,7 @@ export default async function RideDetailPage({ params }: Props) {
       vehicle={vehicle}
       rideId={id}
       locale={locale}
+      route={route}
     />
   );
 }
