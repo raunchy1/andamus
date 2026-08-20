@@ -27,6 +27,7 @@ const ActivityChart = dynamic(
 );
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTranslations, useLocale } from "next-intl";
+import { OWN_PROFILE_COLUMNS } from "@/lib/profile-columns";
 
 interface Ride {
   id: string;
@@ -109,7 +110,7 @@ export default function StatisticsPage() {
 
         const { data: profileData } = await supabase
           .from("profiles")
-          .select("*")
+          .select(OWN_PROFILE_COLUMNS)
           .eq("id", currentUser.id)
           .single();
         setProfile(profileData);

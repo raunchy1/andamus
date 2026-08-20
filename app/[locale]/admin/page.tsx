@@ -90,18 +90,18 @@ export default function AdminPage() {
       // Total users
       const { count: totalUsers } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true });
+        .select("id", { count: "exact", head: true });
 
       // New users today
       const { count: newUsersToday } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .gte("created_at", todayStr);
 
       // New users this week
       const { count: newUsersWeek } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .gte("created_at", weekAgo);
 
       // Total rides

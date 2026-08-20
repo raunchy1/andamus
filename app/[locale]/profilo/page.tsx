@@ -49,6 +49,7 @@ import { EmptyState, EmptyStateProfile } from "@/components/EmptyState";
 import { StripeConnectBanner } from "@/components/StripeConnectBanner";
 import { ShareApp } from "@/components/ShareApp";
 import { Reveal } from "@/components/ui/premium/reveal";
+import { OWN_PROFILE_COLUMNS } from "@/lib/profile-columns";
 
 function getWeekKey(date: Date): string {
   const d = new Date(date);
@@ -357,7 +358,7 @@ export default function ProfilePage() {
 
       // Parallelize independent queries
       const [profileRes, ridesRes, bookingsRes, alertsRes] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", currentUser.id).single(),
+        supabase.from("profiles").select(OWN_PROFILE_COLUMNS).eq("id", currentUser.id).single(),
         supabase.from("rides").select(`*, bookings(count)`).eq("driver_id", currentUser.id).order("date", { ascending: false }),
         supabase.from("bookings").select(`
           *,

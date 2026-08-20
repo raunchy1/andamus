@@ -35,12 +35,12 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       isDev
-        ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com https://browser.sentry-cdn.com"
-        : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com https://browser.sentry-cdn.com",
+        ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com https://browser.sentry-cdn.com https://maps.googleapis.com https://*.posthog.com"
+        : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com https://browser.sentry-cdn.com https://maps.googleapis.com https://*.posthog.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://images.unsplash.com https://commons.wikimedia.org https://upload.wikimedia.org https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
+      "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co https://images.unsplash.com https://commons.wikimedia.org https://upload.wikimedia.org https://*.openstreetmap.org https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.open-meteo.com wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
+      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.open-meteo.com wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://*.posthog.com https://maps.googleapis.com",
       "frame-src 'self' https://accounts.google.com https://*.google.com",
       "media-src 'self' https://*.supabase.co",
       "worker-src 'self' blob:",

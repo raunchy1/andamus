@@ -18,6 +18,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { OWN_PROFILE_COLUMNS } from "@/lib/profile-columns";
 
 interface VerificationStatus {
   email: "none" | "pending" | "verified";
@@ -58,7 +59,7 @@ export default function VerificationPage() {
 
         const { data: profileData } = await supabase
           .from("profiles")
-          .select("*")
+          .select(OWN_PROFILE_COLUMNS)
           .eq("id", user.id)
           .single();
 
