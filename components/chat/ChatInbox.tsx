@@ -24,27 +24,79 @@ export function ChatInbox() {
         return;
       }
 
-      const { data: bookings } = await supabase
-        .from("bookings")
-        .select(
+      // A conversation belongs to a booking, and a booking has two sides. The
+      // inbox used to query passenger_id only, so a driver — who has the other
+      // half of every conversation — saw an empty list. Fetch both roles.
+      // `bookings` has two FKs to profiles (passenger_id and cancelled_by), so
+      // the passenger embed has to name its constraint.
+      const [asPassenger, asDriver] = await Promise.all([
+        supabase
+          .from("bookings")
+          .select(
+            `
+            id,
+            status,
+            updated_at,
+            rides!inner(from_city, to_city, driver_id, profiles(name, avatar_url))
           `
-          id,
-          status,
-          updated_at,
-          rides(from_city, to_city, profiles(name, avatar_url))
-        `
-        )
-        .eq("passenger_id", user.id)
-        .neq("status", "cancelled")
-        .order("updated_at", { ascending: false });
+          )
+          .eq("passenger_id", user.id)
+          .neq("status", "cancelled")
+          .order("updated_at", { ascending: false }),
+        supabase
+          .from("bookings")
+          .select(
+            `
+            id,
+            status,
+            updated_at,
+            passenger:profiles!bookings_passenger_id_fkey(name, avatar_url),
+            rides!inner(from_city, to_city, driver_id)
+          `
+          )
+          .eq("rides.driver_id", user.id)
+          .neq("status", "cancelled")
+          .order("updated_at", { ascending: false }),
+      ]);
 
-      if (!bookings) {
+      type Party = { name: string; avatar_url: string | null };
+      const one = <T,>(v: T | T[] | null | undefined): T | undefined =>
+        Array.isArray(v) ? v[0] : (v ?? undefined);
+
+      type Row = {
+        id: string;
+        updated_at: string;
+        passenger?: Party | Party[] | null;
+        rides?:
+          | { from_city: string; to_city: string; profiles?: Party | Party[] | null }
+          | { from_city: string; to_city: string; profiles?: Party | Party[] | null }[]
+          | null;
+      };
+
+      // The other party is the driver when you booked, the passenger when you drove.
+      const collected = new Map<string, { row: Row; other?: Party }>();
+      for (const row of (asPassenger.data ?? []) as Row[]) {
+        const ride = one(row.rides);
+        collected.set(row.id, { row, other: one(ride?.profiles) });
+      }
+      for (const row of (asDriver.data ?? []) as Row[]) {
+        if (collected.has(row.id)) continue;
+        collected.set(row.id, { row, other: one(row.passenger) });
+      }
+
+      const bookings = [...collected.values()].sort(
+        (a, b) =>
+          new Date(b.row.updated_at).getTime() - new Date(a.row.updated_at).getTime()
+      );
+
+      if (bookings.length === 0) {
+        setConversations([]);
         setLoading(false);
         return;
       }
 
       // ultimo messaggio per ogni conversazione — una sola query, niente N+1
-      const bookingIds = bookings.map((b: { id: string }) => b.id);
+      const bookingIds = bookings.map((b) => b.row.id);
       const { data: messages } = await supabase
         .from("messages")
         .select("booking_id, content, created_at")
@@ -58,29 +110,15 @@ export function ChatInbox() {
         }
       }
 
-      const items: ChatConversation[] = bookings.map((booking: {
-        id: string;
-        updated_at: string;
-        rides: {
-          from_city: string;
-          to_city: string;
-          profiles: { name: string; avatar_url: string | null } | { name: string; avatar_url: string | null }[];
-        } | {
-          from_city: string;
-          to_city: string;
-          profiles: { name: string; avatar_url: string | null } | { name: string; avatar_url: string | null }[];
-        }[];
-      }) => {
-        const ride = Array.isArray(booking.rides) ? booking.rides[0] : booking.rides;
-        const driver = Array.isArray(ride?.profiles) ? ride.profiles[0] : ride?.profiles;
-
+      const items: ChatConversation[] = bookings.map(({ row, other }) => {
+        const ride = one(row.rides);
         return {
-          bookingId: booking.id,
-          participantName: driver?.name || t("user"),
-          participantAvatar: driver?.avatar_url || null,
+          bookingId: row.id,
+          participantName: other?.name || t("user"),
+          participantAvatar: other?.avatar_url || null,
           route: `${ride?.from_city || ""} → ${ride?.to_city || ""}`,
-          preview: lastMessageByBooking.get(booking.id) ?? "",
-          timestamp: booking.updated_at,
+          preview: lastMessageByBooking.get(row.id) ?? "",
+          timestamp: row.updated_at,
           unreadCount: 0,
         };
       });

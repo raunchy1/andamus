@@ -105,6 +105,19 @@ function formatTime(dateStr: string, locale: string) {
   });
 }
 
+/** The ride date, written the way the rest of the app writes it ("ven 21 ago")
+ *  rather than the raw ISO string the header used to print. */
+function formatRideDate(dateStr: string | undefined, locale: string) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(d);
+}
+
 function formatDuration(seconds: number) {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -1274,7 +1287,7 @@ export default function ChatWindow({
         <div className="flex shrink-0 items-center justify-between border-b border-line bg-surface px-4 py-3 sm:px-6">
           <div className="flex flex-col">
             <span className="font-mono text-[11px] text-dim">
-              {booking?.rides.date} · {booking?.rides.time.slice(0, 5)}
+              {formatRideDate(booking?.rides.date, locale)} · {booking?.rides.time.slice(0, 5)}
             </span>
           </div>
           {booking?.status !== "cancelled" && (
@@ -1367,7 +1380,7 @@ export default function ChatWindow({
                 {otherParticipant?.name || t("chat")}
               </h1>
               <p className="truncate text-sm text-muted">
-                {booking?.rides.from_city} → {booking?.rides.to_city} · {booking?.rides.date}
+                {booking?.rides.from_city} → {booking?.rides.to_city} · {formatRideDate(booking?.rides.date, locale)}
               </p>
             </div>
             {booking?.status !== "cancelled" && (
