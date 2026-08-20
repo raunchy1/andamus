@@ -170,13 +170,15 @@ function RideDetailTopBar({
   onBack: () => void;
   ride: Ride;
 }) {
+  const tCommon = useTranslations("common");
+
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-bg/95 px-4 py-3 backdrop-blur-md md:px-6">
       <button
         type="button"
         onClick={onBack}
         className="inline-flex size-10 items-center justify-center rounded-[var(--radius-sm)] text-fg transition-colors hover:bg-surface-2"
-        aria-label="Indietro"
+        aria-label={tCommon("back")}
       >
         <ChevronLeft className="size-5" strokeWidth={1.5} />
       </button>

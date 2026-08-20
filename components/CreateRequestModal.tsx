@@ -62,22 +62,22 @@ export function CreateRequestModal({
     e.preventDefault();
 
     if (!user) {
-      toast.error("Devi effettuare l'accesso per pubblicare una richiesta.");
+      toast.error(t("loginToPublish"));
       return;
     }
 
     if (!fromCity || !toCity) {
-      toast.error("Inserisci sia la partenza che la destinazione.");
+      toast.error(t("errorMissingCities"));
       return;
     }
 
     if (fromCity === toCity) {
-      toast.error("La partenza e la destinazione non possono coincidere.");
+      toast.error(t("errorSameCity"));
       return;
     }
 
     if (!date) {
-      toast.error("Inserisci la data del viaggio.");
+      toast.error(t("errorMissingDate"));
       return;
     }
 
@@ -99,7 +99,7 @@ export function CreateRequestModal({
 
       if (error) throw error;
 
-      toast.success("Richiesta di passaggio pubblicata con successo!");
+      toast.success(t("published"));
       Analytics.trackEvent("ride_request_created", {
         from_city: fromCity,
         to_city: toCity,
@@ -111,7 +111,7 @@ export function CreateRequestModal({
       onClose();
     } catch (err: any) {
       console.error("[CreateRequestModal] submit error:", err);
-      toast.error("Errore durante l'invio della richiesta. Riprova.");
+      toast.error(t("publishError"));
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ export function CreateRequestModal({
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
               <Sparkles className="h-3 w-3" />
-              Cerco passaggio
+              {t("modalTitle")}
             </span>
             <h3 className="text-2xl font-semibold tracking-tight text-ink">Chiedi un passaggio</h3>
             <p className="text-xs text-muted mt-1">
@@ -225,7 +225,7 @@ export function CreateRequestModal({
                   { value: "exact", label: "Preciso" },
                   { value: "1h", label: "±1h" },
                   { value: "3h", label: "±3h" },
-                  { value: "any", label: "Qualsiasi" },
+                  { value: "any", label: t("any") },
                 ].map((item) => (
                   <button
                     key={item.value}
@@ -310,7 +310,7 @@ export function CreateRequestModal({
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <>
-                Pubblica richiesta
+                {t("publish")}
                 <ArrowRight className="h-4.5 w-4.5" />
               </>
             )}

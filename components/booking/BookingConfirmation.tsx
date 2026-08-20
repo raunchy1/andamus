@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 
 interface BookingConfirmationProps {
@@ -24,6 +25,7 @@ export function BookingConfirmation({
   meetingPoint,
   driverName,
 }: BookingConfirmationProps) {
+  const t = useTranslations("postAction");
   const departure = time?.slice(0, 5) ?? "";
   const dateLabel = new Date(date).toLocaleDateString(locale, {
     weekday: "long",
@@ -136,7 +138,7 @@ export function BookingConfirmation({
           color: "rgba(244,241,234,.65)",
         }}
       >
-        Torna alla home
+        {t("backHome")}
       </Link>
     </div>
   );

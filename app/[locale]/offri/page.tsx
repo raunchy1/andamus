@@ -486,7 +486,6 @@ export default function OfferPage() {
             <RoutePhotos
               from={publishedRideData.from_city}
               to={publishedRideData.to_city}
-              credit={false}
             />
           )}
 

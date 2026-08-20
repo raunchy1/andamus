@@ -76,6 +76,7 @@ export function PublicProfileView({
   activeRides,
 }: PublicProfileViewProps) {
   const t = useTranslations("publicProfile");
+  const tSearch = useTranslations("search");
   const [copied, setCopied] = useState(false);
   const verified =
     profile.driver_verified ||
@@ -229,7 +230,7 @@ export function PublicProfileView({
                   driverAvatar={profile.avatar_url}
                   verified={verified}
                   rating={profile.review_count > 0 ? profile.rating.toFixed(1) : undefined}
-                  seatsLabel={`${ride.seats} posti`}
+                  seatsLabel={tSearch("seats", { count: ride.seats })}
                 />
               ))}
             </div>

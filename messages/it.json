@@ -92,7 +92,7 @@
   },
   "search": {
     "title": "Cerca un passaggio",
-    "seats": "{count} posti",
+    "seats": "{count, plural, one {# posto} other {# posti}}",
     "today": "Oggi",
     "saveAlert": "Salva avviso",
     "alertDescription": "Ricevi una notifica quando un conducente pubblica un passaggio su questa tratta.",
@@ -185,7 +185,7 @@
     "createRecurring": "Crea i passaggi",
     "creating": "Creazione…",
     "summaryFree": "gratis",
-    "summarySeats": "{seats} posti",
+    "summarySeats": "{seats, plural, one {# posto} other {# posti}}",
     "step1": {
       "title": "Dove vai?",
       "subtitle": "Partenza e arrivo. Le fermate lungo la strada le aggiungi dopo.",
@@ -564,7 +564,27 @@
     "bookingConfirmed": "Prenotazione confermata",
     "requestRejected": "Richiesta rifiutata",
     "booking": "Prenotazione in corso...",
-    "requestSeat": "Richiedi un posto"
+    "requestSeat": "Richiedi un posto",
+    "driverNoPayments": "Il conducente non ha ancora configurato i pagamenti.",
+    "failed": "Prenotazione non riuscita.",
+    "confirmTitle": "Conferma prenotazione",
+    "back": "Indietro",
+    "howManySeats": "Quanti posti?",
+    "oneBookingPer": "Una prenotazione per passeggero",
+    "removeSeat": "Rimuovi un posto",
+    "addSeat": "Aggiungi un posto",
+    "payment": "Pagamento",
+    "card": "Carta di credito o debito",
+    "stripeNote": "Il pagamento viene gestito da Stripe al passaggio successivo.",
+    "summary": "Riepilogo",
+    "seatsLine": "{count, plural, one {# × posto} other {# × posti}}",
+    "serviceFee": "Commissione servizio",
+    "total": "Totale",
+    "free": "Gratis",
+    "legalNote": "Cancellazione gratuita fino a 24 ore prima della partenza. {driver} riceve il tuo numero solo a prenotazione confermata.",
+    "meetingPointNote": " Punto d'incontro: {point}.",
+    "waiting": "Attendi…",
+    "confirmAndPay": "Conferma e paga {amount}"
   },
   "auth": {
     "termsRequired": "Devi accettare i Termini di Servizio e la Privacy Policy per continuare.",
@@ -674,7 +694,8 @@
     "joinCta": "Unisciti al gruppo",
     "youAreMember": "Sei membro",
     "membersCount": "{count, plural, =0 {Nessun membro} one {1 membro} other {# membri}}",
-    "noMembers": "Nessun membro, per ora. Puoi essere il primo."
+    "noMembers": "Nessun membro, per ora. Puoi essere il primo.",
+    "joinError": "Errore durante l'iscrizione al gruppo"
   },
   "requests": {
     "title": "Chi cerca un passaggio",
@@ -689,7 +710,7 @@
     "flexibleTime": "Orario flessibile",
     "exactTime": "Orario preciso",
     "oneSeat": "1 posto",
-    "manySeats": "{count} posti",
+    "manySeats": "{count, plural, one {# posto} other {# posti}}",
     "maxPrice": "Max {price}€",
     "flexibility": {
       "1h": "Flessibile ±1h",
@@ -711,7 +732,15 @@
     "yourRequest": "Questa è la tua richiesta",
     "createRequest": "Chiedi",
     "haveRideBody": "Pubblica una corsa su questa tratta: il passeggero riceve una notifica.",
-    "filters": "Filtri"
+    "filters": "Filtri",
+    "loginToPublish": "Devi effettuare l'accesso per pubblicare una richiesta.",
+    "errorMissingCities": "Inserisci sia la partenza che la destinazione.",
+    "errorSameCity": "La partenza e la destinazione non possono coincidere.",
+    "errorMissingDate": "Inserisci la data del viaggio.",
+    "published": "Richiesta di passaggio pubblicata con successo!",
+    "publishError": "Errore durante l'invio della richiesta. Riprova.",
+    "modalTitle": "Cerco passaggio",
+    "publish": "Pubblica richiesta"
   },
   "premium": {
     "choosePlan": "Scegli il tuo piano",
@@ -1368,7 +1397,8 @@
     "completed": "Completata",
     "copy": "Copia",
     "copied": "Copiato",
-    "back": "Torna indietro"
+    "back": "Torna indietro",
+    "backHome": "Torna alla home"
   },
   "shareModal": {
     "title": "Condividi passaggio",
@@ -1629,6 +1659,11 @@
     "searchPlaceholder": "Cerca marca o modello",
     "noMatch": "Nessun modello trovato",
     "changeVehicle": "Cambia veicolo",
-    "photoCredit": "Foto: {author}"
+    "photoCredit": "Foto: {author}",
+    "maxPhotos": "Hai già 10 foto!",
+    "photoRemoved": "Foto rimossa",
+    "photoRemoveError": "Non siamo riusciti a eliminare la foto.",
+    "descriptionSaveError": "Non siamo riusciti a salvare la descrizione.",
+    "createError": "Non siamo riusciti a creare il veicolo."
   }
 }

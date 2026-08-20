@@ -92,7 +92,7 @@
   },
   "search": {
     "title": "Find a ride",
-    "seats": "{count} seats",
+    "seats": "{count, plural, one {# seat} other {# seats}}",
     "today": "Today",
     "saveAlert": "Save alert",
     "alertDescription": "Get notified when a driver publishes a ride on this route.",
@@ -185,7 +185,7 @@
     "createRecurring": "Create the rides",
     "creating": "Creating…",
     "summaryFree": "free",
-    "summarySeats": "{seats} seats",
+    "summarySeats": "{seats, plural, one {# seat} other {# seats}}",
     "step1": {
       "title": "Where are you heading?",
       "subtitle": "Pick-up and drop-off. Stops along the way come later.",
@@ -564,7 +564,27 @@
     "bookingConfirmed": "Booking confirmed",
     "requestRejected": "Request rejected",
     "booking": "Booking...",
-    "requestSeat": "Request a seat"
+    "requestSeat": "Request a seat",
+    "driverNoPayments": "This driver hasn't set up payments yet.",
+    "failed": "Booking failed.",
+    "confirmTitle": "Confirm booking",
+    "back": "Back",
+    "howManySeats": "How many seats?",
+    "oneBookingPer": "One booking per passenger",
+    "removeSeat": "Remove a seat",
+    "addSeat": "Add a seat",
+    "payment": "Payment",
+    "card": "Credit or debit card",
+    "stripeNote": "Payment is handled by Stripe in the next step.",
+    "summary": "Summary",
+    "seatsLine": "{count, plural, one {# × seat} other {# × seats}}",
+    "serviceFee": "Service fee",
+    "total": "Total",
+    "free": "Free",
+    "legalNote": "Free cancellation up to 24 hours before departure. {driver} only receives your number once the booking is confirmed.",
+    "meetingPointNote": " Meeting point: {point}.",
+    "waiting": "Please wait…",
+    "confirmAndPay": "Confirm and pay {amount}"
   },
   "auth": {
     "termsRequired": "You must accept the Terms of Service and the Privacy Policy to continue.",
@@ -674,7 +694,8 @@
     "joinCta": "Join the group",
     "youAreMember": "You're a member",
     "membersCount": "{count, plural, =0 {No members} one {1 member} other {# members}}",
-    "noMembers": "No members yet. You can be the first."
+    "noMembers": "No members yet. You can be the first.",
+    "joinError": "Could not join the group"
   },
   "requests": {
     "title": "Who is looking for a ride",
@@ -689,7 +710,7 @@
     "flexibleTime": "Flexible time",
     "exactTime": "Exact time",
     "oneSeat": "1 seat",
-    "manySeats": "{count} seats",
+    "manySeats": "{count, plural, one {# seat} other {# seats}}",
     "maxPrice": "Max {price}€",
     "flexibility": {
       "1h": "Flexible ±1h",
@@ -711,7 +732,15 @@
     "yourRequest": "This is your request",
     "createRequest": "Ask",
     "haveRideBody": "Publish a ride on this route and the passenger gets a notification.",
-    "filters": "Filters"
+    "filters": "Filters",
+    "loginToPublish": "You need to sign in to post a request.",
+    "errorMissingCities": "Enter both the departure and the destination.",
+    "errorSameCity": "Departure and destination cannot be the same.",
+    "errorMissingDate": "Enter the date of the trip.",
+    "published": "Your ride request has been posted.",
+    "publishError": "Could not send the request. Please try again.",
+    "modalTitle": "Looking for a ride",
+    "publish": "Post request"
   },
   "premium": {
     "choosePlan": "Choose your plan",
@@ -1368,7 +1397,8 @@
     "completed": "Completed",
     "copy": "Copy",
     "copied": "Copied",
-    "back": "Go back"
+    "back": "Go back",
+    "backHome": "Back to home"
   },
   "shareModal": {
     "title": "Share ride",
@@ -1629,6 +1659,11 @@
     "searchPlaceholder": "Search make or model",
     "noMatch": "No model found",
     "changeVehicle": "Change vehicle",
-    "photoCredit": "Photo: {author}"
+    "photoCredit": "Photo: {author}",
+    "maxPhotos": "You already have 10 photos.",
+    "photoRemoved": "Photo removed",
+    "photoRemoveError": "We couldn't delete the photo.",
+    "descriptionSaveError": "We couldn't save the description.",
+    "createError": "We couldn't add the vehicle."
   }
 }

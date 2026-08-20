@@ -77,17 +77,17 @@ export default function GroupDetailPage() {
 
   const handleJoin = async () => {
     if (!user) {
-      toast.error("Accedi per unirti al gruppo");
+      toast.error(t("loginRequired"));
       return;
     }
     setJoining(true);
     const { error } = await supabase.from("group_memberships").insert({ group_id: groupId, user_id: user.id });
     if (error) {
-      toast.error("Errore durante l'iscrizione al gruppo");
+      toast.error(t("joinError"));
     } else {
       setIsMember(true);
       setMembers((prev) => [...prev, { id: "temp", profiles: { name: user.user_metadata?.name || "Tu", avatar_url: null } }]);
-      toast.success("Ti sei unito al gruppo!");
+      toast.success(t("joinedGroup"));
     }
     setJoining(false);
   };

@@ -74,7 +74,7 @@ export function VehiclePicker({ value, fallbackLabel, onChange }: Props) {
     return (
       <div className="overflow-hidden rounded-2xl border border-line bg-surface">
         {value.image_url ? (
-          <div className="relative aspect-[16/9] bg-sand-deep">
+          <div className="relative bg-sand-deep" style={{ aspectRatio: "16 / 9" }}>
             <Image
               src={commonsThumb(value.image_url, 800)}
               alt={value.label}
@@ -85,7 +85,7 @@ export function VehiclePicker({ value, fallbackLabel, onChange }: Props) {
             />
           </div>
         ) : (
-          <div className="flex aspect-[16/9] items-center justify-center bg-sand-deep">
+          <div className="flex items-center justify-center bg-sand-deep" style={{ aspectRatio: "16 / 9" }}>
             <Car className="h-6 w-6 text-muted" strokeWidth={1.5} aria-hidden />
           </div>
         )}

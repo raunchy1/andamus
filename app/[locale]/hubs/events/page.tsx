@@ -107,7 +107,7 @@ export default async function EventsHubPage({
                 href={`/${locale}/cerca?event=${event.slug}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-colors hover:border-accent/40"
               >
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-2">
+                <div className="relative w-full overflow-hidden bg-surface-2" style={{ aspectRatio: "16 / 10" }}>
                   <Image
                     src={event.image_url}
                     alt={event.name}

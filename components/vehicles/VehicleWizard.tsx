@@ -155,7 +155,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
       setVehicleId(data.id);
       return data.id as string;
     } catch (err) {
-      toast.error("Errore nella creazione del veicolo");
+      toast.error(t("createError"));
       return null;
     } finally {
       setCreating(false);
@@ -259,7 +259,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
       toast.success(t("added"));
       onSuccess?.(vId);
     } catch (err) {
-      toast.error("Errore nel salvare il veicolo");
+      toast.error(t("updateError"));
     } finally {
       setSubmitting(false);
     }
@@ -337,7 +337,7 @@ export function VehicleWizard({ onSuccess, onCancel }: VehicleWizardProps) {
 
             {selectedModel?.image_url && (
               <figure className="overflow-hidden rounded-2xl border border-line bg-surface">
-                <div className="relative aspect-[16/9] bg-sand-deep">
+                <div className="relative bg-sand-deep" style={{ aspectRatio: "16 / 9" }}>
                   <Image
                     src={selectedModel.image_url}
                     alt={`${selectedMake?.name} ${selectedModel.name}`}

@@ -33,7 +33,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
   const handleFileSelect = useCallback(async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const remaining = 10 - images.length;
-    if (remaining <= 0) { toast.error("Hai già 10 foto!"); return; }
+    if (remaining <= 0) { toast.error(t("maxPhotos")); return; }
 
     const toUpload = Array.from(files).slice(0, remaining);
     setUploading(true);
@@ -68,10 +68,10 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Errore eliminazione");
-      toast.success("Foto rimossa");
+      toast.success(t("photoRemoved"));
       onRefresh();
     } catch {
-      toast.error("Errore nell'eliminare la foto");
+      toast.error(t("photoRemoveError"));
     } finally {
       setDeletingImg(null);
     }
@@ -90,7 +90,7 @@ export function VehicleEditPanel({ vehicle, onClose, onRefresh }: VehicleEditPan
       toast.success(t("descriptionSaved"));
       onRefresh();
     } catch {
-      toast.error("Errore nel salvare la descrizione");
+      toast.error(t("descriptionSaveError"));
     } finally {
       setSavingDesc(false);
     }

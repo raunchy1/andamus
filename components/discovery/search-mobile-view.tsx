@@ -110,7 +110,7 @@ export function SearchMobileView(props: SearchViewProps) {
           <button
             type="button"
             onClick={handleRefresh}
-            aria-label={t("loading")}
+            aria-label={t("ariaRefresh")}
             className="flex size-[38px] items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors hover:border-line-strong"
           >
             <RefreshCw

@@ -92,7 +92,7 @@
   },
   "search": {
     "title": "Mitfahrgelegenheit suchen",
-    "seats": "{count} Plätze",
+    "seats": "{count, plural, one {# Platz} other {# Plätze}}",
     "today": "Heute",
     "saveAlert": "Benachrichtigung speichern",
     "alertDescription": "Wir benachrichtigen dich, sobald ein Fahrer eine Mitfahrgelegenheit auf dieser Strecke veröffentlicht.",
@@ -185,7 +185,7 @@
     "createRecurring": "Fahrten anlegen",
     "creating": "Wird angelegt…",
     "summaryFree": "gratis",
-    "summarySeats": "{seats} Plätze",
+    "summarySeats": "{seats, plural, one {# Platz} other {# Plätze}}",
     "step1": {
       "title": "Wohin fährst du?",
       "subtitle": "Start und Ziel. Zwischenstopps kommen später dazu.",
@@ -564,7 +564,27 @@
     "bookingConfirmed": "Buchung bestätigt",
     "requestRejected": "Anfrage abgelehnt",
     "booking": "Buchung läuft...",
-    "requestSeat": "Platz anfragen"
+    "requestSeat": "Platz anfragen",
+    "driverNoPayments": "Dieser Fahrer hat die Zahlungen noch nicht eingerichtet.",
+    "failed": "Buchung fehlgeschlagen.",
+    "confirmTitle": "Buchung bestätigen",
+    "back": "Zurück",
+    "howManySeats": "Wie viele Plätze?",
+    "oneBookingPer": "Eine Buchung pro Mitfahrer",
+    "removeSeat": "Einen Platz entfernen",
+    "addSeat": "Einen Platz hinzufügen",
+    "payment": "Zahlung",
+    "card": "Kredit- oder Debitkarte",
+    "stripeNote": "Die Zahlung wird im nächsten Schritt von Stripe abgewickelt.",
+    "summary": "Übersicht",
+    "seatsLine": "{count, plural, one {# × Platz} other {# × Plätze}}",
+    "serviceFee": "Servicegebühr",
+    "total": "Gesamt",
+    "free": "Kostenlos",
+    "legalNote": "Kostenlose Stornierung bis 24 Stunden vor Abfahrt. {driver} erhält deine Nummer erst nach bestätigter Buchung.",
+    "meetingPointNote": " Treffpunkt: {point}.",
+    "waiting": "Bitte warten…",
+    "confirmAndPay": "Bestätigen und {amount} zahlen"
   },
   "auth": {
     "termsRequired": "Du musst die Nutzungsbedingungen und die Datenschutzerklärung akzeptieren, um fortzufahren.",
@@ -674,7 +694,8 @@
     "joinCta": "Der Gruppe beitreten",
     "youAreMember": "Du bist Mitglied",
     "membersCount": "{count, plural, =0 {Keine Mitglieder} one {1 Mitglied} other {# Mitglieder}}",
-    "noMembers": "Noch keine Mitglieder. Du kannst die erste Person sein."
+    "noMembers": "Noch keine Mitglieder. Du kannst die erste Person sein.",
+    "joinError": "Beitritt zur Gruppe fehlgeschlagen"
   },
   "requests": {
     "title": "Wer eine Mitfahrt sucht",
@@ -689,7 +710,7 @@
     "flexibleTime": "Flexible Uhrzeit",
     "exactTime": "Genaue Uhrzeit",
     "oneSeat": "1 Platz",
-    "manySeats": "{count} Plätze",
+    "manySeats": "{count, plural, one {# Platz} other {# Plätze}}",
     "maxPrice": "Max. {price}€",
     "flexibility": {
       "1h": "Flexibel ±1h",
@@ -711,7 +732,15 @@
     "yourRequest": "Das ist deine Anfrage",
     "createRequest": "Anfragen",
     "haveRideBody": "Veröffentliche eine Fahrt auf dieser Strecke — der Mitfahrer wird benachrichtigt.",
-    "filters": "Filter"
+    "filters": "Filter",
+    "loginToPublish": "Du musst dich anmelden, um eine Anfrage zu veröffentlichen.",
+    "errorMissingCities": "Gib sowohl Abfahrt als auch Ziel an.",
+    "errorSameCity": "Abfahrt und Ziel dürfen nicht identisch sein.",
+    "errorMissingDate": "Gib das Datum der Fahrt an.",
+    "published": "Deine Mitfahranfrage wurde veröffentlicht.",
+    "publishError": "Die Anfrage konnte nicht gesendet werden. Bitte erneut versuchen.",
+    "modalTitle": "Ich suche eine Mitfahrt",
+    "publish": "Anfrage veröffentlichen"
   },
   "premium": {
     "choosePlan": "Wähle deinen Plan",
@@ -1368,7 +1397,8 @@
     "completed": "Abgeschlossen",
     "copy": "Kopieren",
     "copied": "Kopiert",
-    "back": "Zurück"
+    "back": "Zurück",
+    "backHome": "Zurück zur Startseite"
   },
   "shareModal": {
     "title": "Mitfahrgelegenheit teilen",
@@ -1629,6 +1659,11 @@
     "searchPlaceholder": "Marke oder Modell suchen",
     "noMatch": "Kein Modell gefunden",
     "changeVehicle": "Fahrzeug ändern",
-    "photoCredit": "Foto: {author}"
+    "photoCredit": "Foto: {author}",
+    "maxPhotos": "Du hast bereits 10 Fotos.",
+    "photoRemoved": "Foto entfernt",
+    "photoRemoveError": "Das Foto konnte nicht gelöscht werden.",
+    "descriptionSaveError": "Die Beschreibung konnte nicht gespeichert werden.",
+    "createError": "Das Fahrzeug konnte nicht angelegt werden."
   }
 }
