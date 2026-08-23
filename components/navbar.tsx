@@ -82,8 +82,18 @@ export function Navbar() {
 
   useEffect(() => {
     const getInitialUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        // The server rejected the session (e.g. the account behind it no
+        // longer exists — deleted from another tab, or by the user just
+        // now). getUser() re-validates against the Auth server, unlike
+        // getSession(), so an error here means the local token is stale;
+        // drop it instead of showing a name for an account that's gone.
+        setUser(null);
+        await supabase.auth.signOut();
+      } else {
+        setUser(user);
+      }
       setLoading(false);
     };
     getInitialUser();
