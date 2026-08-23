@@ -207,6 +207,23 @@ export async function signInWithEmail(email: string, password: string) {
   return data;
 }
 
+/**
+ * Passwordless sign-in: emails a one-time link that lands on /auth/callback
+ * with a PKCE code, exchanged the same way as the OAuth flow. Creates the
+ * account on first use, same as signing up.
+ */
+export async function signInWithMagicLink(email: string, redirectTo?: string) {
+  const supabase = createClient();
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+      emailRedirectTo: getCallbackPath(redirectTo),
+    },
+  });
+  if (error) throw error;
+}
+
 export async function signOut() {
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();

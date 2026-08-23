@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FEATURES } from "@/lib/features";
-import { preloadGoogleIdentity, signInWithGoogle } from "@/lib/auth";
+import { preloadGoogleIdentity, signInWithGoogle, signInWithMagicLink } from "@/lib/auth";
 import { ProductAnalytics } from "@/lib/posthog";
 
 interface AuthModalProps {
@@ -25,12 +25,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
   const [supabase] = useState(() => createClient());
 
   const [mode, setMode] = useState<"login" | "register">(defaultTab);
+  const [loginMethod, setLoginMethod] = useState<"password" | "magiclink">("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   // Size the modal against the visual viewport so the on-screen keyboard never
   // covers the form fields on mobile.
@@ -64,6 +66,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       setPassword("");
       setConfirmPassword("");
       setName("");
+      setMagicLinkSent(false);
+      setLoginMethod("password");
     }, 200);
   }, [onClose]);
 
@@ -131,6 +135,20 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
       // method === "oauth": browser navigates to Google; leave loading state.
     } catch (error: any) {
       toast.error(error instanceof Error ? error.message : t("googleLoginError"));
+      setLoading(false);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    if (!email) return toast.error(t("fillAllFields"));
+    setLoading(true);
+    try {
+      ProductAnalytics.signupStarted("magiclink");
+      await signInWithMagicLink(email);
+      setMagicLinkSent(true);
+    } catch (error: any) {
+      toast.error(error.message || t("magicLinkError"));
+    } finally {
       setLoading(false);
     }
   };
@@ -217,17 +235,17 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
         <div className="px-6 mb-6">
           <div className="flex p-1 bg-surface border border-line rounded-2xl">
             <button
-              onClick={() => setMode("login")}
+              onClick={() => { setMode("login"); setLoginMethod("password"); setMagicLinkSent(false); }}
               className={`flex-1 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] rounded-xl transition-all ${
-                mode === "login" 
-                  ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                mode === "login"
+                  ? "bg-primary text-white shadow-lg shadow-primary/20"
                   : "text-faint hover:text-muted"
               }`}
             >
               {t("loginTab")}
             </button>
             <button
-              onClick={() => setMode("register")}
+              onClick={() => { setMode("register"); setLoginMethod("password"); setMagicLinkSent(false); }}
               className={`flex-1 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] rounded-xl transition-all ${
                 mode === "register" 
                   ? "bg-primary text-white shadow-lg shadow-primary/20" 
@@ -241,6 +259,21 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
 
         {/* Form */}
         <div className="px-6 pb-8 space-y-4">
+          {mode === "login" && loginMethod === "magiclink" && magicLinkSent ? (
+            <div className="space-y-4 py-2 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Mail size={22} />
+              </div>
+              <p className="text-sm leading-relaxed text-ink">{t("magicLinkSent", { email })}</p>
+              <button
+                onClick={() => setMagicLinkSent(false)}
+                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary hover:underline"
+              >
+                {t("magicLinkTryAgain")}
+              </button>
+            </div>
+          ) : (
+          <>
           {mode === "register" && (
             <div className="space-y-1.5">
               <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
@@ -279,30 +312,42 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
-              {t("passwordLabel")}
-            </label>
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-faint group-focus-within:text-primary transition-colors">
-                <Lock size={18} />
+          {!(mode === "login" && loginMethod === "magiclink") && (
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint ml-1">
+                {t("passwordLabel")}
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-faint group-focus-within:text-primary transition-colors">
+                  <Lock size={18} />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-sand border border-line focus:border-green/50 rounded-2xl pl-12 pr-12 py-4 text-ink placeholder:text-faint focus:outline-none transition-all"
+                  placeholder={t("passwordPlaceholder")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-faint hover:text-ink transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-sand border border-line focus:border-green/50 rounded-2xl pl-12 pr-12 py-4 text-ink placeholder:text-faint focus:outline-none transition-all"
-                placeholder={t("passwordPlaceholder")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-faint hover:text-ink transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
-          </div>
+          )}
+
+          {mode === "login" && (
+            <button
+              type="button"
+              onClick={() => setLoginMethod(loginMethod === "password" ? "magiclink" : "password")}
+              className="-mt-2 ml-1 text-xs font-medium text-primary hover:underline"
+            >
+              {loginMethod === "password" ? t("useMagicLinkInstead") : t("usePasswordInstead")}
+            </button>
+          )}
 
           {mode === "register" && (
             <div className="space-y-1.5">
@@ -325,14 +370,22 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
           )}
 
           <button
-            onClick={mode === "login" ? handleLogin : handleRegister}
+            onClick={
+              mode === "login"
+                ? loginMethod === "magiclink"
+                  ? handleMagicLink
+                  : handleLogin
+                : handleRegister
+            }
             disabled={loading}
             className="w-full bg-primary hover:bg-primary-hover disabled:opacity-50 text-white font-semibold uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />
+            ) : mode === "login" ? (
+              loginMethod === "magiclink" ? t("sendMagicLinkButton") : t("loginButton")
             ) : (
-              mode === "login" ? t("loginButton") : t("registerButton")
+              t("registerButton")
             )}
           </button>
 
@@ -359,6 +412,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalPr
             </svg>
             {t("loginWithGoogle")}
           </button>
+          </>
+          )}
         </div>
       </div>
     </div>
