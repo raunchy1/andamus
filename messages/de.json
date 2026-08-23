@@ -491,6 +491,12 @@
     "emailNotifications": "E-Mail-Benachrichtigungen",
     "emailDetail": "Wähle, was du bekommst",
     "deleteAccount": "Konto löschen",
+    "deleteAccountTitle": "Konto löschen?",
+    "deleteAccountWarning": "Fahrten, Buchungen, Nachrichten und Bewertungen werden dauerhaft entfernt. Dies kann nicht rückgängig gemacht werden.",
+    "deleteAccountConfirmPrompt": "Schreibe LÖSCHEN, um zu bestätigen.",
+    "deleteAccountConfirmPlaceholder": "LÖSCHEN",
+    "deleteAccountSuccess": "Konto gelöscht",
+    "deleteAccountError": "Konto konnte nicht gelöscht werden. Versuche es später erneut.",
     "emailConfirmed": "Adresse bestätigt",
     "emailNotConfirmed": "Bestätige deine Adresse über den Link, den wir dir geschickt haben.",
     "photoCredit": "Foto: {author}"

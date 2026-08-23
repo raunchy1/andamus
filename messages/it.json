@@ -491,6 +491,12 @@
     "emailNotifications": "Notifiche email",
     "emailDetail": "Scegli cosa ricevere",
     "deleteAccount": "Elimina l'account",
+    "deleteAccountTitle": "Eliminare l'account?",
+    "deleteAccountWarning": "Passaggi, prenotazioni, messaggi e recensioni verranno rimossi in modo permanente. L'operazione non può essere annullata.",
+    "deleteAccountConfirmPrompt": "Scrivi ELIMINA per confermare.",
+    "deleteAccountConfirmPlaceholder": "ELIMINA",
+    "deleteAccountSuccess": "Account eliminato",
+    "deleteAccountError": "Impossibile eliminare l'account. Riprova più tardi.",
     "emailConfirmed": "Indirizzo confermato",
     "emailNotConfirmed": "Conferma l'indirizzo dal link che ti abbiamo inviato.",
     "photoCredit": "Foto: {author}"

@@ -491,6 +491,12 @@
     "emailNotifications": "Email notifications",
     "emailDetail": "Choose what you receive",
     "deleteAccount": "Delete account",
+    "deleteAccountTitle": "Delete your account?",
+    "deleteAccountWarning": "Rides, bookings, messages and reviews will be permanently removed. This cannot be undone.",
+    "deleteAccountConfirmPrompt": "Type DELETE to confirm.",
+    "deleteAccountConfirmPlaceholder": "DELETE",
+    "deleteAccountSuccess": "Account deleted",
+    "deleteAccountError": "Couldn't delete the account. Try again later.",
     "emailConfirmed": "Address confirmed",
     "emailNotConfirmed": "Confirm your address from the link we sent you.",
     "photoCredit": "Photo: {author}"

@@ -302,6 +302,9 @@ export default function ProfilePage() {
   const [streakCelebrated, setStreakCelebrated] = useState(false);
   const [activeTab, setActiveTab] = useState("rides");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [processingBooking, setProcessingBooking] = useState<string | null>(null);
 
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -590,6 +593,20 @@ export default function ProfilePage() {
       toast.error(t("logoutError"));
     } finally {
       setIsLoggingOut(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+    try {
+      const res = await fetch("/api/profile/delete", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || t("deleteAccountError"));
+      toast.success(t("deleteAccountSuccess"));
+      window.location.href = `/${locale}`;
+    } catch (err: any) {
+      toast.error(err.message || t("deleteAccountError"));
+      setIsDeletingAccount(false);
     }
   };
 
@@ -1551,13 +1568,13 @@ export default function ProfilePage() {
                   <LogOut className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.5} aria-hidden />
                   <span className="flex-1 text-sm font-medium text-ink">{t("logout")}</span>
                 </button>
-                <Link
-                  href={`/${locale}/elimina-account`}
-                  className="flex min-h-[56px] items-center gap-3 px-5 py-3.5 transition-colors hover:bg-sand"
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex min-h-[56px] w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-sand"
                 >
                   <Trash2 className="h-5 w-5 shrink-0 text-terracotta" strokeWidth={1.5} aria-hidden />
                   <span className="flex-1 text-sm font-medium text-terracotta">{t("deleteAccount")}</span>
-                </Link>
+                </button>
               </div>
             </Panel>
           </aside>
@@ -1587,6 +1604,50 @@ export default function ProfilePage() {
                   className="min-h-[44px] flex-1 rounded-xl bg-terracotta text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {isLoggingOut ? <Loader2 className="mx-auto h-4 w-4 animate-spin" strokeWidth={1.5} /> : t("logout")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-modal flex items-end justify-center bg-[var(--bg-overlay)] p-4 sm:items-center">
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-account-title"
+              className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6"
+            >
+              <h2 id="delete-account-title" className="font-heading text-xl text-ink">{t("deleteAccountTitle")}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{t("deleteAccountWarning")}</p>
+              <label htmlFor="delete-account-confirm" className="mt-4 block text-sm leading-relaxed text-muted">
+                {t("deleteAccountConfirmPrompt")}
+              </label>
+              <input
+                id="delete-account-confirm"
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder={t("deleteAccountConfirmPlaceholder")}
+                className="mt-2 w-full rounded-xl border border-line bg-sand px-4 py-3 text-sm text-ink focus:border-terracotta/50 focus:outline-none"
+                autoComplete="off"
+              />
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteConfirmText("");
+                  }}
+                  className="min-h-[44px] flex-1 rounded-xl border border-line text-sm font-medium text-ink transition-colors hover:bg-sand"
+                >
+                  {t("cancel")}
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isDeletingAccount || deleteConfirmText.trim().toUpperCase() !== t("deleteAccountConfirmPlaceholder").toUpperCase()}
+                  className="min-h-[44px] flex-1 rounded-xl bg-terracotta text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {isDeletingAccount ? <Loader2 className="mx-auto h-4 w-4 animate-spin" strokeWidth={1.5} /> : t("deleteAccount")}
                 </button>
               </div>
             </div>
