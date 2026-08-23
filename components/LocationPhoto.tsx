@@ -36,7 +36,7 @@ export function LocationPhoto({
 
   return (
     <figure className={cn("m-0 flex flex-col gap-1.5", className)}>
-      <div className="relative aspect-[8/5] w-full overflow-hidden rounded-2xl border border-line bg-surface-2">
+      <div className="relative w-full overflow-hidden rounded-2xl border border-line bg-surface-2" style={{ aspectRatio: "8 / 5" }}>
         {usable ? (
           <Image
             src={usable.url}

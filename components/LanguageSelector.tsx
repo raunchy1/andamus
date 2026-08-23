@@ -53,7 +53,10 @@ export function LanguageSelector({ isHome: _isHome = false }: LanguageSelectorPr
         className="inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm text-fg"
         aria-label={t("select")}
       >
-        <span>{t("it")}</span>
+        {/* useLocale() resolves on the server too, so render the *current*
+            language here. Hardcoding "it" made the English and German pages
+            ship markup labelling the switcher "Italiano" until hydration. */}
+        <span>{currentLabel}</span>
       </button>
     );
   }

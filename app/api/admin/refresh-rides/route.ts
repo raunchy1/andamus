@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import * as crypto from "crypto";
 
 // ── Deterministic helpers (same as seed-rides.ts) ─────────────────────────────
-
-function generateDeterministicUUID(seed: string): string {
-  const hash = crypto.createHash("md5").update(seed).digest("hex");
-  return `${hash.substring(0, 8)}-${hash.substring(8, 12)}-${hash.substring(12, 16)}-${hash.substring(16, 20)}-${hash.substring(20, 32)}`;
-}
 
 function createPRNG(seedString: string) {
   let h = 0;
@@ -57,9 +51,32 @@ export async function GET(request: Request) {
       "martina.usai@andamus.it",
     ];
 
-    const seedDriverIds = seedEmails.map((email) =>
-      generateDeterministicUUID(`user-${email}`)
-    );
+    // The ids must come from the table, not from a hash of the email. The
+    // seed profiles were created through Supabase Auth, so their ids are the
+    // auth user ids — generateDeterministicUUID("user-<email>") produces
+    // something else entirely, the `in` filter matched nothing, and this route
+    // reported "marketplace is fresh" while every seeded ride sat expired.
+    const { data: seedDrivers, error: seedDriversErr } = await supabase
+      .from("profiles")
+      .select("id, email")
+      .in("email", seedEmails);
+
+    if (seedDriversErr) {
+      logs.push(`Error resolving seed drivers: ${seedDriversErr.message}`);
+      return NextResponse.json({ success: false, error: seedDriversErr.message, logs }, { status: 500 });
+    }
+
+    const seedDriverIds = (seedDrivers ?? []).map((d) => d.id as string);
+    logs.push(`Resolved ${seedDriverIds.length} seed drivers`);
+
+    if (seedDriverIds.length === 0) {
+      return NextResponse.json({
+        success: true,
+        message: "No seed drivers found — nothing to refresh.",
+        refreshed: 0,
+        logs,
+      });
+    }
 
     // ── 2. Find expired or soon-expiring seed rides ────────────────────────────
     // Include status 'expired' (set by midnight expire-rides cron) AND

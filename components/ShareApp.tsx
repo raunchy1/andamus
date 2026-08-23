@@ -22,7 +22,7 @@ export function ShareApp({ variant = "button", className = "", onShare }: ShareA
         await navigator.share({
           title: t("appName"),
           text: SHARE_TEXT,
-          url: "https://andamus.it",
+          url: process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it",
         });
         toast.success(t("shareSuccess"));
       } else if (navigator.clipboard) {
@@ -103,7 +103,7 @@ export function useShareApp() {
         await navigator.share({
           title: t("appName"),
           text,
-          url: "https://andamus.it",
+          url: process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it",
         });
         return true;
       } else if (navigator.clipboard) {

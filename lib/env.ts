@@ -36,7 +36,7 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_BASE_URL: z.string().url().optional(),
 
   // Third-party
-  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().min(1, "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is required"),
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
 
   // Observability

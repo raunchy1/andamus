@@ -32,7 +32,7 @@ export function Footer() {
         await navigator.share({
           title: t("shareTitle"),
           text: shareText,
-          url: "https://andamus.it",
+          url: process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it",
         });
         toast.success(t("shareSuccess"));
       } else if (navigator.clipboard) {

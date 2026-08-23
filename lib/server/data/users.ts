@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { PUBLIC_PROFILE_COLUMNS } from "@/lib/profile-columns";
 
 export interface Profile {
   id: string;
@@ -38,7 +39,7 @@ export async function getProfileById(userId: string): Promise<Profile | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PUBLIC_PROFILE_COLUMNS)
     .eq("id", userId)
     .single();
 

@@ -33,6 +33,7 @@ interface HomeUIProps {
   loading: boolean;
   userName: string;
   userAvatar: string | null;
+  unreadCount: number;
   handleSearch: (e: React.FormEvent) => void;
   router: ReturnType<typeof useRouter>;
   savedRoutes: any[];
@@ -81,6 +82,7 @@ interface HomeTranslations {
   featuredToday: string;
   withDriver: string;
   driverFallback: string;
+  login: string;
   savedRoutes: string;
   routeRemoved: string;
   routeRemoveError: string;
@@ -110,6 +112,7 @@ function HomeMobile(props: HomeViewProps) {
       locale={props.locale}
       userName={props.userName}
       userAvatar={props.userAvatar}
+      unreadCount={props.unreadCount}
       translations={props.translations}
       savedRoutes={props.savedRoutes}
       router={props.router}
@@ -142,6 +145,7 @@ export default function HomePageClient({
   initialRides,
   initialUserName,
   initialUserAvatar,
+  initialUnreadCount = 0,
   initialSavedRoutes = [],
 }: {
   locale: string;
@@ -149,6 +153,7 @@ export default function HomePageClient({
   initialRides: Ride[];
   initialUserName: string;
   initialUserAvatar: string | null;
+  initialUnreadCount?: number;
   initialSavedRoutes?: any[];
 }) {
   const router = useRouter();
@@ -211,6 +216,7 @@ export default function HomePageClient({
     loading,
     userName,
     userAvatar,
+    unreadCount: initialUnreadCount,
     handleSearch,
     router,
     locale,

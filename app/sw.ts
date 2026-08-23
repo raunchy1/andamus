@@ -94,17 +94,17 @@ const serwist = new Serwist({
       }),
     },
     
-    // Cache Google Maps API responses (limited)
     {
       matcher: ({ url }: { url: URL }) =>
-        url.hostname.includes("googleapis.com") ||
-        url.hostname.includes("gstatic.com"),
-      handler: new StaleWhileRevalidate({
-        cacheName: "google-maps-cache",
+        url.hostname.endsWith("basemaps.cartocdn.com") ||
+        url.hostname.endsWith("cartocdn.com") ||
+        url.hostname === "staticmap.openstreetmap.de",
+      handler: new CacheFirst({
+        cacheName: "map-tiles",
         plugins: [
           new ExpirationPlugin({
-            maxEntries: 50,
-            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+            maxEntries: 200,
+            maxAgeSeconds: 14 * 24 * 60 * 60,
           }),
         ],
       }),

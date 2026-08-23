@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "it_IT",
-    url: "https://andamus.it",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it",
     siteName: "Andamus",
     title: "Andamus - Carpooling in Sardegna",
     description:

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Check, Minus, Plus, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { RoutePhotos } from "@/components/LocationPhoto";
 
 import { Analytics } from "@/lib/analytics";
@@ -49,6 +50,7 @@ export function BookingClient({
   driverName,
 }: BookingClientProps) {
   const router = useRouter();
+  const t = useTranslations("booking");
   const [seats, setSeats] = useState(1);
   const [submitting, setSubmitting] = useState(false);
 
@@ -77,10 +79,13 @@ export function BookingClient({
       const data = await res.json();
 
       if (!res.ok) {
+        // data.error comes from the API in English; map the one case we
+        // recognise to a translated line and fall back to a generic one
+        // rather than surfacing a raw server string to the user.
         toast.error(
           data.error === "Driver has not set up payments"
-            ? "Il conducente non ha ancora configurato i pagamenti."
-            : data.error || "Prenotazione non riuscita."
+            ? t("driverNoPayments")
+            : t("failed")
         );
         setSubmitting(false);
         return;
@@ -88,7 +93,7 @@ export function BookingClient({
 
       window.location.href = data.url;
     } catch {
-      toast.error("Prenotazione non riuscita. Riprova.");
+      toast.error(t("bookingError"));
       setSubmitting(false);
     }
   };
@@ -112,7 +117,7 @@ export function BookingClient({
             cursor: "pointer",
             marginBottom: 18,
           }}
-          aria-label="Indietro"
+          aria-label={t("back")}
         >
           <ChevronLeft size={20} strokeWidth={1.7} style={{ color: "var(--ink)" }} />
         </button>
@@ -126,7 +131,7 @@ export function BookingClient({
             margin: "0 0 6px",
           }}
         >
-          Conferma prenotazione
+          {t("confirmTitle")}
         </h1>
         <p style={{ fontSize: 14, color: "var(--muted)", margin: 0 }}>
           {fromCity} → {toCity} · {dateLabel}, {departure}
@@ -134,7 +139,7 @@ export function BookingClient({
       </header>
 
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 12 }}>
-        <RoutePhotos from={fromCity} to={toCity} credit={false} />
+        <RoutePhotos from={fromCity} to={toCity} />
 
         {/* ── Card posti ──────────────────────────────── */}
         <section
@@ -148,11 +153,11 @@ export function BookingClient({
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
               <p style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)", margin: "0 0 2px" }}>
-                Quanti posti?
+                {t("howManySeats")}
               </p>
               <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
                 {seatCap === 1
-                  ? "Una prenotazione per passeggero"
+                  ? t("oneBookingPer")
                   : `Massimo ${seatCap} disponibili`}
               </p>
             </div>
@@ -174,7 +179,7 @@ export function BookingClient({
                   cursor: seats <= 1 ? "not-allowed" : "pointer",
                   opacity: seats <= 1 ? 0.4 : 1,
                 }}
-                aria-label="Rimuovi un posto"
+                aria-label={t("removeSeat")}
               >
                 <Minus size={16} strokeWidth={2} style={{ color: "var(--ink)" }} />
               </button>
@@ -208,7 +213,7 @@ export function BookingClient({
                   cursor: seats >= seatCap ? "not-allowed" : "pointer",
                   opacity: seats >= seatCap ? 0.4 : 1,
                 }}
-                aria-label="Aggiungi un posto"
+                aria-label={t("addSeat")}
               >
                 <Plus size={16} strokeWidth={2} color="#fff" />
               </button>
@@ -227,7 +232,7 @@ export function BookingClient({
             }}
           >
             <p style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)", margin: "0 0 14px" }}>
-              Pagamento
+              {t("payment")}
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div
@@ -245,12 +250,12 @@ export function BookingClient({
                 <CreditCard size={16} strokeWidth={1.7} color="var(--sand)" />
               </div>
               <span style={{ fontSize: 15, color: "var(--ink)", flex: 1 }}>
-                Carta di credito o debito
+                {t("card")}
               </span>
               <Check size={20} strokeWidth={2.1} style={{ color: "var(--green)" }} />
             </div>
             <p style={{ fontSize: 12.5, color: "var(--faint)", margin: "10px 0 0" }}>
-              Il pagamento viene gestito da Stripe al passaggio successivo.
+              {t("stripeNote")}
             </p>
           </section>
         )}
@@ -265,21 +270,21 @@ export function BookingClient({
           }}
         >
           <p style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)", margin: "0 0 14px" }}>
-            Riepilogo
+            {t("summary")}
           </p>
 
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
             <span style={{ fontSize: 14.5, color: "var(--muted)" }}>
-              {seats} × posto
+              {t("seatsLine", { count: seats })}
             </span>
             <span style={{ fontSize: 14.5, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
-              {isFree ? "Gratis" : formatEuro(subtotal)}
+              {isFree ? t("free") : formatEuro(subtotal)}
             </span>
           </div>
 
           {!isFree && (
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-              <span style={{ fontSize: 14.5, color: "var(--muted)" }}>Commissione servizio</span>
+              <span style={{ fontSize: 14.5, color: "var(--muted)" }}>{t("serviceFee")}</span>
               <span style={{ fontSize: 14.5, color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>
                 {formatEuro(SERVICE_FEE)}
               </span>
@@ -289,7 +294,7 @@ export function BookingClient({
           <div style={{ height: 1, background: "var(--line-soft)", margin: "0 0 14px" }} />
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-            <span style={{ fontSize: 19, fontWeight: 600, color: "var(--ink)" }}>Totale</span>
+            <span style={{ fontSize: 19, fontWeight: 600, color: "var(--ink)" }}>{t("total")}</span>
             <span
               style={{
                 fontSize: 19,
@@ -298,7 +303,7 @@ export function BookingClient({
                 fontVariantNumeric: "tabular-nums",
               }}
             >
-              {isFree ? "Gratis" : formatEuro(total)}
+              {isFree ? t("free") : formatEuro(total)}
             </span>
           </div>
         </section>
@@ -313,9 +318,8 @@ export function BookingClient({
             textWrap: "pretty",
           }}
         >
-          Cancellazione gratuita fino a 24 ore prima della partenza.{" "}
-          {driverName} riceve il tuo numero solo a prenotazione confermata.
-          {meetingPoint ? ` Punto d'incontro: ${meetingPoint}.` : ""}
+          {t("legalNote", { driver: driverName })}
+          {meetingPoint ? t("meetingPointNote", { point: meetingPoint }) : ""}
         </p>
       </div>
 
@@ -353,10 +357,10 @@ export function BookingClient({
           }}
         >
           {submitting
-            ? "Attendi…"
+            ? t("waiting")
             : isFree
-              ? "Conferma prenotazione"
-              : `Conferma e paga ${formatEuro(total)}`}
+              ? t("confirmTitle")
+              : t("confirmAndPay", { amount: formatEuro(total) })}
         </button>
       </div>
     </div>

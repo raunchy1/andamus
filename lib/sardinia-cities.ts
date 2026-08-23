@@ -314,39 +314,3 @@ export function calculateCO2Saved(distanceKm: number, passengers: number = 1): n
   return Math.round(distanceKm * emissionPerKm * passengers * 10) / 10;
 }
 
-/** Map accent — matches --accent token */
-export const MAP_ACCENT = "#2D6A4F";
-export const MAP_MUTED = "#8C8C87";
-
-// Sand-toned map styles for Google Maps (tile + static), matching the
-// light design system. These replace the pre-redesign dark styles.
-export const mapStyles = [
-  { elementType: "geometry", stylers: [{ color: "#F4F1EA" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#6B7570" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#F4F1EA" }] },
-  { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#E4DFD4" }] },
-  { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#EDE7DA" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-  { featureType: "transit", stylers: [{ visibility: "off" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#FFFFFF" }] },
-  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#E4DFD4" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#FFFFFF" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#D8D3C7" }] },
-];
-
-/** Query-string fragment for Google Static Maps sand styling */
-export const staticMapStyleQuery = [
-  "element:geometry|color:0xF4F1EA",
-  "element:labels.text.fill|color:0x6B7570",
-  "element:labels.text.stroke|color:0xF4F1EA",
-  "feature:administrative|element:geometry|color:0xE4DFD4",
-  "feature:landscape|element:geometry|color:0xEDE7DA",
-  "feature:poi|visibility:off",
-  "feature:transit|visibility:off",
-  "feature:road|element:geometry|color:0xFFFFFF",
-  "feature:road|element:geometry.stroke|color:0xE4DFD4",
-  "feature:road.highway|element:geometry|color:0xFFFFFF",
-  "feature:water|element:geometry|color:0xD8D3C7",
-]
-  .map((s) => `style=feature:${s}`)
-  .join("&");

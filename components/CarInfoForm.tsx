@@ -79,7 +79,7 @@ export function CarInfoForm({ initialData, onSave, onCancel }: CarInfoFormProps)
     return (
       <div className="overflow-hidden rounded-2xl border border-line bg-surface">
         {initialData.car_image_url && (
-          <div className="relative aspect-[16/9] bg-sand-deep">
+          <div className="relative bg-sand-deep" style={{ aspectRatio: "16 / 9" }}>
             <Image
               src={commonsThumb(initialData.car_image_url, 800)}
               alt={initialData.car_model}

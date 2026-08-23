@@ -17,9 +17,36 @@ interface WeeklyRide {
 interface WeeklyDigestUser {
   id: string;
   email: string;
-  name: string;
-  locale: string;
-  streak_weeks: number;
+  name: string | null;
+  locale: string | null;
+}
+
+/** Monday of the week `date` falls in, as YYYY-MM-DD. Mirrors lib/retention.ts. */
+function getWeekKey(date: Date): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 1);
+  return d.toISOString().split("T")[0];
+}
+
+/** Count back consecutive weeks of recorded activity, ending this week or last. */
+function streakFromWeeks(weekKeys: Set<string>): number {
+  const thisWeek = getWeekKey(new Date());
+  const lastWeek = getWeekKey(new Date(Date.now() - 7 * 86400000));
+  let cursor: string;
+  if (weekKeys.has(thisWeek)) cursor = thisWeek;
+  else if (weekKeys.has(lastWeek)) cursor = lastWeek;
+  else return 0;
+
+  let streak = 1;
+  for (;;) {
+    const prev = getWeekKey(new Date(new Date(cursor).getTime() - 7 * 86400000));
+    if (!weekKeys.has(prev)) break;
+    streak += 1;
+    cursor = prev;
+  }
+  return streak;
 }
 
 export async function GET(request: NextRequest) {
@@ -43,11 +70,43 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createServiceRoleClient();
 
-    // Fetch users with active streaks
+    // Streaks live in user_activity_weeks (one row per user per active week),
+    // so derive them here rather than reading a profiles column.
+    const { data: activity, error: activityError } = await supabase
+      .from("user_activity_weeks")
+      .select("user_id, week_key");
+
+    if (activityError) {
+      console.error("[weekly-digest] activity error:", activityError);
+      return apiError("Database error", "DB_ERROR", 500);
+    }
+
+    const weeksByUser = new Map<string, Set<string>>();
+    for (const row of activity ?? []) {
+      const userId = String(row.user_id);
+      const set = weeksByUser.get(userId) ?? new Set<string>();
+      set.add(String(row.week_key));
+      weeksByUser.set(userId, set);
+    }
+
+    const streakByUser = new Map<string, number>();
+    for (const [userId, weeks] of weeksByUser) {
+      const streak = streakFromWeeks(weeks);
+      if (streak > 0) streakByUser.set(userId, streak);
+    }
+
+    if (streakByUser.size === 0) {
+      const response = apiSuccess({ message: "No users with streaks", emailsSent: 0 });
+      response.headers.set("X-RateLimit-Limit", String(rl.limit));
+      response.headers.set("X-RateLimit-Remaining", String(rl.remaining));
+      return response;
+    }
+
     const { data: users, error: usersError } = await supabase
       .from("profiles")
-      .select("id, email, full_name, locale, streak_weeks")
-      .gt("streak_weeks", 0)
+      .select("id, email, name, locale")
+      .in("id", [...streakByUser.keys()])
+      .not("email", "is", null)
       .returns<WeeklyDigestUser[]>();
 
     if (usersError) {
@@ -72,27 +131,40 @@ export async function GET(request: NextRequest) {
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         const oneWeekAgoStr = oneWeekAgo.toISOString().split("T")[0];
 
-        const { data: rides, error: ridesError } = await supabase
+        const { data: rideRows, error: ridesError } = await supabase
           .from("rides")
-          .select("from_city, to_city, date, time, price, profiles!inner(full_name)")
-          .or(`driver_id.eq.${user.id},bookings.passenger_id.eq.${user.id}`)
+          .select("from_city, to_city, date, time, price, profiles!rides_driver_id_fkey(name)")
+          .eq("driver_id", user.id)
           .gte("date", oneWeekAgoStr)
-          .eq("status", "completed")
-          .returns<WeeklyRide[]>();
+          .eq("status", "completed");
 
         if (ridesError) {
           errors.push(`User ${user.id}: rides fetch error`);
           continue;
         }
 
-        const hasStreak = user.streak_weeks > 0;
+        // The email template wants {from, to, driver}; the table stores
+        // from_city/to_city and the driver's name on the joined profile.
+        const rides: WeeklyRide[] = (rideRows ?? []).map((r) => {
+          const driverProfile = Array.isArray(r.profiles) ? r.profiles[0] : r.profiles;
+          return {
+            from: String(r.from_city ?? ""),
+            to: String(r.to_city ?? ""),
+            date: String(r.date ?? ""),
+            time: String(r.time ?? ""),
+            price: Number(r.price ?? 0),
+            driver: String((driverProfile as { name?: string } | null)?.name ?? ""),
+          };
+        });
+
+        const streakWeeks = streakByUser.get(user.id) ?? 0;
 
         const result = await sendWeeklyDigestEmail({
           to: user.email,
-          name: user.name,
-          rides: rides || [],
-          hasStreak,
-          streakWeeks: user.streak_weeks,
+          name: user.name ?? "",
+          rides,
+          hasStreak: streakWeeks > 0,
+          streakWeeks,
         });
 
         if (result.success) emailsSent++;

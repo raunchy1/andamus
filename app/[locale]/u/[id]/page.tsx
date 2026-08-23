@@ -5,6 +5,7 @@ import Script from "next/script";
 import { createClient } from "@/lib/supabase/server";
 import { PublicProfileView } from "@/components/PublicProfile";
 import { computeTrustScore, getTrustLevel, getAccountAge } from "@/lib/reputation";
+import { PUBLIC_PROFILE_COLUMNS } from "@/lib/profile-columns";
 
 interface PublicProfilePageProps {
   params: Promise<{ id: string; locale: string }>;
@@ -87,14 +88,14 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
   const supabase = await createClient();
 
   // Try resolving as slug first, then fall back to UUID
-  const profileQuery = supabase.from("profiles").select("*").eq("slug", id);
+  const profileQuery = supabase.from("profiles").select(PUBLIC_PROFILE_COLUMNS).eq("slug", id);
   let { data: profileRaw } = await profileQuery.single();
 
   if (!profileRaw) {
     // Fallback to UUID lookup for backward compatibility
     const { data: profileById } = await supabase
       .from("profiles")
-      .select("*")
+      .select(PUBLIC_PROFILE_COLUMNS)
       .eq("id", id)
       .single();
     profileRaw = profileById;
@@ -125,7 +126,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   const { data: reviewsRaw } = await supabase
     .from("reviews")
-    .select("id, rating, comment, created_at, reviewer:profiles(name, avatar_url), ride:rides(from_city, to_city, date)")
+    .select("id, rating, comment, created_at, reviewer:profiles!reviews_reviewer_id_fkey(name, avatar_url), ride:rides(from_city, to_city, date)")
     .eq("reviewed_id", id)
     .order("created_at", { ascending: false })
     .limit(20);
@@ -162,7 +163,7 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
     memberOf: {
       "@type": "Organization",
       name: "Andamus",
-      url: "https://andamus.it",
+      url: process.env.NEXT_PUBLIC_BASE_URL || "https://andamus.it",
     },
     aggregateRating: profile.review_count > 0
       ? {

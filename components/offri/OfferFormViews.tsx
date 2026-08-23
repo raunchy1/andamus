@@ -671,7 +671,22 @@ function OfferWizard({ props, layout }: { props: OfferViewProps; layout: "mobile
     props.handleSubmit(e);
   };
 
-  const stepProps: StepProps = { ...props, stepErrors };
+  // The page clears its own `errors` entry as soon as a field changes, but
+  // stepErrors was only reset by goBack() — so once a step failed validation,
+  // "Seleziona la città di partenza" stayed on screen in red even after the
+  // driver had picked a city. Clear the field's error as it is corrected.
+  const handleChange: OfferViewProps["handleChange"] = (field, value) => {
+    setStepErrors((prev) => {
+      if (!(field in prev) && !("sameCity" in prev)) return prev;
+      const next = { ...prev };
+      delete next[field];
+      if (field === "origin" || field === "destination") delete next.sameCity;
+      return next;
+    });
+    props.handleChange(field, value);
+  };
+
+  const stepProps: StepProps = { ...props, handleChange, stepErrors };
 
   const variants = {
     enter: (dir: number) => ({ x: dir > 0 ? 28 : -28, opacity: 0 }),

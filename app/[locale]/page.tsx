@@ -59,13 +59,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     greetingAfternoon: t('greetingAfternoon'),
     greetingEvening: t('greetingEvening'),
     featuredToday: t('featuredToday'),
-    withDriver: t('withDriver'),
+    // HomeMobileView interpolates {name} itself, so hand it the raw ICU
+    // template. t() would try to format it here and throw FORMATTING_ERROR
+    // because `name` isn't known until the client picks the next ride.
+    withDriver: t.raw('withDriver'),
     driverFallback: t('driverFallback'),
+    login: tCommon('login'),
   };
 
   let todayRides: any[] = [];
   let savedRoutes: any[] = [];
   let claims: any = null;
+  let unreadCount = 0;
 
   try {
     const supabase = await createClient();
@@ -76,7 +81,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     claims = claimsData?.claims ?? null;
     const userId = typeof claims?.sub === "string" ? claims.sub : null;
 
-    const [ridesRes, savedRes] = await Promise.allSettled([
+    const [ridesRes, savedRes, unreadRes] = await Promise.allSettled([
       getTodayRides(5),
       userId
         ? supabase
@@ -88,6 +93,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             .order("created_at", { ascending: false })
             .limit(20)
         : Promise.resolve({ data: [] as any[] }),
+      // The header's bell used to show its dot unconditionally, including to
+      // signed-out visitors. Count the real unread rows instead.
+      userId
+        ? supabase
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", userId)
+            .eq("read", false)
+        : Promise.resolve({ count: 0 }),
     ]);
 
     if (ridesRes.status === "fulfilled") {
@@ -100,6 +114,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       savedRoutes = (savedRes.value as { data: any[] | null }).data || [];
     } else {
       console.error("[home] Failed to fetch saved routes:", savedRes.reason);
+    }
+
+    if (unreadRes.status === "fulfilled") {
+      unreadCount = (unreadRes.value as { count: number | null }).count ?? 0;
+    } else {
+      console.error("[home] Failed to count unread notifications:", unreadRes.reason);
     }
   } catch (err) {
     console.error("[home] Unexpected error in Server Component:", err);
@@ -116,6 +136,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       initialRides={todayRides}
       initialUserName={userName}
       initialUserAvatar={userAvatar}
+      initialUnreadCount={unreadCount}
       initialSavedRoutes={savedRoutes}
     />
   );

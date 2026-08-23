@@ -70,7 +70,10 @@ interface HomeMobileViewProps {
     featuredToday: string
     withDriver: string
     driverFallback: string
+    login: string
   }
+  /** Unread notifications for the signed-in user; 0 hides the bell's dot. */
+  unreadCount?: number
   savedRoutes: Array<{ id: string; from_city: string; to_city: string }>
   router: ReturnType<typeof useRouter>
   suggestion: { from: string; to: string; reason: string } | null
@@ -112,13 +115,19 @@ export function HomeMobileView({
   userName,
   userAvatar,
   translations: t,
+  unreadCount = 0,
   savedRoutes,
   router,
   suggestion,
 }: HomeMobileViewProps) {
+  // The header is personalised, so it needs to know whether anyone is signed
+  // in. The server passes a name and/or an avatar only for a real session.
+  const isSignedIn = Boolean(userName || userAvatar)
   // Pluralised seat labels resolve here rather than via props: ICU plurals
   // need the live count, which is client state.
   const tHome = useTranslations("home")
+  const tNav = useTranslations("nav")
+  const tNotifications = useTranslations("notifications")
   const today = new Date().toISOString().split("T")[0]
   const [date, setDate] = useState(today)
   const [seats, setSeats] = useState(1)
@@ -151,85 +160,139 @@ export function HomeMobileView({
         className="flex items-center justify-between"
       >
         <div>
-          <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 2 }}>
-            {greeting(t)}
-          </p>
-          <h1
-            style={{
-              fontSize: 26,
-              fontWeight: 600,
-              letterSpacing: "-0.6px",
-              color: "var(--ink)",
-              margin: 0,
-            }}
-          >
-            {userName?.split(" ")[0] ?? ""}
-          </h1>
+          {isSignedIn ? (
+            <>
+              <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 2 }}>
+                {greeting(t)}
+              </p>
+              <h1
+                style={{
+                  fontSize: 26,
+                  fontWeight: 600,
+                  letterSpacing: "-0.6px",
+                  color: "var(--ink)",
+                  margin: 0,
+                }}
+              >
+                {userName?.split(" ")[0] ?? ""}
+              </h1>
+            </>
+          ) : (
+            /* No session, so there is no name to greet. Lead with the value
+               proposition instead of "Good evening" followed by a blank. */
+            <>
+              <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 2 }}>
+                {t.heroEyebrow}
+              </p>
+              <h1
+                style={{
+                  fontSize: 26,
+                  fontWeight: 600,
+                  letterSpacing: "-0.6px",
+                  color: "var(--ink)",
+                  margin: 0,
+                }}
+              >
+                {t.heroHeadline}
+              </h1>
+            </>
+          )}
         </div>
 
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          {/* Bell */}
-          <Link
-            href={`/${locale}/notifiche`}
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 999,
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <Bell size={18} strokeWidth={1.7} style={{ color: "var(--ink)" }} />
-            {/* badge */}
-            <span
-              style={{
-                position: "absolute",
-                top: 9,
-                right: 9,
-                width: 8,
-                height: 8,
-                borderRadius: 999,
-                background: "var(--terracotta)",
-                border: "2px solid var(--surface)",
-              }}
-            />
-          </Link>
+          {isSignedIn ? (
+            <>
+              {/* Bell */}
+              <Link
+                href={`/${locale}/notifiche`}
+                aria-label={tNotifications("title")}
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 999,
+                  background: "var(--surface)",
+                  border: "1px solid var(--line)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                }}
+              >
+                <Bell size={18} strokeWidth={1.7} style={{ color: "var(--ink)" }} />
+                {/* Only dot when something is actually unread. */}
+                {unreadCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 9,
+                      right: 9,
+                      width: 8,
+                      height: 8,
+                      borderRadius: 999,
+                      background: "var(--terracotta)",
+                      border: "2px solid var(--surface)",
+                    }}
+                  />
+                )}
+              </Link>
 
-          {/* Avatar */}
-          <Link
-            href={`/${locale}/profilo`}
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 999,
-              background: "var(--terracotta)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              fontSize: 14,
-              fontWeight: 600,
-              letterSpacing: "-0.3px",
-              flexShrink: 0,
-              overflow: "hidden",
-            }}
-          >
-            {userAvatar ? (
-              <Image
-                src={userAvatar}
-                alt=""
-                width={42}
-                height={42}
-                style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 999 }}
-              />
-            ) : (
-              getInitials(userName)
-            )}
-          </Link>
+              {/* Avatar */}
+              <Link
+                href={`/${locale}/profilo`}
+                aria-label={tNav("profile")}
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 999,
+                  background: "var(--terracotta)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  letterSpacing: "-0.3px",
+                  flexShrink: 0,
+                  overflow: "hidden",
+                }}
+              >
+                {userAvatar ? (
+                  <Image
+                    src={userAvatar}
+                    alt=""
+                    width={42}
+                    height={42}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 999 }}
+                  />
+                ) : (
+                  getInitials(userName)
+                )}
+              </Link>
+            </>
+          ) : (
+            /* Signed out: a bell and an empty "?" bubble both lead to pages
+               that just bounce to /join, so offer the sign-in directly. */
+            <Link
+              href={`/${locale}/join`}
+              style={{
+                height: 42,
+                padding: "0 18px",
+                borderRadius: 999,
+                background: "var(--surface)",
+                border: "1px solid var(--line)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--ink)",
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: "-0.2px",
+                flexShrink: 0,
+              }}
+            >
+              {t.login}
+            </Link>
+          )}
         </div>
       </header>
 

@@ -1,0 +1,110 @@
+.route-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  background: var(--sand-deep, #ede7da);
+}
+
+.route-svg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.route-map .maplibregl-canvas {
+  outline: none;
+}
+
+.route-map .maplibregl-ctrl-attrib {
+  font-size: 10px;
+  line-height: 1.35;
+  background: color-mix(in srgb, var(--sand, #f4f1ea) 92%, transparent);
+  color: var(--muted, #6b7570);
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin: 0;
+}
+
+.route-map .maplibregl-ctrl-attrib a {
+  color: inherit;
+}
+
+.route-map .maplibregl-ctrl-bottom-right,
+.route-map .maplibregl-ctrl-bottom-left {
+  bottom: 8px;
+  right: 8px;
+  left: auto;
+  z-index: 2;
+}
+
+.route-map .maplibregl-ctrl-top-right {
+  top: 8px;
+  right: 8px;
+}
+
+.route-map .maplibregl-ctrl-group {
+  border: 1px solid var(--line, #e4dfd4);
+  box-shadow: none;
+  background: var(--surface, #fff);
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.route-map .maplibregl-ctrl-group button {
+  width: 32px;
+  height: 32px;
+}
+
+.route-map .maplibregl-ctrl-group button + button {
+  border-top-color: var(--line, #e4dfd4);
+}
+
+.route-map .maplibregl-marker {
+  z-index: 2;
+}
+
+.route-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.route-marker-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid var(--green, #2d6a4f);
+  background: var(--sand, #f4f1ea);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--surface, #fff) 78%, transparent);
+}
+
+.route-marker--destination .route-marker-pin {
+  background: var(--green, #2d6a4f);
+}
+
+.route-marker--stop .route-marker-pin {
+  width: 10px;
+  height: 10px;
+  background: var(--ink, #16211c);
+  border-color: var(--ink, #16211c);
+}
+
+.route-marker-label {
+  margin-top: 5px;
+  max-width: 148px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid var(--line, #e4dfd4);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface, #fff) 94%, transparent);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink, #16211c);
+}
