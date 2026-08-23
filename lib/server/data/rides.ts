@@ -368,7 +368,7 @@ export async function searchRides(filters: SearchFilters): Promise<Ride[]> {
  */
 export async function getTodayRides(limit = 6): Promise<Ride[]> {
   const supabase = await createClient();
-  const today = new Date().toISOString().split("T")[0];
+  const { date: today, time: now } = getAppNow();
   const { data, error } = await supabase
     .from("rides")
     .select(`
@@ -385,6 +385,7 @@ export async function getTodayRides(limit = 6): Promise<Ride[]> {
     `)
     .eq("status", "active")
     .eq("date", today)
+    .gte("time", now)
     .order("time", { ascending: true })
     .limit(limit);
 
