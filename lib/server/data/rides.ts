@@ -230,7 +230,7 @@ export async function getSimilarRides(ride: Ride, limit = 3): Promise<Ride[]> {
       seats,
       price,
       created_at,
-      profiles!inner(name, avatar_url, rating, review_count)
+      profiles!inner(name, avatar_url, rating, review_count, id_verified)
     `)
     .eq("from_city", ride.from_city)
     .eq("status", "active")
@@ -381,7 +381,7 @@ export async function getTodayRides(limit = 6): Promise<Ride[]> {
       seats,
       price,
       created_at,
-      profiles!inner(name, avatar_url, rating, review_count)
+      profiles!inner(name, avatar_url, rating, review_count, id_verified)
     `)
     .eq("status", "active")
     .eq("date", today)
@@ -414,7 +414,7 @@ export async function getUpcomingActiveRides(limit = 3): Promise<Ride[]> {
       seats,
       price,
       created_at,
-      profiles!inner(name, avatar_url, rating, review_count)
+      profiles!inner(name, avatar_url, rating, review_count, id_verified)
     `)
     .eq("status", "active")
     .gte("date", today)

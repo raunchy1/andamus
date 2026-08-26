@@ -116,6 +116,7 @@ interface Ride {
     rating: number;
     rides_count: number;
     review_count?: number | null;
+    id_verified?: boolean | null;
   };
 }
 
@@ -274,8 +275,12 @@ function RideDetailDriverTrust({
 }) {
   const router = useRouter();
   const t = useTranslations("ride");
-  const verified =
-    (ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5;
+  // "Verificato" next to a driver's name means their identity was checked, so
+  // it must read the KYC flag and nothing else. It used to be
+  // `rating >= 4.5 || review_count > 5`, and profiles.rating defaults to 5.0 —
+  // every account was therefore badged as verified from the moment it was
+  // created, without a single review or document behind it.
+  const verified = ride.profiles.id_verified === true;
   const memberYear = ride.created_at
     ? new Date(ride.created_at).getFullYear()
     : new Date().getFullYear();

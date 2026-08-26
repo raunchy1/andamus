@@ -20,6 +20,8 @@ export interface PremiumDatePickerProps {
   label?: string;
   triggerClassName?: string;
   availabilityData?: Record<string, number>;
+  /** Suppress the built-in calendar glyph when the caller already draws one. */
+  hideIcon?: boolean;
 }
 
 function parseDate(dateStr: string | undefined): Date | undefined {
@@ -46,6 +48,7 @@ export function PremiumDatePicker({
   label = "Data",
   triggerClassName,
   availabilityData,
+  hideIcon = false,
 }: PremiumDatePickerProps) {
   const locale = useLocale();
   const t = useTranslations("calendar");
@@ -124,7 +127,9 @@ export function PremiumDatePicker({
           triggerClassName
         )}
       >
-        <Calendar className="w-5 h-5 text-muted flex-shrink-0" strokeWidth={1.5} />
+        {!hideIcon && (
+          <Calendar className="w-5 h-5 text-muted flex-shrink-0" strokeWidth={1.5} />
+        )}
         <div className="flex flex-col w-full min-w-0">
           {resolvedLabel ? (
             <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-dim mb-0.5">

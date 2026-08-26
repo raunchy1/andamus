@@ -78,10 +78,9 @@ export function PublicProfileView({
   const t = useTranslations("publicProfile");
   const tSearch = useTranslations("search");
   const [copied, setCopied] = useState(false);
-  const verified =
-    profile.driver_verified ||
-    profile.rating >= 4.5 ||
-    profile.review_count > 5;
+  // Identity checks only. The `rating >= 4.5` fallback badged every account as
+  // verified, because profiles.rating defaults to 5.0.
+  const verified = profile.driver_verified || profile.id_verified;
   const memberYear = new Date(profile.created_at).getFullYear();
 
   useEffect(() => {

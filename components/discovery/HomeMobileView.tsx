@@ -417,6 +417,7 @@ export function HomeMobileView({
                 min={today}
                 placeholder={t.heroDate}
                 label=""
+                hideIcon
                 className="border-0 shadow-none bg-transparent p-0 h-auto text-[13px] text-ink font-medium w-full"
               />
             </div>

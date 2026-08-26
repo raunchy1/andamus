@@ -313,7 +313,7 @@ export async function searchRides(filters: SearchFilters) {
       music_preference,
       women_only,
       students_only,
-      profiles!inner(name, avatar_url, rating, review_count, rides_count)
+      profiles!inner(name, avatar_url, rating, review_count, rides_count, id_verified)
     `
     )
     .eq("status", "active")
@@ -360,14 +360,16 @@ export async function searchRides(filters: SearchFilters) {
       rating: number;
       review_count?: number | null;
       rides_count?: number | null;
+      id_verified?: boolean | null;
     };
   }>;
 
-  // ── Verified filter (fallback logic since columns don't exist in DB yet) ──
+  // ── Verified filter ──
+  // profiles.id_verified exists now; the old fallback (rating >= 4.5) matched
+  // every driver, because rating defaults to 5.0 — so "Verificati" filtered
+  // nothing out.
   if (filters.verifiedOnly) {
-    results = results.filter(
-      (ride) => (ride.profiles.rating || 0) >= 4.5 || (ride.profiles.review_count || 0) > 5
-    );
+    results = results.filter((ride) => ride.profiles.id_verified === true);
   }
 
   // ── Nearby date fallback ──
@@ -405,7 +407,7 @@ export async function searchRides(filters: SearchFilters) {
         music_preference,
         women_only,
         students_only,
-        profiles!inner(name, avatar_url, rating, review_count, rides_count)
+        profiles!inner(name, avatar_url, rating, review_count, rides_count, id_verified)
       `
       )
       .eq("status", "active")
