@@ -442,16 +442,22 @@ export default function ProfilePage() {
 
       // Requests depend on rides data — do sequentially
       if (ridesData.length > 0) {
-        const { data: requestsData } = await supabase
+        // bookings has two FKs to profiles (passenger_id and cancelled_by), so
+        // the embed must name the constraint — a bare profiles(...) is ambiguous
+        // and PostgREST rejects the whole query with PGRST201.
+        const { data: requestsData, error: requestsError } = await supabase
           .from("bookings")
           .select(`
             *,
-            passenger:profiles(name, avatar_url),
+            passenger:profiles!bookings_passenger_id_fkey(name, avatar_url),
             ride:rides(from_city, to_city, date, time, price)
           `)
           .eq("status", "pending")
           .or("payment_status.is.null,payment_status.eq.authorized")
           .in("ride_id", ridesData.map((r: { id: string }) => r.id));
+        if (requestsError) {
+          console.error("[profilo] booking requests query failed:", requestsError);
+        }
         if (isMountedRef.current) setBookingRequests(requestsData || []);
       } else {
         setBookingRequests([]);

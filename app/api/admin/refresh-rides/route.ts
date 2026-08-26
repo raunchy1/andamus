@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { getAppNow } from "@/lib/date-utils";
 
 // ── Deterministic helpers (same as seed-rides.ts) ─────────────────────────────
 
@@ -33,8 +34,11 @@ export async function GET(request: Request) {
 
   const supabase = createServiceRoleClient();
   const logs: string[] = [];
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
+  // Europe/Rome, like every other expiry check in the app. toISOString() would
+  // read the UTC date, which is a different day for part of each night.
+  const { date: todayStr } = getAppNow();
+  // Anchor at midday so adding days can never slip across a DST boundary.
+  const today = new Date(`${todayStr}T12:00:00Z`);
 
   try {
     // ── 1. Find all seed driver IDs ────────────────────────────────────────────
@@ -78,15 +82,20 @@ export async function GET(request: Request) {
       });
     }
 
-    // ── 2. Find expired or soon-expiring seed rides ────────────────────────────
-    // Include status 'expired' (set by midnight expire-rides cron) AND
-    // 'active' rides with past dates (edge case where this runs before expire-rides)
+    // ── 2. Find expired seed rides ─────────────────────────────────────────────
+    // Two distinct cases: rides the midnight expire-rides cron already marked
+    // 'expired', and 'active' rides whose date is already past (in case this
+    // runs before that cron).
+    //
+    // The date bound is strictly `<` today. It used to be `<=`, which also
+    // caught rides scheduled for *today* that had not departed yet — so every
+    // night this route pushed the whole of today's marketplace 1-30 days out
+    // and the homepage's "Passaggi di oggi" could never show anything.
     const { data: expiredRides, error: fetchErr } = await supabase
       .from("rides")
       .select("id")
-      .in("status", ["expired", "active"])
       .in("driver_id", seedDriverIds)
-      .lte("date", todayStr);
+      .or(`status.eq.expired,and(status.eq.active,date.lt.${todayStr})`);
 
     if (fetchErr) {
       logs.push(`Error fetching expired rides: ${fetchErr?.message}`);

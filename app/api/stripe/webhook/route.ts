@@ -86,6 +86,18 @@ export async function POST(req: NextRequest) {
         await handleAccountUpdated(event.data.object as Stripe.Account, supabase);
         break;
       }
+      case "payment_intent.canceled": {
+        await handlePaymentIntentCanceled(event.data.object as Stripe.PaymentIntent, supabase);
+        break;
+      }
+      case "charge.dispute.created": {
+        logger.error("[stripe/webhook] Dispute opened", {
+          chargeId: (event.data.object as Stripe.Dispute).charge,
+          amount: (event.data.object as Stripe.Dispute).amount,
+          reason: (event.data.object as Stripe.Dispute).reason,
+        });
+        break;
+      }
     }
   } catch (handlerErr) {
     const msg = handlerErr instanceof Error ? handlerErr.message : "Handler error";
@@ -238,6 +250,28 @@ async function handleAccountUpdated(
       .update({ connect_onboarded: true })
       .eq("stripe_connect_account_id", account.id);
   }
+}
+
+async function handlePaymentIntentCanceled(
+  paymentIntent: Stripe.PaymentIntent,
+  supabase: ReturnType<typeof createServiceRoleClient>
+) {
+  // PaymentIntent expired (7-day uncaptured limit) or was canceled externally.
+  // Find the booking and mark it so it doesn't stay stuck in "authorized".
+  const { data: booking } = await supabase
+    .from("bookings")
+    .select("id, status")
+    .eq("payment_intent_id", paymentIntent.id)
+    .maybeSingle();
+
+  if (!booking) return;
+
+  const updates: Record<string, string> = { payment_status: "cancelled" };
+  if (booking.status === "pending" || booking.status === "confirmed") {
+    updates.status = "cancelled";
+  }
+
+  await supabase.from("bookings").update(updates).eq("id", booking.id);
 }
 
 function timestampToIso(ts: number | null | undefined): string | null {

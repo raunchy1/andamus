@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isRideExpired } from "@/lib/date-utils";
 import { createNotification } from "@/lib/notification-actions";
 import { revalidatePath } from "next/cache";
+import { refundBooking } from "@/lib/server/payments/refund";
 
 export type LifecycleResult = {
   success: boolean;
@@ -174,23 +175,18 @@ export async function rejectBooking(
     return { success: false, error: "booking_not_pending" };
   }
 
-  // For paid rides, cancel the Stripe authorization first
+  // For paid rides, release the Stripe authorization first.
+  // Called directly rather than over HTTP: a server-to-server fetch would not
+  // carry the driver's session cookies and would be rejected as unauthorized.
   if (booking.payment_intent_id) {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}/api/stripe/connect/cancel-payment`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ bookingId }),
-        }
-      );
-      if (!res.ok) {
-        console.error("[rejectBooking] Stripe cancel failed");
+      const result = await refundBooking(supabase, bookingId, user.id);
+      if (!result.ok) {
+        console.error("[rejectBooking] Stripe cancel failed:", result.error);
         // Continue anyway — we'll mark as rejected regardless
       }
-    } catch {
-      // Non-blocking
+    } catch (err) {
+      console.error("[rejectBooking] Stripe cancel threw:", err);
     }
   }
 
@@ -227,6 +223,98 @@ export async function rejectBooking(
 
   revalidatePath("/profilo");
   revalidatePath(`/corsa/${rideId}`);
+
+  return { success: true };
+}
+
+/**
+ * Server action to cancel an entire ride.
+ * Refunds all confirmed bookings, cancels authorized ones, notifies all passengers.
+ */
+export async function cancelRide(rideId: string): Promise<LifecycleResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return { success: false, error: "unauthorized" };
+  }
+
+  const { data: ride, error: rideError } = await supabase
+    .from("rides")
+    .select("id, driver_id, from_city, to_city, status")
+    .eq("id", rideId)
+    .single();
+
+  if (rideError || !ride) {
+    return { success: false, error: "ride_not_found" };
+  }
+
+  if (ride.driver_id !== user.id) {
+    return { success: false, error: "not_driver" };
+  }
+
+  if (ride.status === "cancelled") {
+    return { success: false, error: "already_cancelled" };
+  }
+
+  const { data: bookings } = await supabase
+    .from("bookings")
+    .select("id, passenger_id, payment_intent_id, payment_status, status")
+    .eq("ride_id", rideId)
+    .in("status", ["pending", "confirmed"]);
+
+  const refundErrors: string[] = [];
+  for (const booking of bookings ?? []) {
+    if (booking.payment_intent_id) {
+      try {
+        const result = await refundBooking(supabase, booking.id, user.id);
+        if (!result.ok) {
+          refundErrors.push(`booking ${booking.id}: ${result.error}`);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "unknown error";
+        refundErrors.push(`booking ${booking.id}: ${msg}`);
+      }
+    }
+
+    await supabase
+      .from("bookings")
+      .update({ status: "cancelled" })
+      .eq("id", booking.id);
+
+    try {
+      await createNotification({
+        userId: booking.passenger_id,
+        type: "booking_rejected",
+        title: "Passaggio annullato",
+        body: `Il conducente ha annullato il passaggio ${ride.from_city} → ${ride.to_city}. Il rimborso è in arrivo.`,
+        rideId,
+        bookingId: booking.id,
+      });
+    } catch {
+      // Non-blocking
+    }
+  }
+
+  const { error: rideUpdateError } = await supabase
+    .from("rides")
+    .update({ status: "cancelled" })
+    .eq("id", rideId);
+
+  if (rideUpdateError) {
+    return { success: false, error: "update_failed" };
+  }
+
+  revalidatePath("/profilo");
+  revalidatePath(`/corsa/${rideId}`);
+
+  if (refundErrors.length > 0) {
+    console.error("[cancelRide] Refund errors:", refundErrors);
+    return { success: true, error: "partial_refund_failure" };
+  }
 
   return { success: true };
 }

@@ -15,6 +15,7 @@ export type DiscoveryRide = {
     avatar_url?: string | null
     rating?: number | null
     review_count?: number | null
+    id_verified?: boolean | null
   } | null
 }
 
@@ -43,8 +44,14 @@ function DiscoveryRideCard({
   const isFree = ride.price === 0
   const priceLabel = isFree ? freeLabel : `${ride.price} €`
 
+  // Only show a score once someone has actually been reviewed. profiles.rating
+  // defaults to 5.0, so an ungated read prints a rating for every driver who
+  // has never carried a passenger — the same invented stat the ride page and
+  // the public profile already refuse to show.
+  const hasReviews = (profile?.review_count ?? 0) > 0
+
   const rating =
-    profile?.rating != null && Number(profile.rating) > 0
+    hasReviews && profile?.rating != null && Number(profile.rating) > 0
       ? Number(profile.rating).toFixed(1)
       : undefined
 
@@ -58,7 +65,9 @@ function DiscoveryRideCard({
       ? formatDate(ride.date)
       : undefined
 
-  const verified = (profile?.review_count ?? 0) > 0
+  // The card's check mark is the same claim the ride page makes: identity
+  // verified, not "has been reviewed".
+  const verified = profile?.id_verified === true
 
   return (
     <RideCard

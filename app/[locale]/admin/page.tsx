@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
@@ -410,18 +411,19 @@ function RevenueTab() {
     <div className="space-y-4">
       <div className="rounded-[var(--radius)] border border-line bg-surface p-6 text-center">
         <Euro size={40} className="mx-auto mb-3 text-muted" strokeWidth={1.5} />
-        <h3 className="heading-editorial mb-2 text-xl text-fg">revenue dashboard</h3>
-        <p className="text-sm text-muted">
-          Configura Stripe per vedere le metriche di revenue in tempo reale.
+        <h3 className="heading-editorial mb-2 text-xl text-fg">
+          commissioni piattaforma
+        </h3>
+        <p className="mx-auto max-w-md text-sm text-muted">
+          Guadagni netti al netto dei rimborsi, grafico giornaliero e ultimi
+          pagamenti incassati.
         </p>
-        <div className="mt-4 space-y-3">
-          <div className="rounded-[var(--radius-sm)] border border-line bg-surface-2 p-4 text-left">
-            <p className="text-eyebrow mb-2">da configurare</p>
-            <p className="text-sm text-fg">1. Aggiungi STRIPE_SECRET_KEY su Vercel</p>
-            <p className="text-sm text-fg">2. Configura webhook Stripe → /api/stripe/webhook</p>
-            <p className="text-sm text-fg">3. Le transazioni appariranno qui automaticamente</p>
-          </div>
-        </div>
+        <Link
+          href="/admin/earnings"
+          className="mt-5 inline-block rounded-[var(--radius-sm)] border border-line bg-surface-2 px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-surface"
+        >
+          apri dashboard commissioni →
+        </Link>
       </div>
     </div>
   );
