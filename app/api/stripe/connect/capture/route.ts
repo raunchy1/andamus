@@ -66,11 +66,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No seats available" }, { status: 409 });
     }
 
-    await getStripe().paymentIntents.capture(booking.payment_intent_id);
+    const intent = await getStripe().paymentIntents.capture(
+      booking.payment_intent_id,
+      { expand: ["latest_charge"] }
+    );
+
+    // Record what Stripe actually moved, rather than recomputing it from the
+    // ride price later — the fee percentage and the price can both change.
+    const charge =
+      intent.latest_charge && typeof intent.latest_charge !== "string"
+        ? intent.latest_charge
+        : null;
+
+    const amountGross = charge?.amount_captured ?? intent.amount_received ?? null;
+    const platformFee =
+      typeof charge?.application_fee_amount === "number"
+        ? charge.application_fee_amount
+        : intent.application_fee_amount ?? null;
 
     await supabase
       .from("bookings")
-      .update({ payment_status: "captured", status: "confirmed" })
+      .update({
+        payment_status: "captured",
+        status: "confirmed",
+        amount_gross_cents: amountGross,
+        platform_fee_cents: platformFee,
+        currency: intent.currency,
+        captured_at: new Date().toISOString(),
+      })
       .eq("id", bookingId);
 
     return NextResponse.json({ captured: true });

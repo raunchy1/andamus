@@ -319,7 +319,16 @@
     "from": "Start",
     "to": "Ziel",
     "route": "Die Strecke",
-    "via": "Über"
+    "via": "Über",
+    "cancelRide": "Fahrt stornieren",
+    "cancelRideTitle": "Diese Fahrt stornieren?",
+    "cancelRideWarning": "Alle Mitfahrer werden benachrichtigt und automatisch erstattet. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "cancelRideConfirm": "Ja, stornieren",
+    "cancelRideKeep": "Nein, behalten",
+    "cancelRideLoading": "Wird storniert...",
+    "cancelRideSuccess": "Fahrt storniert. Die Mitfahrer wurden erstattet.",
+    "cancelRideError": "Fahrt konnte nicht storniert werden",
+    "cancelRidePartial": "Fahrt storniert, aber einige Erstattungen sind fehlgeschlagen. Bitte kontaktiere den Support."
   },
   "profile": {
     "cancel": "Abbrechen",

@@ -11,6 +11,8 @@ import { toast } from "sonner";
 interface BookingDetails {
   id: string;
   status: string;
+  payment_intent_id: string | null;
+  payment_status: string | null;
   ride: {
     id: string;
     from_city: string;
@@ -65,6 +67,8 @@ export default function CancelBookingPage() {
           .select(`
             id,
             status,
+            payment_intent_id,
+            payment_status,
             passenger_id,
             ride:ride_id (
               id,
@@ -107,6 +111,8 @@ export default function CancelBookingPage() {
 
         setBooking({
           ...data,
+          payment_intent_id: data.payment_intent_id ?? null,
+          payment_status: data.payment_status ?? null,
           ride: ride,
           passenger: passenger,
         } as BookingDetails);
@@ -129,6 +135,19 @@ export default function CancelBookingPage() {
     setCancelling(true);
 
     try {
+      // Handle Stripe refund/cancellation before updating the DB
+      if (booking?.payment_intent_id) {
+        const refundRes = await fetch("/api/stripe/connect/refund", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId }),
+        });
+        if (!refundRes.ok) {
+          const refundData = await refundRes.json();
+          throw new Error(refundData.error || "Refund failed");
+        }
+      }
+
       const { error: updateError } = await supabase
         .from("bookings")
         .update({
@@ -145,19 +164,17 @@ export default function CancelBookingPage() {
         await fetch("/api/emails/booking-rejected", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            bookingId,
-            reason: selectedReason,
-          }),
+          body: JSON.stringify({ bookingId, reason: selectedReason }),
         });
       } catch {
-        // Email error - logged silently
+        // Email error — non-blocking
       }
 
       toast.success(t("successMessage"));
       router.push(`/${locale}/profilo`);
     } catch (_error) {
-      toast.error(t("errorMessage"));
+      const msg = _error instanceof Error ? _error.message : t("errorMessage");
+      toast.error(msg);
     } finally {
       setCancelling(false);
     }

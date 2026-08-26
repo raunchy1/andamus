@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { notifyBookingRequest } from "@/lib/notification-actions";
+import { cancelRide } from "@/lib/booking-lifecycle";
 import { useDeviceType } from "@/components/view-mode";
 import { toast } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -648,13 +649,16 @@ function RideDetailStickyCTA({
   const action = (() => {
     if (isMyRide) {
       return (
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={() => router.push(`/${locale}/profilo`)}
-        >
-          {t("manageFromProfile")}
-        </Button>
+        <div className="w-full">
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={() => router.push(`/${locale}/profilo`)}
+          >
+            {t("manageFromProfile")}
+          </Button>
+          <RideCancelAction rideId={ride.id} rideStatus={rideStatus} />
+        </div>
       );
     }
     if (existingBooking) {
@@ -742,6 +746,97 @@ function RideDetailLoginModal({
         </div>
       </Card>
     </div>
+  );
+}
+
+function RideCancelAction({
+  rideId,
+  rideStatus,
+}: {
+  rideId: string;
+  rideStatus: import("@/lib/ride-status").ComputedRideStatus;
+}) {
+  const t = useTranslations("ride");
+  const router = useRouter();
+  const [confirming, setConfirming] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+
+  // Only an upcoming or in-progress ride can be cancelled
+  if (rideStatus === "completed" || rideStatus === "cancelled") return null;
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    try {
+      const result = await cancelRide(rideId);
+
+      if (!result.success) {
+        toast.error(t("cancelRideError"));
+        return;
+      }
+
+      if (result.error === "partial_refund_failure") {
+        toast.warning(t("cancelRidePartial"));
+      } else {
+        toast.success(t("cancelRideSuccess"));
+      }
+
+      setConfirming(false);
+      router.refresh();
+    } catch {
+      toast.error(t("cancelRideError"));
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        className="mt-2 w-full text-center text-[13px] font-medium text-bad underline-offset-4 hover:underline"
+      >
+        {t("cancelRide")}
+      </button>
+
+      {confirming && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-ride-title"
+        >
+          <Card className="w-full max-w-sm p-6">
+            <h3
+              id="cancel-ride-title"
+              className="heading-editorial mb-2 text-xl text-fg"
+            >
+              {t("cancelRideTitle")}
+            </h3>
+            <p className="mb-6 text-sm leading-relaxed text-muted">
+              {t("cancelRideWarning")}
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setConfirming(false)}
+                disabled={cancelling}
+              >
+                {t("cancelRideKeep")}
+              </Button>
+              <Button
+                className="flex-1 bg-bad text-white hover:bg-bad"
+                onClick={handleCancel}
+                disabled={cancelling}
+              >
+                {cancelling ? t("cancelRideLoading") : t("cancelRideConfirm")}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+    </>
   );
 }
 

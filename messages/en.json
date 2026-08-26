@@ -319,7 +319,16 @@
     "from": "From",
     "to": "To",
     "route": "The route",
-    "via": "Via"
+    "via": "Via",
+    "cancelRide": "Cancel ride",
+    "cancelRideTitle": "Cancel this ride?",
+    "cancelRideWarning": "All passengers will be notified and refunded automatically. This action cannot be undone.",
+    "cancelRideConfirm": "Yes, cancel",
+    "cancelRideKeep": "No, keep it",
+    "cancelRideLoading": "Cancelling...",
+    "cancelRideSuccess": "Ride cancelled. Passengers have been refunded.",
+    "cancelRideError": "Could not cancel the ride",
+    "cancelRidePartial": "Ride cancelled, but some refunds failed. Please contact support."
   },
   "profile": {
     "cancel": "Cancel",

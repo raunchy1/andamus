@@ -319,7 +319,16 @@
     "from": "Partenza",
     "to": "Arrivo",
     "route": "Il percorso",
-    "via": "Passa da"
+    "via": "Passa da",
+    "cancelRide": "Annulla passaggio",
+    "cancelRideTitle": "Annullare questo passaggio?",
+    "cancelRideWarning": "Tutti i passeggeri saranno avvisati e rimborsati automaticamente. Questa azione non può essere annullata.",
+    "cancelRideConfirm": "Sì, annulla",
+    "cancelRideKeep": "No, mantieni",
+    "cancelRideLoading": "Annullamento in corso...",
+    "cancelRideSuccess": "Passaggio annullato. I passeggeri sono stati rimborsati.",
+    "cancelRideError": "Impossibile annullare il passaggio",
+    "cancelRidePartial": "Passaggio annullato, ma alcuni rimborsi non sono riusciti. Contatta l'assistenza."
   },
   "profile": {
     "cancel": "Annulla",
