@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { Resend } from "resend";
+import { getResend } from "@/lib/emails/resend-client";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Andamus <noreply@andamus.app>";
 
 /**
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
     // 1. Send confirmation email first (while user email is still available)
     if (userEmail) {
       try {
-        await resend.emails.send({
+        await getResend().emails.send({
           from: FROM_EMAIL,
           to: userEmail,
           subject: "Conferma eliminazione account | Andamus",

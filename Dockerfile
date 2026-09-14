@@ -12,6 +12,13 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_OPTIONS=--max-old-space-size=2048
+# Placeholders so next build page-collection does not crash; Coolify overrides at runtime
+ENV RESEND_API_KEY=re_build_placeholder
+ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
+ENV NEXT_PUBLIC_APP_URL=http://localhost:3000
+ENV NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ENV NEXT_PUBLIC_WAITLIST_MODE=false
 RUN npm run build
 
 FROM base AS runner
