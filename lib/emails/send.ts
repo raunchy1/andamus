@@ -1,4 +1,3 @@
-import { Resend } from "resend";
 import crypto from "crypto";
 import {
   getBookingRequestEmailTemplate,
@@ -9,8 +8,7 @@ import {
   getRideReminderEmailTemplate,
 } from "./templates";
 import { createClient } from "@/lib/supabase/server";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getResend } from "@/lib/emails/resend-client";
 
 const FROM_EMAIL = "Andamus <noreply@andamus.app>";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://andamus.app";
@@ -104,7 +102,7 @@ export async function sendBookingRequestEmail(data: {
       unsubscribeToken,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.driverEmail,
       subject,
@@ -172,7 +170,7 @@ export async function sendBookingConfirmedEmail(data: {
       locale,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.passengerEmail,
       subject,
@@ -221,7 +219,7 @@ export async function sendBookingRejectedEmail(data: {
       unsubscribeToken,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.passengerEmail,
       subject,
@@ -271,7 +269,7 @@ export async function sendNewMessageEmail(data: {
       unsubscribeToken,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.recipientEmail,
       subject,
@@ -322,7 +320,7 @@ export async function sendWelcomeEmail(data: {
       locale,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.email,
       subject,
@@ -386,7 +384,7 @@ export async function sendRideReminderEmail(data: {
       locale,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.recipientEmail,
       subject,
@@ -444,7 +442,7 @@ export async function sendWeeklyDigestEmail(data: {
       baseUrl: BASE_URL,
     });
 
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.to,
       subject,

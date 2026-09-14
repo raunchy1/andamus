@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/session";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { Resend } from "resend";
+import { getResend } from "@/lib/emails/resend-client";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Andamus <noreply@andamus.app>";
 
 function escapeHtml(text: string): string {
@@ -106,7 +105,7 @@ export async function POST(request: NextRequest) {
     // 2c. Send success email (optional but great for UX)
     if (userEmail) {
       try {
-        await resend.emails.send({
+        await getResend().emails.send({
           from: FROM_EMAIL,
           to: userEmail,
           subject: "Profilo Verificato! 🎉 | Andamus",
@@ -145,7 +144,7 @@ export async function POST(request: NextRequest) {
           ? escapeHtml(reason) 
           : "Il documento caricato non è leggibile o è scaduto. Ti preghiamo di riprovare con una foto più nitida.";
 
-        await resend.emails.send({
+        await getResend().emails.send({
           from: FROM_EMAIL,
           to: userEmail,
           subject: "Aggiornamento sulla verifica dei documenti | Andamus",
