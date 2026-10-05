@@ -12,9 +12,9 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
 
-  // Stripe
-  STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1, "STRIPE_WEBHOOK_SECRET is required"),
+  // Stripe (optional until premium/payments are configured)
+  STRIPE_SECRET_KEY: z.string().min(1).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
 
   // VAPID (Push notifications)
   VAPID_PUBLIC_KEY: z.string().min(1, "VAPID_PUBLIC_KEY is required").optional(),
